@@ -15,8 +15,8 @@ SRC = $(SRC_DIR)/SteeringFileReader.cxx $(SRC_DIR)/SPXSteeringFile.cxx $(SRC_DIR
 		$(SRC_DIR)/SPXOverlayStyle.cxx $(SRC_DIR)/SPXPDFBandType.cxx $(SRC_DIR)/SPXPDFErrorType.cxx $(SRC_DIR)/SPXPDFErrorSize.cxx \
 		$(SRC_DIR)/SPXFrameOptions.cxx $(SRC_DIR)/SPXPDFSteeringFile.cxx $(SRC_DIR)/SPXGridSteeringFile.cxx $(SRC_DIR)/SPXDataSteeringFile.cxx \
 		$(SRC_DIR)/SPXDataFormat.cxx
-INC = -I/afs/cern.ch/work/j/jgibson/usr/inih/include -I$(SRC_DIR)
-LIB_PATH = -L/afs/cern.ch/work/j/jgibson/usr/inih/lib
+INC = -I./inih/include -I$(SRC_DIR)
+LIB_PATH = -L./inih/lib
 LIB = -linih
 BIN = $(BIN_DIR)/SteeringFileReader
 
@@ -29,7 +29,7 @@ BIN = $(BIN_DIR)/SteeringFileReader
 all: $(BIN)
 
 $(BIN): $(SRC)
-	mkdir $(BIN_DIR)
+	mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $(BIN) $(INC) $(SRC) $(LIB_PATH) $(LIB)
 
 test: $(TST_DIR)/TestSPXRatioStyle $(TST_DIR)/TestSPXDisplayStyle $(TST_DIR)/TestSPXOverlayStyle
