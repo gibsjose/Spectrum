@@ -1,0 +1,91 @@
+;==============================================================
+;
+; Link:			
+;	<link_here>
+;
+; Description:		
+;	Example Data Steering File
+;
+; Authors:
+;	Jon Doe
+;	Jean Pierre Larousse
+;	...
+;
+; Date:
+;	17.09.2014
+;
+; Other:
+;	Other information...
+;
+;==============================================================
+
+;--------------------------------------------------------------
+; NOTE:
+;
+; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
+;
+;	"  some_thing = "  <--- BAD
+;	"; some_thing = "  <--- OKAY
+;
+; If you forget to do this, some trailing comments could
+; be included in the option's value
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = true													;[Optional] Turn on/off debug statements - [default = false]
+
+;==============================================================
+; Description
+;==============================================================
+[DESC]
+name = ATLAS_2012_diffcross_mtt									;[Optional] Data name
+year = 2013														;[Optional] Year of data measurements
+experiment = ATLAS												;[Optional] Which experiment
+reaction = P P --> top top										;[Optional] Reaction type
+
+;==============================================================
+; Graphing Options
+;==============================================================
+[GRAPH]
+sqrt_s = 7000.0													;[REQUIRED]	Sqrt(s) value
+legend_label = ATLAS 2011										;[REQUIRED] Legend label describing this data set
+x_label = m_{t, #bar{t}} [GeV]									;[REQUIRED] X Axis Label (supports LaTeX)
+y_label = 1/#sigma d#sigma/dm_{t,#bar{t}} [1/TeV]				;[REQUIRED] Y Axis Label (supports LaTeX)
+x_units = TeV													;[REQUIRED] X Axis Units (MeV, GeV or TeV) - [default = GeV]
+y_units = pb													;[REQUIRED] Y Axis Units (pb or fb) - [default = fb]
+; x_scale =														;[Optional] Artificially scale the data measurements
+; y_scale =														;[Optional] Artificially scale the data measurements
+frame_x_log = true												;[Optional] Plot the X Axis of the frame logarithmically
+frame_y_log = true												;[Optional] Plot the Y Axis of the frame logarithmically
+jet_algorithm_label = antikt									;[Optional] Jet Algorithm Label
+jet_algorithm_number = 4										;[Optional] Jet Algorithm Number
+
+;--------------------------------------------------------------
+; NOTE:
+;
+; For the data_format specification below there are currently
+; 5 supported formats:
+;
+;		spectrum_t1s
+;		spectrum_t1a
+;		spectrum_t2s
+;		spectrum_t2a
+;		herapdf
+;
+; See the file 'data_formats.txt' for a more comprehensive
+; explanation of the different formats
+;--------------------------------------------------------------
+
+;==============================================================
+; Data Options
+;==============================================================
+[DATA]
+data_format = spectrum_t1a										;[REQUIRED] Data format
+data_file = Data/example_data.csv								;[REQUIRED] Data file path
+divided_by_bin_width = true										;[Optional] Specify if data is already divided by the bin width
+normalized_to_total_sigma = true								;[Optional] Specify if the cross-section data (sigma) has been 
+																;			normalized to the total sigma
+error_in_percent = true											;[Optional] Specify that errors are reported in percents

@@ -1,0 +1,90 @@
+;==============================================================
+;
+; Link:			
+;	<link_here>
+;
+; Description:		
+;	Example of a valid Data Steering File
+;
+; Authors:
+;	Jon Doe
+;	Jean Pierre Larousse
+;	...
+;
+; Date:
+;	17.09.2014
+;
+; Other:
+;	Other information...
+;
+;==============================================================
+
+;--------------------------------------------------------------
+; NOTE: 
+;
+; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
+;
+;	"  some_thing = "  <--- BAD
+;	"; some_thing = "  <--- OKAY
+;
+; If you forget to do this, some trailing comments could
+; be included in the option's value
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = false
+
+;==============================================================
+; Description
+;==============================================================
+[DESC]
+name = ATLAS_2012_diffcross_mtt
+year = 2013
+experiment = ATLAS
+reaction = P P --> top top
+
+;==============================================================
+; Graphing Options
+;==============================================================
+[GRAPH]
+sqrt_s = 7000.0
+legend_label = ATLAS 2011
+x_label = m_{t, #bar{t}} [GeV]
+y_label = 1/#sigma d#sigma/dm_{t,#bar{t}} [1/TeV]
+x_units = TeV
+y_units = pb
+; x_scale =	
+; y_scale =	
+frame_x_log = true
+frame_y_log = true
+jet_algorithm_label = antikt
+jet_algorithm_number = 4
+
+;--------------------------------------------------------------
+; NOTE:
+;
+; For the data_format specification below there are currently
+; 5 supported formats:
+;
+;		spectrum_t1s
+;		spectrum_t1a
+;		spectrum_t2s
+;		spectrum_t2a
+;		herapdf
+;
+; See the file 'data_formats.txt' for a more comprehensive
+; explanation of the different formats
+;--------------------------------------------------------------
+
+;==============================================================
+; Data Options
+;==============================================================
+[DATA]
+data_format = spectrum_t1a
+data_file = spectrum_t1a_data.txt
+divided_by_bin_width = true
+normalized_to_total_sigma = true
+error_in_percent = true

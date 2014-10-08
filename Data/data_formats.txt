@@ -1,0 +1,70 @@
+Spectrum T1S
+Spectrum T1A
+Spectrum T2S
+Spectrum T2A
+HERAPDF
+
+==============
+ Spectrum T1S
+==============
+Spectrum T1S = Spectrum Type 1, Symmetric Errors
+'Type 1' specifies that ONLY the TOTAL systematic error will be given
+'Symmetric' specifies that the systematic errors will be given symmetrically (only one column)
+
+[xm] [xlow] [xhigh] [sigma] [stat sigma] [syst sigma]
+
+Example: /afs/cern.ch/user/j/jgibson/public/MyAnalysis/MyData/
+
+==============
+ Spectrum T1A
+==============
+Spectrum T1A = Spectrum Type 1, Asymmetric Errors
+'Type 1' specifies that ONLY the TOTAL systematic error will be given
+'Asymmetric' specifies that the systematic errors will be given asymmetrically (as + and - in separate columns)
+
+[xm] [xlow] [xhigh] [sigma] [stat sigma] [syst sigma +] [syst sigma -]
+
+Example: /afs/cern.ch/user/j/jgibson/public/MyAnalysis/MyData/
+
+==============
+ Spectrum T2S
+==============
+'Type 2' specifies that BOTH the TOTAL systematic error AND any number of partial systematic errors will be given as formatted below
+'Symmetric' specifies that the systematic errors will be given symmetrically (only one column)
+
+[syst sub 1] e_p1 e_p2 ...
+[syst sub 2] ...
+...
+
+[xm] [xlow] [xhigh] [sigma] [stat sigma] [syst sigma]
+p1
+p2
+...
+
+Example: /afs/cern.ch/user/j/jgibson/public/MyAnalysis/MyData/
+
+==============
+ Spectrum T2A
+==============
+'Type 2' specifies that BOTH the TOTAL systematic error AND any number of partial systematic errors will be given as formatted below
+'Asymmetric' specifies that the systematic errors will be given asymmetrically (as + and - in separate columns)
+
+[syst sub 1 +] e_p1 e_p2 ...
+[syst sub 1 -] ...
+[syst sub 2 +] ...
+[syst sub 2 -] ...
+...
+
+[xm] [xlow] [xhigh] [sigma] [stat sigma] [syst sigma +] [syst sigma -]
+p1
+p2
+...
+
+Example: /afs/cern.ch/user/j/jgibson/public/MyAnalysis/MyData/
+
+==============
+   HERAPDF
+==============
+The HERAPDF Format is a completely different (but similar format).
+
+Example: /afs/cern.ch/user/j/jgibson/public/herapdf_data/Jets2011/dijets_7000_R04_ystar_y_00_05_long.dat

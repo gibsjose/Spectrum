@@ -1,0 +1,58 @@
+;==============================================================
+;
+; Description:		
+;	Example Grid Steering File
+;
+; Authors:
+;	Jon Doe
+;	Jean Pierre Larousse
+;	...
+;
+; Date:
+;	17.09.2014
+;
+; Other:
+;	Other information...
+;
+;==============================================================
+
+;--------------------------------------------------------------
+; NOTE: 
+;
+; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
+;
+;	"  some_thing = "  <--- BAD
+;	"; some_thing = "  <--- OKAY
+;
+; If you forget to do this, some trailing comments could
+; be included in the option's value
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = true													;[Optional] Turn on/off debug statements - [default = false]
+
+;==============================================================
+; Description
+;==============================================================
+[DESC]
+name = ATLAS_epj_atlas_mtt										;[Optional] Grid Name
+
+;==============================================================
+; Graphing Options
+;==============================================================
+[GRAPH]
+x_units = TeV													;[REQUIRED] X Units for scaling
+y_units = pb													;[REQUIERD] Y Units for scaling
+divided_by_bin_width = true										;[Optional] Note if grid's reference histogram has already been divided by the bin width
+
+;==============================================================
+; Grid Options
+;==============================================================
+[GRID]								
+grid_file = MyGrids/top/mcfm/grid-TTbar_mttatlas.root			;[REQUIRED] Path to the grid's root file
+generator_id = 													;[Optional] Specify who generated the grid, for informational purposes
+ntuple_id = MCFM												;[Optional] Specify who generated the NTuple (could be used to determine units)
+lowest_order = "NNLO"											;[Optional] Set the lowest order of what is in this grid

@@ -1,0 +1,134 @@
+;==============================================================
+;
+; Description:		
+;	Example of an invalid Steering File
+;
+; Authors:
+;	Jon Doe
+;	Jean Pierre Larousse
+;	...
+;
+; Date:
+;	17.09.2014
+;
+; Other:
+;	Other information...
+;
+;==============================================================
+
+;--------------------------------------------------------------
+; NOTE: 
+;
+; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
+;
+;	"  some_thing = "  <--- BAD
+;	"; some_thing = "  <--- OKAY
+;
+; If you forget to do this, some trailing comments could
+; be included in the option's value
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = true
+pdf_directory = PDF											
+data_directory = Data/datanew																
+grid_directory = Grids/top/mcfm					
+
+;==============================================================
+; Graphing Options
+;==============================================================
+[GRAPH]
+; plot_band = 
+; plot_error_ticks = 
+plot_marker = true
+plot_staggered = true
+label_sqrt_s = true
+x_legend = 0.9
+y_legend = 0.9
+; ratio_title =
+ratio_style = convolute,zebra/data
+display_style =	overlay, ratio
+; y_overlay_min = 
+; y_overlay_max = 
+y_ratio_min = octopus
+; y_ratio_max = 
+
+;==============================================================
+; PDF Options
+;==============================================================
+[PDF]
+pdf_steering_files = PDF/elephant.txt PDF/CT10.txt, PDF/HERAPDF15NLO.txt
+
+;--------------------------------------------------------------
+; NOTE:
+; 	
+; The following options will OVERRIDE the corresponding
+; options in ALL the chosen PDF Steering Files above
+;--------------------------------------------------------------
+
+pdf_fill_style = 3005
+pdf_fill_color = 600
+pdf_marker_style = 20
+pdf_band_type = use_alpha_s
+pdf_error_type = pdf_jaguar
+pdf_error_size = one_sigma
+
+;--------------------------------------------------------------
+; NOTE:
+;
+; Below is where you define the options for each frame.
+; To define a new frame, create a section with the format:
+;		[FRAME_n]	where n starts at 0
+;
+; If a frame has more than one data file, it MUST also have a
+; corresponding grid file, marker style, and marker color
+;
+; To give a frame more than one data file, etc., just use a comma
+; separated list:
+;
+;		data_steering_files = file1.txt, file2.txt
+;		...
+;		marker_style = 20, 21
+;		...
+;
+; Each frame is plotted on it's own ROOT canvas
+;--------------------------------------------------------------
+
+;==============================================================
+; Frame 0 Options
+;==============================================================
+[FRAME_0]													
+data_steering_files = atlas2012_5fb_top_mtt_ljet.txt										
+grid_steering_files = grid--TTbar_mttatlas.txt
+marker_color = 1
+; ref_line_style = 
+; ref_line_color = 
+desc = atlas_mtt_5fb
+
+;==============================================================
+; Frame 1 Options
+;==============================================================
+[FRAME_1]
+data_steering_files = atlas2012_5fb_top_ptt_ljet.txt, some_other_data_file.txt
+grid_steering_files = grid--TTbar_ptatlas.txt, some_other_grid_file.txt
+marker_style = 20, 21
+marker_color = 1
+; ref_line_style =
+; ref_line_color = 
+desc = atlas_ptt_5fb
+
+;==============================================================
+; Frame 2 Options
+;==============================================================
+[FRAME_2]
+data_steering_files = atlas2012_5fb_top_pttt_ljet.txt
+grid_steering_files = grid--TTbar_ptttatlas5fb.txt
+marker_style = 20
+marker_color = camel
+; ref_line_style =
+; ref_line_color = 
+desc = atlas_mtt_5fb
+

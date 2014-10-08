@@ -1,0 +1,67 @@
+;==============================================================
+;
+; Description:		
+;	Example PDF Steering File
+;
+; Authors:
+;	Jon Doe
+;	Jean Pierre Larousse
+;	...
+;
+; Date:
+;	17.09.2014
+;
+; Other:
+;	Other information...
+;
+;==============================================================
+
+;--------------------------------------------------------------
+; NOTE: 
+;
+; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
+;
+;	"  some_thing = "  <--- BAD
+;	"; some_thing = "  <--- OKAY
+;
+; If you forget to do this, some trailing comments could
+; be included in the option's value
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = false
+
+;==============================================================
+; Description
+;==============================================================
+[DESC]
+name = CT10
+type = CT10
+order = NLO
+num_members = 53	
+
+;==============================================================
+; Style Options
+;==============================================================
+[STYLE]
+fill_style = 3005
+fill_color = 600
+marker_style = 20
+
+;==============================================================
+; PDF Options
+;==============================================================
+[PDF]
+band_type =	use_error_band
+error_type = pdf_band
+error_size = one_sigma
+alpha_s_error_number_up = 7
+alpha_s_error_number_down = 3
+alpha_s_pdf_name_up = none
+alpha_s_pdf_name_down = CT10as
+alpha_s_pdf_histogram_name_up = CT10as120_prenorm
+alpha_s_pdf_histogram_name_down = CT10as116_prenorm
+
