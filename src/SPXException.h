@@ -162,4 +162,25 @@ private:
 	std::string message;
 };
 
+class SPXGraphException : public SPXException {
+public:
+	SPXGraphException(std::string message) : SPXException() {
+		this->message = message;
+	}
+	
+	~SPXGraphException() throw() {}
+	
+	const char * what() const throw() {
+		std::string tmp;
+
+		tmp = "SPXGraphException: " + message;
+		
+		return tmp.c_str();
+	}
+	
+private:
+	std::string filename;
+	std::string message;
+};
+
 #endif

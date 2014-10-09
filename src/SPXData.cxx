@@ -855,6 +855,18 @@ void SPXData::Draw(void) {
 
 	//@TODO Check if(!graph) and issue SPXGraphError("Graph is invalid") here
 
+	if(!statisticalErrorGraph) {
+		throw SPXGraphException("Invalid statistical error graph");
+	}
+
+	if(!systematicErrorGraph) {
+		throw SPXGraphException("Invalid systematic error graph");
+	}
+
+	statisticalErrorGraph->Print();
+	systematicErrorGraph->Print();
+
+
 	//Draw
 	statisticalErrorGraph->Draw("e1");
 	systematicErrorGraph->Draw("PX same");
