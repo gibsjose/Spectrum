@@ -1,0 +1,55 @@
+;--------------------------------------------------------------
+; NOTE:
+;
+; Data taken from atlas2012_5fb_top_mtt_ljet_full.txt
+;--------------------------------------------------------------
+
+;--------------------------------------------------------------
+; NOTE:
+;
+; The format for specifying individual Systematic errors is
+; as follows:
+;
+; For example, let's define 2 individual systematic errors:
+;	ISFR
+;	MCGen
+;
+; In the list, you MUST prepend 'syst_' to each systematic error!
+;
+; For SYMMETRICAL errors, just put a '+' in front of the name.
+;
+; For ASYMMETRICAL errors:
+; For positive errors, put a '+' in front of the name, and
+; for negative errors, put a '-' in front of the name.
+;
+; To specify these systematic errors, first list the positive
+; errors, one for each bin, and then list the negatives (if they exist)
+; (NOTE that you should NOT put a negative sign in front of the
+; actual error values!).
+;
+; So for our example errors the list would look like this if we had
+; a dataset with 4 bins and were using ASYMMETRICAL errors.
+;
+; + syst_ISFR 0.1 0.2 0.3 0.4
+; - syst_ISFR 0.1 0.2 0.3 0.4
+; + syst_MCGen 0.1 0.2 0.3 0.4
+; - syst_MCGen 0.1 0.2 0.3 0.4
+;--------------------------------------------------------------
+
++ syst_btagEff 			0.9 	0.4 	1.4 	1.7 	1.7
++ syst_Frag 			0.5 	0.0 	0.7 	1.5 	1.5
++ syst_ISFR 			0.9 	0.9 	1.2 	0.5 	1.1
++ syst_JESDETModel1 	0.3 	0.3 	0.6 	0.5 	0.5
++ syst_JESetainter 		0.8 	0.4 	1.2 	1.8 	2.1
++ syst_MCGen 			2.5 	2.2 	2.7 	2.9 	3.4
++ syst_multijetNorm 	0.2 	0.1 	0.2 	0.6 	1.4
++ syst_multijetshape 	0.1 	0.0 	0.0 	0.6 	1.2
+
+;====================================================
+; xm 	xlow 	xhigh 	sigma 	statsigma	systsigma
+;====================================================
+ 350.0 	250.0 	450.0 	2.50   	0.90  		2.90
+ 500.0 	450.0 	550.0 	2.73   	1.10  		2.50
+ 625.0 	550.0 	700.0 	1.02   	1.60  		3.60
+ 825.0 	700.0 	950.0 	0.23   	2.60  		4.20
+1825.0 	950.0 	2700.0 	0.0076 	4.0 		5.10

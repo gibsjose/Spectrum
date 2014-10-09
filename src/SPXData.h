@@ -52,12 +52,51 @@ public:
 		return numberOfBins;
 	}
 
-private:
-	static bool debug;
-	std::ifstream *dataFile;	//Must declare as pointer... ifstream's copy constructor is private
-	SPXDataSteeringFile dataSteeringFile;
+	unsigned int GetNumberOfIndividualSystematicErrors(void) const {
+		return individualSystematicErrorNames.size();
+	}
 
+	const std::string & GetIndividualSystematicErrorName(unsigned int index) const {
+		if(index > (individualSystematicErrorNames.size() - 1)) {
+			throw SPXOutOfRangeException((individualSystematicErrorNames.size() - 1), index, "SPXData::GetIndividualSystematicErrorName: Index out of range");
+		} 
+
+		return individualSystematicErrorNames.at(index);
+	}
+
+	/*
+	const std::vector<double> & GetIndividualSystematicErrorVector(unsigned int index) const {
+		if(index > (individualSystematicErrorNames.size() - 1)) {
+			throw SPXOutOfRangeException((individualSystematicErrorNames.size() - 1), index, "SPXData::GetIndividualSystematicErrorName: Index out of range");
+		}
+
+		return data[individualSystematicErrorNames.at(index)];
+	}
+
+	const std::vector<double> & GetIndividualSystematicErrorVector(std::string name) const {
+		return data[name];
+	}
+	*/
+	
+	const std::map<std::string, std::vector<double> > & GetDataMap(void) const {
+		return data;
+	}
+
+private:
+	static bool debug;							//Flag indicating debug mode
+	std::ifstream *dataFile;					//Must declare as pointer... ifstream's copy constructor is private
+	SPXDataSteeringFile dataSteeringFile;		//Data Steering File for this data object
+
+	//Number of bins in data map
 	unsigned int numberOfBins;
+
+	//Stores a copy of all individual systematic error names
+	// for T2S: There is a single copy of each name
+	// for T2A: There are 2 copies of each name, each appended with '_p' for the positive errors
+	//				and '_n' for the negative errors
+	std::vector<std::string> individualSystematicErrorNames;
+
+	//Actual data map
 	std::map<std::string, std::vector<double> > data;
 
 	void ParseSpectrumT1S(void);
