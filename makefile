@@ -1,6 +1,6 @@
 ###############################################################
 #															  #
-#		Makefile for SteeringFileReader Test Program		  #
+#					Makefile for Spectrum 	  				  #
 #															  #
 ###############################################################
 
@@ -8,17 +8,18 @@ CXX = g++
 CXXFLAGS += -g -O3
 
 SRC_DIR = ./src
-BIN_DIR = ./bin
+BIN_DIR = .
 TST_DIR = $(SRC_DIR)/test
 
-SRC = $(SRC_DIR)/SteeringFileReader.cxx $(SRC_DIR)/SPXSteeringFile.cxx $(SRC_DIR)/SPXRatioStyle.cxx $(SRC_DIR)/SPXDisplayStyle.cxx \
+SRC = $(SRC_DIR)/Spectrum.cxx $(SRC_DIR)/SPXSteeringFile.cxx $(SRC_DIR)/SPXRatioStyle.cxx $(SRC_DIR)/SPXDisplayStyle.cxx \
 		$(SRC_DIR)/SPXOverlayStyle.cxx $(SRC_DIR)/SPXPDFBandType.cxx $(SRC_DIR)/SPXPDFErrorType.cxx $(SRC_DIR)/SPXPDFErrorSize.cxx \
 		$(SRC_DIR)/SPXFrameOptions.cxx $(SRC_DIR)/SPXPDFSteeringFile.cxx $(SRC_DIR)/SPXGridSteeringFile.cxx $(SRC_DIR)/SPXDataSteeringFile.cxx \
-		$(SRC_DIR)/SPXDataFormat.cxx
+		$(SRC_DIR)/SPXDataFormat.cxx $(SRC_DIR)/SPXData.cxx
+HDR = $(SRC_DIR)/*.h
 INC = -I./inih/include -I$(SRC_DIR)
 LIB_PATH = -L./inih/lib
 LIB = -linih
-BIN = $(BIN_DIR)/SteeringFileReader
+BIN = $(BIN_DIR)/Spectrum
 
 .SUFFIXES: .cxx .o
 
@@ -28,7 +29,7 @@ BIN = $(BIN_DIR)/SteeringFileReader
 
 all: $(BIN)
 
-$(BIN): $(SRC)
+$(BIN): $(SRC) $(HDR)
 	mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $(BIN) $(INC) $(SRC) $(LIB_PATH) $(LIB)
 

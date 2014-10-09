@@ -10,7 +10,7 @@
 //		spectrum_t1a 	(DF_SPECTRUM_T1A)
 //		spectrum_t2s 	(DF_SPECTRUM_T2S)
 //		spectrum_t2a 	(DF_SPECTRUM_T2A)
-//		herapdf			(DF_HERAPDF)
+//		herafitter		(DF_HERAFITTER)
 //
 //	@Author: 	Joe Gibson - CERN ATLAS
 //	@Date:		08.10.2014
@@ -42,7 +42,7 @@ SPXDataFormat::SPXDataFormat(std::string s) {
 //	spectrum_t1a 	XOR
 //	spectrum_t2s 	XOR
 //	spectrum_t2a 	XOR
-//	herapdf
+//	herafitter
 //
 // Sets the format based on the input string
 void SPXDataFormat::Parse(std::string s) {
@@ -73,10 +73,10 @@ void SPXDataFormat::Parse(std::string s) {
 		format = DF_SPECTRUM_T2A;
 		if(debug) std::cout << cn << mn << "Data Format successfully set to \"spectrum_t2a\"" << std::endl;
 	}
-	else if(!s.compare("herapdf")) {
-		if(debug) std::cout << cn << mn << "Successfully matched format string: \"herapdf\"" << std::endl;
-		format = DF_HERAPDF;
-		if(debug) std::cout << cn << mn << "Data Format successfully set to \"herapdf\"" << std::endl;
+	else if(!s.compare("herafitter")) {
+		if(debug) std::cout << cn << mn << "Successfully matched format string: \"herafitter\"" << std::endl;
+		format = DF_HERAFITTER;
+		if(debug) std::cout << cn << mn << "Data Format successfully set to \"herafitter\"" << std::endl;
 	}
 	else {
 		format = DF_INVALID;
@@ -120,22 +120,22 @@ std::string SPXDataFormat::ToString(void) {
 	if(format == DF_SPECTRUM_T2A) {
 		return "Spectrum T2A";
 	}
-	if(format == DF_HERAPDF) {
-		return "HERAPDF";
+	if(format == DF_HERAFITTER) {
+		return "HERAFitter";
 	}
 	
 	return "INVALID_DATA_FORMAT";
 }
 
 //Determines whether the band format is empty or not
-bool SPXDataFormat::IsEmpty(void) {
+bool SPXDataFormat::IsEmpty(void) const {
 	std::string mn = "IsEmpty: ";
 	
 	return !(bool)format;
 }
 
 //Determines the validity of the band format
-bool SPXDataFormat::IsValid(void) {
+bool SPXDataFormat::IsValid(void) const {
 	std::string mn = "IsValid: ";
 	
 	//Empty style: valid, but empty
@@ -157,7 +157,7 @@ bool SPXDataFormat::IsValid(void) {
 		return true;		
 	} else if(format == DF_SPECTRUM_T2A) {
 		return true;		
-	} else if(format == DF_HERAPDF) {
+	} else if(format == DF_HERAFITTER) {
 		return true;	
 	} else {
 		if(debug) std::cout << cn << mn << "Data format is invalid: Set to unknown value: " << format << std::endl;

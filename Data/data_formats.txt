@@ -62,9 +62,9 @@ p2
 
 Example: /afs/cern.ch/user/j/jgibson/public/MyAnalysis/MyData/
 
-==============
-   HERAPDF
-==============
-The HERAPDF Format is a completely different (but similar format).
+================
+   HERAFitter
+================
+The HERAFitter Format is a completely different (but similar format).
 
 Example: /afs/cern.ch/user/j/jgibson/public/herapdf_data/Jets2011/dijets_7000_R04_ystar_y_00_05_long.dat

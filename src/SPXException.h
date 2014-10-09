@@ -8,6 +8,8 @@
 // - (Maybe) Stack trace: return the entire stack trace as string to
 //				give to a logging function?
 
+//@TODO Why are all the string aruments not const std::string & ???
+
 #ifndef SPXEXCEPTION_H
 #define SPXEXCEPTION_H
 
@@ -68,8 +70,13 @@ private:
 
 class SPXFileIOException : public SPXException {
 public:
-	SPXFileIOException(std::string filename, std::string message = "") : SPXException() {
+	SPXFileIOException(std::string filename, std::string message) : SPXException() {
 		this->filename = filename;
+		this->message = message;
+	}
+
+	SPXFileIOException(const std::string & message) : SPXException() {
+		this->filename.clear();
 		this->message = message;
 	}
 	
@@ -77,7 +84,12 @@ public:
 	
 	const char * what() const throw() {
 		std::string tmp;
-		tmp = "SPXFileIOException: Unable to process file: " + filename + ": " + message;
+		if(!filename.empty()) {
+			tmp = "SPXFileIOException: Unable to process file: " + filename + ": " + message;
+		} else {
+			tmp = "SPXFileIOException: " + message;
+		}
+		
 		return tmp.c_str();
 	}
 	

@@ -1,9 +1,6 @@
 //************************************************************/
 //
-//	Steering File Reader Test Program
-//
-//	Tests the INIH Library and SteeringFile classes and
-//	subclasses
+//	Spectrum
 //
 //	@Author: 	Joe Gibson - CERN ATLAS
 //	@Date:		19.09.2014
@@ -12,19 +9,20 @@
 
 #include <iostream>
 #include "SPXSteeringFile.h"
+#include "SPXData.h"
 #include "SPXException.h"
 
 int main(int argc, char *argv[]) {
 
 	if((argc - 1) < 1) {
-		std::cout << "@usage: SteeringFileReader <steering_file>" << std::endl;
+		std::cout << "@usage: Spectrum <steering_file>" << std::endl;
 		exit(0);
 	}
 
 	std::string file;
 	
 	std::cout << "==================================" << std::endl;
-	std::cout << "      Steering File Reader        " << std::endl;
+	std::cout << "      	   Spectrum		        " << std::endl;
 	std::cout << "==================================" << std::endl <<std::endl;
 
 	file = std::string(argv[1]);
@@ -71,7 +69,24 @@ int main(int argc, char *argv[]) {
 		std::cerr << "FATAL: Could not parse the Grid Steering files" << std::endl;
 		exit(-1);
 	}
+
+	//Create a data object and parse it
+	SPXDataSteeringFile dsf = steeringFile.GetDataSteeringFile(0, 0);
+	std::cout << "TEST" << std::endl;
+	dsf.Print();
 	
+	SPXData::SetDebug(true);
+
+	SPXData data = SPXData(dsf);
+
+	try {
+		data.Parse();
+	} catch(const SPXException &e) {
+		std::cerr << e.what() << std::endl;
+		std::cerr << "FATAL: Could not parse the data file" << std::endl;
+		exit(-1);
+	}
+
 	return 0;
 }
 

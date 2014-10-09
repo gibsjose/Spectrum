@@ -29,6 +29,7 @@
 #include "SPXFrameOptions.h"
 
 #include "SPXPDFSteeringFile.h"
+#include "SPXDataSteeringFile.h"
 #include "SPXGridSteeringFile.h"
 
 #include "SPXException.h"
@@ -253,12 +254,14 @@ public:
 		return frameOptions.at(index);
 	}
 	
-	//@TODO Implement: Allow 2D indexing of Data/Grid Steering files
-	const SPXDataSteeringFile & GetDataSteeringFile(unsigned int frameOptionsIndex, unsigned int frameOptionsInstanceIndex) const {
-		//Error check: check both indices against array sizes and issue SPXOutOfRangeExceptions if out of range before returning steering file
+	SPXDataSteeringFile & GetDataSteeringFile(unsigned int frameOptionsIndex, unsigned int frameOptionsInstanceIndex) {
+		return frameOptions.at(frameOptionsIndex).GetFrameOptionsInstance(frameOptionsInstanceIndex).dataSteeringFile;
+	}
+
+	SPXGridSteeringFile & GetGridSteeringFile(unsigned int frameOptionsIndex, unsigned int frameOptionsInstanceIndex) {
+		return frameOptions.at(frameOptionsIndex).GetFrameOptionsInstance(frameOptionsInstanceIndex).gridSteeringFile;
 	}
 	
-	//@TODO Same for Grid...
 };
 
 #endif

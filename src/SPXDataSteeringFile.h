@@ -143,7 +143,7 @@ public:
 		return jetAlgorithmNumber;
 	}
 	
-	SPXDataFormat GetDataFormat(void) const {
+	const SPXDataFormat & GetDataFormat(void) const {
 		return dataFormat;
 	}
 	
