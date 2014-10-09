@@ -1,0 +1,45 @@
+#ifndef SPXROOT_H
+#define SPXROOT_H
+
+#include "TStyle.h"
+#include "TApplication.h"
+#include "TObject.h"
+#include "TObjString.h"
+#include "Riostream.h"
+#include "TCanvas.h"
+#include "TLine.h"
+#include "TPaveLabel.h"
+#include "TLegend.h"
+#include "TFile.h"
+#include "TTree.h"
+#include "TBranch.h"
+#include "TChain.h"
+#include "TEventList.h"
+#include "TF1.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TProfile.h"
+#include "TProfile2D.h"
+#include "TMarker.h"
+#include "TArrow.h"
+#include "TPad.h"
+#include "TGraph.h"
+#include "TGraphErrors.h"
+#include "TGraphAsymmErrors.h"
+#include "TVirtualPad.h"
+#include "TLatex.h"
+#include "TCanvas.h"
+#include "TCut.h"
+#include "TApplication.h"
+#include "Getline.h"
+#include "TMath.h"
+#include "THashList.h"
+#include "TRandom.h"
+#include "TMatrixTLazy.h"
+#include "TMatrixT.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+
+#endif

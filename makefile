@@ -7,6 +7,13 @@
 CXX = g++
 CXXFLAGS += -g -O3
 
+#ROOT
+ROOTINCS = $(shell root-config --cflags) 
+ROOTLIBS = $(shell root-config --glibs) 
+ROOTARCH = $(findstring -m64, $(ROOTINCS))
+
+CXXFLAGS += $(ROOTARCH) $(ROOTINCS)
+
 SRC_DIR = ./src
 BIN_DIR = .
 TST_DIR = $(SRC_DIR)/test
@@ -18,7 +25,7 @@ SRC = $(SRC_DIR)/Spectrum.cxx $(SRC_DIR)/SPXSteeringFile.cxx $(SRC_DIR)/SPXRatio
 HDR = $(SRC_DIR)/*.h
 INC = -I./inih/include -I$(SRC_DIR)
 LIB_PATH = -L./inih/lib
-LIB = -linih
+LIB = -linih $(ROOTLIBS)
 BIN = $(BIN_DIR)/Spectrum
 
 .SUFFIXES: .cxx .o

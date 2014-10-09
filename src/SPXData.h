@@ -21,6 +21,10 @@
 #include <string>
 #include <vector>
 
+#include "SPXROOT.h"
+#include "TMatrixTLazy.h"
+#include "TMatrixT.h"
+
 #include "SPXDataSteeringFile.h"
 #include "SPXException.h"
 
@@ -77,7 +81,7 @@ public:
 		return data[name];
 	}
 	*/
-	
+
 	const std::map<std::string, std::vector<double> > & GetDataMap(void) const {
 		return data;
 	}
