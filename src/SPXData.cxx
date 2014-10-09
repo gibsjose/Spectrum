@@ -11,9 +11,6 @@
 //
 //************************************************************/
 
-#include <iostream>
-#include <sstream>
-
 #include "SPXData.h"
 
 //Class name for debug statements
@@ -40,19 +37,49 @@ void SPXData::Parse(void) {
 
 	if(df.IsSpectrumT1S()) {
 		if(debug) std::cout << cn << mn << "Data format is " << df.ToString() << std::endl;
-		ParseSpectrumT1S();
+
+		try {
+			ParseSpectrumT1S();
+		} catch(const SPXException &e) {
+			std::cerr << e.what() << std::endl;
+			throw SPXParseException(dataSteeringFile.GetDataFile(), "Error parsing data file");
+		}
 	} else if(df.IsSpectrumT1A()) {
 		if(debug) std::cout << cn << mn << "Data format is " << df.ToString() << std::endl;
-		ParseSpectrumT1A();
+
+		try {
+			ParseSpectrumT1A();
+		} catch(const SPXException &e) {
+			std::cerr << e.what() << std::endl;
+			throw SPXParseException(dataSteeringFile.GetDataFile(), "Error parsing data file");
+		}
 	} else if(df.IsSpectrumT2S()) {
 		if(debug) std::cout << cn << mn << "Data format is " << df.ToString() << std::endl;
-		ParseSpectrumT2S();
+
+		try {
+			ParseSpectrumT2S();
+		} catch(const SPXException &e) {
+			std::cerr << e.what() << std::endl;
+			throw SPXParseException(dataSteeringFile.GetDataFile(), "Error parsing data file");
+		}
 	} else if(df.IsSpectrumT2A()) {
 		if(debug) std::cout << cn << mn << "Data format is " << df.ToString() << std::endl;
-		ParseSpectrumT2A();
+
+		try {
+			ParseSpectrumT2A();
+		} catch(const SPXException &e) {
+			std::cerr << e.what() << std::endl;
+			throw SPXParseException(dataSteeringFile.GetDataFile(), "Error parsing data file");
+		}
 	} else if(df.IsHERAFitter()) {
 		if(debug) std::cout << cn << mn << "Data format is " << df.ToString() << std::endl;
-		ParseHERAFitter();
+
+		try {
+			ParseHERAFitter();
+		} catch(const SPXException &e) {
+			std::cerr << e.what() << std::endl;
+			throw SPXParseException(dataSteeringFile.GetDataFile(), "Error parsing data file");
+		}
 	} else {
 		throw SPXParseException("DataSteeringFile " + dataSteeringFile.GetFilename() + " has invalid data format");
 	}
@@ -61,7 +88,88 @@ void SPXData::Parse(void) {
 void SPXData::ParseSpectrumT1S(void) {
 	std::string mn = "ParseSpectrumT1S: ";
 
-	if(debug) std::cout << cn << mn << "Beginning to parse data file: " << dataSteeringFile.GetFilename() << std::endl;
+	if(debug) std::cout << cn << mn << "Beginning to parse data file: " << dataSteeringFile.GetDataFile() << std::endl;
+
+	if(!(*dataFile)) {
+		throw SPXFileIOException("Something went awry with the dataFile ifstream...");
+	}
+
+	std::string line;
+	double xm_t, xlow_t, xhigh_t, sigma_t, stat_t, syst_t;
+	std::vector<double> xm;				//Mean x
+	std::vector<double> xlow;			//X min
+	std::vector<double> xhigh;			//X max
+	std::vector<double> sigma;			//Sigma (cross-section)
+	std::vector<double> stat;			//Statistical error
+	std::vector<double> syst;			//Total systematic error
+
+	while(dataFile->good()) {
+		std::getline(*dataFile, line);
+		
+		//String stream to parse the individual lines
+		std::istringstream iss(line);
+
+		if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
+
+		//Skip empty lines
+		if(line.empty()) {
+			continue;
+		}
+
+		//Skip comments
+		if(!line.empty() && (line[0] == ';')) {
+			continue;
+		} else if(!line.empty()) {
+
+			//Parse each line into temp variables
+			iss >> xm_t >> xlow_t >> xhigh_t >> sigma_t >> stat_t >> syst_t;
+
+			//Fill vectors with temp variables
+			xm.push_back(xm_t);
+			xlow.push_back(xlow_t);
+			xhigh.push_back(xhigh_t);
+			sigma.push_back(sigma_t);
+			stat.push_back(stat_t);
+			syst.push_back(syst_t);
+		}
+	}
+
+	//Check vector sizes: all vectors should be the same size
+	int masterSize = xm.size();
+	if(debug) std::cout << cn << mn << "Master size set to size of \"xm\" vector: " << masterSize << std::endl;
+
+	if(debug) std::cout << cn << mn << "Checking sizes of all other vectors.." << std::endl;
+
+	try {
+		CheckVectorSize(xlow, "xlow", masterSize);
+		CheckVectorSize(xhigh, "xhigh", masterSize);
+		CheckVectorSize(sigma, "sigma", masterSize);
+		CheckVectorSize(stat, "stat", masterSize);
+		CheckVectorSize(syst, "syst", masterSize);
+	} catch(const SPXException &e) {
+		throw;
+	}
+
+	//All vectors passed size check
+	if(debug) std::cout << cn << mn << "Success: All vector sizes match master size" << std::endl;
+
+	//Set numberOfBins based on master size
+	if(debug) std::cout << cn << mn << "Setting numberOfBins to match master size" << std::endl;
+	numberOfBins = masterSize;
+	if(debug) std::cout << cn << mn << "numberOfBins = " << numberOfBins << std::endl;
+
+	//Add to data map
+	data.insert(std::pair<std::string, std::vector<double> >("xm", xm));
+	data.insert(std::pair<std::string, std::vector<double> >("xlow", xlow));
+	data.insert(std::pair<std::string, std::vector<double> >("xhigh", xhigh));
+	data.insert(std::pair<std::string, std::vector<double> >("sigma", sigma));
+	data.insert(std::pair<std::string, std::vector<double> >("stat", stat));
+	data.insert(std::pair<std::string, std::vector<double> >("syst", syst));
+
+	//Print formatted table
+	if(debug) {
+		PrintSpectrumT1S();
+	}
 }
 
 void SPXData::ParseSpectrumT1A(void) {
@@ -80,19 +188,68 @@ void SPXData::ParseHERAFitter(void) {
 	std::string mn = "ParseHERAFitter: ";
 }
 
-//Print displays the output of ToString to the console
-/*
+//Helper method to choose correct print method based on data format
 void SPXData::Print(void) {
-	std::string mn = "Print: ";
-	std::cout << this->ToString() << std::endl;
-}
-*/
 
-//ToString does the opposite of Parse: it assembles a string based on
-// the object's type data
-/*
-std::string SPXData::ToString(void) {
-	std::string mn = "ToString: ";
+	SPXDataFormat df = dataSteeringFile.GetDataFormat();
+
+	if(df.IsSpectrumT1S()) {
+		PrintSpectrumT1S();
+	} else if(df.IsSpectrumT1A()) {
+		PrintSpectrumT1A();
+	} else if(df.IsSpectrumT2S()) {
+		PrintSpectrumT2S();
+	} else if(df.IsSpectrumT2A()) {
+		PrintSpectrumT2A();
+	} else if(df.IsHERAFitter()) {
+		PrintHERAFitter();
+	}
 }
-*/
+
+void SPXData::PrintSpectrumT1S(void) {
+
+	std::cout << std::endl << "Spectrum T1S Data File: " << dataSteeringFile.GetDataFile() << std::endl << std::endl;
+
+	std::cout << "===============================================================================" << std::endl;
+	std::cout << "|         xm |       xlow |      xhigh |      sigma |       stat |       syst |" << std::endl;
+	std::cout << "-------------------------------------------------------------------------------" << std::endl;
+
+	//Iterate over map
+	for(int i = 0; i < numberOfBins; i++) {
+		//std::pair<std::string, std::vector<double> > p;
+
+		std::cout << "| ";
+		std::cout.width(10); std::cout << data["xm"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["xlow"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["xhigh"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["sigma"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["stat"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["syst"][i]; 
+		std::cout << " |" << std::endl;
+	}
+
+	std::cout << "===============================================================================" << std::endl;
+}
+
+void SPXData::PrintSpectrumT1A(void) {
+
+}
+
+void SPXData::PrintSpectrumT2S(void) {
+
+}
+
+void SPXData::PrintSpectrumT2A(void) {
+
+}
+
+void SPXData::PrintHERAFitter(void) {
+
+}
+
 

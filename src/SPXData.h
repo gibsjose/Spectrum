@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <map>
 #include <string>
 #include <vector>
@@ -47,10 +48,16 @@ public:
 		return dataSteeringFile.GetDataFormat();
 	}
 
+	unsigned int GetNumberOfBins(void) {
+		return numberOfBins;
+	}
+
 private:
 	static bool debug;
 	std::ifstream *dataFile;	//Must declare as pointer... ifstream's copy constructor is private
 	SPXDataSteeringFile dataSteeringFile;
+
+	unsigned int numberOfBins;
 	std::map<std::string, std::vector<double> > data;
 
 	void ParseSpectrumT1S(void);
@@ -58,6 +65,12 @@ private:
 	void ParseSpectrumT2S(void);
 	void ParseSpectrumT2A(void);
 	void ParseHERAFitter(void);
+
+	void PrintSpectrumT1S(void);
+	void PrintSpectrumT1A(void);
+	void PrintSpectrumT2S(void);
+	void PrintSpectrumT2A(void);
+	void PrintHERAFitter(void);
 
 	void OpenDataFile(void) {
 		std::string filepath = dataSteeringFile.GetDataFile();
@@ -69,11 +82,26 @@ private:
 		try {
 			dataFile = new std::ifstream();
 			dataFile->open(filepath.c_str());
-			if(debug) std::cout << "SPXData::OpenDataFile: Successfully opened data file: " << filepath << std::endl;
+
+			if(*dataFile) {
+				if(debug) std::cout << "SPXData::OpenDataFile: Successfully opened data file: " << filepath << std::endl;
+			} else {
+				throw SPXFileIOException(filepath, "Unable to open data file");
+			}
 		} catch(const std::exception &e) {
 			std::cerr << e.what() << std::endl;
 
 			throw SPXFileIOException(filepath, "Unable to open data file");
+		}
+	}
+
+	void CheckVectorSize(const std::vector<double> & vector, const std::string & name, unsigned int masterSize) {
+		if(vector.size() != masterSize) {
+			std::ostringstream oss;
+			oss << "Size error: \"" << name << "\" vector has different size (" << vector.size() << ") than master size (" << masterSize << ")" << std::endl;
+			throw SPXParseException(dataSteeringFile.GetDataFile(), oss.str());
+		} else {
+			if(debug) std::cout << "SPXData::" << "CheckVectorSize: " << "\t -->  Success: \"" << name << "\" vector size matches master size" << std::endl;
 		}
 	}
 };

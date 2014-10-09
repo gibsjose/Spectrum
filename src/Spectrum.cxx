@@ -72,11 +72,8 @@ int main(int argc, char *argv[]) {
 
 	//Create a data object and parse it
 	SPXDataSteeringFile dsf = steeringFile.GetDataSteeringFile(0, 0);
-	std::cout << "TEST" << std::endl;
-	dsf.Print();
 	
 	SPXData::SetDebug(true);
-
 	SPXData data = SPXData(dsf);
 
 	try {

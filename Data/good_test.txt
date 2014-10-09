@@ -84,7 +84,7 @@ jet_algorithm_number = 4
 ;==============================================================
 [DATA]
 data_format = spectrum_t1s
-data_file = spectrum_t1s_data.txt
+data_file = Data/spectrum_t1s_data.txt
 divided_by_bin_width = true
 normalized_to_total_sigma = true
 error_in_percent = true
