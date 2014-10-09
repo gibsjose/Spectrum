@@ -15,7 +15,7 @@ Spectrum currently supports the following data formats:
 * Spectrum T1A
 * Spectrum T2S
 * Spectrum T2A
-* HERAPDF
+* HERAFitter
 
 ## Installation 
 Installation instructions coming soon...
