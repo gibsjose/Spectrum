@@ -170,9 +170,9 @@ void SPXData::ParseSpectrumT1S(void) {
 	data.insert(std::pair<std::string, std::vector<double> >("syst", syst));
 
 	//Print formatted table
-	if(debug) {
-		PrintSpectrumT1S();
-	}
+	// if(debug) {
+	// 	PrintSpectrumT1S();
+	// }
 }
 
 void SPXData::ParseSpectrumT1A(void) {
@@ -262,9 +262,9 @@ void SPXData::ParseSpectrumT1A(void) {
 	data.insert(std::pair<std::string, std::vector<double> >("syst_n", syst_n));
 
 	//Print formatted table
-	if(debug) {
-		PrintSpectrumT1A();
-	}
+	// if(debug) {
+	// 	PrintSpectrumT1A();
+	// }
 }
 
 void SPXData::ParseSpectrumT2S(void) {
@@ -391,9 +391,9 @@ void SPXData::ParseSpectrumT2S(void) {
 	}
 
 	//Print formatted table
-	if(debug) {
-		PrintSpectrumT2S();
-	}
+	// if(debug) {
+	// 	PrintSpectrumT2S();
+	// }
 }
 
 void SPXData::ParseSpectrumT2A(void) {
@@ -533,9 +533,9 @@ void SPXData::ParseSpectrumT2A(void) {
 	}
 
 	//Print formatted table
-	if(debug) {
-		PrintSpectrumT2A();
-	}
+	// if(debug) {
+	// 	PrintSpectrumT2A();
+	// }
 }
 
 void SPXData::ParseHERAFitter(void) {
@@ -746,6 +746,49 @@ void SPXData::PrintSpectrumT2A(void) {
 
 void SPXData::PrintHERAFitter(void) {
 
+}
+
+void SPXData::CreateGraphs(void) {
+
+	//Instantiate graph objects
+	dataGraph = new TGraphAsymmErrors();
+	statisticalErrorGraph = new TGraphAsymmErrors();
+	systematicErrorGraph = new TGraphAsymmErrors();
+
+	//Create name strings
+	TString name;
+	TString statName;
+	TString systName;
+
+	//Check if name exists
+	if(!dataSteeringFile.GetName().empty()) {
+		name = TString(dataSteeringFile.GetName());
+		statName = name + "_stat";
+		systName = name + "_syst";
+	} 
+
+	//Data steering file has no [DESC]:name
+	//Default to filename
+	else {
+		name = dataSteeringFile.GetFilename();
+		name.ReplaceAll(TString(".txt"), TString(""));
+		statName = name + "_stat";
+		systName = name + "_syst";
+	}
+
+	dataGraph->SetName(name);
+	statisticalErrorGraph->SetName(statName);
+	systematicErrorGraph->SetName(systName);
+
+	if(debug) {
+		std::cout << "Data Graph created with name: " << name << std::endl;
+		std::cout << "Statistical Error Graph created with name: " << statName << std::endl;
+		std::cout << "Systematic Error Graph created with name: " << systName << std::endl;
+	}
+}
+
+void SPXData::Draw(void) {
+	CreateGraphs();
 }
 
 

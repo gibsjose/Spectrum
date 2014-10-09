@@ -253,6 +253,10 @@ public:
 		
 		return frameOptions.at(index);
 	}
+
+	SPXFrameOptionsInstance & GetFrameOptionsInstance(unsigned int frameOptionsIndex, unsigned int frameOptionsInstanceIndex) {
+		return frameOptions.at(frameOptionsIndex).GetFrameOptionsInstance(frameOptionsInstanceIndex);
+	}
 	
 	SPXDataSteeringFile & GetDataSteeringFile(unsigned int frameOptionsIndex, unsigned int frameOptionsInstanceIndex) {
 		return frameOptions.at(frameOptionsIndex).GetFrameOptionsInstance(frameOptionsInstanceIndex).dataSteeringFile;

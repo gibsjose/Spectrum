@@ -25,19 +25,18 @@
 #include "TMatrixTLazy.h"
 #include "TMatrixT.h"
 
-#include "SPXDataSteeringFile.h"
+#include "SPXFrameOptions.h"
 #include "SPXException.h"
 
 class SPXData {
 
 public:
-	explicit SPXData (const SPXDataSteeringFile & dataSteeringFile) {
-		this->dataSteeringFile = dataSteeringFile;
+	explicit SPXData (const SPXFrameOptionsInstance & frameOptions) : dataSteeringFile(frameOptions.dataSteeringFile) {
+		this->frameOptions = frameOptions;
 	}
 	
 	void Parse(void);
 	void Print(void);
-
 	void Draw(void);
 	
 	static bool GetDebug(void) {
@@ -87,9 +86,10 @@ public:
 	}
 
 private:
-	static bool debug;							//Flag indicating debug mode
-	std::ifstream *dataFile;					//Must declare as pointer... ifstream's copy constructor is private
-	SPXDataSteeringFile dataSteeringFile;		//Data Steering File for this data object
+	static bool debug;								//Flag indicating debug mode
+	std::ifstream *dataFile;						//Must declare as pointer... ifstream's copy constructor is private
+	SPXFrameOptionsInstance frameOptions;			//Frame options instance which contains the data steering file as well as the plot options
+	const SPXDataSteeringFile &dataSteeringFile;	//Data Steering File from Frame options instance for this data object
 
 	//Number of bins in data map
 	unsigned int numberOfBins;
@@ -103,6 +103,15 @@ private:
 	//Actual data map
 	std::map<std::string, std::vector<double> > data;
 
+	//Graph with actual data points
+	TGraphAsymmErrors *dataGraph;
+
+	//Graph for plotting statistical error bars
+	TGraphAsymmErrors *statisticalErrorGraph;
+
+	//Graph for plotting systematic error and actual point markers
+	TGraphAsymmErrors *systematicErrorGraph;
+
 	void ParseSpectrumT1S(void);
 	void ParseSpectrumT1A(void);
 	void ParseSpectrumT2S(void);
@@ -114,6 +123,8 @@ private:
 	void PrintSpectrumT2S(void);
 	void PrintSpectrumT2A(void);
 	void PrintHERAFitter(void);
+
+	void CreateGraphs(void);
 
 	void OpenDataFile(void) {
 		std::string filepath = dataSteeringFile.GetDataFile();

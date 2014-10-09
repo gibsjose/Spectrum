@@ -71,13 +71,14 @@ int main(int argc, char *argv[]) {
 	}
 
 	//Create a data object and parse it
-	SPXDataSteeringFile dsf = steeringFile.GetDataSteeringFile(0, 0);
-	
 	SPXData::SetDebug(true);
-	SPXData data = SPXData(dsf);
+	SPXFrameOptionsInstance &foi = steeringFile.GetFrameOptionsInstance(0, 0);
+	SPXData data = SPXData(foi);
 
 	try {
-		data.Parse();
+		data.Parse();	//Parse the data
+		data.Print();	//Print the data to the console
+		data.Draw();	//Draw the data in a frame
 	} catch(const SPXException &e) {
 		std::cerr << e.what() << std::endl;
 		std::cerr << "FATAL: Could not parse the data file" << std::endl;
