@@ -749,11 +749,10 @@ void SPXData::PrintHERAFitter(void) {
 }
 
 void SPXData::CreateGraphs(void) {
+	std::string mn = "CreateGraphs: ";
 
-	//Instantiate graph objects
-	dataGraph = new TGraphAsymmErrors();
-	statisticalErrorGraph = new TGraphAsymmErrors();
-	systematicErrorGraph = new TGraphAsymmErrors();
+	//Obtain format
+	const SPXDataFormat &df = dataSteeringFile.GetDataFormat();
 
 	//Create name strings
 	TString name;
@@ -770,25 +769,95 @@ void SPXData::CreateGraphs(void) {
 	//Data steering file has no [DESC]:name
 	//Default to filename
 	else {
+		if(debug) std::cout << cn << mn << "Data steering file has no name value: using filename instead" << std::endl;
 		name = dataSteeringFile.GetFilename();
 		name.ReplaceAll(TString(".txt"), TString(""));
 		statName = name + "_stat";
 		systName = name + "_syst";
 	}
 
-	dataGraph->SetName(name);
+	//@TODO Implement divided_by_bin_width, normalized_to_total, and error_in_percent here
+
+	//double x[numberOfBins]; 		//xm
+	//double y[numberOfBins];		//sigma
+	double exl[numberOfBins];		// = (xm - ((xh + xl) / 2) + ((xh - xl) / 2))
+	double exh[numberOfBins];		// = (((xh + xl) / 2) + ((xh - xl) / 2) - xm)
+	//double eyl[numberOfBins];		//either stat - or syst - (depending on graph)
+	//double eyh[numberOfBins];		//either stat + or syst + (depending on graph)
+
+	double *x = &data["xm"][0];		//x = xm
+	double *y = &data["sigma"][0];	//y = sigma
+
+	//Calculate exl and exh
+	for(int i = 0; i < numberOfBins; i++) {
+		double m, n;
+
+		m = (data["xhigh"][i] + data["xlow"][i]) / 2;
+		n = (data["xhigh"][i] - data["xlow"][i]) / 2;
+
+		exl[i] = x[i] - m + n;
+		exh[i] = m + n - x[i];
+	}
+
+	//Errors for statistical are always symmetrical
+	double *eyl_stat = &data["stat"][0];
+	double *eyh_stat = &data["stat"][0];
+	
+	//Must initialize beforehand
+	double *eyl_syst;
+	double *eyh_syst;
+
+	//@TODO Implement IsSymmetrical and IsAsymmetrical instead
+	if(df.IsSpectrumT1S() || df.IsSpectrumT2S()) {
+		eyl_syst = &data["syst"][0];
+		eyh_syst = &data["syst"][0];
+	} 
+
+	//Asymmetrical
+	else {
+		eyl_syst = &data["syst_n"][0];
+		eyh_syst = &data["syst_p"][0];
+	}
+
+	//Create statistical error graph
+	statisticalErrorGraph = new TGraphAsymmErrors(numberOfBins, x, y, exl, exh, eyl_stat, eyh_stat);
+
+	//Create systematic error graph
+	systematicErrorGraph = new TGraphAsymmErrors(numberOfBins, x, y, exl, exh, eyl_syst, eyh_syst);
+
+	//Modify names
 	statisticalErrorGraph->SetName(statName);
 	systematicErrorGraph->SetName(systName);
 
 	if(debug) {
-		std::cout << "Data Graph created with name: " << name << std::endl;
-		std::cout << "Statistical Error Graph created with name: " << statName << std::endl;
-		std::cout << "Systematic Error Graph created with name: " << systName << std::endl;
+		std::cout << cn << mn << "Statistical Error Graph created with name: " << statName << std::endl;
+		std::cout << cn << mn << "Systematic Error Graph created with name: " << systName << std::endl;
 	}
+
+	//Modify styles (from FrameOptionsInstance)
+	statisticalErrorGraph->SetMarkerStyle(frameOptions.markerStyle);
+	systematicErrorGraph->SetMarkerStyle(frameOptions.markerStyle);
+
+	statisticalErrorGraph->SetMarkerColor(frameOptions.markerColor);
+	systematicErrorGraph->SetMarkerColor(frameOptions.markerColor);
+
+	//@TODO Why is this not in the data steering file? Why is one larger?
+	statisticalErrorGraph->SetMarkerSize(1.2);
+	systematicErrorGraph->SetMarkerSize(1.0);
 }
 
 void SPXData::Draw(void) {
+	std::string mn = "Draw: ";
+
+	//Create the graphs
+	//@TODO User should have to call CreateGraphs and then Draw, this was things aren't calculated everytime draw is called
 	CreateGraphs();
+
+	//@TODO Check if(!graph) and issue SPXGraphError("Graph is invalid") here
+
+	//Draw
+	statisticalErrorGraph->Draw("e1");
+	systematicErrorGraph->Draw("PX same");
 }
 
 

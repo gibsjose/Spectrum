@@ -102,10 +102,7 @@ private:
 
 	//Actual data map
 	std::map<std::string, std::vector<double> > data;
-
-	//Graph with actual data points
-	TGraphAsymmErrors *dataGraph;
-
+	
 	//Graph for plotting statistical error bars
 	TGraphAsymmErrors *statisticalErrorGraph;
 
