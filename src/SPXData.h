@@ -81,7 +81,7 @@ public:
 	}
 	*/
 
-	const std::map<std::string, std::vector<double> > & GetDataMap(void) const {
+	std::map<std::string, std::vector<double> > & GetDataMap(void) {
 		return data;
 	}
 
@@ -102,7 +102,7 @@ private:
 
 	//Actual data map
 	std::map<std::string, std::vector<double> > data;
-	
+
 	//Graph for plotting statistical error bars
 	TGraphAsymmErrors *statisticalErrorGraph;
 

@@ -748,6 +748,15 @@ void SPXData::PrintHERAFitter(void) {
 
 }
 
+//@TODO Look into using a reference instead of a pointer here...
+TGraphAsymmErrors * GetStatisticalErrorGraph(void) {
+	return this->statisticalErrorGraph;
+}
+
+TGraphAsymmErrors * GetSystematicErrorGraph(void) {
+	return this->systematicErrorGraph;
+}
+
 void SPXData::CreateGraphs(void) {
 	std::string mn = "CreateGraphs: ";
 
