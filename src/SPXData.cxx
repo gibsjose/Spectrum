@@ -36,10 +36,8 @@ void SPXData::Parse(void) {
 		throw SPXFileIOException(cn + mn + "Unable to open data file");
 	}
 
-	SPXDataFormat df = dataSteeringFile.GetDataFormat();
-
-	if(df.IsSpectrumT1S()) {
-		if(debug) std::cout << cn << mn << "Data format is " << df.ToString() << std::endl;
+	if(dataFormat.IsSpectrumT1S()) {
+		if(debug) std::cout << cn << mn << "Data format is " << dataFormat.ToString() << std::endl;
 
 		try {
 			ParseSpectrumT1S();
@@ -47,8 +45,8 @@ void SPXData::Parse(void) {
 			std::cerr << e.what() << std::endl;
 			throw SPXParseException(dataSteeringFile.GetDataFile(), "Error parsing data file");
 		}
-	} else if(df.IsSpectrumT1A()) {
-		if(debug) std::cout << cn << mn << "Data format is " << df.ToString() << std::endl;
+	} else if(dataFormat.IsSpectrumT1A()) {
+		if(debug) std::cout << cn << mn << "Data format is " << dataFormat.ToString() << std::endl;
 
 		try {
 			ParseSpectrumT1A();
@@ -56,8 +54,8 @@ void SPXData::Parse(void) {
 			std::cerr << e.what() << std::endl;
 			throw SPXParseException(dataSteeringFile.GetDataFile(), "Error parsing data file");
 		}
-	} else if(df.IsSpectrumT2S()) {
-		if(debug) std::cout << cn << mn << "Data format is " << df.ToString() << std::endl;
+	} else if(dataFormat.IsSpectrumT2S()) {
+		if(debug) std::cout << cn << mn << "Data format is " << dataFormat.ToString() << std::endl;
 
 		try {
 			ParseSpectrumT2S();
@@ -65,8 +63,8 @@ void SPXData::Parse(void) {
 			std::cerr << e.what() << std::endl;
 			throw SPXParseException(dataSteeringFile.GetDataFile(), "Error parsing data file");
 		}
-	} else if(df.IsSpectrumT2A()) {
-		if(debug) std::cout << cn << mn << "Data format is " << df.ToString() << std::endl;
+	} else if(dataFormat.IsSpectrumT2A()) {
+		if(debug) std::cout << cn << mn << "Data format is " << dataFormat.ToString() << std::endl;
 
 		try {
 			ParseSpectrumT2A();
@@ -74,8 +72,8 @@ void SPXData::Parse(void) {
 			std::cerr << e.what() << std::endl;
 			throw SPXParseException(dataSteeringFile.GetDataFile(), "Error parsing data file");
 		}
-	} else if(df.IsHERAFitter()) {
-		if(debug) std::cout << cn << mn << "Data format is " << df.ToString() << std::endl;
+	} else if(dataFormat.IsHERAFitter()) {
+		if(debug) std::cout << cn << mn << "Data format is " << dataFormat.ToString() << std::endl;
 
 		try {
 			ParseHERAFitter();
@@ -544,18 +542,15 @@ void SPXData::ParseHERAFitter(void) {
 
 //Helper method to choose correct print method based on data format
 void SPXData::Print(void) {
-
-	SPXDataFormat df = dataSteeringFile.GetDataFormat();
-
-	if(df.IsSpectrumT1S()) {
+	if(dataFormat.IsSpectrumT1S()) {
 		PrintSpectrumT1S();
-	} else if(df.IsSpectrumT1A()) {
+	} else if(dataFormat.IsSpectrumT1A()) {
 		PrintSpectrumT1A();
-	} else if(df.IsSpectrumT2S()) {
+	} else if(dataFormat.IsSpectrumT2S()) {
 		PrintSpectrumT2S();
-	} else if(df.IsSpectrumT2A()) {
+	} else if(dataFormat.IsSpectrumT2A()) {
 		PrintSpectrumT2A();
-	} else if(df.IsHERAFitter()) {
+	} else if(dataFormat.IsHERAFitter()) {
 		PrintHERAFitter();
 	}
 }
@@ -748,20 +743,8 @@ void SPXData::PrintHERAFitter(void) {
 
 }
 
-//@TODO Look into using a reference instead of a pointer here...
-TGraphAsymmErrors * GetStatisticalErrorGraph(void) {
-	return this->statisticalErrorGraph;
-}
-
-TGraphAsymmErrors * GetSystematicErrorGraph(void) {
-	return this->systematicErrorGraph;
-}
-
 void SPXData::CreateGraphs(void) {
 	std::string mn = "CreateGraphs: ";
-
-	//Obtain format
-	const SPXDataFormat &df = dataSteeringFile.GetDataFormat();
 
 	//Create name strings
 	TString name;
@@ -816,14 +799,13 @@ void SPXData::CreateGraphs(void) {
 	double *eyl_syst;
 	double *eyh_syst;
 
-	//@TODO Implement IsSymmetrical and IsAsymmetrical instead
-	if(df.IsSpectrumT1S() || df.IsSpectrumT2S()) {
+	//Symmetric
+	if(dataFormat.IsSymmetric()) {
 		eyl_syst = &data["syst"][0];
 		eyh_syst = &data["syst"][0];
 	} 
-
-	//Asymmetrical
-	else {
+	//Asymmetric
+	else if(dataFormat.IsAsymmetric()) {
 		eyl_syst = &data["syst_n"][0];
 		eyh_syst = &data["syst_p"][0];
 	}
@@ -840,7 +822,11 @@ void SPXData::CreateGraphs(void) {
 
 	if(debug) {
 		std::cout << cn << mn << "Statistical Error Graph created with name: " << statName << std::endl;
+		statisticalErrorGraph->Print();
+		std::cout << std::endl;
 		std::cout << cn << mn << "Systematic Error Graph created with name: " << systName << std::endl;
+		systematicErrorGraph->Print();
+		std::cout << std::endl;
 	}
 
 	//Modify styles (from FrameOptionsInstance)
@@ -886,9 +872,6 @@ void SPXData::Draw(void) {
 	if(!systematicErrorGraph) {
 		throw SPXGraphException("Invalid systematic error graph");
 	}
-
-	statisticalErrorGraph->Print();
-	systematicErrorGraph->Print();
 
 	TCanvas *canvas = new TCanvas("canvas", "Test Canvas", 200, 10, 700, 500);
 	canvas->SetFillColor(0);

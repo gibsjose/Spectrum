@@ -95,7 +95,7 @@ void SPXDataFormat::Print(void) {
 
 //ToString does the opposite of Parse: it assembles a string based on
 // the object's format data
-std::string SPXDataFormat::ToString(void) {
+std::string SPXDataFormat::ToString(void) const {
 	std::string mn = "ToString: ";
 	
 	//Empty style

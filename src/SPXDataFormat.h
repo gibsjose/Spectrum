@@ -39,7 +39,7 @@ public:
 	
 	void Parse(std::string s);
 	void Print(void);
-	std::string ToString(void);
+	std::string ToString(void) const;
 	bool IsEmpty(void) const;
 	bool IsValid(void) const;
 	
@@ -65,6 +65,34 @@ public:
 		} else {
 			return false;
 		}
+	}
+
+	bool IsSymmetric(void) const {
+		if(this->IsValid()) {
+			if(format == DF_SPECTRUM_T1S) {
+				return true;
+			}
+
+			if(format == DF_SPECTRUM_T2S) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	bool IsAsymmetric(void) const {
+		if(this->IsValid()) {
+			if(format == DF_SPECTRUM_T1A) {
+				return true;
+			}
+
+			if(format == DF_SPECTRUM_T2A) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	bool IsSpectrumT1S(void) const {

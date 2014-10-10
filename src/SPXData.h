@@ -31,7 +31,9 @@
 class SPXData {
 
 public:
-	explicit SPXData (const SPXFrameOptionsInstance & frameOptions) : dataSteeringFile(frameOptions.dataSteeringFile) {
+	explicit SPXData (const SPXFrameOptionsInstance & frameOptions) : 
+		dataSteeringFile(frameOptions.dataSteeringFile), 
+		dataFormat(dataSteeringFile.GetDataFormat()) {
 		this->frameOptions = frameOptions;
 	}
 	
@@ -67,22 +69,66 @@ public:
 		return individualSystematicErrorNames.at(index);
 	}
 
-	/*
-	const std::vector<double> & GetIndividualSystematicErrorVector(unsigned int index) const {
-		if(index > (individualSystematicErrorNames.size() - 1)) {
-			throw SPXOutOfRangeException((individualSystematicErrorNames.size() - 1), index, "SPXData::GetIndividualSystematicErrorName: Index out of range");
-		}
-
-		return data[individualSystematicErrorNames.at(index)];
+	std::vector<double> GetDataColumn(const std::string &column) {
+		return data[column];
 	}
-
-	const std::vector<double> & GetIndividualSystematicErrorVector(std::string name) const {
-		return data[name];
-	}
-	*/
 
 	std::map<std::string, std::vector<double> > & GetDataMap(void) {
 		return data;
+	}
+
+	std::vector<double> & GetXmVector(void) {
+		return data["xm"];
+	}
+
+	std::vector<double> & GetXlowVector(void) {
+		return data["xlow"];
+	}
+
+	std::vector<double> & GetXhighVector(void) {
+		return data["xhigh"];
+	}
+
+	std::vector<double> & GetSigmaVector(void) {
+		return data["sigma"];
+	}
+
+	std::vector<double> & GetStatisticalErrorVector(void) {
+		return data["stat"];
+	}
+
+	//NOTE: Returns only the POSITIVE vector for asymmetric formats
+	std::vector<double> & GetSystematicErrorVector(void) {
+		if(dataFormat.IsSymmetric()) {
+			return data["syst"];
+		} else {
+			return data["sys_p"];
+		}
+	}
+
+	std::vector<double> & GetPositiveSystematicErrorVector(void) {
+		if(dataFormat.IsSymmetric()) {
+			return data["syst"];
+		} else {
+			return data["syst_p"];
+		}
+	}
+
+	std::vector<double> & GetNegativeSystematicErrorVector(void) {
+		if(dataFormat.IsSymmetric()) {
+			return data["syst"];
+		} else {
+			return data["syst_n"];
+		}
+	}
+
+	//@TODO Look into using a reference instead of a pointer here...
+	TGraphAsymmErrors * GetStatisticalErrorGraph(void) {
+		return this->statisticalErrorGraph;
+	}
+
+	TGraphAsymmErrors * GetSystematicErrorGraph(void) {
+		return this->systematicErrorGraph;
 	}
 
 private:
@@ -90,6 +136,7 @@ private:
 	std::ifstream *dataFile;						//Must declare as pointer... ifstream's copy constructor is private
 	SPXFrameOptionsInstance frameOptions;			//Frame options instance which contains the data steering file as well as the plot options
 	const SPXDataSteeringFile &dataSteeringFile;	//Data Steering File from Frame options instance for this data object
+	const SPXDataFormat &dataFormat;
 
 	//Number of bins in data map
 	unsigned int numberOfBins;
