@@ -8,6 +8,8 @@
 //************************************************************/
 
 #include <iostream>
+
+#include "SPXROOT.h"
 #include "SPXSteeringFile.h"
 #include "SPXData.h"
 #include "SPXException.h"
@@ -24,6 +26,9 @@ int main(int argc, char *argv[]) {
 	std::cout << "==================================" << std::endl;
 	std::cout << "      	   Spectrum		        " << std::endl;
 	std::cout << "==================================" << std::endl <<std::endl;
+
+	TApplication *spectrum = new TApplication("Spectrum",0,0);
+  	spectrum->SetReturnFromRun(true);
 
 	file = std::string(argv[1]);
 
@@ -84,6 +89,8 @@ int main(int argc, char *argv[]) {
 		std::cerr << "FATAL: Could not parse the data file" << std::endl;
 		exit(-1);
 	}
+
+	spectrum->Run(kTRUE);
 
 	return 0;
 }

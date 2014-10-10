@@ -844,6 +844,21 @@ void SPXData::CreateGraphs(void) {
 	//@TODO Why is this not in the data steering file? Why is one larger?
 	statisticalErrorGraph->SetMarkerSize(1.2);
 	systematicErrorGraph->SetMarkerSize(1.0);
+
+	statisticalErrorGraph->SetLineColor(4);
+	systematicErrorGraph->SetLineColor(1);
+
+	statisticalErrorGraph->SetLineWidth(1);
+	systematicErrorGraph->SetLineWidth(1);
+
+	//statisticalErrorGraph->SetTitle("Statistical");
+	//systematicErrorGraph->SetTitle("Systematic");
+
+	//statisticalErrorGraph->GetXaxis()->SetTitle("X title");
+	//systematicErrorGraph->GetXaxis()->SetTitle("X title");
+
+	//statisticalErrorGraph->GetYaxis()->SetTitle("Y title");
+	//systematicErrorGraph->GetYaxis()->SetTitle("Y title");
 }
 
 void SPXData::Draw(void) {
@@ -866,10 +881,18 @@ void SPXData::Draw(void) {
 	statisticalErrorGraph->Print();
 	systematicErrorGraph->Print();
 
+	TCanvas *canvas = new TCanvas("canvas", "Test Canvas", 200, 10, 700, 500);
+	canvas->SetFillColor(0);
+	canvas->SetGrid();
+
+	//Draw the frame (xmin, ymin, xmax, ymax)
+	canvas->DrawFrame(0, -10, 3000, 10);
 
 	//Draw
-	statisticalErrorGraph->Draw("e1");
-	systematicErrorGraph->Draw("PX same");
+	systematicErrorGraph->Draw("P");
+	statisticalErrorGraph->Draw("||");
+
+	canvas->Update();
 }
 
 

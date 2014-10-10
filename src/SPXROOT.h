@@ -24,6 +24,7 @@
 #include "TArrow.h"
 #include "TPad.h"
 #include "TGraph.h"
+#include "TFrame.h"
 #include "TGraphErrors.h"
 #include "TGraphAsymmErrors.h"
 #include "TVirtualPad.h"
