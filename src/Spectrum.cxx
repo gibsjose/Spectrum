@@ -11,7 +11,7 @@
 
 #include "SPXROOT.h"
 #include "SPXSteeringFile.h"
-#include "SPXData.h"
+#include "SPXAnalysis.h"
 #include "SPXException.h"
 
 int main(int argc, char *argv[]) {
@@ -51,33 +51,17 @@ int main(int argc, char *argv[]) {
 	//     Analysis
 	//=========================================================
 
-    SPXAnalysis analysis = SPXAnalysis(steeringFile);
+    SPXAnalysis analysis = SPXAnalysis(&steeringFile);
 
     //Run Analysis: Plot everything based on steering files
     try {
-    	analysis.Initialize();
+    	analysis.Initialize();	//@TODO Should this be private? Why should user have to call Initialization?
     	analysis.Plot();
     } catch(const SPXException &e) {
     	std::cerr << e.what() << std::endl;
     	std::cerr << "FATAL: Unable to perform successful analysis" << std::endl;
     	exit(-1);
     }
-
-
-	//Create a data object and parse it
-	SPXData::SetDebug(true);
-	SPXFrameOptionsInstance &foi = steeringFile.GetFrameOptionsInstance(0, 0);
-	SPXData data = SPXData(foi);
-
-	try {
-		data.Parse();	//Parse the data
-		data.Print();	//Print the data to the console
-		data.Draw();	//Draw the data in a frame
-	} catch(const SPXException &e) {
-		std::cerr << e.what() << std::endl;
-		std::cerr << "FATAL: Could not parse the data file" << std::endl;
-		exit(-1);
-	}
 
 	spectrum->Run(kTRUE);
 
