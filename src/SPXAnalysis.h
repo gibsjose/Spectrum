@@ -15,45 +15,19 @@
 #ifndef SPXANALYSIS_H
 #define SPXANALYSIS_H
 
-//#include "SPXPlot.h"
-#include "SPXData.h" //TEMPORARY!
+#include "SPXPlot.h"
 #include "SPXSteeringFile.h"
 #include "SPXException.h"
 
 class SPXAnalysis {
 
 public:
-	explicit SPXAnalysis(SPXSteeringFile *sf) : steeringFile(*sf) {}
-
-	void Initialize(void) {
-		/*
-		try {
-			for(int i = 0; i < steeringFile.GetNumberOfPlots(); i++) {
-				SPXPlot plot = SPXPlot();
-				plot.Initilize();
-				plots.push_back(plot);
-			}
-		} catch(const SPXException &e) {
-			throw;
-		}
-		*/
+	explicit SPXAnalysis(SPXSteeringFile *steeringFile) {
+		this->steeringFile = steeringFile;
+		this->Initialize();
 	}
 
-	void Plot(void) {
-		//TEMPORARY!!!
-		SPXData::SetDebug(true);
-		SPXFrameOptionsInstance &foi = steeringFile.GetFrameOptionsInstance(0, 0);
-		SPXData data = SPXData(foi);
-
-		try {
-			data.Parse();	//Parse the data
-			data.Print();	//Print the data to the console
-			data.Draw();	//Draw the data in a frame
-		} catch(const SPXException &e) {
-			throw;
-		}
-
-		/*
+	void Run(void) {
 		try {
 			for(int i = 0; i < plots.size(); i++) {
 				plots[i].Plot();
@@ -61,7 +35,6 @@ public:
 		} catch(const SPXException &e) {
 			throw;
 		}
-		*/
 	}
 	
 	static bool GetDebug(void) {
@@ -74,8 +47,20 @@ public:
 
 private:
 	static bool debug;					//Flag indicating debug mode
-	SPXSteeringFile &steeringFile;		//Reference to a fully parsed steering file	
-	//std::vector<SPXPlot> plots;			//Vector of plots
+	SPXSteeringFile *steeringFile;		//Pointer to a fully parsed steering file	
+	std::vector<SPXPlot> plots;			//Vector of plots
+
+	void Initialize(void) {
+		try {
+			for(int i = 0; i < steeringFile->GetNumberOfPlotConfigurations(); i++) {
+				SPXPlot plot = SPXPlot(steeringFile);
+				plot.Initialize();
+				plots.push_back(plot);
+			}
+		} catch(const SPXException &e) {
+			throw;
+		}
+	}
 };
 
 #endif

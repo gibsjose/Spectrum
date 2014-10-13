@@ -32,13 +32,11 @@ int main(int argc, char *argv[]) {
 
 	file = std::string(argv[1]);
 
+	SPXSteeringFile steeringFile = SPXSteeringFile(file);
+
 	//=========================================================
 	//   Configuration
 	//=========================================================
-
-	SPXSteeringFile steeringFile = SPXSteeringFile(file);
-    
-    //Parse (and print) the Steering Files
     try {
     	steeringFile.ParseAll(true);
     } catch(const SPXException &e) {
@@ -50,13 +48,9 @@ int main(int argc, char *argv[]) {
     //=========================================================
 	//     Analysis
 	//=========================================================
-
-    SPXAnalysis analysis = SPXAnalysis(&steeringFile);
-
-    //Run Analysis: Plot everything based on steering files
     try {
-    	analysis.Initialize();	//@TODO Should this be private? Why should user have to call Initialization?
-    	analysis.Plot();
+    	SPXAnalysis analysis = SPXAnalysis(&steeringFile);
+    	analysis.Run();
     } catch(const SPXException &e) {
     	std::cerr << e.what() << std::endl;
     	std::cerr << "FATAL: Unable to perform successful analysis" << std::endl;

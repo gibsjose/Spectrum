@@ -23,8 +23,8 @@ void SPXSteeringFile::SetDefaults(void) {
 	
 	if(debug) std::cout << cn << mn << "Setting default Steering File data" << std::endl;
 	
-	numberOfFrames = 0;
-	if(debug) std::cout << cn << mn << "numberOfFrames set to default: \"0\"" << std::endl;
+	numberOfPlots = 0;
+	if(debug) std::cout << cn << mn << "numberOfPlots set to default: \"0\"" << std::endl;
 	
 	pdfDirectory = ".";
 	if(debug) std::cout << cn << mn << "pdfDirectory set to default: \".\"" << std::endl;
@@ -131,12 +131,12 @@ void SPXSteeringFile::ParseAll(bool print) {
 //Print the Steering File Data in a nice format
 void SPXSteeringFile::Print(void) {
 	std::cout << "Steering File: " << filename << std::endl;
-	std::cout << "\t General Options [GEN]" << std::endl;
+	std::cout << "\t General configurations [GEN]" << std::endl;
 	std::cout << "\t\t Debug is " << (debug ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t PDF Directory: " << pdfDirectory << std::endl;
 	std::cout << "\t\t Data Directory: " << dataDirectory << std::endl;
 	std::cout << "\t\t Grid Directory: " << gridDirectory << std::endl << std::endl;
-	std::cout << "\t Graphing Options [GRAPH]" << std::endl;
+	std::cout << "\t Graphing configurations [GRAPH]" << std::endl;
 	std::cout << "\t\t Plot Band is: " << (plotBand ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Error Ticks is: " << (plotErrorTicks ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Marker is: " << (plotMarker ? "ON" : "OFF") << std::endl;
@@ -152,7 +152,7 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Y Overlay Max: " << yOverlayMax << std::endl;
 	std::cout << "\t\t Y Ratio Min: " << yRatioMin << std::endl;
 	std::cout << "\t\t Y Ratio Max: " << yRatioMax << std::endl << std::endl;
-	std::cout << "\t PDF Options [PDF]" << std::endl;
+	std::cout << "\t PDF configurations [PDF]" << std::endl;
 	std::vector<std::string> tmpVector = this->GetPDFSteeringFilepaths();
 	std::cout << "\t\t PDF Steering Files: " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 	std::cout << "\t\t PDF Fill Style: " << (pdfFillStyle == STYLE_EMPTY ? "UNSET: " : "") << pdfFillStyle << std::endl;
@@ -162,18 +162,18 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t PDF Error Type: " << pdfErrorType.ToString() << std::endl;
 	std::cout << "\t\t PDF Error Size: " << pdfErrorSize.ToString() << std::endl;
 	std::cout << "" << std::endl;
-	std::cout << "\t Frame Options" << std::endl;
-	std::cout << "\t\t Number of Frames: " << numberOfFrames << std::endl << std::endl;
+	std::cout << "\t Plot Configurations" << std::endl;
+	std::cout << "\t\t Number of Plots: " << numberOfPlots << std::endl << std::endl;
 	
-	for(int i = 0; i < numberOfFrames; i++) {
-		std::cout << "\t\t Frame " << i << " Options [FRAME_" << i << "]" << std::endl;
-		std::cout << "\t\t\t Description: " << frameOptions[i].GetDescription() << std::endl << std::endl;
+	for(int i = 0; i < numberOfPlots; i++) {
+		std::cout << "\t\t Plot " << i << " Configuration [PLOT_" << i << "]" << std::endl;
+		std::cout << "\t\t\t Description: " << plotConfigurations[i].GetDescription() << std::endl << std::endl;
 		
-		for(int j = 0; j < frameOptions[i].GetNumberOfOptionsInstances(); j++) {
-			SPXFrameOptionsInstance tmp;
+		for(int j = 0; j < plotConfigurations[i].GetNumberOfConfigurationInstances(); j++) {
+			SPXPlotConfigurationInstance tmp;
 			
 			try {
-				tmp = frameOptions[i].GetFrameOptionsInstance(j);
+				tmp = plotConfigurations[i].GetPlotConfigurationInstance(j);
 			} catch(const SPXException &e) {
 				std::cerr << e.what() << std::endl;
 				
@@ -189,71 +189,71 @@ void SPXSteeringFile::Print(void) {
 	}			
 }
 
-unsigned int SPXSteeringFile::ParseNumberOfFrames(void) {
-	std::string mn = "ParseNumberOfFrames: ";
+unsigned int SPXSteeringFile::ParseNumberOfPlots(void) {
+	std::string mn = "ParseNumberOfPlots: ";
 	
-	unsigned int frameNumber = 0;
-	bool noMoreFrames = false;
+	unsigned int plotNumber = 0;
+	bool noMorePlots = false;
 	std::string tmp;
-	std::string frameSection;
+	std::string plotSection;
 	
-	if(debug) std::cout << cn << mn << "Starting to look for frame sections..." << std::endl;
+	if(debug) std::cout << cn << mn << "Starting to look for plot sections..." << std::endl;
 	
 	do {
 		std::ostringstream intStream;
-		intStream << "FRAME_" << frameNumber;
-		frameSection = intStream.str();
-		if(debug) std::cout << cn << mn << "Formed frame section string: " << frameSection << std::endl;
-		if(debug) std::cout << cn << mn << "Checking for existence of frame section: " << frameSection << std::endl;
+		intStream << "PLOT_" << plotNumber;
+		plotSection = intStream.str();
+		if(debug) std::cout << cn << mn << "Formed plot section string: " << plotSection << std::endl;
+		if(debug) std::cout << cn << mn << "Checking for existence of plot section: " << plotSection << std::endl;
 		
-		tmp = reader->Get(frameSection, "data_steering_files", "EMPTY");
+		tmp = reader->Get(plotSection, "data_steering_files", "EMPTY");
 		
 		if(!tmp.compare("EMPTY")) {
-			if(debug) std::cout << cn << mn << "Frame section: " << frameSection << " was not found. Number of frames found: " << frameNumber << std::endl;
-			noMoreFrames = true;
+			if(debug) std::cout << cn << mn << "plot section: " << plotSection << " was not found. Number of plots found: " << plotNumber << std::endl;
+			noMorePlots = true;
 			break;
 		} else {
-			frameNumber++;
-			if(debug) std::cout << cn << mn << "Frame section: " << frameSection << " found. Current number of frames: " << frameNumber << std::endl;
+			plotNumber++;
+			if(debug) std::cout << cn << mn << "plot section: " << plotSection << " found. Current number of plots: " << plotNumber << std::endl;
 		}	
 	
-	} while(!noMoreFrames);
+	} while(!noMorePlots);
 	
-	if(debug) std::cout << cn << mn << "Done searching for frames: " << frameNumber << " frames found" << std::endl;
+	if(debug) std::cout << cn << mn << "Done searching for plots: " << plotNumber << " plots found" << std::endl;
 	
-	return frameNumber;
+	return plotNumber;
 }
 
-void SPXSteeringFile::ParseFrameOptions(unsigned int numFrames) {
-	std::string mn = "ParseFrameOptions: ";
+void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
+	std::string mn = "ParsePlotConfigurations: ";
 	
 	std::string tmp;
 	std::string desc;
-	std::string frameSection;
+	std::string plotSection;
 	std::vector<std::string> tmpVector;
-	std::vector<std::vector<std::string> > options;
-	int numberOfOptionsInstances = 0;
+	std::vector<std::vector<std::string> > configurations;
+	int numberOfConfigurationInstances = 0;
 	
-	//Create frame options object for all frames found
-	for(int i = 0; i < numFrames; i++) {
+	//Create plot configurations object for all plots found
+	for(int i = 0; i < numPlots; i++) {
 		
 		desc.clear();
 		tmp.clear();
 		tmpVector.clear();
-		options.clear();
-		numberOfOptionsInstances = 0;
+		configurations.clear();
+		numberOfConfigurationInstances = 0;
 		
 		std::ostringstream intStream;
 		
-		//Form the section name from the frame number
-		intStream << "FRAME_" << i;
-		frameSection = intStream.str();
-		if(debug) std::cout << cn << mn << "Formed frame section string: " << frameSection << std::endl;
+		//Form the section name from the plot number
+		intStream << "plot_" << i;
+		plotSection = intStream.str();
+		if(debug) std::cout << cn << mn << "Formed plot section string: " << plotSection << std::endl;
 		
 		//Get the data_steering_files
-		tmp = reader->Get(frameSection, "data_steering_files", "EMPTY");
+		tmp = reader->Get(plotSection, "data_steering_files", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			throw SPXINIParseException(frameSection, "data_steering_files", "You MUST specify the data_steering_files");
+			throw SPXINIParseException(plotSection, "data_steering_files", "You MUST specify the data_steering_files");
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -271,20 +271,20 @@ void SPXSteeringFile::ParseFrameOptions(unsigned int numFrames) {
 				if(debug) std::cout << cn << mn << "Now: " << tmpVector[j] << std::endl;
 			}
 			
-			//Add to Options vector
-			options.push_back(tmpVector);
-			if(debug) std::cout << cn << mn << "options[0] = " << SPXStringUtilities::VectorToCommaSeparatedList(options[0]) << std::endl;
+			//Add to configurations vector
+			configurations.push_back(tmpVector);
+			if(debug) std::cout << cn << mn << "configurations[0] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations[0]) << std::endl;
 			
-			//Set the numberOfOptionsInstances based on the number of dataSteeringFiles
-			//	NOTE: ALL OPTIONS HENCEFORTH MUST HAVE THE SAME SIZE VECTOR, OR AN ERROR IS SIGNALED WHEN PARSING IN SPXFrameOptions::Parse
-			numberOfOptionsInstances = tmpVector.size();
-			if(debug) std::cout << cn << mn << "Number of frame options instances for frame " << i << " has been set to: " << numberOfOptionsInstances << std::endl;
+			//Set the numberOfConfigurationInstances based on the number of dataSteeringFiles
+			//	NOTE: ALL configurations HENCEFORTH MUST HAVE THE SAME SIZE VECTOR, OR AN ERROR IS SIGNALED WHEN PARSING IN SPXPlotConfiguration::Parse
+			numberOfConfigurationInstances = tmpVector.size();
+			if(debug) std::cout << cn << mn << "Number of plot configurations instances for plot " << i << " has been set to: " << numberOfConfigurationInstances << std::endl;
 		}
 		
 		//Get the grid_steering_files
-		tmp = reader->Get(frameSection, "grid_steering_files", "EMPTY");
+		tmp = reader->Get(plotSection, "grid_steering_files", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			throw SPXINIParseException(frameSection, "grid_steering_files", "You MUST specify the grid_steering_files");
+			throw SPXINIParseException(plotSection, "grid_steering_files", "You MUST specify the grid_steering_files");
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -302,15 +302,15 @@ void SPXSteeringFile::ParseFrameOptions(unsigned int numFrames) {
 				if(debug) std::cout << cn << mn << "Now: " << tmpVector[j] << std::endl;
 			}
 			
-			//Add to Options vector
-			options.push_back(tmpVector);
-			if(debug) std::cout << cn << mn << "options[1] = " << SPXStringUtilities::VectorToCommaSeparatedList(options[1]) << std::endl;
+			//Add to configurations vector
+			configurations.push_back(tmpVector);
+			if(debug) std::cout << cn << mn << "configurations[1] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations[1]) << std::endl;
 		}
 		
 		//Get the marker_style
-		tmp = reader->Get(frameSection, "marker_style", "EMPTY");
+		tmp = reader->Get(plotSection, "marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			throw SPXINIParseException(frameSection, "marker_style", "You MUST specify the marker_style");
+			throw SPXINIParseException(plotSection, "marker_style", "You MUST specify the marker_style");
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -321,15 +321,15 @@ void SPXSteeringFile::ParseFrameOptions(unsigned int numFrames) {
 				}
 			}
 			
-			//Add to Options vector
-			options.push_back(tmpVector);
-			if(debug) std::cout << cn << mn << "options[2] = " << SPXStringUtilities::VectorToCommaSeparatedList(options[2]) << std::endl;
+			//Add to configurations vector
+			configurations.push_back(tmpVector);
+			if(debug) std::cout << cn << mn << "configurations[2] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations[2]) << std::endl;
 		}
 		
 		//Get the marker_color
-		tmp = reader->Get(frameSection, "marker_color", "EMPTY");
+		tmp = reader->Get(plotSection, "marker_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			throw SPXINIParseException(frameSection, "marker_color", "You MUST specify the marker_color");
+			throw SPXINIParseException(plotSection, "marker_color", "You MUST specify the marker_color");
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -340,15 +340,15 @@ void SPXSteeringFile::ParseFrameOptions(unsigned int numFrames) {
 				}
 			}
 			
-			//Add to Options vector
-			options.push_back(tmpVector);
-			if(debug) std::cout << cn << mn << "options[3] = " << SPXStringUtilities::VectorToCommaSeparatedList(options[3]) << std::endl;
+			//Add to configurations vector
+			configurations.push_back(tmpVector);
+			if(debug) std::cout << cn << mn << "configurations[3] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations[3]) << std::endl;
 		}
 		
 		//Get the ref_line_style
-		tmp = reader->Get(frameSection, "ref_line_style", "EMPTY");
+		tmp = reader->Get(plotSection, "ref_line_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			if(debug) std::cout << cn << mn << "No frame option for ref_line_style was specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No plot option for ref_line_style was specified" << std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -359,15 +359,15 @@ void SPXSteeringFile::ParseFrameOptions(unsigned int numFrames) {
 				}
 			}
 			
-			//Add to Options vector
-			options.push_back(tmpVector);
-			if(debug) std::cout << cn << mn << "options[4] = " << SPXStringUtilities::VectorToCommaSeparatedList(options[4]) << std::endl;
+			//Add to configurations vector
+			configurations.push_back(tmpVector);
+			if(debug) std::cout << cn << mn << "configurations[4] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations[4]) << std::endl;
 		}
 		
 		//Get the ref_line_color
-		tmp = reader->Get(frameSection, "ref_line_color", "EMPTY");
+		tmp = reader->Get(plotSection, "ref_line_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			if(debug) std::cout << cn << mn << "No frame option for ref_line_color was specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No plot option for ref_line_color was specified" << std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -378,39 +378,39 @@ void SPXSteeringFile::ParseFrameOptions(unsigned int numFrames) {
 				}
 			}
 			
-			//Add to Options vector
-			options.push_back(tmpVector);
-			if(debug) std::cout << cn << mn << "options[5] = " << SPXStringUtilities::VectorToCommaSeparatedList(options[5]) << std::endl;
+			//Add to configurations vector
+			configurations.push_back(tmpVector);
+			if(debug) std::cout << cn << mn << "configurations[5] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations[5]) << std::endl;
 		}
 		
 		//Get the description
-		tmp = reader->Get(frameSection, "desc", "EMPTY");
+		tmp = reader->Get(plotSection, "desc", "EMPTY");
 		if(tmp.compare("EMPTY") != 0) {
 			desc = tmp;
 			if(debug) std::cout << cn << mn << "Description successfully parsed: \"" << desc << "\"" << std::endl;
 		} else {
 			desc.clear();
-			if(debug) std::cout << cn << mn << "No frame option for desc was specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No plot option for desc was specified" << std::endl;
 		}
 		
-		//Create a new frameOptions object with options vector (FrameOptions constructor will parse it)
+		//Create a new plotConfigurations object with configurations vector (plotconfigurations constructor will parse it)
 		try {
-			SPXFrameOptions fo = SPXFrameOptions(options, desc, numberOfOptionsInstances);
+			SPXPlotConfiguration pc = SPXPlotConfiguration(configurations, desc, numberOfConfigurationInstances);
 			
-			//Make sure it is valid and non-empty, and add it to frame vector
-			if(!fo.IsEmpty() && fo.IsValid()) {
-				frameOptions.push_back(fo);
-				if(debug) std::cout << cn << mn << "Successfully added " << frameSection << " to the frameOptions vector" << std::endl;
+			//Make sure it is valid and non-empty, and add it to plot vector
+			if(!pc.IsEmpty() && pc.IsValid()) {
+				plotConfigurations.push_back(pc);
+				if(debug) std::cout << cn << mn << "Successfully added " << plotSection << " to the plotConfigurations vector" << std::endl;
 			} else {
-				throw SPXINIParseException(frameSection, "SPXFrameOptions object is empty or invalid");
+				throw SPXINIParseException(plotSection, "SPXPlotConfiguration object is empty or invalid");
 			}
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
-			throw SPXINIParseException(frameSection, "Unable to create/parse new frame options object");
+			throw SPXINIParseException(plotSection, "Unable to create/parse new plot configurations object");
 		}
 	}
 	
-	if(debug) std::cout << cn << mn << "Successfully parsed and added " << numFrames << " frame options" << std::endl;
+	if(debug) std::cout << cn << mn << "Successfully parsed and added " << numPlots << " plot configurations" << std::endl;
 }
 
 void SPXSteeringFile::Parse(void) {
@@ -431,7 +431,7 @@ void SPXSteeringFile::Parse(void) {
 	
 	std::string tmp;
 	
-	//General Options [GEN]
+	//General configurations [GEN]
 	debug = reader->GetBoolean("GEN", "debug", debug);
 	
 	//Set Defaults
@@ -441,7 +441,7 @@ void SPXSteeringFile::Parse(void) {
 	dataDirectory = reader->Get("GEN", "data_directory", dataDirectory);
 	gridDirectory = reader->Get("GEN", "grid_directory", gridDirectory);
 	
-	//Enable all debug options if debug is on
+	//Enable all debug configurations if debug is on
 	if(debug) {
 		std::cout << cn << mn << "Debug is ON" << std::endl;
 		SPXRatioStyle::SetDebug(true);
@@ -450,10 +450,10 @@ void SPXSteeringFile::Parse(void) {
 		SPXPDFBandType::SetDebug(true);
 		SPXPDFErrorType::SetDebug(true);
 		SPXPDFErrorSize::SetDebug(true);
-		SPXFrameOptions::SetDebug(true);
+		SPXPlotConfiguration::SetDebug(true);
 	}
 	
-	//Graphing Options [GRAPH]
+	//Graphing configurations [GRAPH]
 	plotBand = reader->GetBoolean("GRAPH", "plot_band", plotBand);
 	plotErrorTicks = reader->GetBoolean("GRAPH", "plot_error_ticks", plotErrorTicks);
 	plotMarker = reader->GetBoolean("GRAPH", "plot_marker", plotMarker);
@@ -519,7 +519,7 @@ void SPXSteeringFile::Parse(void) {
 	yRatioMin = reader->GetReal("GRAPH", "y_ratio_min", yRatioMin);
 	yRatioMax = reader->GetReal("GRAPH", "y_ratio_max", yRatioMax);
 	
-	//PDF Options [PDF]
+	//PDF configurations [PDF]
 
 	//Parse PDF Steering Filepaths
 	tmp = reader->Get("PDF", "pdf_steering_files", "EMPTY");
@@ -602,20 +602,20 @@ void SPXSteeringFile::Parse(void) {
 		}
 	}
 	
-	//Parse Frames
-	numberOfFrames = this->ParseNumberOfFrames();
+	//Parse plots
+	numberOfPlots = this->ParseNumberOfPlots();
 	
-	if(numberOfFrames == 0) {
-		throw SPXParseException("No frame options found: Nothing will be plotted");
+	if(numberOfPlots == 0) {
+		throw SPXParseException("No plot configurations found: Nothing will be plotted");
 	}
 	
-	//Attempt to parse frame options
+	//Attempt to parse plot configurations
 	try {
-		this->ParseFrameOptions(numberOfFrames);
+		this->ParsePlotConfigurations(numberOfPlots);
 	} catch(const SPXException &e) {
 		std::cerr << e.what() << std::endl;
 		
-		throw SPXParseException("Could not parse frames: Verify correct frame configuration syntax");
+		throw SPXParseException("Could not parse plots: Verify correct plot configuration syntax");
 	}
 }
 
@@ -647,9 +647,9 @@ void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 }
 
 void SPXSteeringFile::PrintDataSteeringFiles(void) {
-	for(int i = 0; i < frameOptions.size(); i++) {
-		for(int j = 0; j < frameOptions.at(i).GetNumberOfOptionsInstances(); j++) {
-			SPXDataSteeringFile &dataSteeringFile = frameOptions.at(i).GetFrameOptionsInstance(j).dataSteeringFile;
+	for(int i = 0; i < plotConfigurations.size(); i++) {
+		for(int j = 0; j < plotConfigurations.at(i).GetNumberOfConfigurationInstances(); j++) {
+			SPXDataSteeringFile &dataSteeringFile = plotConfigurations.at(i).GetPlotConfigurationInstance(j).dataSteeringFile;
 			dataSteeringFile.Print();
 		}
 	}
@@ -658,11 +658,11 @@ void SPXSteeringFile::PrintDataSteeringFiles(void) {
 void SPXSteeringFile::ParseDataSteeringFiles(void) {
 	std::string mn = "ParseDataSteeringFiles: ";
 	
-	//Loop through all frame options instances for each frame option
-	for(int i = 0; i < frameOptions.size(); i++) {
-		for(int j = 0; j < frameOptions.at(i).GetNumberOfOptionsInstances(); j++) {
+	//Loop through all plot configurations instances for each plot option
+	for(int i = 0; i < plotConfigurations.size(); i++) {
+		for(int j = 0; j < plotConfigurations.at(i).GetNumberOfConfigurationInstances(); j++) {
 			
-			SPXDataSteeringFile &dataSteeringFile = frameOptions.at(i).GetFrameOptionsInstance(j).dataSteeringFile;
+			SPXDataSteeringFile &dataSteeringFile = plotConfigurations.at(i).GetPlotConfigurationInstance(j).dataSteeringFile;
 			
 			//Attempt to parse the Grid Steering File
 			try {
@@ -679,9 +679,9 @@ void SPXSteeringFile::ParseDataSteeringFiles(void) {
 }
 
 void SPXSteeringFile::PrintGridSteeringFiles(void) {
-	for(int i = 0; i < frameOptions.size(); i++) {
-		for(int j = 0; j < frameOptions.at(i).GetNumberOfOptionsInstances(); j++) {
-			SPXGridSteeringFile &gridSteeringFile = frameOptions.at(i).GetFrameOptionsInstance(j).gridSteeringFile;
+	for(int i = 0; i < plotConfigurations.size(); i++) {
+		for(int j = 0; j < plotConfigurations.at(i).GetNumberOfConfigurationInstances(); j++) {
+			SPXGridSteeringFile &gridSteeringFile = plotConfigurations.at(i).GetPlotConfigurationInstance(j).gridSteeringFile;
 			gridSteeringFile.Print();
 		}
 	}
@@ -690,11 +690,11 @@ void SPXSteeringFile::PrintGridSteeringFiles(void) {
 void SPXSteeringFile::ParseGridSteeringFiles(void) {
 	std::string mn = "ParseGridSteeringFiles: ";
 	
-	//Loop through all frame options instances for each frame option
-	for(int i = 0; i < frameOptions.size(); i++) {
-		for(int j = 0; j < frameOptions.at(i).GetNumberOfOptionsInstances(); j++) {
+	//Loop through all plot configurations instances for each plot option
+	for(int i = 0; i < plotConfigurations.size(); i++) {
+		for(int j = 0; j < plotConfigurations.at(i).GetNumberOfConfigurationInstances(); j++) {
 			
-			SPXGridSteeringFile &gridSteeringFile = frameOptions.at(i).GetFrameOptionsInstance(j).gridSteeringFile;
+			SPXGridSteeringFile &gridSteeringFile = plotConfigurations.at(i).GetPlotConfigurationInstance(j).gridSteeringFile;
 			
 			//Attempt to parse the Grid Steering File
 			try {

@@ -90,14 +90,14 @@ pdf_error_size = one_sigma										;[Optional]	PDF error size override: one_sig
 ;--------------------------------------------------------------
 ; NOTE:
 ;
-; Below is where you define the options for each frame.
-; To define a new frame, create a section with the format:
-;		[FRAME_n]	where n starts at 0
+; Below is where you define the options for each plot.
+; To define a new plot, create a section with the format:
+;		[PLOT_n]	where n starts at 0
 ;
-; If a frame has more than one data file, it MUST also have a
+; If a plot has more than one data file, it MUST also have a
 ; corresponding grid file, marker style, and marker color
 ;
-; To give a frame more than one data file, etc., just use a comma
+; To give a plot more than one data file, etc., just use a comma
 ; separated list:
 ;
 ;		data_steering_files = file1.txt, file2.txt
@@ -105,13 +105,13 @@ pdf_error_size = one_sigma										;[Optional]	PDF error size override: one_sig
 ;		marker_style = 20, 21
 ;		...
 ;
-; Each frame is plotted on it's own ROOT canvas
+; Each plot is plotted on it's own ROOT canvas
 ;--------------------------------------------------------------
 								
 ;==============================================================
-; Frame 0 Options
+; Plot 0 Options
 ;==============================================================
-[FRAME_0]
+[PLOT_0]
 																
 data_steering_files = atlas2012_5fb_top_mtt_ljet.txt			;[REQUIRED] List of all data steering files
 
@@ -124,9 +124,9 @@ marker_color = 1												;[REQUIRED] Marker color list
 desc = atlas_mtt_5fb											;[Optional] Description of plot 
 
 ;==============================================================
-; Frame 1 Options
+; Plot 1 Options
 ;==============================================================
-[FRAME_1]
+[PLOT_1]
 data_steering_files = atlas2012_5fb_top_ptt_ljet.txt, some_other_data_file.txt
 grid_steering_files = grid--TTbar_ptatlas.txt, some_other_grid_file.txt
 marker_style = 20, 21
@@ -136,9 +136,9 @@ marker_color = 1, 2
 desc = atlas_ptt_5fb
 
 ;==============================================================
-; Frame 2 Options
+; Plot 2 Options
 ;==============================================================
-[FRAME_2]
+[PLOT_2]
 data_steering_files = atlas2012_5fb_top_pttt_ljet.txt
 grid_steering_files = grid--TTbar_ptttatlas5fb.txt
 marker_style = 20

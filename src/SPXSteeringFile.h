@@ -26,7 +26,7 @@
 #include "SPXPDFBandType.h"
 #include "SPXPDFErrorType.h"
 #include "SPXPDFErrorSize.h"
-#include "SPXFrameOptions.h"
+#include "SPXPlotConfiguration.h"
 
 #include "SPXPDFSteeringFile.h"
 #include "SPXDataSteeringFile.h"
@@ -49,7 +49,7 @@ private:
 
 	//Metadata
 	std::string filename;
-	unsigned int numberOfFrames;
+	unsigned int numberOfPlots;
 
 	//[GEN]
 	bool debug;						//Flag to indicate debug mode
@@ -84,11 +84,11 @@ private:
 	SPXPDFErrorSize pdfErrorSize;	//Override PDF error size
 	
 	//[FRAME_n]
-	std::vector<SPXFrameOptions> frameOptions;			//Options for each Frame to be plotted
+	std::vector<SPXPlotConfiguration> plotConfigurations;	//Options for each plot
 	
 	void SetDefaults(void);
-	unsigned int ParseNumberOfFrames(void);
-	void ParseFrameOptions(unsigned int numFrames);
+	unsigned int ParseNumberOfPlots(void);
+	void ParsePlotConfigurations(unsigned int numPlots);
 	
 public:
 
@@ -241,34 +241,34 @@ public:
 		return this->pdfErrorSize;
 	}
 	
-	unsigned int GetNumberOfFrames(void) const {
-		return this->frameOptions.size();
+	unsigned int GetNumberOfPlotConfigurations(void) const {
+		return this->plotConfigurations.size();
 	}
 	
-	const std::vector<SPXFrameOptions> & GetFrameOptionsVector(void) const {
-		return this->frameOptions;
+	const std::vector<SPXPlotConfiguration> & GetPlotConfigurationsVector(void) const {
+		return this->plotConfigurations;
 	}
 	
-	const SPXFrameOptions & GetFrameOptions(unsigned int index) const {
+	const SPXPlotConfiguration & GetPlotConfiguration(unsigned int index) const {
 		
-		if((index + 1) > frameOptions.size()) {
-			int top = frameOptions.size() - 1;
-			throw SPXOutOfRangeException(top, index, "SPXSteeringFile::GetFrameOptions: Index out of range");
+		if((index + 1) > plotConfigurations.size()) {
+			int top = plotConfigurations.size() - 1;
+			throw SPXOutOfRangeException(top, index, "SPXSteeringFile::GetPlotConfiguration: Index out of range");
 		}
 		
-		return frameOptions.at(index);
+		return plotConfigurations.at(index);
 	}
 
-	SPXFrameOptionsInstance & GetFrameOptionsInstance(unsigned int frameOptionsIndex, unsigned int frameOptionsInstanceIndex) {
-		return frameOptions.at(frameOptionsIndex).GetFrameOptionsInstance(frameOptionsInstanceIndex);
+	SPXPlotConfigurationInstance & GetPlotConfigurationInstance(unsigned int pci, unsigned int pcii) {
+		return plotConfigurations.at(pci).GetPlotConfigurationInstance(pcii);
 	}
 	
-	SPXDataSteeringFile & GetDataSteeringFile(unsigned int frameOptionsIndex, unsigned int frameOptionsInstanceIndex) {
-		return frameOptions.at(frameOptionsIndex).GetFrameOptionsInstance(frameOptionsInstanceIndex).dataSteeringFile;
+	SPXDataSteeringFile & GetDataSteeringFile(unsigned int pci, unsigned int pcii) {
+		return plotConfigurations.at(pci).GetPlotConfigurationInstance(pcii).dataSteeringFile;
 	}
 
-	SPXGridSteeringFile & GetGridSteeringFile(unsigned int frameOptionsIndex, unsigned int frameOptionsInstanceIndex) {
-		return frameOptions.at(frameOptionsIndex).GetFrameOptionsInstance(frameOptionsInstanceIndex).gridSteeringFile;
+	SPXGridSteeringFile & GetGridSteeringFile(unsigned int pci, unsigned int pcii) {
+		return plotConfigurations.at(pci).GetPlotConfigurationInstance(pcii).gridSteeringFile;
 	}
 	
 };
