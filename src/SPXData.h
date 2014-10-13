@@ -146,7 +146,7 @@ public:
 private:
 	static bool debug;								//Flag indicating debug mode
 	std::ifstream *dataFile;						//Must declare as pointer... ifstream's copy constructor is private
-	SPXPlotConfigurationInstance frameOptions;			//Frame options instance which contains the data steering file as well as the plot options
+	SPXPlotConfigurationInstance frameOptions;		//Frame options instance which contains the data steering file as well as the plot options
 	const SPXDataSteeringFile &dataSteeringFile;	//Data Steering File from Frame options instance for this data object
 	const SPXDataFormat &dataFormat;
 

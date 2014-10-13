@@ -14,6 +14,8 @@
 #ifndef SPXPLOT_H
 #define SPXPLOT_H
 
+#include <vector>
+
 #include "SPXSteeringFile.h"
 
 //#include "SPXCrossSection.h" //@TODO Create SPXCrossSection class
@@ -29,22 +31,8 @@ public:
 		this->steeringFile = steeringFile;
 	}
 
-	void Initialize(void) {}
-
-	void Plot(void) {
-		//TEMPORARY!!!
-		SPXData::SetDebug(true);
-		SPXPlotConfigurationInstance &pci = steeringFile->GetPlotConfigurationInstance(0, 0);
-		SPXData data = SPXData(pci);
-
-		try {
-			data.Parse();	//Parse the data
-			data.Print();	//Print the data to the console
-			data.Draw();	//Draw the data in a frame
-		} catch(const SPXException &e) {
-			throw;
-		}
-	}
+	void Initialize(void);
+	void Plot(void);
 	
 	static bool GetDebug(void) {
 		return debug;
@@ -55,8 +43,11 @@ public:
 	}
 
 private:
-	static bool debug;					//Flag indicating debug mode
-	SPXSteeringFile *steeringFile;		//Fully parsed steering file
+	static bool debug;								//Flag indicating debug mode
+	SPXSteeringFile *steeringFile;					//Fully parsed steering file
+
+	std::vector<SPXData> data;						//Vector of data
+	std::vector<SPXCrossSection> crossSections;		//Vector of cross sections
 };
 
 #endif
