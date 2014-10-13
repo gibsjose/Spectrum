@@ -31,10 +31,9 @@
 class SPXData {
 
 public:
-	explicit SPXData (const SPXPlotConfigurationInstance & frameOptions) : 
-		dataSteeringFile(frameOptions.dataSteeringFile), 
-		dataFormat(dataSteeringFile.GetDataFormat()) {
-		this->frameOptions = frameOptions;
+	explicit SPXData (const SPXPlotConfigurationInstance &pci) {
+		this->pci = pci;
+		this->dataFormat = pci.dataSteeringFile.GetDataFormat();
 	}
 	
 	void Parse(void);
@@ -53,7 +52,7 @@ public:
 	}
 	
 	const SPXDataFormat & GetDataFormat(void) {
-		return dataSteeringFile.GetDataFormat();
+		return pci.dataSteeringFile.GetDataFormat();
 	}
 
 	unsigned int GetNumberOfBins(void) {
@@ -146,9 +145,8 @@ public:
 private:
 	static bool debug;								//Flag indicating debug mode
 	std::ifstream *dataFile;						//Must declare as pointer... ifstream's copy constructor is private
-	SPXPlotConfigurationInstance frameOptions;		//Frame options instance which contains the data steering file as well as the plot options
-	const SPXDataSteeringFile &dataSteeringFile;	//Data Steering File from Frame options instance for this data object
-	const SPXDataFormat &dataFormat;
+	SPXPlotConfigurationInstance pci;				//Frame options instance which contains the data steering file as well as the plot options
+	SPXDataFormat dataFormat;						//Format of this data: Included directly simply to cut down on syntax in implementation
 
 	//Number of bins in data map
 	unsigned int numberOfBins;
@@ -181,7 +179,7 @@ private:
 	void PrintHERAFitter(void);
 
 	void OpenDataFile(void) {
-		std::string filepath = dataSteeringFile.GetDataFile();
+		std::string filepath = pci.dataSteeringFile.GetDataFile();
 
 		if(filepath.empty()) {
 			throw SPXFileIOException("Data Filepath is empty");
@@ -207,7 +205,7 @@ private:
 		if(vector.size() != masterSize) {
 			std::ostringstream oss;
 			oss << "Size error: \"" << name << "\" vector has different size (" << vector.size() << ") than master size (" << masterSize << ")" << std::endl;
-			throw SPXParseException(dataSteeringFile.GetDataFile(), oss.str());
+			throw SPXParseException(pci.dataSteeringFile.GetDataFile(), oss.str());
 		} else {
 			if(debug) std::cout << "SPXData::" << "CheckVectorSize: " << "\t -->  Success: \"" << name << "\" vector size matches master size" << std::endl;
 		}

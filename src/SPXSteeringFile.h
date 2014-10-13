@@ -259,6 +259,10 @@ public:
 		return plotConfigurations.at(index);
 	}
 
+	unsigned int GetNumberOfConfigurationInstances(unsigned int index) {
+		return plotConfigurations.at(index).GetNumberOfConfigurationInstances();
+	}
+
 	SPXPlotConfigurationInstance & GetPlotConfigurationInstance(unsigned int pci, unsigned int pcii) {
 		return plotConfigurations.at(pci).GetPlotConfigurationInstance(pcii);
 	}

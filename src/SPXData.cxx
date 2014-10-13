@@ -26,7 +26,7 @@ bool SPXData::debug;
 void SPXData::Parse(void) {
 	std::string mn = "Parse: ";
 	
-	if(debug) std::cout << cn << mn << "Parsing data file: " << dataSteeringFile.GetDataFile() << std::endl;
+	if(debug) std::cout << cn << mn << "Parsing data file: " << pci.dataSteeringFile.GetDataFile() << std::endl;
 
 	try {
 		OpenDataFile();
@@ -43,7 +43,7 @@ void SPXData::Parse(void) {
 			ParseSpectrumT1S();
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
-			throw SPXParseException(dataSteeringFile.GetDataFile(), "Error parsing data file");
+			throw SPXParseException(pci.dataSteeringFile.GetDataFile(), "Error parsing data file");
 		}
 	} else if(dataFormat.IsSpectrumT1A()) {
 		if(debug) std::cout << cn << mn << "Data format is " << dataFormat.ToString() << std::endl;
@@ -52,7 +52,7 @@ void SPXData::Parse(void) {
 			ParseSpectrumT1A();
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
-			throw SPXParseException(dataSteeringFile.GetDataFile(), "Error parsing data file");
+			throw SPXParseException(pci.dataSteeringFile.GetDataFile(), "Error parsing data file");
 		}
 	} else if(dataFormat.IsSpectrumT2S()) {
 		if(debug) std::cout << cn << mn << "Data format is " << dataFormat.ToString() << std::endl;
@@ -61,7 +61,7 @@ void SPXData::Parse(void) {
 			ParseSpectrumT2S();
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
-			throw SPXParseException(dataSteeringFile.GetDataFile(), "Error parsing data file");
+			throw SPXParseException(pci.dataSteeringFile.GetDataFile(), "Error parsing data file");
 		}
 	} else if(dataFormat.IsSpectrumT2A()) {
 		if(debug) std::cout << cn << mn << "Data format is " << dataFormat.ToString() << std::endl;
@@ -70,7 +70,7 @@ void SPXData::Parse(void) {
 			ParseSpectrumT2A();
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
-			throw SPXParseException(dataSteeringFile.GetDataFile(), "Error parsing data file");
+			throw SPXParseException(pci.dataSteeringFile.GetDataFile(), "Error parsing data file");
 		}
 	} else if(dataFormat.IsHERAFitter()) {
 		if(debug) std::cout << cn << mn << "Data format is " << dataFormat.ToString() << std::endl;
@@ -79,17 +79,17 @@ void SPXData::Parse(void) {
 			ParseHERAFitter();
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
-			throw SPXParseException(dataSteeringFile.GetDataFile(), "Error parsing data file");
+			throw SPXParseException(pci.dataSteeringFile.GetDataFile(), "Error parsing data file");
 		}
 	} else {
-		throw SPXParseException("DataSteeringFile " + dataSteeringFile.GetFilename() + " has invalid data format");
+		throw SPXParseException("DataSteeringFile " + pci.dataSteeringFile.GetFilename() + " has invalid data format");
 	}
 }
 
 void SPXData::ParseSpectrumT1S(void) {
 	std::string mn = "ParseSpectrumT1S: ";
 
-	if(debug) std::cout << cn << mn << "Beginning to parse data file: " << dataSteeringFile.GetDataFile() << std::endl;
+	if(debug) std::cout << cn << mn << "Beginning to parse data file: " << pci.dataSteeringFile.GetDataFile() << std::endl;
 
 	if(!(*dataFile)) {
 		throw SPXFileIOException("Something went awry with the dataFile ifstream...");
@@ -177,7 +177,7 @@ void SPXData::ParseSpectrumT1A(void) {
 
 	std::string mn = "ParseSpectrumT1A: ";
 
-	if(debug) std::cout << cn << mn << "Beginning to parse data file: " << dataSteeringFile.GetDataFile() << std::endl;
+	if(debug) std::cout << cn << mn << "Beginning to parse data file: " << pci.dataSteeringFile.GetDataFile() << std::endl;
 
 	if(!(*dataFile)) {
 		throw SPXFileIOException("Something went awry with the dataFile ifstream...");
@@ -268,7 +268,7 @@ void SPXData::ParseSpectrumT1A(void) {
 void SPXData::ParseSpectrumT2S(void) {
 	std::string mn = "ParseSpectrumT2S: ";
 
-	if(debug) std::cout << cn << mn << "Beginning to parse data file: " << dataSteeringFile.GetDataFile() << std::endl;
+	if(debug) std::cout << cn << mn << "Beginning to parse data file: " << pci.dataSteeringFile.GetDataFile() << std::endl;
 
 	if(!(*dataFile)) {
 		throw SPXFileIOException("Something went awry with the dataFile ifstream...");
@@ -397,7 +397,7 @@ void SPXData::ParseSpectrumT2S(void) {
 void SPXData::ParseSpectrumT2A(void) {
 	std::string mn = "ParseSpectrumT2A: ";
 
-	if(debug) std::cout << cn << mn << "Beginning to parse data file: " << dataSteeringFile.GetDataFile() << std::endl;
+	if(debug) std::cout << cn << mn << "Beginning to parse data file: " << pci.dataSteeringFile.GetDataFile() << std::endl;
 
 	if(!(*dataFile)) {
 		throw SPXFileIOException("Something went awry with the dataFile ifstream...");
@@ -557,7 +557,7 @@ void SPXData::Print(void) {
 
 void SPXData::PrintSpectrumT1S(void) {
 
-	std::cout << std::endl << "Spectrum T1S Data File: " << dataSteeringFile.GetDataFile() << std::endl << std::endl;
+	std::cout << std::endl << "Spectrum T1S Data File: " << pci.dataSteeringFile.GetDataFile() << std::endl << std::endl;
 
 	std::cout << "===============================================================================" << std::endl;
 	std::cout << "|         xm |       xlow |      xhigh |      sigma |       stat |       syst |" << std::endl;
@@ -592,7 +592,7 @@ void SPXData::PrintSpectrumT1S(void) {
 
 void SPXData::PrintSpectrumT1A(void) {
 
-	std::cout << std::endl << "Spectrum T1A Data File: " << dataSteeringFile.GetDataFile() << std::endl << std::endl;
+	std::cout << std::endl << "Spectrum T1A Data File: " << pci.dataSteeringFile.GetDataFile() << std::endl << std::endl;
 
 	std::cout << "============================================================================================" << std::endl;
 	std::cout << "|         xm |       xlow |      xhigh |      sigma |       stat |     syst + |     syst - |" << std::endl;
@@ -629,7 +629,7 @@ void SPXData::PrintSpectrumT1A(void) {
 
 void SPXData::PrintSpectrumT2S(void) {
 
-	std::cout << std::endl << "Spectrum T2S Data File: " << dataSteeringFile.GetDataFile() << std::endl << std::endl;
+	std::cout << std::endl << "Spectrum T2S Data File: " << pci.dataSteeringFile.GetDataFile() << std::endl << std::endl;
 
 	std::cout << "===============================================================================" << std::endl;
 	std::cout << "|         xm |       xlow |      xhigh |      sigma |       stat |       syst |" << std::endl;
@@ -684,7 +684,7 @@ void SPXData::PrintSpectrumT2S(void) {
 
 void SPXData::PrintSpectrumT2A(void) {
 
-	std::cout << std::endl << "Spectrum T2A Data File: " << dataSteeringFile.GetDataFile() << std::endl << std::endl;
+	std::cout << std::endl << "Spectrum T2A Data File: " << pci.dataSteeringFile.GetDataFile() << std::endl << std::endl;
 
 	std::cout << "============================================================================================" << std::endl;
 	std::cout << "|         xm |       xlow |      xhigh |      sigma |       stat |     syst + |     syst - |" << std::endl;
@@ -752,8 +752,8 @@ void SPXData::CreateGraphs(void) {
 	TString systName;
 
 	//Check if name exists
-	if(!dataSteeringFile.GetName().empty()) {
-		name = TString(dataSteeringFile.GetName());
+	if(!pci.dataSteeringFile.GetName().empty()) {
+		name = TString(pci.dataSteeringFile.GetName());
 		statName = name + "_stat";
 		systName = name + "_syst";
 	} 
@@ -762,7 +762,7 @@ void SPXData::CreateGraphs(void) {
 	//Default to filename
 	else {
 		if(debug) std::cout << cn << mn << "Data steering file has no name value: using filename instead" << std::endl;
-		name = dataSteeringFile.GetFilename();
+		name = pci.dataSteeringFile.GetFilename();
 		name.ReplaceAll(TString(".txt"), TString(""));
 		statName = name + "_stat";
 		systName = name + "_syst";
@@ -829,12 +829,12 @@ void SPXData::CreateGraphs(void) {
 		std::cout << std::endl;
 	}
 
-	//Modify styles (from FrameOptionsInstance)
-	statisticalErrorGraph->SetMarkerStyle(frameOptions.markerStyle);
-	systematicErrorGraph->SetMarkerStyle(frameOptions.markerStyle);
+	//Modify styles (from plotConfigurationInstance)
+	statisticalErrorGraph->SetMarkerStyle(pci.markerStyle);
+	systematicErrorGraph->SetMarkerStyle(pci.markerStyle);
 
-	statisticalErrorGraph->SetMarkerColor(frameOptions.markerColor);
-	systematicErrorGraph->SetMarkerColor(frameOptions.markerColor);
+	statisticalErrorGraph->SetMarkerColor(pci.markerColor);
+	systematicErrorGraph->SetMarkerColor(pci.markerColor);
 
 	//@TODO Why is this not in the data steering file? Why is one larger?
 	statisticalErrorGraph->SetMarkerSize(1.2);

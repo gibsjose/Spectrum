@@ -21,14 +21,14 @@
 //#include "SPXCrossSection.h" //@TODO Create SPXCrossSection class
 #include "SPXData.h"
 
-#include "SPXUtilities.h"
 #include "SPXException.h"
 
 class SPXPlot {
 
 public:
-	explicit SPXPlot(SPXSteeringFile *steeringFile) {
+	explicit SPXPlot(SPXSteeringFile *steeringFile, unsigned int plotNumber) {
 		this->steeringFile = steeringFile;
+		this->id = plotNumber;
 	}
 
 	void Initialize(void);
@@ -45,9 +45,12 @@ public:
 private:
 	static bool debug;								//Flag indicating debug mode
 	SPXSteeringFile *steeringFile;					//Fully parsed steering file
-
+	unsigned int id;								//Plot number ID (0-based)
 	std::vector<SPXData> data;						//Vector of data
-	std::vector<SPXCrossSection> crossSections;		//Vector of cross sections
+	//std::vector<SPXCrossSection> crossSections;	//Vector of cross sections
+
+	void InitializeData(void);
+	void InitializeCrossSections(void);
 };
 
 #endif

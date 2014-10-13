@@ -24,7 +24,12 @@ class SPXAnalysis {
 public:
 	explicit SPXAnalysis(SPXSteeringFile *steeringFile) {
 		this->steeringFile = steeringFile;
-		this->Initialize();
+
+		try {
+			this->Initialize();
+		} catch(const SPXException &e) {
+			throw;
+		}
 	}
 
 	void Run(void) {
@@ -53,7 +58,7 @@ private:
 	void Initialize(void) {
 		try {
 			for(int i = 0; i < steeringFile->GetNumberOfPlotConfigurations(); i++) {
-				SPXPlot plot = SPXPlot(steeringFile);
+				SPXPlot plot = SPXPlot(steeringFile, i);
 				plot.Initialize();
 				plots.push_back(plot);
 			}
