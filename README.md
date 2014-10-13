@@ -10,7 +10,7 @@ This version of Spectrum is a **severely** slimmed-down version, as compared wit
 Spectrum plots cross-sections, theory results, and experimental data for proton-proton collisions. It is a collaboration between Dr. Tancredi Carli (CERN) and a few research assistants. Spectrum works with multiple grids, as well as data from multiple experiments, including CMS, ATLAS, and HERA.
 
 ## UML
-![Top Level UML](uml/top_level_uml_v2.png)
+![Top Level UML](uml/top_level_uml.png)
 
 ## Supported Data Formats
 Spectrum currently supports the following data formats:
