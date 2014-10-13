@@ -118,10 +118,10 @@ void SPXSteeringFile::ParseAll(bool print) {
 		this->ParsePDFSteeringFiles();
 		if(print) this->PrintPDFSteeringFiles();
 
-		steeringFile.ParseDataSteeringFiles();
+		this->ParseDataSteeringFiles();
 		if(print) this->PrintDataSteeringFiles();
 
-		steeringFile.ParseGridSteeringFiles();
+		this->ParseGridSteeringFiles();
 		if(print) this->PrintGridSteeringFiles();
 	} catch(const SPXException &e) {
 		throw;
