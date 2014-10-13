@@ -48,7 +48,7 @@ void SPXOverlayStyle::Parse(std::string s) {
 	this->Clear();
 	
 	//Parse the string into style options
-	std::vector<std::string> v = SPXUtilities::CommaSeparatedListToVector(s);
+	std::vector<std::string> v = SPXStringUtilities::CommaSeparatedListToVector(s);
 	
 	if(debug) {
 		std::cout << cn << mn << "Configuration string: " << s << " was parsed into:" << std::endl;
@@ -131,7 +131,7 @@ std::string SPXOverlayStyle::ToString(void) {
 		v.push_back("convolute");
 	}
 	
-	return SPXUtilities::VectorToCommaSeparatedList(v);
+	return SPXStringUtilities::VectorToCommaSeparatedList(v);
 }
 
 //Determines whether the overlay style is empty or not

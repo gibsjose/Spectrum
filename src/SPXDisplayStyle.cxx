@@ -49,7 +49,7 @@ void SPXDisplayStyle::Parse(std::string s) {
 	this->Clear();
 	
 	//Parse the string into style options
-	std::vector<std::string> v = SPXUtilities::CommaSeparatedListToVector(s);
+	std::vector<std::string> v = SPXStringUtilities::CommaSeparatedListToVector(s);
 	
 	if(debug) {
 		std::cout << cn << mn << "Configuration string: " << s << " was parsed into:" << std::endl;
@@ -123,7 +123,7 @@ std::string SPXDisplayStyle::ToString(void) {
 		v.push_back("ratio");
 	}
 
-	return SPXUtilities::VectorToCommaSeparatedList(v);
+	return SPXStringUtilities::VectorToCommaSeparatedList(v);
 }
 
 //Determines whether the display style is empty or not

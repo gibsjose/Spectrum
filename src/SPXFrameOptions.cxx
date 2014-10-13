@@ -86,27 +86,27 @@ void SPXFrameOptions::Parse(const std::vector<std::vector<std::string> > & optio
 		std::vector<std::string> tmpVector;
 		
 		tmpVector = options[0];
-		std::cout << "\tdata_steering_files = " << SPXUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		std::cout << "\tdata_steering_files = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		
 		tmpVector = options[1];
-		std::cout << "\tgrid_steering_files = " << SPXUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		std::cout << "\tgrid_steering_files = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		
 		tmpVector = options[2];
-		std::cout << "\tmarker_style = " << SPXUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		std::cout << "\tmarker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		
 		tmpVector = options[3];
-		std::cout << "\tmarker_color = " << SPXUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		std::cout << "\tmarker_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		
 		if(options.size() >= 5) {
 			tmpVector = options[4];
-			std::cout << "\tref_line_style = " << SPXUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+			std::cout << "\tref_line_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
 			if(debug) std::cout << cn << mn << "No reference line style option specified" << std::endl;
 		}
 		
 		if(options.size() == 6) {
 			tmpVector = options[5];
-			std::cout << "\tref_line_color = " << SPXUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+			std::cout << "\tref_line_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
 			if(debug) std::cout << cn << mn << "No reference line color option specified" << std::endl;
 		}

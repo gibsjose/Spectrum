@@ -55,10 +55,10 @@ void SPXRatioStyle::Parse(std::string s) {
 	this->Clear();
 	
 	//Parse the string into numerator and denominator (delimit with '/')
-	std::vector<std::string> v = SPXUtilities::ParseString(s, '/');
+	std::vector<std::string> v = SPXStringUtilities::ParseString(s, '/');
 	
 	//Parse the numerator by commas
-	num = SPXUtilities::CommaSeparatedListToVector(v[0]);
+	num = SPXStringUtilities::CommaSeparatedListToVector(v[0]);
 	
 	//Obtain the denominator
 	den = v[1]; 
@@ -185,7 +185,7 @@ std::string SPXRatioStyle::ToString(void) {
 		den = "convolute";
 	}
 	
-	return SPXUtilities::VectorToCommaSeparatedList(num) + " / " + den;
+	return SPXStringUtilities::VectorToCommaSeparatedList(num) + " / " + den;
 }
 
 //Determines whether the ratio style is empty or not
