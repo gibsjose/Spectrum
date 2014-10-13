@@ -17,12 +17,22 @@
 
 class SPXGraphUtilities {
 
-SPXGraphUtilities::Scale()
-
 public:
 
-	//@TODO
-	static void Scale();
+	static void Scale(TGraphAsymmErrors *graph, double xScale, double yScale) {
+		double *x = graph->GetX();
+		double *y = graph->GetY();
+		double *exh = graph->GetEXhigh();
+		double *exl = graph->GetEXlow();
+		double *eyh = graph->GetEYhigh();
+		double *eyl = graph->GetEYlow();
+
+		for(int i = 0; i < graph->GetN(); i++) {
+			graph->SetPoint(i, (x[i] * xScale), (y[i] * yScale));
+			graph->SetPointError(i, (exl[i] * xScale), (exh[i] * xScale), 
+				(eyl[i] * yScale), (eyh[i] * yScale));
+		}
+	}
 
 	static void Normalize(TGraphAsymmErrors *graph, double xScale, double yScale, 
 		bool normalizedToTotalSigma, bool dividedByBinWidth) {
