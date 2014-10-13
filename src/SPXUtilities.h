@@ -13,7 +13,6 @@
 #define SPXUTILITIES_H
 
 #include "SPXStringUtilities.h"
-//#include "SPXMathUtilities.h"
-//#include "SPXGraphUtilities.h"
+#include "SPXGraphUtilities.h"
 
 #endif
