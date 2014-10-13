@@ -102,6 +102,32 @@ void SPXSteeringFile::SetDefaults(void) {
 	if(debug) std::cout << cn << mn << "pdfErrorSize set to default: \" \"" << std::endl;
 }
 
+void SPXSteeringFile::PrintAll(void) {
+	this->Print();
+	this->PrintPDFSteeringFiles();
+	this->PrintDataSteeringFiles();
+	this->PrintGridSteeringFiles();
+}
+
+void SPXSteeringFile::ParseAll(bool print) {
+
+	try {
+		this->Parse();
+		if(print) this->Print();
+
+		this->ParsePDFSteeringFiles();
+		if(print) this->PrintPDFSteeringFiles();
+
+		steeringFile.ParseDataSteeringFiles();
+		if(print) this->PrintDataSteeringFiles();
+
+		steeringFile.ParseGridSteeringFiles();
+		if(print) this->PrintGridSteeringFiles();
+	} catch(const SPXException &e) {
+		throw;
+	}
+}
+
 //Print the Steering File Data in a nice format
 void SPXSteeringFile::Print(void) {
 	std::cout << "Steering File: " << filename << std::endl;

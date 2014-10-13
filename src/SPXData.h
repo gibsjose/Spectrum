@@ -40,6 +40,9 @@ public:
 	void Parse(void);
 	void Print(void);
 	void Draw(void);
+
+	//CreateGraphs should always be called BEFORE Get_____Graph() is called
+	void CreateGraphs(void);
 	
 	static bool GetDebug(void) {
 		return debug;
@@ -122,12 +125,21 @@ public:
 		}
 	}
 
-	//@TODO Look into using a reference instead of a pointer here...
 	TGraphAsymmErrors * GetStatisticalErrorGraph(void) {
+
+		if(!this->statisticalErrorGraph) {
+			throw SPXGraphException("Statistical Error Graph pointer is NULL: You MUST call ::CreateGraphs() before obtaining the graph");
+		}
+
 		return this->statisticalErrorGraph;
 	}
 
 	TGraphAsymmErrors * GetSystematicErrorGraph(void) {
+
+		if(!this->statisticalErrorGraph) {
+			throw SPXGraphException("Systematic Error Graph pointer is NULL: You MUST call ::CreateGraphs() before obtaining the graph");
+		}
+
 		return this->systematicErrorGraph;
 	}
 
@@ -167,8 +179,6 @@ private:
 	void PrintSpectrumT2S(void);
 	void PrintSpectrumT2A(void);
 	void PrintHERAFitter(void);
-
-	void CreateGraphs(void);
 
 	void OpenDataFile(void) {
 		std::string filepath = dataSteeringFile.GetDataFile();

@@ -32,48 +32,37 @@ int main(int argc, char *argv[]) {
 
 	file = std::string(argv[1]);
 
-	//Create Steering File Object and initialize with filename
+	//=========================================================
+	//   Configuration
+	//=========================================================
+
 	SPXSteeringFile steeringFile = SPXSteeringFile(file);
     
-    //Parse the Steering File
+    //Parse (and print) the Steering Files
     try {
-    	steeringFile.Parse();
-    	steeringFile.Print(); 
+    	steeringFile.ParseAll(true);
     } catch(const SPXException &e) {
-    	std::cerr << e.what() << std:: endl;
+    	std::cerr << e.what() << std::endl;
     	std::cerr << "FATAL: Could not parse the steering file: " << file << std::endl;
     	exit(-1);
     }
-    
-    //Parse the PDF Steering Files
+
+    //=========================================================
+	//     Analysis
+	//=========================================================
+
+    SPXAnalysis analysis = SPXAnalysis(steeringFile);
+
+    //Run Analysis: Plot everything based on steering files
     try {
-    	steeringFile.ParsePDFSteeringFiles();
-    	steeringFile.PrintPDFSteeringFiles();
+    	analysis.Initialize();
+    	analysis.Plot();
     } catch(const SPXException &e) {
     	std::cerr << e.what() << std::endl;
-    	std::cerr << "FATAL: Could not parse the PDF Steering files" << std::endl;
+    	std::cerr << "FATAL: Unable to perform successful analysis" << std::endl;
     	exit(-1);
     }
-    
-    //Parse the Data Steering Files
-	try {
-		steeringFile.ParseDataSteeringFiles();
-		steeringFile.PrintDataSteeringFiles();
-	} catch(const SPXException &e) {
-		std::cerr << e.what() << std::endl;
-		std::cerr << "FATAL: Could not parse the Data Steering files" << std::endl;
-		exit(-1);
-	}
-	
-	//Parse the Grid Steering Files
-	try {
-		steeringFile.ParseGridSteeringFiles();
-		steeringFile.PrintGridSteeringFiles();
-	} catch(const SPXException &e) {
-		std::cerr << e.what() << std::endl;
-		std::cerr << "FATAL: Could not parse the Grid Steering files" << std::endl;
-		exit(-1);
-	}
+
 
 	//Create a data object and parse it
 	SPXData::SetDebug(true);

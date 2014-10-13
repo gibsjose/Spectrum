@@ -1,13 +1,9 @@
-@TODO Learn Markdown and create README.md for Spectrum: https://guides.github.com/features/mastering-markdown/
 @TODO Clean up todo python script and send copy to Jesse and Dr. Carli
 @TODO Allow todo.py to accommodate multi-line comments (like SPXSteeringFile.h: 75)
 @TODO Perhaps add a way to specify a line number and filename and remove the @TODO statement at that line
 
 @TODO When DEBUG is on in SteeringFile, override DEBUG settings in PDF, Data, Grid files approporiately
-@TODO If SteeringFile defines PDF overrides, process that appropriately within CrossSection class
-
-@TODO Suggest changing 'MyFrame' --> 'SPXPlot': Frame is already a thing in ROOT, plot is more clear
-@TODO If so, FrameOptions becomes PlotOptions, 
+@TODO If SteeringFile defines PDF overrides, process that appropriately
 
 @TODO Figure out what to do with INIH library (can't just provide binary .a...)
 

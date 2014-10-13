@@ -860,10 +860,8 @@ void SPXData::Draw(void) {
 	std::string mn = "Draw: ";
 
 	//Create the graphs
-	//@TODO User should have to call CreateGraphs and then Draw, this was things aren't calculated everytime draw is called
+	//@TODO User should have to call CreateGraphs and then Draw, this way things aren't calculated everytime draw is called
 	CreateGraphs();
-
-	//@TODO Check if(!graph) and issue SPXGraphError("Graph is invalid") here
 
 	if(!statisticalErrorGraph) {
 		throw SPXGraphException("Invalid statistical error graph");

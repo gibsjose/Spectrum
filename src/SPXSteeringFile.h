@@ -92,6 +92,11 @@ private:
 	
 public:
 
+	//These functions simplify the main file's interface to parsing
+	// and printing the Steering Files
+	void PrintAll(void);
+	void ParseAll(bool print);
+
 	void Print(void);
 	void PrintPDFSteeringFiles(void);
 	void PrintDataSteeringFiles(void);
