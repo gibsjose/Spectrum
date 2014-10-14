@@ -1,8 +1,8 @@
 //************************************************************/
 //
-//	PDF Steering File Header
+//	PDF Steering File Implementation
 //
-//	Outlines the SPXPDFSteeringFile class, which standardizes the
+//	Implements the SPXPDFSteeringFile class, which standardizes the
 //	format and I/O of the Steering File Format (SFF), a file
 //	format that allows for interfacing between Grids, Data,
 //	and Cross Sections within Spectrum.

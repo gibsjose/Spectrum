@@ -1,8 +1,8 @@
 //************************************************************/
 //
-//	Data Steering File Header
+//	Data Steering File Implementation
 //
-//	Outlines the SPXDataSteeringFile class, which standardizes the
+//	Implements the SPXDataSteeringFile class, which standardizes the
 //	format and I/O of the Data portion of the 
 //	Steering File Format (SFF), a file format that allows for 
 //	interfacing between Grids, Data, and Cross Sections with 

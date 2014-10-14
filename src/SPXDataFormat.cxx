@@ -1,8 +1,8 @@
 //************************************************************/
 //
-//	Data Format Header
+//	Data Format Implementation
 //
-//	Outlines the SPXDataFormat class, which describes the 
+//	Implements the SPXDataFormat class, which describes the 
 //	formats available for experimental data. 
 //	The options are:
 //

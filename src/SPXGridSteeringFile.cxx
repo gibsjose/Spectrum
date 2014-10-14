@@ -1,8 +1,8 @@
 //************************************************************/
 //
-//	Grid Steering File Header
+//	Grid Steering File Implementation
 //
-//	Outlines the SPXGridSteeringFile class, which standardizes the
+//	Implements the SPXGridSteeringFile class, which standardizes the
 //	format and I/O of the Steering File Format (SFF), a file
 //	format that allows for interfacing between Grids, Data,
 //	and Cross Sections with the MyAnalysis PDF Program
