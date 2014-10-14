@@ -18,7 +18,7 @@
 
 #include "SPXSteeringFile.h"
 
-//#include "SPXCrossSection.h" //@TODO Create SPXCrossSection class
+#include "SPXCrossSection.h"
 #include "SPXData.h"
 
 #include "SPXException.h"
@@ -52,7 +52,7 @@ private:
 	SPXSteeringFile *steeringFile;					//Fully parsed steering file
 	unsigned int id;								//Plot number ID (0-based)
 	std::vector<SPXData> data;						//Vector of data
-	//std::vector<SPXCrossSection> crossSections;	//Vector of cross sections
+	std::vector<SPXCrossSection> crossSections;		//Vector of cross sections
 
 	//ROOT Components
 	TCanvas *canvas;

@@ -31,7 +31,7 @@
 class SPXData {
 
 public:
-	explicit SPXData (const SPXPlotConfigurationInstance &pci) {
+	explicit SPXData(const SPXPlotConfigurationInstance &pci) {
 		this->pci = pci;
 		this->dataFormat = pci.dataSteeringFile.GetDataFormat();
 	}
