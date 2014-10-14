@@ -11,6 +11,8 @@
 //
 //************************************************************/
 
+#include <sstream>
+
 #include "SPXPlot.h"
 #include "SPXUtilities.h"
 
@@ -30,15 +32,45 @@ void SPXPlot::Initialize(void) {
 }
 
 void SPXPlot::Plot(void) {
+	std::string mn = "Plot:: ";
 
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 
-	canvas = new TCanvas("canvas", pc.GetDescription().c_str(), 200, 10, 700, 500);
+	std::ostringstream oss;
+	oss << "canvas" << id;
+	std::string canvasID = oss.str();
+
+	//@TODO Where should these come from? Or are they just initial values that are set later?
+	int wtopx = 200;	//Window top x
+	int wtopy = 10;		//Window top y
+	int ww = 700;		//Window width
+	int wh = 500;		//Window height
+
+	canvas = new TCanvas(canvasID.c_str(), pc.GetDescription().c_str(), wtopx, wtopy, ww, wh);
 	canvas->SetFillColor(0);
 	canvas->SetGrid();
 
-	//Draw the frame (xmin, ymin, xmax, ymax)	//@TODO How to set bounds?
-	canvas->DrawFrame(0, -1, 3000, 4);
+	if(debug) {
+		std::cout << cn << mn << "Canvas (" << canvasID << ") created for Plot ID " << id << 
+			" with dimensions: " << ww << " x " << wh << " and title: " << pc.GetDescription() << std::endl; 
+	}
+
+	//@TODO Where should these come from?
+	int xMin = 0;
+	int xMax = 3000;
+	int yMin = -1;
+	int yMax = 4;
+
+	//Draw the frame (xmin, ymin, xmax, ymax)
+	canvas->DrawFrame(xMin, yMin, xMax, yMax);
+
+	if(debug) {
+		std::cout << cn << mn << "Canvas (" << canvasID << ") frame drawn with dimensions: " << std::endl;
+		std::cout << "\t xMin = " << xMin << std::endl;
+		std::cout << "\t xMax = " << xMax << std::endl;
+		std::cout << "\t yMin = " << yMin << std::endl;
+		std::cout << "\t yMax = " << yMax << std::endl;
+	}
 
 	//Draw data graphs
 	for(int i = 0; i < data.size(); i++) {

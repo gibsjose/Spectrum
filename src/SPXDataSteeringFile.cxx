@@ -132,6 +132,8 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t\t Errors given in percentages? " << (errorInPercent ? "YES" : "NO") << std::endl << std::endl;
 }
 
+//@TODO Create Correlation Matrix Class and parse correlation matrix here if there is one (correlation_matrix = true)!
+//@TODO Update documentation with correlation matrix syntax and behavior
 void SPXDataSteeringFile::Parse(void) {
 	std::string mn = "Parse: ";
 	
