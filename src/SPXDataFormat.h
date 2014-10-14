@@ -12,7 +12,7 @@
 //		spectrum_t2a 	(DF_SPECTRUM_T2A)
 //		herafitter		(DF_HERAFITTER)
 //
-//	@Author: 	Joe Gibson - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
 //	@Date:		08.10.2014
 //
 //************************************************************/

@@ -5,7 +5,7 @@
 //	Outlines the SPXPDFBandType class, which describes the PDF
 //	band type. The options are 'use_alpha_s' or 'use_error_band' 
 //
-//	@Author: 	Joe Gibson - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
 //	@Date:		29.09.2014
 //
 //************************************************************/

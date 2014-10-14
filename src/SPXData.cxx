@@ -6,7 +6,7 @@
 //	given data file in a map structure and intelligently parses
 //	data from different formats.
 //
-//	@Author: 	Joe Gibson - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
 //	@Date:		08.10.2014
 //
 //************************************************************/

@@ -16,7 +16,7 @@
 //			ref_line_color -- Reference line color list
 //			desc -- Description of the entire plot (not a list)
 //
-//	@Author: 	Joe Gibson - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
 //	@Date:		29.09.2014
 //
 //************************************************************/

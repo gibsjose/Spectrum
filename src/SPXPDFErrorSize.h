@@ -5,7 +5,7 @@
 //	Outlines the SPXPDFErrorSize class, which describes the PDF
 //	error size. The options are 'one_sigma' or '90_percent' 
 //
-//	@Author: 	Joe Gibson - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
 //	@Date:		29.09.2014
 //
 //************************************************************/

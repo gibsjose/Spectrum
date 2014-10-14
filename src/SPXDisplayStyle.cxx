@@ -6,7 +6,7 @@
 //	plots will be made on the TCanvas. The options are Overlay,
 //	Ratio, or both.
 //
-//	@Author: 	Joe Gibson - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
 //	@Date:		26.09.2014
 //
 //************************************************************/

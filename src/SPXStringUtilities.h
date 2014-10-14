@@ -4,7 +4,7 @@
 //
 //	Some useful string utilities for Spectrum
 //
-//	@Author: 	Joe Gibson - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
 //	@Date:		13.10.2014
 //
 //************************************************************/

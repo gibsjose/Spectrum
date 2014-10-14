@@ -8,7 +8,7 @@
 //	numerator, and [data XOR reference XOR convolute] in the
 //	demominator.
 //
-//	@Author: 	Joe Gibson - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
 //	@Date:		25.09.2014
 //
 //************************************************************/

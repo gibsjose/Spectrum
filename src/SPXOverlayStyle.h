@@ -6,7 +6,7 @@
 //	will be plotted on the overlay graph. Options include: data,
 //	reference, and convolute.
 //
-//	@Author: 	Joe Gibson - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
 //	@Date:		26.09.2014
 //
 //************************************************************/
