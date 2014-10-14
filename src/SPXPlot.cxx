@@ -84,6 +84,7 @@ void SPXPlot::Plot(void) {
 	canvas->Update();
 }
 
+//@TODO Which PDF corresponds with which grid/CrossSection?
 void SPXPlot::InitializeData(void) {
 	std::string mn = "InitializeData: ";
 
