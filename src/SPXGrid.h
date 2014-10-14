@@ -13,6 +13,9 @@
 #ifndef SPXGRID_H
 #define SPXGRID_H
 
+#include "appl_grid/appl_grid.h"
+#include "appl_grid/generic_pdf.h"
+
 #include "SPXROOT.h"
 
 #include "SPXPlotConfiguration.h"
@@ -26,6 +29,13 @@ public:
 	explicit SPXGrid(const SPXPlotConfigurationInstance &pci) {
 		this->pci = pci;
 	}
+
+	//@TODO Delete here: Could be a source of errors
+	~SPXGrid(void) {
+		if(grid) {
+			delete grid;
+		}
+	}
 	
 	void Parse(void);
 	void Print(void);
@@ -38,9 +48,12 @@ public:
 		debug = b;
 	}
 
+	TH1D *GetReferenceHistogram(void);
+
 private:
 	static bool debug;					//Flag indicating debug mode
 	SPXPlotConfigurationInstance pci;	//Frame options instance
+	appl::grid *grid;					//APPLGrid Grid
 };
 
 #endif

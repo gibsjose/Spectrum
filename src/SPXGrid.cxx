@@ -18,3 +18,31 @@ const std::string cn = "SPXGrid::";
 
 //Must define the static debug variable in the implementation
 bool SPXGrid::debug;
+
+TH1D *SPXGrid::GetReferenceHistogram(void) {
+	
+	std::string gridFile = pci.gridSteeringFile.GetGridFilepath();
+
+	if(!SPXFileUtilities::FileExists(gridFile)) {
+		throw SPXFileIOException(gridFile, "Unable to open grid file");
+	}
+
+	//Create a new grid object from the grid file
+	grid = new appl::grid(gridFile);
+
+	if(!grid) {
+		throw SPXGeneralException("APPLGrid: appl::grid(" + gridFile + ") did not return a valid object pointer");
+	}
+
+	//Create a reference histogram from the grid
+	TH1D *referenceHistogram = (TH1D *)grid->getReference();
+
+	if(!referenceHistogram) {
+		throw SPXGeneralException("Reference histogram from appl::grid::getReference() for grid file " + gridFile + " was unsuccessful");
+	}
+
+	int nTot = grid->run();
+	referenceHistogram->Scale(1.0 / nTot);
+
+	return referenceHistogram;
+}
