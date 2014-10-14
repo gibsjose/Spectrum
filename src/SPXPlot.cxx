@@ -57,10 +57,10 @@ void SPXPlot::Plot(void) {
 	}
 
 	//@TODO Where should these come from?
-	int xMin = 0;
-	int xMax = 3000;
-	int yMin = -1;
-	int yMax = 4;
+	double xMin = 0;
+	double xMax = 3000;
+	double yMin = 0;
+	double yMax = 0.003;
 
 	//Draw the frame (xmin, ymin, xmax, ymax)
 	canvas->DrawFrame(xMin, yMin, xMax, yMax);
