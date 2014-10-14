@@ -51,6 +51,26 @@ private:
 	unsigned int lineNumber;
 };
 
+class SPXGeneralException : public SPXException {
+public:
+	SPXGeneralException(std::string message) : SPXException() {
+		this->message = message;
+	}
+	
+	~SPXGeneralException() throw() {}
+	
+	const char * what() const throw() {
+		std::string tmp;
+
+		tmp = "SPXGeneralException: " + message;
+		
+		return tmp.c_str();
+	}
+	
+private:
+	std::string message;
+};
+
 class SPXINIParseException : public SPXException {
 public:	
 	SPXINIParseException(std::string section, std::string name, std::string message) : SPXException() {
