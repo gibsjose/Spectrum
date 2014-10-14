@@ -14,5 +14,6 @@
 
 #include "SPXStringUtilities.h"
 #include "SPXGraphUtilities.h"
+#include "SPXFileUtilities.h"
 
 #endif
