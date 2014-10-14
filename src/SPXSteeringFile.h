@@ -245,11 +245,11 @@ public:
 		return this->plotConfigurations.size();
 	}
 	
-	const std::vector<SPXPlotConfiguration> & GetPlotConfigurationsVector(void) const {
+	std::vector<SPXPlotConfiguration> & GetPlotConfigurationsVector(void) {
 		return this->plotConfigurations;
 	}
 	
-	const SPXPlotConfiguration & GetPlotConfiguration(unsigned int index) const {
+	SPXPlotConfiguration & GetPlotConfiguration(unsigned int index) {
 		
 		if((index + 1) > plotConfigurations.size()) {
 			int top = plotConfigurations.size() - 1;

@@ -768,8 +768,6 @@ void SPXData::CreateGraphs(void) {
 		systName = name + "_syst";
 	}
 
-	//@TODO Implement divided_by_bin_width, normalized_to_total, and error_in_percent here
-
 	//double x[numberOfBins]; 		//xm
 	//double y[numberOfBins];		//sigma
 	double exl[numberOfBins];		// = (xm - ((xh + xl) / 2) + ((xh - xl) / 2))
@@ -810,6 +808,18 @@ void SPXData::CreateGraphs(void) {
 		eyh_syst = &data["syst_p"][0];
 	}
 
+	//@TODO See lines 628 to 646 of MyData.cxx: What is the datavectortoterr? Is it used only for the correlation matrix? What do I do for correlation matrix?
+
+	//Convert to raw number if errors are given in percent
+	if(pci.dataSteeringFile.IsErrorInPercent()) {
+		for(int i = 0; i < numberOfBins; i++) {
+			eyl_stat[i] *= y[i] / 100.0;
+			eyh_stat[i] *= y[i] / 100.0;
+			eyl_syst[i] *= y[i] / 100.0;
+			eyh_syst[i] *= y[i] / 100.0;
+		}
+	}
+
 	//Create statistical error graph
 	statisticalErrorGraph = new TGraphAsymmErrors(numberOfBins, x, y, exl, exh, eyl_stat, eyh_stat);
 
@@ -828,32 +838,6 @@ void SPXData::CreateGraphs(void) {
 		systematicErrorGraph->Print();
 		std::cout << std::endl;
 	}
-
-	//Modify styles (from plotConfigurationInstance)
-	statisticalErrorGraph->SetMarkerStyle(pci.markerStyle);
-	systematicErrorGraph->SetMarkerStyle(pci.markerStyle);
-
-	statisticalErrorGraph->SetMarkerColor(pci.markerColor);
-	systematicErrorGraph->SetMarkerColor(pci.markerColor);
-
-	//@TODO Why is this not in the data steering file? Why is one larger?
-	statisticalErrorGraph->SetMarkerSize(1.2);
-	systematicErrorGraph->SetMarkerSize(1.0);
-
-	statisticalErrorGraph->SetLineColor(4);
-	systematicErrorGraph->SetLineColor(1);
-
-	statisticalErrorGraph->SetLineWidth(1);
-	systematicErrorGraph->SetLineWidth(1);
-
-	//statisticalErrorGraph->SetTitle("Statistical");
-	//systematicErrorGraph->SetTitle("Systematic");
-
-	//statisticalErrorGraph->GetXaxis()->SetTitle("X title");
-	//systematicErrorGraph->GetXaxis()->SetTitle("X title");
-
-	//statisticalErrorGraph->GetYaxis()->SetTitle("Y title");
-	//systematicErrorGraph->GetYaxis()->SetTitle("Y title");
 }
 
 void SPXData::Draw(void) {

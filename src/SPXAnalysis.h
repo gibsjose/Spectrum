@@ -41,21 +41,18 @@ public:
 			throw;
 		}
 	}
-	
-	static bool GetDebug(void) {
-		return debug;
-	}
-	
-	static void SetDebug(bool b) {
-		debug = b;
-	}
 
 private:
-	static bool debug;					//Flag indicating debug mode
 	SPXSteeringFile *steeringFile;		//Pointer to a fully parsed steering file	
 	std::vector<SPXPlot> plots;			//Vector of plots
 
 	void Initialize(void) {
+
+		//Turn on debug modes for Plot
+		if(steeringFile->GetDebug()) {
+			SPXPlot::SetDebug(true);
+		}
+
 		try {
 			for(int i = 0; i < steeringFile->GetNumberOfPlotConfigurations(); i++) {
 				SPXPlot plot = SPXPlot(steeringFile, i);

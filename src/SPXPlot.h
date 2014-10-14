@@ -40,6 +40,11 @@ public:
 	
 	static void SetDebug(bool b) {
 		debug = b;
+
+		if(debug) {
+			SPXData::SetDebug(true);
+			//SPXCrossSection::SetDebug(true);
+		}
 	}
 
 private:
@@ -48,6 +53,11 @@ private:
 	unsigned int id;								//Plot number ID (0-based)
 	std::vector<SPXData> data;						//Vector of data
 	//std::vector<SPXCrossSection> crossSections;	//Vector of cross sections
+
+	//ROOT Components
+	TCanvas *canvas;
+	TPad *overlayPad;
+	TPad *ratioPad;
 
 	void InitializeData(void);
 	void InitializeCrossSections(void);
