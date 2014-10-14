@@ -35,6 +35,7 @@ public:
 	}
 	
 	/*
+	//@TODO
 	virtual const char * what() const throw() {
 		std::string detailedMessage;
 		
