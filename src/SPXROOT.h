@@ -1,3 +1,14 @@
+//************************************************************/
+//
+//	Spectrum ROOT Header
+//
+//	Simply includes all the necessary ROOT headers
+//
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
+//	@Date:		25.09.2014
+//
+//************************************************************/
+
 #ifndef SPXROOT_H
 #define SPXROOT_H
 
