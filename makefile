@@ -12,7 +12,12 @@ ROOTINCS = $(shell root-config --cflags)
 ROOTLIBS = $(shell root-config --glibs) 
 ROOTARCH = $(findstring -m64, $(ROOTINCS))
 
-CXXFLAGS += $(ROOTARCH) $(ROOTINCS)
+#APPLGrid
+APPLCXXFLAGS = $(shell applgrid-config --cxxflags)
+APPLCLIBS    = $(shell applgrid-config --ldcflags)
+APPLFLIBS    = $(shell applgrid-config --ldflags)
+
+CXXFLAGS += $(ROOTARCH) $(ROOTINCS) $(APPLCXXFLAGS)
 
 SRC_DIR = ./src
 BIN_DIR = .
@@ -26,7 +31,7 @@ SRC = $(SRC_DIR)/Spectrum.cxx $(SRC_DIR)/SPXSteeringFile.cxx $(SRC_DIR)/SPXRatio
 HDR = $(SRC_DIR)/*.h
 INC = -I./inih/include -I$(SRC_DIR)
 LIB_PATH = -L./inih/lib
-LIB = -linih $(ROOTLIBS)
+LIB = -linih $(ROOTLIBS) $(APPLCLIBS) $(APPLFLIBS)
 BIN = $(BIN_DIR)/Spectrum
 
 .SUFFIXES: .cxx .o
