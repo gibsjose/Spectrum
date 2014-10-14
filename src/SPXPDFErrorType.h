@@ -7,6 +7,7 @@
 //
 //	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
 //	@Date:		29.09.2014
+//	@Email:		gibsjose@mail.gvsu.edu
 //
 //************************************************************/
 
