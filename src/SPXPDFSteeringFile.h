@@ -5,7 +5,7 @@
 //	Outlines the SPXPDFSteeringFile class, which standardizes the
 //	format and I/O of the Steering File Format (SFF), a file
 //	format that allows for interfacing between Grids, Data,
-//	and Cross Sections with the MyAnalysis PDF Program
+//	and Cross Sections within Spectrum.
 //
 //	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
 //	@Date:		30.09.2014
