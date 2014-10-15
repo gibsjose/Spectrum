@@ -39,9 +39,11 @@ debug = false
 ;==============================================================
 [DESC]
 name = CT10
+name_var = CT10_R04
 type = CT10
 order = NLO
-num_members = 53	
+num_members = 53
+; pdf_set_path = 
 
 ;==============================================================
 ; Style Options
@@ -55,6 +57,17 @@ marker_style = 20
 ; PDF Options
 ;==============================================================
 [PDF]
+default_id = 0 	
+default_id_var = 0	
+first_eig = 1	
+last_eig = 0		
+first_quad = 1
+last_quad = 25
+first_max = 1
+last_max = 6
+include_eig = true 
+include_quad = true 
+include_max = false 
 band_type =	use_error_band
 error_type = pdf_band
 error_size = one_sigma

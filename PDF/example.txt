@@ -59,14 +59,14 @@ marker_style = 20												;[REQUIRED] PDF marker style code
 ; PDF Options
 ;==============================================================
 [PDF]
-default_pdf_id = 0 												;[REQUIRED] Default PDF ID
-default_pdf_id_var = 0 											;[REQUIRED] Default PDF Variation ID
+default_id = 0 													;[REQUIRED] Default PDF ID
+default_id_var = 0 												;[REQUIRED] Default PDF Variation ID
 first_eig = 1 													;[REQUIRED] First Eigenvector Variation ID
 last_eig = 0  													;[REQUIRED] Last Eigenvector Variation ID
-first_quad_var = 1 												;[REQUIRED] First uncertainty to be added in quadrature 
-last_quad_var = 25 												;[REQUIRED] Last uncertainty to be added in quadrature
-first_max_var = 1 												;[REQUIRED] First uncertainty in which to look for a maximum
-last_max_var = 6 												;[REQUIRED] Last uncertainty in which to look for a maximum
+first_quad = 1 													;[REQUIRED] First uncertainty to be added in quadrature 
+last_quad = 25 													;[REQUIRED] Last uncertainty to be added in quadrature
+first_max = 1 													;[REQUIRED] First uncertainty in which to look for a maximum
+last_max = 6 													;[REQUIRED] Last uncertainty in which to look for a maximum
 include_eig = true 												;[Optional] Include eigenvectors in band 
 include_quad = true 											;[Optional] Include parameterization uncertainties added in quadrature
 include_max = false 											;[Optional] Include model uncertainties among which one looks for a max
