@@ -40,6 +40,9 @@ void SPXPDFSteeringFile::SetDefaults(void) {
 	numberOfMembers = NUM_MEMBERS_EMPTY;
 	if(debug) std::cout << cn << mn << "numberOfMembers set to default: \"-1\"" << std::endl;
 	
+	pdfSetPath.clear();
+	if(debug) std::cout << cn << mn << "pdfSetPath set to default: \" \"" << std::endl;
+
 	fillStyle = PDF_STYLE_EMPTY;
 	if(debug) std::cout << cn << mn << "fillStyle set to default: \"-1\"" << std::endl;
 	
@@ -120,7 +123,8 @@ void SPXPDFSteeringFile::Print(void) {
 	std::cout << "\t\t Name Variation: " << nameVar << std::endl;
 	std::cout << "\t\t Type: " << type << std::endl;
 	std::cout << "\t\t Order: " << order << std::endl;
-	std::cout << "\t\t Number of Members: " << numberOfMembers << std::endl << std::endl;
+	std::cout << "\t\t Number of Members: " << numberOfMembers << std::endl;
+	std::cout << "\t\t PDF Set Path: " << pdfSetPath << std::endl << std::endl;
 	std::cout << "\t Style Options [STYLE]" << std::endl;
 	std::cout << "\t\t Fill Style: " << (fillStyle == PDF_STYLE_EMPTY ? "UNSET: " : "") << fillStyle << std::endl;
 	std::cout << "\t\t Fill Color: " << (fillColor == PDF_COLOR_EMPTY ? "UNSET: " : "") << fillColor << std::endl;
@@ -215,6 +219,14 @@ void SPXPDFSteeringFile::Parse(void) {
 		throw SPXINIParseException("DESC", "num_members", "You MUST specify the num_members");
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Number of Members: " << numberOfMembers << std::endl;
+	}
+
+	pdfSetPath = reader->Get("DESC", "pdf_set_path", "EMPTY");
+	if(!pdfSetPath.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "No PDF Set Path configuration found" << std::endl;
+		pdfSetPath.clear();
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read PDF Set Path: " << pdfSetPath << std::endl;
 	}
 	
 	//Style Options [STYLE]

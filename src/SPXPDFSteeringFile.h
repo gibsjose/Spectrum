@@ -62,6 +62,7 @@ private:
 	std::string type;
 	std::string order;
 	int numberOfMembers;
+	std::string pdfSetPath;
 	
 	//[STYLE]
 	int fillStyle;
@@ -143,6 +144,10 @@ public:
 			return 2;
 		}
 	}
+
+	const std::string & GetPDFSetPath(void) const {
+		return this->pdfSetPath;
+	}
 	
 	int GetFillStyle(void) const {
 		return this->fillStyle;
@@ -200,15 +205,15 @@ public:
 		return this->includeMax;
 	}
 	
-	const SPXPDFBandType & GetBandType(void) const {
+	SPXPDFBandType & GetBandType(void) {
 		return this->bandType;
 	}
 	
-	const SPXPDFErrorType & GetErrorType(void) const {
+	SPXPDFErrorType & GetErrorType(void) {
 		return this->errorType;
 	}
 	
-	const SPXPDFErrorSize & GetErrorSize(void) const {
+	SPXPDFErrorSize & GetErrorSize(void) {
 		return this->errorSize;
 	}
 	
