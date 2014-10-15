@@ -42,7 +42,8 @@ name = CT10														;[REQUIRED] PDF Name (may or may not differ from PDF Ty
 name_var = 	CT10_R04											;[REQUIRED] PDF Name Variation
 type = CT10														;[REQUIRED] PDF Type - Ex: CT10, MSTW2008nlo, NNPDF23nlo, HERAPDF15NLO, etc. 
 order = NLO														;[Optional] Order for convolution: LO, NLO, NNLO [default = NLO]
-num_members = 53												;[REQUIRED] Number of members of PDF: 53, 41, 101, 33, ...		
+num_members = 53												;[REQUIRED] Number of members of PDF: 53, 41, 101, 33, ...
+pdf_set_path = some_dir/some_other_dir							;[Optional] Override the default PDF Set Path (./PDFsets)								
 
 ;==============================================================
 ; Style Options
