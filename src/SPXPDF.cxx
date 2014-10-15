@@ -10,8 +10,24 @@
 //
 //************************************************************/
 
+#include <sstream>
+
 #include "SPXPDF.h"
 #include "SPXUtilities.h"
+
+//Patch for faulty G++ compiler <string> guards...
+// Somewhere in <string> there is an issue where there are some #ifdef guards
+// that are incorrectly not being passed to allow the patch::to_string function
+// to be properly build and linked...
+namespace patch
+{
+    template < typename T > std::string to_string( const T& n )
+    {
+        std::ostringstream stm ;
+        stm << n ;
+        return stm.str() ;
+    }
+}
 
 //Class name for debug statements
 const std::string cn = "SPXPDF::";
@@ -73,7 +89,7 @@ SPXPDF::SPXPDF(SPXPDFSteeringFile *psf, int iflpdf, double Q2value, TH1D* h1)
 }
 
 //SPXPDF::SPXPDF(string _gridName, string _steeringFile, bool do_PDFBand, bool do_AlphaS)
-SPXPDF(SPXPDFSteeringFile *psf, const std::string &_gridName, bool _do_PDFBand = true, bool _do_AlphaS = true);
+SPXPDF::SPXPDF(SPXPDFSteeringFile *psf, const std::string &_gridName)
 {
 	if (debug) cout<<" SPXPDF::SPXPDF: Start overloaded constructor"<<endl;
 
@@ -92,7 +108,9 @@ SPXPDF(SPXPDFSteeringFile *psf, const std::string &_gridName, bool _do_PDFBand =
 //Top-Level Steering File parser, and has been passed directly to the SPXPDF constructor, and thus this function
 void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
 
- 	if (debug) cout<<" SPXPDF::ReadSteering: processing pre-parsed steering file named: "<< psf->GetFilename() << std::endl;
+	steeringFileName = psf->GetFilename();
+
+ 	if (debug) cout<<" SPXPDF::ReadSteering: processing pre-parsed steering file named: "<< steeringFileName << std::endl;
 
  	pdfSetPath = defaultPDFSetPath;
  	string pdfSetDefaultPath = GetEnv("LHAPATH");
@@ -114,7 +132,7 @@ void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
 	 PDFtype = psf->GetType();
 	 PDFname = psf->GetName();
 	 PDFnamevar = ""; //@TODO What is PDFnamevar?
-	 numPDFMembers = psf->GetNumberOfMembers();
+	 n_PDFMembers = psf->GetNumberOfMembers();
 	 defaultpdfid = 0; //@TODO What is defaultpdfid?
 	 defaultpdfidvar = 0; //@TODO What is defaultpdfidvar?
 	 firsteig = 0; //@TODO What is firsteig?
@@ -127,12 +145,12 @@ void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
 	 fillStyleCode = psf->GetFillStyle();
 	 fillColorCode = psf->GetFillColor();
 	 markerStyle = psf->GetMarkerStyle();
-	 PDFBandType = psf->GetBandType()->ToString(); //@TODO Make sure this string is compatible
+	 PDFBandType = psf->GetBandType().ToString(); //@TODO Make sure this string is compatible
 	 includeEIG = false; //@TODO What is includeEIG?
 	 includeQUAD = false; //@TODO What is includeQUAD?
-	 PDFErrorType = psf->GetErrorType()->ToString(); //@TODO Make sure this string is compatible
+	 PDFErrorType = psf->GetErrorType().ToString(); //@TODO Make sure this string is compatible
 	 //Parse it here...
-	 PDFErrorSize = psf->GetErrorSize()->ToString(); //@TODO Make sure this string is compatible
+	 PDFErrorSize = psf->GetErrorSize().ToString(); //@TODO Make sure this string is compatible
 	 //pdfSetPath = ""; //@TODO Do I need this?
 	 AlphaSmemberNumDown = psf->GetAlphaSErrorNumberDown();
 	 AlphaSmemberNumUp = psf->GetAlphaSErrorNumberUp();
@@ -1029,6 +1047,7 @@ TGraphAsymmErrors* SPXPDF::MyTGraphErrorsDivide(TGraphAsymmErrors* g1,TGraphAsym
 
 
 //read the provided steering file and set internal variables depending on what is read
+/*
 void SPXPDF::ReadSteering(const string _fileName)
 {
  string fName="";
@@ -1160,7 +1179,7 @@ void SPXPDF::ReadSteering(const string _fileName)
 	}
  }
 }
-
+*/
 
 //Print all relevant internal variable values
 void SPXPDF::Print()
@@ -1180,17 +1199,17 @@ void SPXPDF::Print()
 		 <<"\n"<<setw(w)<<"PDFtype:"              <<setw(w)<<(PDFtype.size()>0? PDFtype:empty)
 		 <<"\n"<<setw(w)<<"PDFname:"              <<setw(w)<<(PDFname.size()>0? PDFname:empty)
 		 <<"\n"<<setw(w)<<"PDFnamevar:"           <<setw(w)<<(PDFnamevar.size()>0? PDFname:empty)
-		 <<"\n"<<setw(w)<<"numPDFMembers:"        <<setw(w)<<(n_PDFMembers!=DEFAULT? std::to_string(n_PDFMembers):empty)
-		 <<"\n"<<setw(w)<<"nLoops: "              <<setw(w)<<(nLoops!=DEFAULT? std::to_string(nLoops):empty)
-		 <<"\n"<<setw(w)<<"fillStyleCode:"        <<setw(w)<<(fillStyleCode!=DEFAULT? std::to_string(fillStyleCode):empty)
-		 <<"\n"<<setw(w)<<"fillColorCode:"        <<setw(w)<<(fillColorCode!=DEFAULT? std::to_string(fillColorCode):empty)
+		 <<"\n"<<setw(w)<<"numPDFMembers:"        <<setw(w)<<(n_PDFMembers!=DEFAULT? patch::to_string(n_PDFMembers):empty)
+		 <<"\n"<<setw(w)<<"nLoops: "              <<setw(w)<<(nLoops!=DEFAULT? patch::to_string(nLoops):empty)
+		 <<"\n"<<setw(w)<<"fillStyleCode:"        <<setw(w)<<(fillStyleCode!=DEFAULT? patch::to_string(fillStyleCode):empty)
+		 <<"\n"<<setw(w)<<"fillColorCode:"        <<setw(w)<<(fillColorCode!=DEFAULT? patch::to_string(fillColorCode):empty)
 		 <<"\n"<<setw(w)<<"PDFBandType:"          <<setw(w)<<(PDFBandType.size()>0? PDFBandType:empty)
-		 <<"\n"<<setw(w)<<"first Eigenvector: "   <<setw(w)<<(firsteig!=DEFAULT? std::to_string(firsteig):empty)
-		 <<"\n"<<setw(w)<<"last Eigenvector:   "  <<setw(w)<<(lasteig!=DEFAULT?  std::to_string(lasteig):empty)
-		 <<"\n"<<setw(w)<<"first component added in quadrature"  <<setw(w)<<(firstquadvar!=DEFAULT?std::to_string(firstquadvar):empty)
-		 <<"\n"<<setw(w)<<"last component added in quadrature"  <<setw(w)<<(lastquadvar!=DEFAULT?std::to_string(lastquadvar):empty)
-		 <<"\n"<<setw(w)<<"first component to find maximum"  <<setw(w)<<(firstmaxvar!=DEFAULT?std::to_string(firstmaxvar):empty)
-		 <<"\n"<<setw(w)<<"last component to find maximum"  <<setw(w)<<(lastmaxvar!=DEFAULT?std::to_string(lastmaxvar):empty)
+		 <<"\n"<<setw(w)<<"first Eigenvector: "   <<setw(w)<<(firsteig!=DEFAULT? patch::to_string(firsteig):empty)
+		 <<"\n"<<setw(w)<<"last Eigenvector:   "  <<setw(w)<<(lasteig!=DEFAULT?  patch::to_string(lasteig):empty)
+		 <<"\n"<<setw(w)<<"first component added in quadrature"  <<setw(w)<<(firstquadvar!=DEFAULT?patch::to_string(firstquadvar):empty)
+		 <<"\n"<<setw(w)<<"last component added in quadrature"  <<setw(w)<<(lastquadvar!=DEFAULT?patch::to_string(lastquadvar):empty)
+		 <<"\n"<<setw(w)<<"first component to find maximum"  <<setw(w)<<(firstmaxvar!=DEFAULT?patch::to_string(firstmaxvar):empty)
+		 <<"\n"<<setw(w)<<"last component to find maximum"  <<setw(w)<<(lastmaxvar!=DEFAULT?patch::to_string(lastmaxvar):empty)
 		 //<<"\n"<<setw(w)<<"**PDF ERROR TYPE(s) ACTIVE:"
 		 <<"\n"<<setw(w)<<"PDFBand:"              <<setw(w)<<(do_PDFBand? ON:OFF)
 		 <<"\n"<<setw(w)<<"AlphaS:"               <<setw(w)<<(do_AlphaS? ON:OFF)
@@ -1202,7 +1221,9 @@ void SPXPDF::Print()
 }
 
 
+//THIS FUNCTION HAS BEEN MOVED TO SPXFileUtilities::FileExists()
 //always check for file existence before usage
+/*
 bool SPXPDF::FileExists(const string _fileName)
 {
  bool exists;
@@ -1216,7 +1237,7 @@ bool SPXPDF::FileExists(const string _fileName)
  if (debug&&!exists) cout<<"file: '"<<_fileName<<"' not found "<<exists<<std::endl;
  return exists;
 }
-
+*/
 
 //default values for variables to avoid crashes and check for proper setup before doing anything
 void SPXPDF::SetVariablesDefault()
