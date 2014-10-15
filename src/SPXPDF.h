@@ -40,9 +40,9 @@ class SPXPDF {
     public:
         //VARIABLES
 
-        TGraphAsymmErrors *h_PDFBand_results;
+        TGraphAsymmErrors *h_PDFBand_results; //@TODO Used by CrossSection
         TGraphAsymmErrors *h_PDFBand_results_ratio_to_ref;
-        TGraphAsymmErrors *h_AlphaS_results;
+        TGraphAsymmErrors *h_AlphaS_results;  //@TODO Used by CrossSection
         TGraphAsymmErrors *h_AlphaS_results_ratio_to_ref;
 
         string calc_desc;
@@ -82,6 +82,7 @@ class SPXPDF {
         double GetMaximum(int iset);
         double GetMinimum(int iset);
 
+        //@TODO Move to SPXGraphUtilities
         TGraphAsymmErrors* MyTGraphErrorsDivide(TGraphAsymmErrors* g1,TGraphAsymmErrors* g2, Int_t noerr=1);
         TGraphAsymmErrors* TH1TOTGraphAsymm(TH1 *h1);
         
