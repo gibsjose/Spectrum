@@ -83,10 +83,10 @@ std::string SPXPDFErrorSize::ToString(void) {
 	}
 	
 	if(type == ES_ONE_SIGMA) {
-		return "one_sigma";
+		return "OneSigma";
 	}
 	if(type == ES_90_PERCENT) {
-		return "90_percent";
+		return "90Percent";
 	}
 	
 	return "INVALID_PDF_ERROR_SIZE";

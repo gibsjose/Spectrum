@@ -83,10 +83,10 @@ std::string SPXPDFBandType::ToString(void) {
 	}
 	
 	if(type == BT_ALPHA_S) {
-		return "use_alpha_s";
+		return "UseAlphaS";
 	}
 	if(type == BT_ERROR_BAND) {
-		return "use_error_band";
+		return "UseErrorBand";
 	}
 	
 	return "INVALID_PDF_BAND_TYPE";
