@@ -39,7 +39,7 @@ debug = true													;[Optional] Turn on/off debug statements - [default = f
 ;==============================================================
 [DESC]
 name = CT10														;[REQUIRED] PDF Name (may or may not differ from PDF Type)
-name_var = 														;[REQUIRED] PDF Name Variation
+name_var = 	CT10_R04											;[REQUIRED] PDF Name Variation
 type = CT10														;[REQUIRED] PDF Type - Ex: CT10, MSTW2008nlo, NNPDF23nlo, HERAPDF15NLO, etc. 
 order = NLO														;[Optional] Order for convolution: LO, NLO, NNLO [default = NLO]
 num_members = 53												;[REQUIRED] Number of members of PDF: 53, 41, 101, 33, ...		
