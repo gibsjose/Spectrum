@@ -83,10 +83,10 @@ std::string SPXPDFErrorType::ToString(void) {
 	}
 	
 	if(type == ET_ALPHA_S) {
-		return "alpha_s";
+		return "AlphaS";
 	}
 	if(type == ET_PDF_BAND) {
-		return "pdf_band";
+		return "PDFBand";
 	}
 	
 	return "INVALID_PDF_ERROR_TYPE";
