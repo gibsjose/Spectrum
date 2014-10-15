@@ -26,7 +26,7 @@
 
 //LHAPDF
 #include "LHAPDF/LHAPDF.h"
-#include "LHAPDF.h"
+#include "SPXLHAPDF.h"
 
 #include "SPXPDFSteeringFile.h"
 #include "SPXException.h"
@@ -51,9 +51,9 @@ class SPXPDF {
 
 
         //METHODS
-
+        SPXPDF() {};
         SPXPDF(SPXPDFSteeringFile *psf, int ifl, double q2, TH1D *h1);
-        SPXPDF(SPXPDFSteeringFile *psf, const std::string &_gridName, bool _do_PDFBand = true, bool _do_AlphaS = true);
+        SPXPDF(SPXPDFSteeringFile *psf, const std::string &_gridName);
 
         virtual ~SPXPDF() { CleanUpSPXPDF(); }; //destructor
         
@@ -64,7 +64,8 @@ class SPXPDF {
         void CleanUpSPXPDF();
         void Initialize();
         void Print();
-        void ReadSteering(const string _fileName);
+        void ReadPDFSteeringFile(SPXPDFSteeringFile *psf);
+       // void ReadSteering(const string _fileName);
 
         void InitializeErrorGraphs();
         void CalcSystErrors();
@@ -86,9 +87,6 @@ class SPXPDF {
         
         //accessor methods
         bool IsDebugOn() const{return debug;};
-        //string GetSteeringFilePath() const{return steeringFilePath;};
-        //string GetSteeringFileDir() const{return steeringFileDir;};
-        string GetSteeringFileName() const{return steeringFileName;};
         string GetPDFtype() const{return PDFtype;};
         string GetPDFName() const{return PDFname;};
         string GetPDFFullname(){ return default_pdf_set_name;};
@@ -147,11 +145,9 @@ class SPXPDF {
         //VARIABLES
         static bool debug;
 
-        SPXPDFSteeringFile *psf;
+        std::string steeringFileName;
 
         string default_pdf_set_name;
-
-        string gridName;
 
         int nLoops;                 // order of the theory prediction. L0=0, NLO=1, NNLO=2
         string PDFtype;             // general name for PDF, used for printing. EX: "MSTW2008nlo"
