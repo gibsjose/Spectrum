@@ -109,12 +109,24 @@ public:
 		return this->type;
 	}
 	
-	const std::string & GetOrder(void) const {
-		return this->order;
-	}
 	
 	unsigned int GetNumberOfMembers(void) const {
 		return this->numberOfMembers;
+	}
+
+	const std::string & GetOrder(void) const {
+		return this->order;
+	}
+
+	//@TODO Make 'Order'/'NumLoops' its own class...
+	unsigned int GetNumberOfLoops(void) const {
+		if(!this->order.compare("LO") || !this->order.compare("lo")) {
+			return 0;
+		} else if(!this->order.compare("NLO") || !this->order.compare("nlo")) {
+			return 1;
+		} else {
+			return 2;
+		}
 	}
 	
 	int GetFillStyle(void) const {
