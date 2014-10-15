@@ -17,7 +17,12 @@ APPLCXXFLAGS = $(shell applgrid-config --cxxflags)
 APPLCLIBS    = $(shell applgrid-config --ldcflags)
 APPLFLIBS    = $(shell applgrid-config --ldflags)
 
-CXXFLAGS += $(ROOTARCH) $(ROOTINCS) $(APPLCXXFLAGS)
+#LHAPDF
+LHAPDFINCS = -I$(shell lhapdf-config --prefix)/include
+LHAPDFDIR  = $(shell lhapdf-config --prefix)/lib
+LHAPDFLIBS = -L$(LHAPDFDIR) -lLHAPDF
+
+CXXFLAGS += $(ROOTARCH) $(ROOTINCS) $(APPLCXXFLAGS) $(LHAPDFINCS)
 
 SRC_DIR = ./src
 BIN_DIR = .
@@ -31,7 +36,7 @@ SRC = $(SRC_DIR)/Spectrum.cxx $(SRC_DIR)/SPXSteeringFile.cxx $(SRC_DIR)/SPXRatio
 HDR = $(SRC_DIR)/*.h
 INC = -I./inih/include -I$(SRC_DIR)
 LIB_PATH = -L./inih/lib
-LIB = -linih $(ROOTLIBS) $(APPLCLIBS) $(APPLFLIBS)
+LIB = -linih $(ROOTLIBS) $(APPLCLIBS) $(APPLFLIBS) $(LHAPDFLIBS)
 BIN = $(BIN_DIR)/Spectrum
 
 .SUFFIXES: .cxx .o
