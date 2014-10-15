@@ -27,6 +27,9 @@ void SPXPDFSteeringFile::SetDefaults(void) {
 	
 	name.clear();
 	if(debug) std::cout << cn << mn << "name set to default: \" \"" << std::endl;
+
+	nameVar.clear();
+	if(debug) std::cout << cn << mn << "nameVar set to default: \" \"" << std::endl;
 	
 	type.clear();
 	if(debug) std::cout << cn << mn << "type set to default: \" \"" << std::endl;
@@ -46,6 +49,39 @@ void SPXPDFSteeringFile::SetDefaults(void) {
 	markerStyle = PDF_STYLE_EMPTY;
 	if(debug) std::cout << cn << mn << "markerStyle set to default: \"-1\"" << std::endl;
 	
+	defaultID = 0;
+	if(debug) std::cout << cn << mn << "markerStyle set to default: \"0\"" << std::endl;
+
+	defaultIDVar = -1;
+	if(debug) std::cout << cn << mn << "markerStyle set to default: \"-1\"" << std::endl;
+
+	firstEig = 1;
+	if(debug) std::cout << cn << mn << "firstEig set to default: \"1\"" << std::endl;
+
+	lastEig = 1;
+	if(debug) std::cout << cn << mn << "lastEig set to default: \"1\"" << std::endl;
+
+	firstQuad = 1;
+	if(debug) std::cout << cn << mn << "firstQuad set to default: \"1\"" << std::endl;
+
+	lastQuad = 1;
+	if(debug) std::cout << cn << mn << "lastQuad set to default: \"1\"" << std::endl;
+
+	firstMax = 1;
+	if(debug) std::cout << cn << mn << "firstMax set to default: \"1\"" << std::endl;
+
+	lastMax = 1;
+	if(debug) std::cout << cn << mn << "lastMax set to default: \"1\"" << std::endl;
+
+	includeEig = false;
+	if(debug) std::cout << cn << mn << "includeEig set to default: \"false\"" << std::endl;
+
+	includeQuad = false;
+	if(debug) std::cout << cn << mn << "includeQuad set to default: \"false\"" << std::endl;
+
+	includeMax = false;
+	if(debug) std::cout << cn << mn << "includeMax set to default: \"false\"" << std::endl;
+
 	bandType = SPXPDFBandType();
 	if(debug) std::cout << cn << mn << "bandType set to default: \" \"" << std::endl;
 	
@@ -81,6 +117,7 @@ void SPXPDFSteeringFile::Print(void) {
 	std::cout << "\t\t Debug is " << (debug ? "ON" : "OFF") << std::endl << std::endl;
 	std::cout << "\t Description [DESC]" << std::endl;
 	std::cout << "\t\t Name: " << name << std::endl;
+	std::cout << "\t\t Name Variation: " << nameVar << std::endl;
 	std::cout << "\t\t Type: " << type << std::endl;
 	std::cout << "\t\t Order: " << order << std::endl;
 	std::cout << "\t\t Number of Members: " << numberOfMembers << std::endl << std::endl;
@@ -89,6 +126,17 @@ void SPXPDFSteeringFile::Print(void) {
 	std::cout << "\t\t Fill Color: " << (fillColor == PDF_COLOR_EMPTY ? "UNSET: " : "") << fillColor << std::endl;
 	std::cout << "\t\t Marker Style: " << (markerStyle == PDF_STYLE_EMPTY ? "UNSET: " : "") << markerStyle << std::endl << std::endl;
 	std::cout << "\t PDF Options [PDF]" << std::endl;
+	std::cout << "\t\t Default ID: " << defaultID << std::endl;
+	std::cout << "\t\t Default ID Var: " << defaultIDVar << std::endl;
+	std::cout << "\t\t First Eigenvector: " << firstEig << std::endl;
+	std::cout << "\t\t Last Eigenvector: " << lastEig << std::endl;
+	std::cout << "\t\t First Quadrature: " << firstQuad << std::endl;
+	std::cout << "\t\t Last Quadrature: " << lastQuad << std::endl;
+	std::cout << "\t\t First Max: " << firstMax << std::endl;
+	std::cout << "\t\t Last Max: " << lastMax << std::endl;
+	std::cout << "\t\t Include Eigenvectors? " << (includeEig ? "YES" : "NO") << std::endl;
+	std::cout << "\t\t Include Quadrature? " << (includeQuad ? "YES" : "NO") << std::endl;
+	std::cout << "\t\t Include Max? " << (includeMax ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Band Type: " << bandType.ToString() << std::endl;
 	std::cout << "\t\t Error Type: " << errorType.ToString() << std::endl;
 	std::cout << "\t\t Error Size: " << errorSize.ToString() << std::endl;
@@ -140,6 +188,13 @@ void SPXPDFSteeringFile::Parse(void) {
 		if(debug) std::cout << cn << mn << "Successfully read PDF Name: " << name << std::endl;
 	}
 	
+	nameVar = reader->Get("DESC", "name_var", "EMPTY");
+	if(!nameVar.compare("EMPTY")) {
+		throw SPXINIParseException("DESC", "name_var", "You MUST specify the nameVar");
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read PDF Name Variation: " << nameVar << std::endl;
+	}
+
 	type = reader->Get("DESC", "type", "EMPTY");
 	if(!type.compare("EMPTY")) {
 		throw SPXINIParseException("DEC", "type", "You MUST specify the type");
@@ -184,7 +239,67 @@ void SPXPDFSteeringFile::Parse(void) {
 		if(debug) std::cout << cn << mn << "Successfully read Marker Style: " << markerStyle << std::endl;
 	}
 	
-	//PDF Options [PDF]	
+	//PDF Options [PDF]
+	defaultID = reader->GetInteger("PDF", "default_id", -1);
+	if(defaultID == -1) {
+		throw SPXINIParseException("PDF", "default_id", "You MUST specify the default_id");
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read Default ID: " << defaultID << std::endl;
+	}
+
+	defaultIDVar = reader->GetInteger("PDF", "default_id_var", -1);
+	if(defaultIDVar == -1) {
+		throw SPXINIParseException("PDF", "default_id_var", "You MUST specify the default_id");
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read Default ID Variation: " << defaultIDVar << std::endl;
+	}
+
+	firstEig = reader->GetInteger("PDF", "first_eig", -1);
+	if(firstEig == -1) {
+		throw SPXINIParseException("PDF", "first_eig", "You MUST specify the first_eig");
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read First Eigenvector: " << firstEig << std::endl;
+	}
+
+	lastEig = reader->GetInteger("PDF", "last_eig", -1);
+	if(lastEig == -1) {
+		throw SPXINIParseException("PDF", "last_eig", "You MUST specify the last_eig");
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read Last Eigenvector: " << lastEig << std::endl;
+	}
+
+	firstQuad = reader->GetInteger("PDF", "first_quad", -1);
+	if(firstQuad == -1) {
+		throw SPXINIParseException("PDF", "first_quad", "You MUST specify the first_quad");
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read First Quadrature: " << firstQuad << std::endl;
+	}
+
+	lastQuad = reader->GetInteger("PDF", "last_quad", -1);
+	if(lastQuad == -1) {
+		throw SPXINIParseException("PDF", "last_quad", "You MUST specify the last_quad");
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read Last Quadrature: " << lastQuad << std::endl;
+	}
+
+	firstMax = reader->GetInteger("PDF", "first_max", -1);
+	if(firstMax == -1) {
+		throw SPXINIParseException("PDF", "first_max", "You MUST specify the first_max");
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read First Max: " << firstMax << std::endl;
+	}
+
+	lastMax = reader->GetInteger("PDF", "last_max", -1);
+	if(lastMax == -1) {
+		throw SPXINIParseException("PDF", "last_max", "You MUST specify the last_max");
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read Last Max: " << lastMax << std::endl;
+	}
+
+	includeEig = reader->GetBoolean("PDF", "include_eig", includeEig);
+	includeQuad = reader->GetBoolean("PDF", "include_quad", includeQuad);
+	includeMax = reader->GetBoolean("PDF", "include_max", includeMax);
+
 	//Parse Band Type
 	tmp = reader->Get("PDF", "band_type", "EMPTY");
 	if(!tmp.compare("EMPTY")) {

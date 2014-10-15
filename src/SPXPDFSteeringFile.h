@@ -58,6 +58,7 @@ private:
 	
 	//[DESC]
 	std::string name;
+	std::string nameVar;
 	std::string type;
 	std::string order;
 	int numberOfMembers;
@@ -68,6 +69,17 @@ private:
 	int markerStyle;
 	
 	//[PDF]
+	int defaultID;
+	int defaultIDVar;
+	int firstEig;
+	int lastEig;
+	int firstQuad;
+	int lastQuad;
+	int firstMax;
+	int lastMax;
+	bool includeEig;
+	bool includeQuad;
+	bool includeMax;
 	SPXPDFBandType bandType;
 	SPXPDFErrorType errorType;
 	SPXPDFErrorSize errorSize;
@@ -104,11 +116,14 @@ public:
 	const std::string & GetName(void) const {
 		return this->name;
 	}
+
+	const std::string & GetNameVar(void) const {
+		return this->nameVar;
+	}
 	
 	const std::string & GetType(void) const {
 		return this->type;
 	}
-	
 	
 	unsigned int GetNumberOfMembers(void) const {
 		return this->numberOfMembers;
@@ -139,6 +154,50 @@ public:
 	
 	int GetMarkerStyle(void) const {
 		return this->markerStyle;
+	}
+
+	int GetDefaultID(void) const {
+		return this->defaultID;
+	}
+
+	int GetDefaultIDVar(void) const {
+		return this->defaultIDVar;
+	}
+
+	int GetFirstEig(void) const {
+		return this->firstEig;
+	}
+
+	int GetLastEig(void) const {
+		return this->lastEig;
+	}
+
+	int GetFirstQuad(void) const {
+		return this->firstQuad;
+	}
+
+	int GetLastQuad(void) const {
+		return this->lastQuad;
+	}
+
+	int GetFirstMax(void) const {
+		return this->firstMax;
+	}
+
+	int GetLastMax(void) const {
+		return this->lastMax;
+	}
+
+	bool GetIncludeEig(void) const {
+		return this->includeEig;
+	}
+	
+	bool GetIncludeQuad(void) const {
+		return this->includeQuad;
+	}
+
+	bool GetIncludeMax(void) const {
+		return this->includeMax;
 	}
 	
 	const SPXPDFBandType & GetBandType(void) const {
