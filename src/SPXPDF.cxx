@@ -17,7 +17,7 @@
 
 //Patch for faulty G++ compiler <string> guards...
 // Somewhere in <string> there is an issue where there are some #ifdef guards
-// that are incorrectly not being passed to allow the patch::to_string function
+// that are incorrectly not being passed to allow the std::to_string function
 // to be properly build and linked...
 namespace patch
 {
@@ -131,27 +131,42 @@ void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
 
 	 PDFtype = psf->GetType();
 	 PDFname = psf->GetName();
-	 PDFnamevar = ""; //@TODO What is PDFnamevar?
+	 PDFnamevar = psf->GetNameVar();
 	 n_PDFMembers = psf->GetNumberOfMembers();
-	 defaultpdfid = 0; //@TODO What is defaultpdfid?
-	 defaultpdfidvar = 0; //@TODO What is defaultpdfidvar?
-	 firsteig = 0; //@TODO What is firsteig?
-	 lasteig = 0; //@TODO What is lasteig?
-	 firstquadvar = 0; //@TODO What is firstquadvar?
-	 lastquadvar = 0; //@TODO What is lastquarvar?
-	 firstmaxvar = 0; //@TODO What is firstmaxvar?
-	 lastmaxvar = 0; //@TODO What is lastmaxvar?
+	 defaultpdfid = psf->GetDefaultID();
+	 defaultpdfidvar = psf->GetDefaultIDVar();
+	 firsteig = psf->GetFirstEig();
+	 lasteig = psf->GetLastEig();
+	 firstquadvar = psf->GetFirstQuad();
+	 lastquadvar = psf->GetLastQuad();
+	 firstmaxvar = psf->GetFirstMax();
+	 lastmaxvar = psf->GetLastMax();
 	 nLoops = psf->GetNumberOfLoops();
 	 fillStyleCode = psf->GetFillStyle();
 	 fillColorCode = psf->GetFillColor();
 	 markerStyle = psf->GetMarkerStyle();
-	 PDFBandType = psf->GetBandType().ToString(); //@TODO Make sure this string is compatible
-	 includeEIG = false; //@TODO What is includeEIG?
-	 includeQUAD = false; //@TODO What is includeQUAD?
-	 PDFErrorType = psf->GetErrorType().ToString(); //@TODO Make sure this string is compatible
-	 //Parse it here...
-	 PDFErrorSize = psf->GetErrorSize().ToString(); //@TODO Make sure this string is compatible
-	 //pdfSetPath = ""; //@TODO Do I need this?
+	 PDFBandType = psf->GetBandType().ToString();
+	 includeEIG = psf->GetIncludeEig();
+	 includeQUAD = psf->GetIncludeQuad();
+	 includeMAX = psf->GetIncludeMax();
+
+	 PDFErrorType = psf->GetErrorType().ToString();
+	 { //Parse Error Type...
+		 if(psf->GetErrorType().IsAlphaS()) {
+		 	do_AlphaS = true;
+		 	do_PDFBand = false;
+		 } else if(psf->GetErrorType().IsPDFBand()) {
+		 	do_AlphaS = false;
+		 	do_PDFBand = true;
+		 }
+	 }
+
+	 PDFErrorSize = psf->GetErrorSize().ToString();
+
+	 if(!psf->GetPDFSetPath().empty()) {
+	 	pdfSetPath = psf->GetPDFSetPath();
+	 }
+
 	 AlphaSmemberNumDown = psf->GetAlphaSErrorNumberDown();
 	 AlphaSmemberNumUp = psf->GetAlphaSErrorNumberUp();
 	 AlphaSPDFSetNameDown = psf->GetAlphaSPDFNameDown();
