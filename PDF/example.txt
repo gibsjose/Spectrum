@@ -39,6 +39,7 @@ debug = true													;[Optional] Turn on/off debug statements - [default = f
 ;==============================================================
 [DESC]
 name = CT10														;[REQUIRED] PDF Name (may or may not differ from PDF Type)
+name_var = 														;[REQUIRED] PDF Name Variation
 type = CT10														;[REQUIRED] PDF Type - Ex: CT10, MSTW2008nlo, NNPDF23nlo, HERAPDF15NLO, etc. 
 order = NLO														;[Optional] Order for convolution: LO, NLO, NNLO [default = NLO]
 num_members = 53												;[REQUIRED] Number of members of PDF: 53, 41, 101, 33, ...		
@@ -57,6 +58,17 @@ marker_style = 20												;[REQUIRED] PDF marker style code
 ; PDF Options
 ;==============================================================
 [PDF]
+default_pdf_id = 0 												;[REQUIRED] Default PDF ID
+default_pdf_id_var = 0 											;[REQUIRED] Default PDF Variation ID
+first_eig = 1 													;[REQUIRED] First Eigenvector Variation ID
+last_eig = 0  													;[REQUIRED] Last Eigenvector Variation ID
+first_quad_var = 1 												;[REQUIRED] First uncertainty to be added in quadrature 
+last_quad_var = 25 												;[REQUIRED] Last uncertainty to be added in quadrature
+first_max_var = 1 												;[REQUIRED] First uncertainty in which to look for a maximum
+last_max_var = 6 												;[REQUIRED] Last uncertainty in which to look for a maximum
+include_eig = true 												;[Optional] Include eigenvectors in band 
+include_quad = true 											;[Optional] Include parameterization uncertainties added in quadrature
+include_max = false 											;[Optional] Include model uncertainties among which one looks for a max
 band_type =	use_error_band										;[REQUIRED] PDF band type: use_alpha_s OR use_error_band
 error_type = pdf_band											;[REQUIRED] PDF error type: alpha_s OR pdf_band
 error_size = one_sigma											;[REQUIRED] PDF error size: one_sigma OR 90_percent
