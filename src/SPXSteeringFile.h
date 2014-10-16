@@ -205,11 +205,11 @@ public:
 		return this->pdfSteeringFiles.size();
 	}
 	
-	const std::vector<SPXPDFSteeringFile> & GetPDFSteeringFiles(void) const {
+	std::vector<SPXPDFSteeringFile> & GetPDFSteeringFiles(void) {
 		return this->pdfSteeringFiles;
 	}
 	
-	const SPXPDFSteeringFile & GetPDFSteeringFile(unsigned int index) const {
+	SPXPDFSteeringFile & GetPDFSteeringFile(unsigned int index) {
 		if((index + 1) > pdfSteeringFiles.size()) {
 			int top = pdfSteeringFiles.size() - 1;
 			throw SPXOutOfRangeException(top, index, "SPXSteeringFile::GetPDFSteeringFile: Index out of range");
