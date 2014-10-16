@@ -20,9 +20,9 @@ const std::string cn = "SPXGrid::";
 //Must define the static debug variable in the implementation
 bool SPXGrid::debug;
 
-TH1D *SPXGrid::GetReferenceHistogram(void) {
+TH1D *SPXGrid::GetReference(void) {
 	
-	std::string gridFile = pci.gridSteeringFile.GetGridFilepath();
+	std::string gridFile = pci->gridSteeringFile.GetGridFilepath();
 
 	if(!SPXFileUtilities::FileExists(gridFile)) {
 		throw SPXFileIOException(gridFile, "Unable to open grid file");

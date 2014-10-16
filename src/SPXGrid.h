@@ -27,20 +27,17 @@ class SPXGrid {
 public:
 	SPXGrid(void) {}
 
-	explicit SPXGrid(const SPXPlotConfigurationInstance &pci) {
+	explicit SPXGrid(SPXPlotConfigurationInstance *pci) {
 		this->pci = pci;
 	}
 
 	//@TODO Delete here: Could be a source of errors
 	~SPXGrid(void) {
 		if(grid) {
-			delete grid;
+			//delete grid;
 		}
 	}
-	
-	void Parse(void);
-	void Print(void);
-	
+
 	static bool GetDebug(void) {
 		return debug;
 	}
@@ -49,11 +46,16 @@ public:
 		debug = b;
 	}
 
-	TH1D *GetReferenceHistogram(void);
+	const std::string & GetGridName(void) const {
+		return pci->gridSteeringFile.GetGridFilepath();
+	}
+
+	//Returns the Grid Reference histogram
+	TH1D *GetReference(void);
 
 private:
 	static bool debug;					//Flag indicating debug mode
-	SPXPlotConfigurationInstance pci;	//Frame options instance
+	SPXPlotConfigurationInstance *pci;	//Plot configuration instance
 	appl::grid *grid;					//APPLGrid Grid
 };
 
