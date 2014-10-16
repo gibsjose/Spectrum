@@ -19,19 +19,24 @@
 
 #include "SPXGrid.h"
 #include "SPXPDF.h"
-#include "SPXSteeringFile.h"
-#include "SPXException.h"
+#include "SPXPDFSteeringFile.h"
+#include "SPXPlotConfiguration.h"
 
 class SPXCrossSection {
 
 public:
-	explicit SPXCrossSection(SPXSteeringFile *sf) {
-		this->steeringFile = sf;
+	explicit SPXCrossSection(SPXPDFSteeringFile *psf, SPXPlotConfigurationInstance *pci) {
+		this->psf = psf;
+		this->pci = pci;
 	}
 	
-	void Parse(void);
-	void Print(void);
-	void Draw(void);
+	~SPXCrossSection(void) {
+		//delete grid;
+		//delete pdf;
+	}
+
+	void Create(void);
+	//void ConfigureStyle();
 	
 	static bool GetDebug(void) {
 		return debug;
@@ -41,11 +46,35 @@ public:
 		debug = b;
 	}
 
+	TGraphAsymmErrors *GetPDFBandResults(void) const {
+		return pdf->h_PDFBand_results;
+	}
+
+	TGraphAsymmErrors *GetAlphaSResults(void) const {
+		return pdf->h_AlphaS_results;
+	}
+
+	SPXPDFSteeringFile *GetPDFSteeringFile(void) const {
+		return psf;
+	}
+
+	SPXPlotConfigurationInstance *GetPlotConfigurationInstance(void) const {
+		return pci;
+	}
+
+	/*
+	TGraphAsymmErrors *GetGridGraph(void) const {
+		return SPXGraphUtilities::HistogramToGraph(grid->GetReference())
+	}
+	*/
+
 private:
 	static bool debug;					//Flag indicating debug mode
-	SPXSteeringFile *steeringFile;		//Fully parsed steering file
-	SPXGrid grid;						//Grid
-	SPXPDF pdf;							//PDF
+	unsigned int plotID;				//Plot ID
+	SPXPDFSteeringFile *psf;			//Fully parsed PDF Steering File
+	SPXPlotConfigurationInstance *pci;	//Fully parsed Plot configuration instance (contains grid steering file)
+	SPXGrid *grid;						//Grid
+	SPXPDF *pdf;						//PDF
 };
 
 #endif
