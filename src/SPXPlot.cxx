@@ -26,7 +26,7 @@ bool SPXPlot::debug;
 void SPXPlot::Initialize(void) {
 	try {
 		InitializeData();
-		//InitializeCrossSections();
+		InitializeCrossSections();
 	} catch(const SPXException &e) {
 		throw;
 	}
@@ -57,11 +57,40 @@ void SPXPlot::Plot(void) {
 	}
 
 	//@TODO Where should these come from?
-	double xMin = 0;
-	double xMax = 3000;
-	double yMin = 0;
-	double yMax = 0.003;
+	double xMin; // = 0;
+	double xMax; // = 3000;
+	double yMin; // = 0;
+	double yMax; // = 0.003;
 
+	//Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
+	std::vector<TGraphAsymmErrors *> graphs;
+	{	
+		//Data graphs
+		for(int i = 0; i < data.size(); i++) {
+			graphs.push_back(data[i].GetStatisticalErrorGraph());
+			graphs.push_back(data[i].GetSystematicErrorGraph());
+		}
+
+		//Cross sections
+		for(int i = 0; i < crossSections.size(); i++) {
+			graphs.push_back(crossSections[i].GetPDFBandResults());
+		}
+
+		xMin = SPXGraphUtilities::GetXMin(graphs);
+		xMax = SPXGraphUtilities::GetXMax(graphs);
+		yMin = SPXGraphUtilities::GetYMin(graphs);
+		yMax = SPXGraphUtilities::GetYMax(graphs);
+
+		//Sanity check
+		if(xMin > xMax) {
+			throw SPXGraphException("xMin calculated to be larger than xMax");
+		}
+
+		if(yMin > yMax) {
+			throw SPXGraphException("yMin calculated to be larger than yMax");
+		}
+	}
+	
 	//Draw the frame (xmin, ymin, xmax, ymax)
 	canvas->DrawFrame(xMin, yMin, xMax, yMax);
 
@@ -79,19 +108,59 @@ void SPXPlot::Plot(void) {
 		data[i].GetStatisticalErrorGraph()->Draw("||");
 	}
 
-	//@TODO Draw other stuff...
+	//Draw cross sections
+	for(int i = 0; i < crossSections.size(); i++) {
+		crossSections[i].GetPDFBandResults()->Draw("P");
+	}
 
 	//Update canvas
 	canvas->Update();
 }
 
-//@TODO Which PDF corresponds with which grid/CrossSection?
+//@TODO Where do I normalize cross section???
+void SPXPlot::InitializeCrossSections(void) {
+	std::string mn = "InitializeCrossSections: ";
+
+	//Create cross sections for each configuration instance (and each PDF)
+	for(int i = 0; i < steeringFile->GetNumberOfConfigurationInstances(id); i++) {
+		for(int j = 0; j < steeringFile->GetNumberOfPDFSteeringFiles(); j++) {
+			SPXPDFSteeringFile &psf = steeringFile->GetPDFSteeringFile(j);
+			SPXPlotConfigurationInstance &pci = steeringFile->GetPlotConfigurationInstance(id, i);
+
+			SPXCrossSection crossSectionInstance = SPXCrossSection(&psf, &pci);
+
+			try {
+				crossSectionInstance.Create();
+				crossSections.push_back(crossSectionInstance);
+			} catch(const SPXException &e) {
+				throw;
+			}
+		}
+	}
+}
+
+void SPXPlot::NormalizeCrossSections(void) {
+	for(int i = 0; i < crossSections.size(); i++) {
+		SPXPDFSteeringFile *psf = crossSections[i].GetPDFSteeringFile();
+		SPXPlotConfigurationInstance *pci = crossSections[i].GetPlotConfigurationInstance();
+
+		//@TODO WHERE DO I GET THE CS SCALE FROM????
+		double xScale = pci->dataSteeringFile.GetXScale();
+		double yScale = pci->dataSteeringFile.GetYScale();
+		bool normalizedToTotalSigma = false; //@TODO Where is this for the PDF/Grid/CS?
+		bool dividedByBinWidth = pci->gridSteeringFile.IsDividedByBinWidth();
+
+		SPXGraphUtilities::Normalize(crossSections[i].GetPDFBandResults(), xScale, yScale, true, dividedByBinWidth);
+	}
+}
+
 void SPXPlot::InitializeData(void) {
 	std::string mn = "InitializeData: ";
 
 	//Create data objects for each configuration instance of this plot and add them to vector
 	for(int i = 0; i < steeringFile->GetNumberOfConfigurationInstances(id); i++) {
 		SPXPlotConfigurationInstance &pci = steeringFile->GetPlotConfigurationInstance(id, i);
+		
 		SPXData dataInstance = SPXData(pci);
 	
 		try {

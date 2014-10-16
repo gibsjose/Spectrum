@@ -44,7 +44,7 @@ public:
 
 		if(debug) {
 			SPXData::SetDebug(true);
-			//SPXCrossSection::SetDebug(true);
+			SPXCrossSection::SetDebug(true);
 		}
 	}
 
@@ -62,6 +62,7 @@ private:
 
 	void InitializeData(void);
 	void InitializeCrossSections(void);
+	void NormalizeCrossSections(void);
 };
 
 #endif
