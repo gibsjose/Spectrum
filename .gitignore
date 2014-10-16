@@ -1,6 +1,9 @@
 # Actual executable
 Spectrum
 
+#PDFSets folder
+PDFsets
+
 # Compiled Object files
 *.slo
 *.lo
