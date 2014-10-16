@@ -17,6 +17,7 @@
 #include <sstream>
 #include <vector>
 
+#include "SPXStringUtilities.h"
 #include "SPXROOT.h"
 #include "SPXException.h"
 
@@ -236,6 +237,44 @@ public:
 		return graph;
 	}
 
+	//Returns how to scale the SLAVE units to match the MASTER units
+	static double GetXUnitsScale(std::string master, std::string slave) {
+
+		//Possible X units are 'MeV, GeV, TeV'	TeV = 1000x GeV, GeV = 1000x MeV
+		std::vector<std::string> units = {"MEV", "GEV", "TEV"};
+
+		unsigned int masterIndex;
+		unsigned int slaveIndex;
+
+		//Get the index of the master string
+		try {
+			masterIndex = SPXStringUtilities::GetIndexOfStringInVector(units, SPXStringUtilities::ToUpper(master));
+		} catch(const SPXException &e) {
+			std::cerr << e.what() << std::endl;
+			
+			throw SPXGraphException("SPXGraphUtilities::GetXUnitsScale: Master units were invalid: " + master);
+		}
+
+		//Get the index of the slave string
+		try {
+			slaveIndex = SPXStringUtilities::GetIndexOfStringInVector(units, SPXStringUtilities::ToUpper(slave));
+		} catch(const SPXException &e) {
+			std::cerr << e.what() << std::endl;
+
+			throw SPXGraphException("SPXGraphUtilities::GetXUnitsScale: Slave units were invalid: " + slave);
+		}
+
+		return pow(10.0, ((double)(masterIndex - slaveIndex) * 3.0));
+	}
+
+	//Returns how to scale the SLAVE units to match the MASTER units
+	static void GetYUnitsScale(std::string master, std::string slave) {
+
+		//Possible Y units are 'pb', 'fb'		pb = 1000x fb
+		std::vector<std::string> yunits = {"FB", "PB"};
+	}
+
+	//Scales the TGraph based on the x and y scale
 	static void Scale(TGraphAsymmErrors *graph, double xScale, double yScale) {
 		double *x = graph->GetX();
 		double *y = graph->GetY();
@@ -251,6 +290,7 @@ public:
 		}
 	}
 
+	//Normalizes (and scales, if xScale, yScale != 1) the TGraph and handles bin width division
 	static void Normalize(TGraphAsymmErrors *graph, double xScale, double yScale, 
 		bool normalizedToTotalSigma, bool dividedByBinWidth) {
 
