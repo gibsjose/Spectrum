@@ -27,6 +27,7 @@ void SPXPlot::Initialize(void) {
 	try {
 		InitializeData();
 		InitializeCrossSections();
+		NormalizeCrossSections();
 	} catch(const SPXException &e) {
 		throw;
 	}
