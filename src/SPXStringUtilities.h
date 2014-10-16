@@ -18,11 +18,26 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <boost/algorithm/string.hpp>
 
 
 class SPXStringUtilities {
 
 public:
+
+	static std::string & ToUpper(const std::string & s) {
+		return boost::to_upper_copy(s);
+	}
+
+	static unsigned int GetIndexOfStringInVector(std::vector<std::string> v, std::string s) {
+		unsigned int index = std::find(v.begin(), v.end(), s) - v.begin();
+		if(index >= v.size()) {
+			throw SPXGeneralException("SPXStringUtilities::GetIndexOfStringInVector: String not found in vector: Index out of bounds");
+		} else {
+			return index;
+		}
+	}
+
 	static std::vector<std::string> ParseString(std::string rawData, char delimeter) {
 	  std::stringstream lineStream(rawData);
 	  std::string cell;
