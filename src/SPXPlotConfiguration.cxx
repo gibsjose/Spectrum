@@ -76,7 +76,9 @@ void SPXPlotConfiguration::Parse(const std::vector<std::vector<std::string> > & 
 		
 		oss << "\t\t\t\t\t And optionally for:" << std::endl;
 		oss << "\t Reference Line Styles" << std::endl;
-		oss << "\t Reference Line Colors";
+		oss << "\t Reference Line Colors" << std::endl;
+		oss << "\t X Scale" << std::endl;
+		oss << "\t Y Scale";
 		
 		throw SPXParseException(oss.str());
 	}
