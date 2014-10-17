@@ -54,10 +54,10 @@ sqrt_s = 7000.0													;[REQUIRED]	Sqrt(s) value
 legend_label = ATLAS 2011										;[REQUIRED] Legend label describing this data set
 x_label = m_{t, #bar{t}} [GeV]									;[REQUIRED] X Axis Label (supports LaTeX)
 y_label = 1/#sigma d#sigma/dm_{t,#bar{t}} [1/TeV]				;[REQUIRED] Y Axis Label (supports LaTeX)
-x_units = TeV													;[REQUIRED] X Axis Units (MeV, GeV or TeV) - [default = GeV]
+x_units = GeV													;[REQUIRED] X Axis Units (MeV, GeV or TeV) - [default = GeV]
 y_units = pb													;[REQUIRED] Y Axis Units (pb or fb) - [default = fb]
-; x_scale =														;[Optional] Artificially scale the data measurements
-; y_scale =														;[Optional] Artificially scale the data measurements
+y_bin_width_units = TeV											;[REQUIRED] Y Axis Bin Width Units (MeV, GeV or TeV): Whatever is in the Y-Axis label : [1 / ...] 
+
 frame_x_log = true												;[Optional] Plot the X Axis of the frame logarithmically
 frame_y_log = true												;[Optional] Plot the Y Axis of the frame logarithmically
 jet_algorithm_label = antikt									;[Optional] Jet Algorithm Label
