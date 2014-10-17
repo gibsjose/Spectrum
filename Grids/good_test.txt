@@ -44,8 +44,8 @@ name = ATLAS_epj_atlas_mtt
 ; Graphing Options
 ;==============================================================
 [GRAPH]
-x_units = TeV
-y_units = pb
+x_units = GeV
+y_units = fb
 divided_by_bin_width = true
 
 ;==============================================================
