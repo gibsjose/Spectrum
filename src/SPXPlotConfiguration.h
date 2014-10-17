@@ -47,6 +47,8 @@ struct SPXPlotConfigurationInstance {
 	int markerColor;
 	int refLineStyle;
 	int refLineColor;
+	double xScale;
+	double yScale;
 	static bool debug;
 	
 	static void SetDebug(bool b) {
