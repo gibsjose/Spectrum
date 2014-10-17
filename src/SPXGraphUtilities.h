@@ -244,15 +244,24 @@ public:
 	//Returns how to scale the SLAVE units to match the MASTER units
 	static double GetXUnitsScale(std::string master, std::string slave) {
 
+		bool debug = true;
+
+		if(debug) std::cout << "=======================================================" << std::endl;
+		if(debug) std::cout << "         GetXUnitsScale                                " << std::endl;
+		if(debug) std::cout << "=======================================================" << std::endl << std::endl;
+
+		if(debug) std::cout << "master = " << master << ", slave = " << slave << std::endl;
+
 		//Possible X units are 'MeV, GeV, TeV'	TeV = 1000x GeV, GeV = 1000x MeV
 		std::vector<std::string> units = {"MEV", "GEV", "TEV"};
 
-		unsigned int masterIndex;
-		unsigned int slaveIndex;
+		int masterIndex;
+		int slaveIndex;
 
 		//Get the index of the master string
 		try {
 			masterIndex = SPXStringUtilities::GetIndexOfStringInVector(units, SPXStringUtilities::ToUpper(master));
+			if(debug) std::cout << "Found masterIndex = " << masterIndex << std::endl;
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
 			
@@ -262,11 +271,14 @@ public:
 		//Get the index of the slave string
 		try {
 			slaveIndex = SPXStringUtilities::GetIndexOfStringInVector(units, SPXStringUtilities::ToUpper(slave));
+			if(debug) std::cout << "Found slaveIndex = " << slaveIndex << std::endl;
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
 
 			throw SPXGraphException("SPXGraphUtilities::GetXUnitsScale: Slave units (\"" + slave + "\") are invalid");
 		}
+
+		if(debug) std::cout << "Calculated scale = " << pow(10.0, ((double)(masterIndex - slaveIndex) * 3.0)) << std::endl;
 
 		return pow(10.0, ((double)(masterIndex - slaveIndex) * 3.0));
 	}
@@ -277,8 +289,8 @@ public:
 		//Possible Y units are 'pb', 'fb'		pb = 1000x fb
 		std::vector<std::string> units = {"FB", "PB"};
 
-		unsigned int masterIndex;
-		unsigned int slaveIndex;
+		int masterIndex;
+		int slaveIndex;
 
 		//Get the index of the master string
 		try {
