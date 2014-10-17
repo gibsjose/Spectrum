@@ -20,12 +20,13 @@
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 
+#include "SPXException.h"
 
 class SPXStringUtilities {
 
 public:
 
-	static std::string & ToUpper(const std::string & s) {
+	static std::string ToUpper(const std::string & s) {
 		return boost::to_upper_copy(s);
 	}
 
