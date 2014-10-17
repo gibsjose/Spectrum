@@ -43,7 +43,7 @@ bool SPXPlotConfigurationInstance::debug;
 //
 //Description is the (optional) frame description
 //And numberOfConfigurationInstances is the size of the vector of string vectors
-SPXPlotConfiguration::SPXPlotConfiguration(const std::vector<std::vector<std::string> > & options, const std::string description, unsigned int numberOfConfigurationInstances) {
+SPXPlotConfiguration::SPXPlotConfiguration(std::map<std::string, std::vector<std::string> > & options, const std::string & description, unsigned int numberOfConfigurationInstances) {
 	this->SetDefaults();
 	this->description = description;
 	this->numberOfConfigurationInstances = numberOfConfigurationInstances;
@@ -58,29 +58,29 @@ SPXPlotConfiguration::SPXPlotConfiguration(const std::vector<std::vector<std::st
 	}	
 }
 
-//Parse the vector of vector of strings into a vector of SPXPlotConfigurationInstances, convert
+//Parse the map of vectors of strings into a vector of SPXPlotConfigurationInstances, convert
 //	strings to integers where needed, and check each instance for errors (and IsEmpty) before
 //	adding it to the vector (call AddOptionsInstance(), which checks IsEmpty and IsValid)
-void SPXPlotConfiguration::Parse(const std::vector<std::vector<std::string> > & options) {
+void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> > &options) {
 	std::string mn = "Parse: ";
-	
-	//Return false if size of options vector is less than 4
-	if(options.size() < 4) {
-		std::ostringstream oss;
-		
-		oss << "Too few vectors in options vector: Only " << options.size() << " options: Options vector MUST contain vectors for:" << std::endl;
-		oss << "\t Data Steering Files" << std::endl;
-		oss << "\t Grid Steering Files" << std::endl;
-		oss << "\t Marker Styles" << std::endl;
-		oss << "\t Marker Colors" << std::endl;
-		
-		oss << "\t\t\t\t\t And optionally for:" << std::endl;
-		oss << "\t Reference Line Styles" << std::endl;
-		oss << "\t Reference Line Colors" << std::endl;
-		oss << "\t X Scale" << std::endl;
-		oss << "\t Y Scale";
-		
-		throw SPXParseException(oss.str());
+
+	//Make sure all required vectors exist
+	{
+		if(options.count("data_steering_files") == 0) {
+			throw SPXParseException("The options map MUST contain a vector for data_steering_files");
+		}
+
+		if(options.count("grid_steering_files") == 0) {
+			throw SPXParseException("The options map MUST contain a vector for grid_steering_files");
+		}
+
+		if(options.count("marker_style") == 0) {
+			throw SPXParseException("The options map MUST contain a vector for marker_style");
+		}
+
+		if(options.count("marker_color") == 0) {
+			throw SPXParseException("The options map MUST contain a vector for marker_color");
+		}
 	}
 	
 	if(debug) {
@@ -88,69 +88,99 @@ void SPXPlotConfiguration::Parse(const std::vector<std::vector<std::string> > & 
 		
 		std::vector<std::string> tmpVector;
 		
-		tmpVector = options[0];
+		tmpVector = options["data_steering_files"];
 		std::cout << "\tdata_steering_files = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		
-		tmpVector = options[1];
+		tmpVector = options["grid_steering_files"];
 		std::cout << "\tgrid_steering_files = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		
-		tmpVector = options[2];
+		tmpVector = options["marker_style"];
 		std::cout << "\tmarker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		
-		tmpVector = options[3];
+		tmpVector = options["marker_color"];
 		std::cout << "\tmarker_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
-		
-		if(options.size() >= 5) {
-			tmpVector = options[4];
+
+		if(options.count("ref_line_style")) {
+			tmpVector = options["ref_line_style"];
 			std::cout << "\tref_line_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
 			if(debug) std::cout << cn << mn << "No reference line style option specified" << std::endl;
 		}
 		
-		if(options.size() == 6) {
-			tmpVector = options[5];
+		if(options.count("ref_line_color")) {
+			tmpVector = options["ref_line_color"];
 			std::cout << "\tref_line_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
 			if(debug) std::cout << cn << mn << "No reference line color option specified" << std::endl;
+		}
+
+		if(options.count("x_scale")) {
+			tmpVector = options["x_scale"];
+			std::cout << "\tx_scale = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No X Scale option specified" << std::endl;
+		}
+
+		if(options.count("y_scale")) {
+			tmpVector = options["y_scale"];
+			std::cout << "\ty_scale = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No Y Scale option specified" << std::endl;
 		}
 	}
 
 	if(debug) std::cout << cn << mn << "numberOfConfigurationInstances = " << numberOfConfigurationInstances << std::endl;
 	
 	//Check options vector sizes against numberOfConfigurationInstances (should ALL be equal)
-	if(numberOfConfigurationInstances != options[0].size()) {
+	if(numberOfConfigurationInstances != options["data_steering_files"].size()) {
 		std::ostringstream oss;
-		oss << "Size of Data Steering File vector (" << options[0].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
+		oss << "Size of Data Steering File vector (" << options["data_steering_files"].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
 		throw SPXParseException(oss.str());
 	}
-	if(numberOfConfigurationInstances != options[1].size()) {
+	if(numberOfConfigurationInstances != options["grid_steering_files"].size()) {
 		std::ostringstream oss;
-		oss << "Size of Grid Steering File vector (" << options[1].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
+		oss << "Size of Grid Steering File vector (" << options["grid_steering_files"].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
 		throw SPXParseException(oss.str());
 	}
-	if(numberOfConfigurationInstances != options[2].size()) {
+	if(numberOfConfigurationInstances != options["marker_style"].size()) {
 		std::ostringstream oss;
-		oss << "Size of Marker Style vector (" << options[2].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
+		oss << "Size of Marker Style vector (" << options["marker_style"].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
 		throw SPXParseException(oss.str());
 	}
-	if(numberOfConfigurationInstances != options[3].size()) {
+	if(numberOfConfigurationInstances != options["marker_color"].size()) {
 		std::ostringstream oss;
-		oss << "Size of Marker Color vector (" << options[3].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
+		oss << "Size of Marker Color vector (" << options["marker_color"].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
 		throw SPXParseException(oss.str());
 	}
 	
-	if(options.size() >= 5) {
-		if(numberOfConfigurationInstances != options[4].size()) {
+	if(options.count("ref_line_style")) {
+		if(numberOfConfigurationInstances != options["ref_line_style"].size()) {
 			std::ostringstream oss;
-			oss << "Size of Reference Line Style vector (" << options[4].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
+			oss << "Size of Reference Line Style vector (" << options["ref_line_style"].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
 			throw SPXParseException(oss.str());
 		}
 	}
 	
-	if(options.size() == 6) {
-		if(numberOfConfigurationInstances != options[5].size()) {
+	if(options.count("ref_line_color")) {
+		if(numberOfConfigurationInstances != options["ref_line_color"].size()) {
 			std::ostringstream oss;
-			oss << "Size of Reference Line Color vector (" << options[5].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
+			oss << "Size of Reference Line Color vector (" << options["ref_line_color"].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
+			throw SPXParseException(oss.str());
+		}
+	}
+
+	if(options.count("x_scale")) {
+		if(numberOfConfigurationInstances != options["x_scale"].size()) {
+			std::ostringstream oss;
+			oss << "Size of X Scale vector (" << options["x_scale"].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
+			throw SPXParseException(oss.str());
+		}
+	}
+
+	if(options.count("y_scale")) {
+		if(numberOfConfigurationInstances != options["y_scale"].size()) {
+			std::ostringstream oss;
+			oss << "Size of Y Scale vector (" << options["y_scale"].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
 			throw SPXParseException(oss.str());
 		}
 	}
@@ -161,18 +191,30 @@ void SPXPlotConfiguration::Parse(const std::vector<std::vector<std::string> > & 
 		pci.SetDefaults();
 		
 		//Create objects and set the filename for the Data/Grid Steering Files
-		pci.dataSteeringFile = SPXDataSteeringFile(options[0][i]);
-		pci.gridSteeringFile = SPXGridSteeringFile(options[1][i]);
+		pci.dataSteeringFile = SPXDataSteeringFile(options["data_steering_files"][i]);
+		pci.gridSteeringFile = SPXGridSteeringFile(options["grid_steering_files"][i]);
 		
-		pci.markerStyle = atoi(options[2][i].c_str());
-		pci.markerColor = atoi(options[3][i].c_str());
+		pci.markerStyle = atoi(options["marker_style"][i].c_str());
+		pci.markerColor = atoi(options["marker_color"][i].c_str());
 		
-		if(options.size() >= 5) {
-			pci.refLineStyle = atoi(options[4][i].c_str());
+		if(options.count("ref_line_style")) {
+			pci.refLineStyle = atoi(options["ref_line_style"][i].c_str());
 		}
 		
-		if(options.size() == 6) {
-			pci.refLineColor = atoi(options[5][i].c_str());
+		if(options.count("ref_line_color")) {
+			pci.refLineColor = atoi(options["ref_line_color"][i].c_str());
+		}
+
+		if(options.count("x_scale")) {
+			pci.xScale = atoi(options["x_scale"][i].c_str());
+		} else {
+			pci.xScale = 1.0;
+		}
+
+		if(options.count("y_scale")) {
+			pci.yScale = atoi(options["y_scale"][i].c_str());
+		} else {
+			pci.yScale = 1.0;
 		}
 		
 		//Attempt to add the configuration instance
@@ -185,33 +227,6 @@ void SPXPlotConfiguration::Parse(const std::vector<std::vector<std::string> > & 
 		}
 	}
 }
-
-//Print displays the output of ToString to the console
-/*
-void SPXPlotConfiguration::Print(void) {
-	std::string mn = "Print: ";
-	//std::cout << this->ToString() << std::endl;
-}
-*/
-
-//ToString does the opposite of Parse
-/*
-const std::string & SPXPlotConfiguration::ToString(void) const {
-	std::string mn = "ToString: ";
-	
-	//Empty frame options
-	if(this->IsEmpty()) {
-		return "";
-	}
-	
-	//Check for validity
-	if(!this->IsValid()) {
-		return "INVALID_FRAME_OPTIONS";
-	}
-	
-	
-}
-*/
 
 //Determines whether the Frame Options object is empty or not
 bool SPXPlotConfiguration::IsEmpty(void) {

@@ -234,7 +234,7 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 	std::string desc;
 	std::string plotSection;
 	std::vector<std::string> tmpVector;
-	std::vector<std::vector<std::string> > configurations;
+	std::map<std::string, std::vector<std::string> > configurations;
 	int numberOfConfigurationInstances = 0;
 	
 	//Create plot configurations object for all plots found
@@ -273,10 +273,11 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 				tmpVector[j] = dataDirectory + "/" + tmpVector[j];
 				if(debug) std::cout << cn << mn << "Now: " << tmpVector[j] << std::endl;
 			}
-			
-			//Add to configurations vector
-			configurations.push_back(tmpVector);
-			if(debug) std::cout << cn << mn << "configurations[0] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations[0]) << std::endl;
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("data_steering_files", tmpVector));
+
+			if(debug) std::cout << cn << mn << "configurations[data_steering_files] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["data_steering_files"]) << std::endl;
 			
 			//Set the numberOfConfigurationInstances based on the number of dataSteeringFiles
 			//	NOTE: ALL configurations HENCEFORTH MUST HAVE THE SAME SIZE VECTOR, OR AN ERROR IS SIGNALED WHEN PARSING IN SPXPlotConfiguration::Parse
@@ -305,9 +306,9 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 				if(debug) std::cout << cn << mn << "Now: " << tmpVector[j] << std::endl;
 			}
 			
-			//Add to configurations vector
-			configurations.push_back(tmpVector);
-			if(debug) std::cout << cn << mn << "configurations[1] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations[1]) << std::endl;
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("grid_steering_files", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[grid_steering_files] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["grid_steering_files"]) << std::endl;
 		}
 		
 		//Get the marker_style
@@ -324,9 +325,9 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 				}
 			}
 			
-			//Add to configurations vector
-			configurations.push_back(tmpVector);
-			if(debug) std::cout << cn << mn << "configurations[2] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations[2]) << std::endl;
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("marker_style", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[marker_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["marker_style"]) << std::endl;
 		}
 		
 		//Get the marker_color
@@ -343,9 +344,9 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 				}
 			}
 			
-			//Add to configurations vector
-			configurations.push_back(tmpVector);
-			if(debug) std::cout << cn << mn << "configurations[3] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations[3]) << std::endl;
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("marker_color", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[marker_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["marker_color"]) << std::endl;
 		}
 		
 		//Get the ref_line_style
@@ -362,9 +363,9 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 				}
 			}
 			
-			//Add to configurations vector
-			configurations.push_back(tmpVector);
-			if(debug) std::cout << cn << mn << "configurations[4] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations[4]) << std::endl;
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("ref_line_style", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[ref_line_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["ref_line_style"]) << std::endl;
 		}
 		
 		//Get the ref_line_color
@@ -381,9 +382,9 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 				}
 			}
 			
-			//Add to configurations vector
-			configurations.push_back(tmpVector);
-			if(debug) std::cout << cn << mn << "configurations[5] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations[5]) << std::endl;
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("ref_line_color", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[ref_line_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["ref_line_color"]) << std::endl;
 		}
 
 		tmp = reader->Get(plotSection, "x_scale", "EMPTY");
@@ -399,8 +400,9 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 				}
 			}
 
-			configurations.push_back(tmpVector);
-			if(debug) std::cout << cn << mn << "configurations[6] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations[6]) << std::endl; 
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("x_scale", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[x_scale] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["x_scale"]) << std::endl; 
 		}
 
 		tmp = reader->Get(plotSection, "y_scale", "EMPTY");
@@ -416,8 +418,9 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 				}
 			}
 
-			configurations.push_back(tmpVector);
-			if(debug) std::cout << cn << mn << "configurations[7] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations[7]) << std::endl; 
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("y_scale", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[y_scale] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["y_scale"]) << std::endl; 
 		}
 		
 		//Get the description

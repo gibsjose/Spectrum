@@ -26,6 +26,7 @@
 #define SPXPLOTCONFIGURATION_H
 
 #include <iostream>
+#include <map>
 #include <vector>
 #include <string>
 #include <sstream>
@@ -155,7 +156,7 @@ public:
 		SetDefaults();
 	}
 	
-	SPXPlotConfiguration(const std::vector<std::vector<std::string> > & options, const std::string description, unsigned int numberOfConfigurationInstances);
+	SPXPlotConfiguration(std::map<std::string, std::vector<std::string> > & options, const std::string &description, unsigned int numberOfConfigurationInstances);
 	
 	//Add an configuration instance to the configurationInstances vector
 	void AddConfigurationInstance(const SPXPlotConfigurationInstance & instance) {
@@ -174,7 +175,7 @@ public:
 		if(debug) std::cout << focn << mn << "Successfully added a configuration instance to the instance vector" << std::endl;	
 	}
 
-	void Parse(const std::vector<std::vector<std::string> > & options);
+	void Parse(std::map<std::string, std::vector<std::string> > & options);
 	bool IsEmpty(void);
 	bool IsValid(void);
 	
