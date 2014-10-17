@@ -114,13 +114,13 @@ pdf_error_size = one_sigma										;[Optional]	PDF error size override: one_sig
 [PLOT_0]
 																
 data_steering_files = atlas2012_5fb_top_mtt_ljet.txt			;[REQUIRED] List of all data steering files
-
-												
 grid_steering_files = grid--TTbar_mttatlas.txt					;[REQUIRED] List of all grid steering files
 marker_style = 20												;[REQUIRED] Marker style list
 marker_color = 1												;[REQUIRED] Marker color list
 ; ref_line_style =												;[Optional] Reference line style list
 ; ref_line_color = 												;[Optional] Reference line color list
+; x_scale =														;[Optional] List: Artificially scale each data/grid pair's X-Axis
+; y_scale =														;[Optional] List: Artificially scale each data/grid pair's Y-Axis
 desc = atlas_mtt_5fb											;[Optional] Description of plot 
 
 ;==============================================================
@@ -129,6 +129,8 @@ desc = atlas_mtt_5fb											;[Optional] Description of plot
 [PLOT_1]
 data_steering_files = atlas2012_5fb_top_ptt_ljet.txt, some_other_data_file.txt
 grid_steering_files = grid--TTbar_ptatlas.txt, some_other_grid_file.txt
+; x_scale = 
+; y_scale = 
 marker_style = 20, 21
 marker_color = 1, 2
 ; ref_line_style =
@@ -141,6 +143,8 @@ desc = atlas_ptt_5fb
 [PLOT_2]
 data_steering_files = atlas2012_5fb_top_pttt_ljet.txt
 grid_steering_files = grid--TTbar_ptttatlas5fb.txt
+; x_scale = 
+; y_scale = 
 marker_style = 20
 marker_color = 1
 ; ref_line_style =

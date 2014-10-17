@@ -102,8 +102,10 @@ pdf_error_size = one_sigma
 ; Plot 0 Options
 ;==============================================================
 [PLOT_0]														
-data_steering_files = good_test.txt										
+data_steering_files = good_test.txt	
 grid_steering_files = good_test.txt
+x_scale = 1.0
+y_scale = 1.0
 marker_style = 20
 marker_color = 1
 ; ref_line_style = 
