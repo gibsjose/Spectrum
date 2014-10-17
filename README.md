@@ -1,4 +1,4 @@
-# Spectrum
+![Spectrum](artwork/SpectrumBanner_White.png)
 
 ## NOTE
 This version of Spectrum is a **severely** slimmed-down version, as compared with the previous [MyAnalysis](http://www.github.com/gibsjose/MyAnalysis) software. This is due to upgrades being made on the front-end of the software, as well as a re-design of the program structure. Spectrum will grow as more parts of MyAnalysis are re-designed, cleaned up, and ported over.
