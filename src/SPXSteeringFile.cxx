@@ -185,7 +185,9 @@ void SPXSteeringFile::Print(void) {
 			std::cout << "\t\t\t Marker Style " << j << ": " << tmp.markerStyle << std::endl;
 			std::cout << "\t\t\t Marker Color " << j << ": " << tmp.markerColor << std::endl;
 			std::cout << "\t\t\t Reference Line Style " << j << ": " << tmp.refLineStyle << std::endl;
-			std::cout << "\t\t\t Reference Line Color " << j << ": " << tmp.refLineColor << std::endl << std::endl;
+			std::cout << "\t\t\t Reference Line Color " << j << ": " << tmp.refLineColor << std::endl;
+			std::cout << "\t\t\t X Scale " << j << ": " << tmp.xScale << std::endl;
+			std::cout << "\t\t\t Y Scale " << j << ": " << tmp.yScale << std::endl << std::endl;
 		}
 	}			
 }
@@ -382,6 +384,40 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 			//Add to configurations vector
 			configurations.push_back(tmpVector);
 			if(debug) std::cout << cn << mn << "configurations[5] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations[5]) << std::endl;
+		}
+
+		tmp = reader->Get(plotSection, "x_scale", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+			if(debug) std::cout << cn << mn << "No plot option for x_scale was specified" << std::endl;
+		} else {
+			//Parse into vector
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				std::cout << cn << mn << "x_scale configuration string: " << tmp << " parsed into:" << std::endl;
+				for(int j = 0; j < tmpVector.size(); j++) {
+					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+				}
+			}
+
+			configurations.push_back(tmpVector);
+			if(debug) std::cout << cn << mn << "configurations[6] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations[6]) << std::endl; 
+		}
+
+		tmp = reader->Get(plotSection, "y_scale", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+			if(debug) std::cout << cn << mn << "No plot option for y_scale was specified" << std::endl;
+		} else {
+			//Parse into vector
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				std::cout << cn << mn << "y_scale configuration string: " << tmp << " parsed into:" << std::endl;
+				for(int j = 0; j < tmpVector.size(); j++) {
+					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+				}
+			}
+
+			configurations.push_back(tmpVector);
+			if(debug) std::cout << cn << mn << "configurations[7] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations[7]) << std::endl; 
 		}
 		
 		//Get the description
