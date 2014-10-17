@@ -141,17 +141,79 @@ void SPXPlot::InitializeCrossSections(void) {
 }
 
 void SPXPlot::NormalizeCrossSections(void) {
+	std::string mn = "NormalizeCrossSections: ";
+
 	for(int i = 0; i < crossSections.size(); i++) {
-		SPXPDFSteeringFile *psf = crossSections[i].GetPDFSteeringFile();
-		SPXPlotConfigurationInstance *pci = crossSections[i].GetPlotConfigurationInstance();
+		try {
+			if(debug) std::cout << cn << mn << "Normalizing Cross Section at index " << i << std::endl;
 
-		//@TODO WHERE DO I GET THE CS SCALE FROM????
-		double xScale = pci->dataSteeringFile.GetXScale();
-		double yScale = pci->dataSteeringFile.GetYScale();
-		bool normalizedToTotalSigma = false; //@TODO Where is this for the PDF/Grid/CS?
-		bool dividedByBinWidth = pci->gridSteeringFile.IsDividedByBinWidth();
+			SPXPDFSteeringFile *psf = crossSections[i].GetPDFSteeringFile();
+			SPXPlotConfigurationInstance *pci = crossSections[i].GetPlotConfigurationInstance();
 
-		SPXGraphUtilities::Normalize(crossSections[i].GetPDFBandResults(), xScale, yScale, true, dividedByBinWidth);
+			std::string masterXUnits = pci->dataSteeringFile.GetXUnits();
+			std::string slaveXUnits = pci->gridSteeringFile.GetXUnits();
+			std::string masterYUnits = pci->dataSteeringFile.GetYUnits();
+			std::string slaveYUnits = pci->gridSteeringFile.GetYUnits();
+
+			//Determine the scale from the unit difference between data and grid
+			double xScale = SPXGraphUtilities::GetXUnitsScale(masterXUnits, slaveXUnits);
+			double yScale = SPXGraphUtilities::GetYUnitsScale(masterYUnits, slaveYUnits);
+
+			if(debug) {
+				std::cout << cn << mn << "Scales determined from data/grid unit differential: " << std::endl;
+				std::cout << "\t Data X Units: " << masterXUnits << std::endl;
+				std::cout << "\t Grid X Units: " << slaveXUnits << std::endl << std::endl;
+				std::cout << "\t Data Y Units: " << masterYUnits << std::endl;
+				std::cout << "\t Grid Y Units: " << slaveYUnits << std::endl << std::endl;
+				std::cout << "\t ---> X Unit Scale Determined: " << xScale << std::endl;
+				std::cout << "\t ---> Y Unit Scale Determined: " << yScale << std::endl << std::endl;
+			}
+
+			//Also scale by the artificial scale from the plot configuration instance
+			xScale *= pci->xScale;
+			yScale *= pci->yScale;
+
+			SPXGraphUtilities::Scale(crossSections[i].GetPDFBandResults(), xScale, yScale);
+
+			if(debug) {
+				std::cout << cn << mn << "Additional artificial scale for Cross Section: " << std::endl;
+				std::cout << "\t X Scale: " << pci->xScale << std::endl;
+				std::cout << "\t Y Scale: " << pci->yScale << std::endl << std::endl;
+			}
+			
+
+			//Normalized to total sigma from the DATA steering file
+			bool normalizeToTotalSigma = pci->dataSteeringFile.IsNormalizedToTotalSigma();
+			bool dataDividedByBinWidth = pci->dataSteeringFile.IsDividedByBinWidth();
+			bool gridDividedByBinWidth = pci->gridSteeringFile.IsDividedByBinWidth();
+			
+			bool divideByBinWidth = false;
+
+			if(dataDividedByBinWidth && !gridDividedByBinWidth) {
+				if(debug) std::cout << cn << mn << "Data IS divided by bin width but the grid IS NOT. Will call Normalize with divideByBinWidth = true" << std::endl;
+				divideByBinWidth = true;
+			}
+
+			double yBinWidthScale = 1.0;
+
+			//If the data is divided by the bin width, then set the yBinWidthScale, which is the scaling of the Data's Y Bin Width Units to the Data's X Units
+			if(dataDividedByBinWidth) {
+				yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), pci->dataSteeringFile.GetYBinWidthUnits());
+			}
+
+			if(debug) std::cout << cn << mn << "Y Bin Width Scale = " << yBinWidthScale << std::endl;
+			if(debug) std::cout << cn << mn << "Normalize to Total Sigma is " << (normalizeToTotalSigma ? "ON" : "OFF") << std::endl;
+			if(debug) std::cout << cn << mn << "Divide by Bin Width is " << (divideByBinWidth ? "ON" : "OFF") << std::endl;
+
+			//Normalize the cross section
+			SPXGraphUtilities::Normalize(crossSections[i].GetPDFBandResults(), yBinWidthScale, normalizeToTotalSigma, divideByBinWidth);
+			
+			if(debug) std::cout << cn << mn << "Sucessfully normalized Cross Section " << i << std::endl;
+		} catch(const SPXException &e) {
+			std::cerr << e.what() << std::endl;
+			throw SPXGraphException("SPXPlot::NormalizeCrossSections: Unable to obtain X/Y Scale based on Data/Grid Units");
+		}
+		
 	}
 }
 
@@ -187,21 +249,17 @@ void SPXPlot::InitializeData(void) {
 		SPXPlotConfigurationInstance &pci = steeringFile->GetPlotConfigurationInstance(id, i);
 
 		//Normalize the graphs based on the settings
-		double xScale = pci.dataSteeringFile.GetXScale();
-		double yScale = pci.dataSteeringFile.GetYScale();
-		bool normalizedToTotalSigma = pci.dataSteeringFile.IsNormalizedToTotalSigma();
-		bool dividedByBinWidth = pci.dataSteeringFile.IsDividedByBinWidth();
+		double xScale = pci.xScale;
+		double yScale = pci.yScale;
 
 		if(debug) {
-			std::cout << cn << mn << "Normalizing with: " << std::endl;
+			std::cout << cn << mn << "Scaling Data with: " << std::endl;
 			std::cout << "\t X Scale = " << xScale << std::endl;
 			std::cout << "\t Y Scale = " << yScale << std::endl;
-			std::cout << "\t Normalized To Total Sigma? " << (normalizedToTotalSigma ? "YES" : "NO") << std::endl;
-			std::cout << "\t Divided By Bin Width? " << (dividedByBinWidth ? "YES" : "NO") << std::endl;
 		}
 
-		SPXGraphUtilities::Normalize(statGraph, xScale, yScale, normalizedToTotalSigma, dividedByBinWidth);
-		SPXGraphUtilities::Normalize(systGraph, xScale, yScale, normalizedToTotalSigma, dividedByBinWidth);
+		SPXGraphUtilities::Scale(statGraph, xScale, yScale);
+		SPXGraphUtilities::Scale(systGraph, xScale, yScale);
 
 		//Modify Data Graph styles
 		statGraph->SetMarkerStyle(pci.markerStyle);
@@ -210,7 +268,6 @@ void SPXPlot::InitializeData(void) {
 		statGraph->SetMarkerColor(pci.markerColor);
 		systGraph->SetMarkerColor(pci.markerColor);
 
-		//@TODO Why is this not in the data steering file? Why is one larger?
 		statGraph->SetMarkerSize(1.0);
 		systGraph->SetMarkerSize(1.0);
 
