@@ -237,6 +237,10 @@ public:
 		return graph;
 	}
 
+	static double GetYBinWidthUnitsScale(std::string master, std::string slave) {
+		return GetXUnitsScale(master, slave);
+	}
+
 	//Returns how to scale the SLAVE units to match the MASTER units
 	static double GetXUnitsScale(std::string master, std::string slave) {
 
@@ -252,7 +256,7 @@ public:
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
 			
-			throw SPXGraphException("SPXGraphUtilities::GetXUnitsScale: Master units were invalid: " + master);
+			throw SPXGraphException("SPXGraphUtilities::GetXUnitsScale: Master units (\"" + master + "\") are invalid");
 		}
 
 		//Get the index of the slave string
@@ -261,17 +265,40 @@ public:
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
 
-			throw SPXGraphException("SPXGraphUtilities::GetXUnitsScale: Slave units were invalid: " + slave);
+			throw SPXGraphException("SPXGraphUtilities::GetXUnitsScale: Slave units (\"" + slave + "\") are invalid");
 		}
 
 		return pow(10.0, ((double)(masterIndex - slaveIndex) * 3.0));
 	}
 
 	//Returns how to scale the SLAVE units to match the MASTER units
-	static void GetYUnitsScale(std::string master, std::string slave) {
+	static double GetYUnitsScale(std::string master, std::string slave) {
 
 		//Possible Y units are 'pb', 'fb'		pb = 1000x fb
-		std::vector<std::string> yunits = {"FB", "PB"};
+		std::vector<std::string> units = {"FB", "PB"};
+
+		unsigned int masterIndex;
+		unsigned int slaveIndex;
+
+		//Get the index of the master string
+		try {
+			masterIndex = SPXStringUtilities::GetIndexOfStringInVector(units, SPXStringUtilities::ToUpper(master));
+		} catch(const SPXException &e) {
+			std::cerr << e.what() << std::endl;
+
+			throw SPXGraphException("SPXGraphUtilities::GetXUnitsScale: Master units (\"" + master + "\") are invalid");
+		}
+
+		//Get the index of the slave string
+		try {
+			slaveIndex = SPXStringUtilities::GetIndexOfStringInVector(units, SPXStringUtilities::ToUpper(slave));
+		} catch(const SPXException &e) {
+			std::cerr << e.what() << std::endl;
+
+			throw SPXGraphException("SPXGraphUtilities::GetXUnitsScale: Slave units (\"" + slave + "\") are invalid");
+		}
+
+		return pow(10.0, ((double)(masterIndex - slaveIndex) * 3.0));
 	}
 
 	//Scales the TGraph based on the x and y scale
@@ -290,16 +317,17 @@ public:
 		}
 	}
 
-	//Normalizes (and scales, if xScale, yScale != 1) the TGraph and handles bin width division
-	static void Normalize(TGraphAsymmErrors *graph, double xScale, double yScale, 
-		bool normalizedToTotalSigma, bool dividedByBinWidth) {
+	//Normalizes the TGraph and handles bin width division
+	static void Normalize(TGraphAsymmErrors *graph, double yBinWidthScale, bool normalizeToTotalSigma, bool divideByBinWidth) {
 
 		//TEMPORARY DEBUG
 		bool debug = true;
 
 		//NOTE:
-		//normalizedToTotalSigma indicates that the graph is ALREADY normalized to the total sigma value
-		//dividedByBinWidth indicates that the graph is ALREADY divided by the bin width
+		//Y Bin Width Scale is the scale needed to convert the Y Bin Width Units to the X Units, i.e. If Y Units are [1/TeV] and X Units
+		//	are in GeV, yBinWidthScale would = 1e-3
+		//normalizeToTotalSigma indicates that the graph should be normalized to the total sigma
+		//divideByBinWidth indicates that the graph should be divided by the bin width
 
 		double totalSigma = 0;
 
@@ -316,37 +344,39 @@ public:
 
 		//Compute total sigma
 		for(int i = 0; i < numberOfBins; i++) {
-			sigma = pY[i] * yScale;
+			sigma = pY[i];
 			double binWidth = pEXlow[i] + pEXhigh[i];
 
-			if(debug) std::cout << "sigma = " << sigma << " : pY[i] * yScale = " << pY[i] << " * " << yScale << std::endl;
+			if(debug) std::cout << "Bin[" << i << "]: sigma = " << sigma << std::endl;
 
 			if(debug) std::cout << "Bin[" << i << "]: binWidth = " << binWidth << std::endl;
 			
-			if(dividedByBinWidth) {
+			if(divideByBinWidth) {
 				totalSigma += sigma * binWidth;
 			} else {
 				totalSigma += sigma;
 			}
 
-			if(debug) std::cout << "Bin[" << i << "]: totalSigma = " << totalSigma << std::endl;
 			//@TODO Check normalization and use of double += sigma here
 			//totalSigma += sigma;
+
+			if(debug) std::cout << "Bin[" << i << "]: totalSigma = " << totalSigma << std::endl;
 		}
 
-		double scale = yScale;
+		double scale = 1.0;
+
+		if(normalizeToTotalSigma) {
+			scale = 1.0 / totalSigma;
+		}
 
 		//Normalize
 		for(int i = 0; i < numberOfBins; i++) {
-			if(normalizedToTotalSigma) {
-				scale = yScale / totalSigma;
-			} //@TODO move scale = yScale to an else? What about the second time around the for loop???
 			
 			if(debug) std::cout << "Bin[" << i << "]: scale = "  << scale << std::endl;
 
 			double binWidth = 1;
 
-			if(dividedByBinWidth) {
+			if(divideByBinWidth) {
 				binWidth = pEXlow[i] + pEXhigh[i];
 			}
 
@@ -356,8 +386,8 @@ public:
 			double eyl = pEYlow[i] * scale * binWidth;
 			double eyh = pEYhigh[i] * scale * binWidth;
 
-			if(dividedByBinWidth) {
-				binWidth *= xScale;
+			if(divideByBinWidth) {
+				binWidth *= yBinWidthScale;
 				eyl /= binWidth;
 				eyh /= binWidth;
 				y /= binWidth;
