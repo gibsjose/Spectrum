@@ -187,7 +187,8 @@ void SPXPlot::NormalizeCrossSections(void) {
 			bool dataDividedByBinWidth = pci->dataSteeringFile.IsDividedByBinWidth();
 			bool gridDividedByBinWidth = pci->gridSteeringFile.IsDividedByBinWidth();
 			
-			bool divideByBinWidth = false;
+			//@TODO Change back to being initialized as false
+			bool divideByBinWidth = true;
 
 			if(dataDividedByBinWidth && !gridDividedByBinWidth) {
 				if(debug) std::cout << cn << mn << "Data IS divided by bin width but the grid IS NOT. Will call Normalize with divideByBinWidth = true" << std::endl;
