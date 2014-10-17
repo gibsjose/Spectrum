@@ -49,8 +49,9 @@ private:
 	std::string yLabel;				//Y-Axis label
 	std::string xUnits;				//X-Axis units
 	std::string yUnits;				//Y-Axis units
-	double xScale;					//X-Axis scale
-	double yScale;					//Y-Axis scale
+	std::string yBinWidthUnits;		//Y-Axis Bin Width Units used when normalizing, if DividedByBinWidth is true
+									// NOTE: For some data the units of the data is different for the y-axis and the x-axis
+									//			EG: Y-Axis is in [1/TeV], but X-Axis is GeV...
 	bool frameXLog;					//Plot the X-axis as logarithmic @TODO Change name (x_log): what do these have to do with frame?
 	bool frameYLog;					//Plot the Y-Axis as logarithmic @TODO Should these be in the Steering File instead? What if one data file is log and another isn't?
 	//double frameXMin;				//X-Axis minimum frame @TODO What does it have to do with frame?
@@ -117,13 +118,9 @@ public:
 	const std::string & GetYUnits(void) const {
 		return yUnits;
 	}
-	
-	double GetXScale(void) const {
-		return xScale;
-	}
-	
-	double GetYScale(void) const {
-		return yScale;
+
+	const std::string & GetYBinWidthUnits(void) const {
+		return yBinWidthUnits;
 	}
 	
 	/*

@@ -59,11 +59,8 @@ void SPXDataSteeringFile::SetDefaults(void) {
 	yUnits.clear();
 	if(debug) std::cout << cn << mn << "yUnits set to default: \" \"" << std::endl;
 
-	xScale = 1.0;
-	if(debug) std::cout << cn << mn << "xScale set to default: \"1.0\"" << std::endl;
-	
-	yScale = 1.0;
-	if(debug) std::cout << cn << mn << "yScale set to default: \"1.0\"" << std::endl;
+	yBinWidthUnits.clear();
+	if(debug) std::cout << cn << mn << "yBinWidthUnits set to default: \" \"" << std::endl;
 
 	frameXLog = false;
 	if(debug) std::cout << cn << mn << "frameXLog set to default: \"false\"" << std::endl;
@@ -117,8 +114,7 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t\t Y Label: " << yLabel << std::endl;
 	std::cout << "\t\t X Units: " << xUnits << std::endl;
 	std::cout << "\t\t Y Units: " << yUnits << std::endl;
-	std::cout << "\t\t X Scale: " << xScale << std::endl;
-	std::cout << "\t\t Y Scale: " << yScale << std::endl;
+	std::cout << "\t\t Y Bin Width Units: " << yBinWidthUnits << std::endl;
 	std::cout << "\t\t Logarithmic X-Axis: " << (frameXLog ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Logarithmic Y-Axis: " << (frameYLog ? "ON" : "OFF") << std::endl;
 	//std::cout << "\t\t Frame X Min: " << frameXMin << std::endl;
@@ -236,9 +232,15 @@ void SPXDataSteeringFile::Parse(void) {
 		if(debug) std::cout << cn << mn << "Successfully read Y Units: " << yUnits << std::endl;
 	}
 
-	xScale = reader->GetReal("GRAPH", "x_scale", xScale);
-	yScale = reader->GetReal("GRAPH", "y_scale", yScale);
+	tmp = reader->Get("GRAPH", "y_bin_width_units", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+		throw SPXINIParseException("GRAPH", "y_bin_width_units", "You MUST specify the y_bin_width_units");
+	} else {
+		yBinWidthUnits = tmp;
+		if(debug) std::cout << cn << mn << "Successfully read Y Units: " << yBinWidthUnits << std::endl;
+	}
 
+	//@TODO These should be moved to the plot configuration sections... one per plot config
 	frameXLog = reader->GetBoolean("GRAPH", "frame_x_log", frameXLog);
 	frameYLog = reader->GetBoolean("GRAPH", "frame_y_log", frameYLog);
 
