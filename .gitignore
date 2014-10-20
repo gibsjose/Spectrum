@@ -8,7 +8,7 @@ PDFsets
 *.png
 
 # Temporary Emacs files
-*.~
+*~
 
 # Compiled Object files
 *.slo
