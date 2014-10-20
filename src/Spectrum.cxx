@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	std::string file;
-	
+
 	std::cout << "==================================" << std::endl;
 	std::cout << "      	   Spectrum		        " << std::endl;
 	std::cout << "==================================" << std::endl <<std::endl;
@@ -69,6 +69,3 @@ int main(int argc, char *argv[]) {
 
 	return 0;
 }
-
-
-
