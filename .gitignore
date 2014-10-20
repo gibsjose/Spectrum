@@ -1,8 +1,14 @@
 # Actual executable
 Spectrum
 
-#PDFSets folder
+# PDFSets folder
 PDFsets
+
+# Plots output (PNG) folder
+./plots
+
+# Temporary Emacs files
+*.~
 
 # Compiled Object files
 *.slo
