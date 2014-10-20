@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
     	exit(-1);
     }
 
-	spectrum->Run(kTRUE);
+	//spectrum->Run(kTRUE);
 
 	return 0;
 }
