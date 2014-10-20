@@ -15,6 +15,9 @@
 #include "SPXAnalysis.h"
 #include "SPXException.h"
 
+//Determines whether or not to draw the actual ROOT application canvases
+#define DRAW_APPLICATION 	false
+
 int main(int argc, char *argv[]) {
 
 	if((argc - 1) < 1) {
@@ -28,8 +31,10 @@ int main(int argc, char *argv[]) {
 	std::cout << "      	   Spectrum		        " << std::endl;
 	std::cout << "==================================" << std::endl <<std::endl;
 
+#if DRAW_APPLICATION
 	TApplication *spectrum = new TApplication("Spectrum",0,0);
   	spectrum->SetReturnFromRun(true);
+#endif
 
 	file = std::string(argv[1]);
 
@@ -58,7 +63,9 @@ int main(int argc, char *argv[]) {
     	exit(-1);
     }
 
-	//spectrum->Run(kTRUE);
+#if DRAW_APPLICATION
+	spectrum->Run(kTRUE);
+#endif
 
 	return 0;
 }

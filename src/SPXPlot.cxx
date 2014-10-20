@@ -91,7 +91,7 @@ void SPXPlot::Plot(void) {
 			throw SPXGraphException("yMin calculated to be larger than yMax");
 		}
 	}
-	
+
 	//Draw the frame (xmin, ymin, xmax, ymax)
 	canvas->DrawFrame(xMin, yMin, xMax, yMax);
 
@@ -116,6 +116,20 @@ void SPXPlot::Plot(void) {
 
 	//Update canvas
 	canvas->Update();
+
+	//Create PNG Filename
+	std::string pngFilename;
+
+	//@TODO Spaces -> Underscores and handle duplicates
+	//@TODO Should probably write a function: string CreatePNGFilename(string output dir, string desc);
+	//pngFilename = PlotOutputDirectory + "/" + pc.GetDescription() + ".png";	//@TODO Implement passing plot output directory as arugment and defaulting to ./plots
+
+	pngFilename = "./plots/" + pc.GetDescription() + "_plot_" + (ULong_t)id + ".png";
+
+	if(debug) std::cout << cn << mn << "Creating Plot PNG with name = " << pngFilename << std::endl;
+
+	//Draw PNG File
+	canvas->Print(pngFilename.c_str());
 }
 
 //@TODO Where do I normalize cross section???
