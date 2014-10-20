@@ -4,17 +4,13 @@
 ### generic setup to be run at the start of EVERY LXPLUS session
 
 #Get the first letter of the user's name
-#user=$USER
-#U=${user:0:1}
-
-
-#TMP
-USER=jgibson
-U=j
+user=$USER
+U=${user:0:1}
 
 #
 #Base directory for installation of APPLgrid, LHAPDF, Hoppet, FastJet, etc.
-export BASEDIR=/afs/cern.ch/work/$U/$USER/usr/
+#export BASEDIR=/afs/cern.ch/work/$U/$USER/usr/
+export BASEDIR=/afs/cern.ch/work/j/jgibson/usr
 
 #
 #
