@@ -5,7 +5,7 @@ Spectrum
 PDFsets
 
 # Plots output (PNG) folder
-./plots
+*.png
 
 # Temporary Emacs files
 *.~
