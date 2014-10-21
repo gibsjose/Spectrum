@@ -29,7 +29,7 @@ public:
 		this->psf = psf;
 		this->pci = pci;
 	}
-	
+
 	~SPXCrossSection(void) {
 		//delete grid;
 		//delete pdf;
@@ -37,29 +37,37 @@ public:
 
 	void Create(void);
 	//void ConfigureStyle();
-	
+
 	static bool GetDebug(void) {
 		return debug;
 	}
-	
+
 	static void SetDebug(bool b) {
 		debug = b;
 	}
 
-	TGraphAsymmErrors *GetPDFBandResults(void) const {
+	TGraphAsymmErrors *GetPDFBandResults(void) {
 		return pdf->h_PDFBand_results;
 	}
 
-	TGraphAsymmErrors *GetAlphaSResults(void) const {
+	TGraphAsymmErrors *GetAlphaSResults(void) {
 		return pdf->h_AlphaS_results;
 	}
 
-	SPXPDFSteeringFile *GetPDFSteeringFile(void) const {
+	SPXPDFSteeringFile *GetPDFSteeringFile(void) {
 		return psf;
 	}
 
-	SPXPlotConfigurationInstance *GetPlotConfigurationInstance(void) const {
+	SPXPlotConfigurationInstance *GetPlotConfigurationInstance(void) {
 		return pci;
+	}
+
+	SPXGrid *GetGrid(void) {
+		return grid;
+	}
+
+	SPXPDF *GetPDF(void) {
+		return pdf;
 	}
 
 	/*
