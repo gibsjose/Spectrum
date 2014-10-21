@@ -1,6 +1,6 @@
 ;==============================================================
 ;
-; Description:		
+; Description:
 ;	Example Steering File
 ;
 ; Authors:
@@ -17,7 +17,7 @@
 ;==============================================================
 
 ;--------------------------------------------------------------
-; NOTE: 
+; NOTE:
 ;
 ; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
 ;
@@ -75,7 +75,7 @@ pdf_steering_files = CT10.txt, HERAPDF15NLO.txt					;[REQUIRED] Required ONLY if
 
 ;--------------------------------------------------------------
 ; NOTE:
-;	
+;
 ; The following options will OVERRIDE the corresponding
 ; options in ALL the chosen PDF Steering Files above
 ;--------------------------------------------------------------
@@ -107,21 +107,23 @@ pdf_error_size = one_sigma										;[Optional]	PDF error size override: one_sig
 ;
 ; Each plot is plotted on it's own ROOT canvas
 ;--------------------------------------------------------------
-								
+
 ;==============================================================
 ; Plot 0 Options
 ;==============================================================
 [PLOT_0]
-																
+
 data_steering_files = atlas2012_5fb_top_mtt_ljet.txt			;[REQUIRED] List of all data steering files
 grid_steering_files = grid--TTbar_mttatlas.txt					;[REQUIRED] List of all grid steering files
-marker_style = 20												;[REQUIRED] Marker style list
-marker_color = 1												;[REQUIRED] Marker color list
-; ref_line_style =												;[Optional] Reference line style list
-; ref_line_color = 												;[Optional] Reference line color list
+marker_style = 20												;[REQUIRED] List of marker styles
+marker_color = 1												;[REQUIRED] List of marker colors
+; ref_line_style =												;[Optional] List of reference line styles
+; ref_line_color = 												;[Optional] List of reference line colors
 ; x_scale =														;[Optional] List: Artificially scale each data/grid pair's X-Axis
 ; y_scale =														;[Optional] List: Artificially scale each data/grid pair's Y-Axis
-desc = atlas_mtt_5fb											;[Optional] Description of plot 
+x_log = true													;[Optional] Plot the X Axis logarithmically
+y_log = true													;[Optional] Plot the Y Axis logarithmically
+desc = atlas_mtt_5fb											;[Optional] Description of plot
 
 ;==============================================================
 ; Plot 1 Options
@@ -129,12 +131,14 @@ desc = atlas_mtt_5fb											;[Optional] Description of plot
 [PLOT_1]
 data_steering_files = atlas2012_5fb_top_ptt_ljet.txt, some_other_data_file.txt
 grid_steering_files = grid--TTbar_ptatlas.txt, some_other_grid_file.txt
-; x_scale = 
-; y_scale = 
+; x_scale =
+; y_scale =
 marker_style = 20, 21
 marker_color = 1, 2
 ; ref_line_style =
-; ref_line_color = 
+; ref_line_color =
+x_log = false
+y_log = false
 desc = atlas_ptt_5fb
 
 ;==============================================================
@@ -143,11 +147,12 @@ desc = atlas_ptt_5fb
 [PLOT_2]
 data_steering_files = atlas2012_5fb_top_pttt_ljet.txt
 grid_steering_files = grid--TTbar_ptttatlas5fb.txt
-; x_scale = 
-; y_scale = 
+; x_scale =
+; y_scale =
 marker_style = 20
 marker_color = 1
 ; ref_line_style =
-; ref_line_color = 
+; ref_line_color =
+x_log = false
+y_log = false
 desc = atlas_mtt_5fb
-

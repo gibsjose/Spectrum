@@ -1,9 +1,9 @@
 ;==============================================================
 ;
-; Link:			
+; Link:
 ;	<link_here>
 ;
-; Description:		
+; Description:
 ;	Example of a valid Data Steering File
 ;
 ; Authors:
@@ -20,7 +20,7 @@
 ;==============================================================
 
 ;--------------------------------------------------------------
-; NOTE: 
+; NOTE:
 ;
 ; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
 ;
@@ -57,8 +57,6 @@ y_label = 1/#sigma d#sigma/dm_{t,#bar{t}} [1/TeV]
 x_units = GeV
 y_units = pb
 y_bin_width_units = TeV
-frame_x_log = true
-frame_y_log = true
 jet_algorithm_label = antikt
 jet_algorithm_number = 4
 

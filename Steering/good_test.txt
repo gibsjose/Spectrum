@@ -1,6 +1,6 @@
 ;==============================================================
 ;
-; Description:		
+; Description:
 ;	Example of a valid Steering File
 ;
 ; Authors:
@@ -17,7 +17,7 @@
 ;==============================================================
 
 ;--------------------------------------------------------------
-; NOTE: 
+; NOTE:
 ;
 ; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
 ;
@@ -33,16 +33,16 @@
 ;==============================================================
 [GEN]
 debug = true
-pdf_directory = PDF											
-data_directory = Data															
-grid_directory = Grids			
+pdf_directory = PDF
+data_directory = Data
+grid_directory = Grids
 
 ;==============================================================
 ; Graphing Options
 ;==============================================================
 [GRAPH]
-; plot_band = 
-; plot_error_ticks = 
+; plot_band =
+; plot_error_ticks =
 plot_marker = true
 plot_staggered = true
 label_sqrt_s = true
@@ -52,10 +52,10 @@ y_legend = 0.9
 ratio_style = convolute/data
 overlay_style = convolute, data
 display_style =	overlay, ratio
-; y_overlay_min = 
-; y_overlay_max = 
-; y_ratio_min =	
-; y_ratio_max = 
+; y_overlay_min =
+; y_overlay_max =
+; y_ratio_min =
+; y_ratio_max =
 
 ;==============================================================
 ; PDF Options
@@ -65,7 +65,7 @@ pdf_steering_files = good_test.txt
 
 ;--------------------------------------------------------------
 ; NOTE:
-;	
+;
 ; The following options will OVERRIDE the corresponding
 ; options in ALL the chosen PDF Steering Files above
 ;--------------------------------------------------------------
@@ -101,14 +101,15 @@ pdf_error_size = one_sigma
 ;==============================================================
 ; Plot 0 Options
 ;==============================================================
-[PLOT_0]														
-data_steering_files = good_test.txt	
+[PLOT_0]
+data_steering_files = good_test.txt
 grid_steering_files = good_test.txt
 x_scale = 1.0
 y_scale = 1.0
 marker_style = 20
 marker_color = 1
-; ref_line_style = 
-; ref_line_color = 
+; ref_line_style =
+; ref_line_color =
+x_log = true;
+y_log = true;
 desc = atlas_mtt_5fb
-
