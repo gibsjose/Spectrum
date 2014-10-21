@@ -108,11 +108,11 @@ void SPXPlot::Plot(void) {
 	overlayPad->SetRightMargin(0.05);
 	overlayPad->SetBottomMargin(0.25);
 
-	if(steeringFile->IsXLog()) {
+	if(pc.IsXLog()) {
 		overlayPad->SetLogx();
 	}
 
-	if(steeringFile->IsYLog()) {
+	if(pc.IsYLog()) {
 		overlayPad->SetLogy();
 	}
 

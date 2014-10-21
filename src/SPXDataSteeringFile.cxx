@@ -3,9 +3,9 @@
 //	Data Steering File Implementation
 //
 //	Implements the SPXDataSteeringFile class, which standardizes the
-//	format and I/O of the Data portion of the 
-//	Steering File Format (SFF), a file format that allows for 
-//	interfacing between Grids, Data, and Cross Sections with 
+//	format and I/O of the Data portion of the
+//	Steering File Format (SFF), a file format that allows for
+//	interfacing between Grids, Data, and Cross Sections with
 //	the MyAnalysis Program
 //
 //	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
@@ -26,9 +26,9 @@ const std::string cn = "SPXDataSteeringFile::";
 
 void SPXDataSteeringFile::SetDefaults(void) {
 	std::string mn = "SetDefaults: ";
-	
+
 	if(debug) std::cout << cn << mn << "Setting default Data Steering File data" << std::endl;
-	
+
 	name.clear();
 	if(debug) std::cout << cn << mn << "name set to default: \" \"" << std::endl;
 
@@ -62,21 +62,6 @@ void SPXDataSteeringFile::SetDefaults(void) {
 	yBinWidthUnits.clear();
 	if(debug) std::cout << cn << mn << "yBinWidthUnits set to default: \" \"" << std::endl;
 
-	frameXLog = false;
-	if(debug) std::cout << cn << mn << "frameXLog set to default: \"false\"" << std::endl;
-
-	frameYLog = false;
-	if(debug) std::cout << cn << mn << "frameYLog set to default: \"false\"" << std::endl;
-	
-
-	/*	@TODO Figure out why frame X/Y Min/Max is here...
-	frameXMin = 0.0;
-	if(debug) std::cout << cn << mn << "frameXMin set to default: \"0.0\"" << std::endl;
-	
-	frameXMax = 0.0;
-	if(debug) std::cout << cn << mn << "frameXMax set to default: \"0.0\"" << std::endl;
-	*/
-
 	jetAlgorithmLabel.clear();
 	if(debug) std::cout << cn << mn << "jetAlgorithmLabel set to default: \" \"" << std::endl;
 
@@ -100,7 +85,7 @@ void SPXDataSteeringFile::SetDefaults(void) {
 }
 
 //Print the Data Steering File Data in a nice format
-void SPXDataSteeringFile::Print(void) {	
+void SPXDataSteeringFile::Print(void) {
 	std::cout << "Data Steering File: " << filename << std::endl;
 	std::cout << "\t General Options [GEN]" << std::endl;
 	std::cout << "\t\t Debug is " << (debug ? "ON" : "OFF") << std::endl << std::endl;
@@ -115,10 +100,6 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t\t X Units: " << xUnits << std::endl;
 	std::cout << "\t\t Y Units: " << yUnits << std::endl;
 	std::cout << "\t\t Y Bin Width Units: " << yBinWidthUnits << std::endl;
-	std::cout << "\t\t Logarithmic X-Axis: " << (frameXLog ? "ON" : "OFF") << std::endl;
-	std::cout << "\t\t Logarithmic Y-Axis: " << (frameYLog ? "ON" : "OFF") << std::endl;
-	//std::cout << "\t\t Frame X Min: " << frameXMin << std::endl;
-	//std::cout << "\t\t Frame Y Min: " << frameYMin << std::endl;
 	std::cout << "\t\t Jet Algorithm Label: " << jetAlgorithmLabel << std::endl;
 	std::cout << "\t\t Jet Algorithm Number: " << jetAlgorithmNumber << std::endl << std::endl;
 	std::cout << "\t Data Options [DATA]" << std::endl;
@@ -133,27 +114,27 @@ void SPXDataSteeringFile::Print(void) {
 //@TODO Update documentation with correlation matrix syntax and behavior
 void SPXDataSteeringFile::Parse(void) {
 	std::string mn = "Parse: ";
-	
+
 	if(filename.empty()) {
 		throw SPXFileIOException(filename, "Empty file string \"\" was given");
 	}
-	
+
 	//Initialize reader
 	reader = new INIReader(filename);
-	
+
 	if(reader->ParseError() < 0) {
 		delete reader;
-		
+
     	throw SPXFileIOException(filename, "INIReader::INIReader(): ParseError generated when parsing file");
 	}
-	
+
 	//General Options [GEN]
 	debug = reader->GetBoolean("GEN", "debug", debug);
 	if(debug) std::cout << cn << mn << "Debug is ON" << std::endl;
-	
+
 	//Set Defaults
 	this->SetDefaults();
-	
+
 	std::string tmp;
 
 	//Description [DESC]
@@ -174,7 +155,7 @@ void SPXDataSteeringFile::Parse(void) {
 		experiment = tmp;
 		if(debug) std::cout << cn << mn << "Successfully read Experiment: " << experiment << std::endl;
 	}
-	
+
 	tmp = reader->Get("DESC", "reaction", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
 		if(debug) std::cout << cn << mn << "Reaction was not specified" << std::endl;
@@ -191,7 +172,7 @@ void SPXDataSteeringFile::Parse(void) {
 		sqrtS = reader->GetReal("GRAPH", "sqrt_s", sqrtS);
 		if(debug) std::cout << cn << mn << "Successfully read Sqrt(s): " << sqrtS << std::endl;
 	}
-	
+
 	tmp = reader->Get("GRAPH", "legend_label", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
 		throw SPXINIParseException("GRAPH", "legend_label", "You MUST specify the legend_label");
@@ -240,15 +221,6 @@ void SPXDataSteeringFile::Parse(void) {
 		if(debug) std::cout << cn << mn << "Successfully read Y Units: " << yBinWidthUnits << std::endl;
 	}
 
-	//@TODO These should be moved to the plot configuration sections... one per plot config
-	frameXLog = reader->GetBoolean("GRAPH", "frame_x_log", frameXLog);
-	frameYLog = reader->GetBoolean("GRAPH", "frame_y_log", frameYLog);
-
-	/*
-	frameXMin = reader->GetReal("GRAPH", "frame_x_min", frameXMin);
-	frameXMax = reader->GetReal("GRAPH", "frame_x_max", frameXMax);
-	*/
-
 	tmp = reader->Get("GRAPH", "jet_algorithm_label", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
 		if(debug) std::cout << cn << mn << "Jet Algorithm Label was not specified" << std::endl;
@@ -283,10 +255,10 @@ void SPXDataSteeringFile::Parse(void) {
 
 	dividedByBinWidth = reader->GetBoolean("DATA", "divided_by_bin_width", false);
 	if(debug) std::cout << cn << mn << "Divided By Bin Width set to: " << (dividedByBinWidth ? "ON" : "OFF") << std::endl;
-	
+
 	normalizedToTotalSigma = reader->GetBoolean("DATA", "normalized_to_total_sigma", false);
 	if(debug) std::cout << cn << mn << "Normalized to Total Sigma set to: " << (normalizedToTotalSigma ? "ON" : "OFF") << std::endl;
-	
+
 	errorInPercent = reader->GetBoolean("DATA", "error_in_percent", false);
 	if(debug) std::cout << cn << mn << "Error in Percent set to: " << (errorInPercent ? "ON" : "OFF") << std::endl;
 }
