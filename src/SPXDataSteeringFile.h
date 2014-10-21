@@ -3,9 +3,9 @@
 //	Data Steering File Header
 //
 //	Outlines the SPXDataSteeringFile class, which standardizes the
-//	format and I/O of the Data portion of the 
-//	Steering File Format (SFF), a file format that allows for 
-//	interfacing between Grids, Data, and Cross Sections with 
+//	format and I/O of the Data portion of the
+//	Steering File Format (SFF), a file format that allows for
+//	interfacing between Grids, Data, and Cross Sections with
 //	the MyAnalysis Program
 //
 //	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
@@ -29,13 +29,13 @@ private:
 
 	//INI Reader
 	INIReader *reader;
-	
+
 	//Metadata
 	std::string filename;
-	
+
 	//[GEN]
 	bool debug;
-	
+
 	//[DESC]
 	std::string name;				//Name of Steering Data
 	unsigned long year;				//Year
@@ -52,10 +52,6 @@ private:
 	std::string yBinWidthUnits;		//Y-Axis Bin Width Units used when normalizing, if DividedByBinWidth is true
 									// NOTE: For some data the units of the data is different for the y-axis and the x-axis
 									//			EG: Y-Axis is in [1/TeV], but X-Axis is GeV...
-	bool frameXLog;					//Plot the X-axis as logarithmic @TODO Change name (x_log): what do these have to do with frame?
-	bool frameYLog;					//Plot the Y-Axis as logarithmic @TODO Should these be in the Steering File instead? What if one data file is log and another isn't?
-	//double frameXMin;				//X-Axis minimum frame @TODO What does it have to do with frame?
-	//double frameYMin;				//Y-Axis minimum frame
 	std::string jetAlgorithmLabel;	//Jet algorithm label
 	int jetAlgorithmNumber;			//Jet algorithm number
 
@@ -65,7 +61,7 @@ private:
 	bool dividedByBinWidth;			//Flag to indicate that data has been divided by the bin width
 	bool normalizedToTotalSigma;	//Flag to indicate that cross section data is normalized to the total cross section
 	bool errorInPercent;			//Flag to indicate the errors in the data file are given in percents
-	
+
 	void SetDefaults(void);
 
 public:
@@ -74,27 +70,27 @@ public:
 	void Parse(void);
 
 	SPXDataSteeringFile(void) : filename(""), debug(false) {}
-	
+
 	explicit SPXDataSteeringFile(std::string filename) : debug(false) {
 		this->filename = filename;
 	}
-	
+
 	const std::string & GetFilename(void) const {
 		return filename;
 	}
-	
+
 	const std::string & GetName(void) const {
 		return name;
 	}
-	
+
 	unsigned long GetYear(void) const {
 		return year;
 	}
-	
+
 	const std::string & GetReaction(void) const {
 		return reaction;
 	}
-	
+
 	double GetSqrtS(void) const {
 		return sqrtS;
 	}
@@ -102,19 +98,19 @@ public:
 	const std::string & GetLegendLabel(void) const {
 		return legendLabel;
 	}
-	
+
 	const std::string & GetXLabel(void) const {
 		return xLabel;
 	}
-	
+
 	const std::string & GetYLabel(void) const {
 		return yLabel;
 	}
-	
+
 	const std::string & GetXUnits(void) const {
 		return xUnits;
 	}
-	
+
 	const std::string & GetYUnits(void) const {
 		return yUnits;
 	}
@@ -122,12 +118,12 @@ public:
 	const std::string & GetYBinWidthUnits(void) const {
 		return yBinWidthUnits;
 	}
-	
+
 	/*
 	double GetFrameXMin(void) const {
 		return frameXMin;
 	}
-	
+
 	double GetFrameYMin(void) const {
 		return frameYMin;
 	}
@@ -140,11 +136,11 @@ public:
 	int GetJetAlgorithmNumber(void) const {
 		return jetAlgorithmNumber;
 	}
-	
+
 	const SPXDataFormat & GetDataFormat(void) const {
 		return dataFormat;
 	}
-	
+
 	const std::string GetDataFile(void) const {
 		return dataFilepath;
 	}
@@ -152,7 +148,7 @@ public:
 	bool IsDividedByBinWidth(void) const {
 		return dividedByBinWidth;
 	}
-	
+
 	bool IsNormalizedToTotalSigma(void) const {
 		return normalizedToTotalSigma;
 	}

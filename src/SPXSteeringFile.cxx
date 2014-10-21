@@ -21,84 +21,84 @@ const std::string cn = "SPXSteeringFile::";
 
 void SPXSteeringFile::SetDefaults(void) {
 	std::string mn = "SetDefaults: ";
-	
+
 	if(debug) std::cout << cn << mn << "Setting default Steering File data" << std::endl;
-	
+
 	numberOfPlots = 0;
 	if(debug) std::cout << cn << mn << "numberOfPlots set to default: \"0\"" << std::endl;
-	
+
 	pdfDirectory = ".";
 	if(debug) std::cout << cn << mn << "pdfDirectory set to default: \".\"" << std::endl;
 
 	dataDirectory = ".";
 	if(debug) std::cout << cn << mn << "dataDirectory set to default: \".\"" << std::endl;
-	
+
 	gridDirectory = ".";
 	if(debug) std::cout << cn << mn << "gridDirectory set to default: \".\"" << std::endl;
-	
+
 	plotBand = false;
 	if(debug) std::cout << cn << mn << "plotBand set to default: \"false\"" << std::endl;
-	
+
 	plotErrorTicks = false;
 	if(debug) std::cout << cn << mn << "plotErrorTicks set to default: \"false\"" << std::endl;
-	
+
 	plotMarker = false;
 	if(debug) std::cout << cn << mn << "plotMarker set to default: \"false\"" << std::endl;
-	
+
 	plotStaggered = false;
 	if(debug) std::cout << cn << mn << "plotStaggered set to default: \"false\"" << std::endl;
-	
+
 	labelSqrtS = false;
 	if(debug) std::cout << cn << mn << "labelSqrtS set to default: \"false\"" << std::endl;
-	
+
 	xLegend = 0.9;
 	if(debug) std::cout << cn << mn << "xLegend set to default: \"0.9\"" << std::endl;
-	
+
 	yLegend = 0.9;
 	if(debug) std::cout << cn << mn << "yLegend set to default: \"0.9\"" << std::endl;
-	
+
 	ratioTitle = std::string();
 	if(debug) std::cout << cn << mn << "ratioTitle set to default: \" \"" << std::endl;
-	
+
 	ratioStyle = SPXRatioStyle();
 	if(debug) std::cout << cn << mn << "ratioStyle has no default: initialized as empty" << std::endl;
-	
+
 	overlayStyle = SPXOverlayStyle(OS_DATA | OS_REFERENCE);
 	if(debug) std::cout << cn << mn << "overlayStyle set to default: \"" << overlayStyle.ToString() << "\"" << std::endl;
-	
+
 	displayStyle = SPXDisplayStyle(DS_OVERLAY | DS_RATIO);
 	if(debug) std::cout << cn << mn << "displayStyle set to default: \"" << displayStyle.ToString() << "\"" << std::endl;
-	
+
 	yOverlayMin = 0;
 	if(debug) std::cout << cn << mn << "yOverlayMin set to default: \"0\"" << std::endl;
-	
+
 	yOverlayMax = 0;
 	if(debug) std::cout << cn << mn << "yOverlayMax set to default: \"0\"" << std::endl;
-	
+
 	yRatioMin = 0;
 	if(debug) std::cout << cn << mn << "yRatioMin set to default: \"0\"" << std::endl;
-	
+
 	yRatioMax = 0;
 	if(debug) std::cout << cn << mn << "yRatioMax set to default: \"0\"" << std::endl;
-	
+
 	pdfSteeringFiles.clear();
 	if(debug) std::cout << cn << mn << "pdfSteeringFiles set to default: \" \"" << std::endl;
-	
+
 	pdfFillStyle = STYLE_EMPTY;
 	if(debug) std::cout << cn << mn << "pdfFillStyle set to default: \" \"" << std::endl;
-	
+
 	pdfFillColor = COLOR_EMPTY;
 	if(debug) std::cout << cn << mn << "pdfFillColor set to default: \" \"" << std::endl;
-	
+
 	pdfMarkerStyle = STYLE_EMPTY;
 	if(debug) std::cout << cn << mn << "pdfMarkerStyle set to default: \" \"" << std::endl;
-	
+
 	pdfBandType = SPXPDFBandType();
 	if(debug) std::cout << cn << mn << "pdfBandType set to default: \" \"" << std::endl;
-	
+
 	pdfErrorType = SPXPDFErrorType();
 	if(debug) std::cout << cn << mn << "pdfErrorType set to default: \" \"" << std::endl;
-	
+
 	pdfErrorSize = SPXPDFErrorSize();
 	if(debug) std::cout << cn << mn << "pdfErrorSize set to default: \" \"" << std::endl;
 }
@@ -165,19 +165,21 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "" << std::endl;
 	std::cout << "\t Plot Configurations" << std::endl;
 	std::cout << "\t\t Number of Plots: " << numberOfPlots << std::endl << std::endl;
-	
+
 	for(int i = 0; i < numberOfPlots; i++) {
 		std::cout << "\t\t Plot " << i << " Configuration [PLOT_" << i << "]" << std::endl;
+		std::cout << "\t\t X Log: " << (plotConfigurations[i].IsXLog() ? "YES" : "NO") << std::endl;
+		std::cout << "\t\t Y Log: " << (plotConfigurations[i].IsYLog() ? "YES" : "NO") << std::endl;
 		std::cout << "\t\t\t Description: " << plotConfigurations[i].GetDescription() << std::endl << std::endl;
-		
+
 		for(int j = 0; j < plotConfigurations[i].GetNumberOfConfigurationInstances(); j++) {
 			SPXPlotConfigurationInstance tmp;
-			
+
 			try {
 				tmp = plotConfigurations[i].GetPlotConfigurationInstance(j);
 			} catch(const SPXException &e) {
 				std::cerr << e.what() << std::endl;
-				
+
 				//@TODO An SPXOutOfRangeException occurred here... what do I do now?
 			}
 			std::cout << "\t\t\t Data Steering File " << j << ": " << tmp.dataSteeringFile.GetFilename() << std::endl;
@@ -189,28 +191,28 @@ void SPXSteeringFile::Print(void) {
 			std::cout << "\t\t\t X Scale " << j << ": " << tmp.xScale << std::endl;
 			std::cout << "\t\t\t Y Scale " << j << ": " << tmp.yScale << std::endl << std::endl;
 		}
-	}			
+	}
 }
 
 unsigned int SPXSteeringFile::ParseNumberOfPlots(void) {
 	std::string mn = "ParseNumberOfPlots: ";
-	
+
 	unsigned int plotNumber = 0;
 	bool noMorePlots = false;
 	std::string tmp;
 	std::string plotSection;
-	
+
 	if(debug) std::cout << cn << mn << "Starting to look for plot sections..." << std::endl;
-	
+
 	do {
 		std::ostringstream intStream;
 		intStream << "PLOT_" << plotNumber;
 		plotSection = intStream.str();
 		if(debug) std::cout << cn << mn << "Formed plot section string: " << plotSection << std::endl;
 		if(debug) std::cout << cn << mn << "Checking for existence of plot section: " << plotSection << std::endl;
-		
+
 		tmp = reader->Get(plotSection, "data_steering_files", "EMPTY");
-		
+
 		if(!tmp.compare("EMPTY")) {
 			if(debug) std::cout << cn << mn << "plot section: " << plotSection << " was not found. Number of plots found: " << plotNumber << std::endl;
 			noMorePlots = true;
@@ -218,41 +220,43 @@ unsigned int SPXSteeringFile::ParseNumberOfPlots(void) {
 		} else {
 			plotNumber++;
 			if(debug) std::cout << cn << mn << "plot section: " << plotSection << " found. Current number of plots: " << plotNumber << std::endl;
-		}	
-	
+		}
+
 	} while(!noMorePlots);
-	
+
 	if(debug) std::cout << cn << mn << "Done searching for plots: " << plotNumber << " plots found" << std::endl;
-	
+
 	return plotNumber;
 }
 
 void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 	std::string mn = "ParsePlotConfigurations: ";
-	
+
 	std::string tmp;
+	bool xLog = false;
+	bool yLog = false;
 	std::string desc;
 	std::string plotSection;
 	std::vector<std::string> tmpVector;
 	std::map<std::string, std::vector<std::string> > configurations;
 	int numberOfConfigurationInstances = 0;
-	
+
 	//Create plot configurations object for all plots found
 	for(int i = 0; i < numPlots; i++) {
-		
+
 		desc.clear();
 		tmp.clear();
 		tmpVector.clear();
 		configurations.clear();
 		numberOfConfigurationInstances = 0;
-		
+
 		std::ostringstream intStream;
-		
+
 		//Form the section name from the plot number
 		intStream << "plot_" << i;
 		plotSection = intStream.str();
 		if(debug) std::cout << cn << mn << "Formed plot section string: " << plotSection << std::endl;
-		
+
 		//Get the data_steering_files
 		tmp = reader->Get(plotSection, "data_steering_files", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
@@ -266,7 +270,7 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
 				}
 			}
-			
+
 			//Prepend data directory onto all data steering files
 			for(int j = 0; j < tmpVector.size(); j++) {
 				if(debug) std::cout << cn << mn << "Prepending: \"" << dataDirectory << "\" to \"" << tmpVector[j] << "\"" << std::endl;
@@ -278,13 +282,13 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("data_steering_files", tmpVector));
 
 			if(debug) std::cout << cn << mn << "configurations[data_steering_files] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["data_steering_files"]) << std::endl;
-			
+
 			//Set the numberOfConfigurationInstances based on the number of dataSteeringFiles
 			//	NOTE: ALL configurations HENCEFORTH MUST HAVE THE SAME SIZE VECTOR, OR AN ERROR IS SIGNALED WHEN PARSING IN SPXPlotConfiguration::Parse
 			numberOfConfigurationInstances = tmpVector.size();
 			if(debug) std::cout << cn << mn << "Number of plot configurations instances for plot " << i << " has been set to: " << numberOfConfigurationInstances << std::endl;
 		}
-		
+
 		//Get the grid_steering_files
 		tmp = reader->Get(plotSection, "grid_steering_files", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
@@ -298,19 +302,19 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
 				}
 			}
-			
+
 			//Prepend grid directory onto all grid steering files
 			for(int j = 0; j < tmpVector.size(); j++) {
 				if(debug) std::cout << cn << mn << "Prepending: \"" << gridDirectory << "\" to \"" << tmpVector[j] << "\"" << std::endl;
 				tmpVector[j] = gridDirectory + "/" + tmpVector[j];
 				if(debug) std::cout << cn << mn << "Now: " << tmpVector[j] << std::endl;
 			}
-			
+
 			//Add to configurations map
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("grid_steering_files", tmpVector));
 			if(debug) std::cout << cn << mn << "configurations[grid_steering_files] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["grid_steering_files"]) << std::endl;
 		}
-		
+
 		//Get the marker_style
 		tmp = reader->Get(plotSection, "marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
@@ -324,12 +328,12 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
 				}
 			}
-			
+
 			//Add to configurations map
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("marker_style", tmpVector));
 			if(debug) std::cout << cn << mn << "configurations[marker_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["marker_style"]) << std::endl;
 		}
-		
+
 		//Get the marker_color
 		tmp = reader->Get(plotSection, "marker_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
@@ -343,12 +347,12 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
 				}
 			}
-			
+
 			//Add to configurations map
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("marker_color", tmpVector));
 			if(debug) std::cout << cn << mn << "configurations[marker_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["marker_color"]) << std::endl;
 		}
-		
+
 		//Get the ref_line_style
 		tmp = reader->Get(plotSection, "ref_line_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
@@ -362,12 +366,12 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
 				}
 			}
-			
+
 			//Add to configurations map
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("ref_line_style", tmpVector));
 			if(debug) std::cout << cn << mn << "configurations[ref_line_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["ref_line_style"]) << std::endl;
 		}
-		
+
 		//Get the ref_line_color
 		tmp = reader->Get(plotSection, "ref_line_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
@@ -381,7 +385,7 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
 				}
 			}
-			
+
 			//Add to configurations map
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("ref_line_color", tmpVector));
 			if(debug) std::cout << cn << mn << "configurations[ref_line_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["ref_line_color"]) << std::endl;
@@ -402,7 +406,7 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 
 			//Add to configurations map
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("x_scale", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[x_scale] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["x_scale"]) << std::endl; 
+			if(debug) std::cout << cn << mn << "configurations[x_scale] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["x_scale"]) << std::endl;
 		}
 
 		tmp = reader->Get(plotSection, "y_scale", "EMPTY");
@@ -420,9 +424,29 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 
 			//Add to configurations map
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("y_scale", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[y_scale] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["y_scale"]) << std::endl; 
+			if(debug) std::cout << cn << mn << "configurations[y_scale] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["y_scale"]) << std::endl;
 		}
-		
+
+		//Get the X Log
+		tmp = reader->Get(plotSection, "x_log", "EMPTY");
+		if(tmp.compare("EMPTY") != 0) {
+			xLog = reader->GetBoolean(plotSection, "x_log", false);
+			if(debug) std::cout << cn << mn << "X Log successfully parsed: " << (xLog ? "ON" : "OFF") << std::endl;
+		} else {
+			xLog = false;
+			if(Debug) std::cout << cn << mn << "X Log not specified: defaulting to OFF" << std::endl;
+		}
+
+		//Get the Y Log
+		tmp = reader->Get(plotSection, "y_log", "EMPTY");
+		if(tmp.compare("EMPTY") != 0) {
+			yLog = reader->GetBoolean(plotSection, "y_log", false);
+			if(debug) std::cout << cn << mn << "Y Log successfully parsed: " << (yLog ? "ON" : "OFF") << std::endl;
+		} else {
+			yLog = false;
+			if(Debug) std::cout << cn << mn << "Y Log not specified: defaulting to OFF" << std::endl;
+		}
+
 		//Get the description
 		tmp = reader->Get(plotSection, "desc", "EMPTY");
 		if(tmp.compare("EMPTY") != 0) {
@@ -432,11 +456,11 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 			desc.clear();
 			if(debug) std::cout << cn << mn << "No plot option for desc was specified" << std::endl;
 		}
-		
+
 		//Create a new plotConfigurations object with configurations vector (plotconfigurations constructor will parse it)
 		try {
-			SPXPlotConfiguration pc = SPXPlotConfiguration(configurations, desc, numberOfConfigurationInstances);
-			
+			SPXPlotConfiguration pc = SPXPlotConfiguration(configurations, xLog, yLog, desc, numberOfConfigurationInstances);
+
 			//Make sure it is valid and non-empty, and add it to plot vector
 			if(!pc.IsEmpty() && pc.IsValid()) {
 				plotConfigurations.push_back(pc);
@@ -449,38 +473,38 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 			throw SPXINIParseException(plotSection, "Unable to create/parse new plot configurations object");
 		}
 	}
-	
+
 	if(debug) std::cout << cn << mn << "Successfully parsed and added " << numPlots << " plot configurations" << std::endl;
 }
 
 void SPXSteeringFile::Parse(void) {
 	std::string mn = "Parse: ";
-	
+
 	if(filename.empty()) {
 		throw SPXFileIOException(filename, "Empty file string \"\" was given");
 	}
-	
+
 	//Initialize reader
 	reader = new INIReader(filename);
-	
+
 	if(reader->ParseError() < 0) {
 		delete reader;
-		
+
     	throw SPXFileIOException(filename, "INIReader::INIReader(): ParseError generated when parsing file");
 	}
-	
+
 	std::string tmp;
-	
+
 	//General configurations [GEN]
 	debug = reader->GetBoolean("GEN", "debug", debug);
-	
+
 	//Set Defaults
 	this->SetDefaults();
-	
+
 	pdfDirectory = reader->Get("GEN", "pdf_directory", pdfDirectory);
 	dataDirectory = reader->Get("GEN", "data_directory", dataDirectory);
 	gridDirectory = reader->Get("GEN", "grid_directory", gridDirectory);
-	
+
 	//Enable all debug configurations if debug is on
 	if(debug) {
 		std::cout << cn << mn << "Debug is ON" << std::endl;
@@ -492,7 +516,7 @@ void SPXSteeringFile::Parse(void) {
 		SPXPDFErrorSize::SetDebug(true);
 		SPXPlotConfiguration::SetDebug(true);
 	}
-	
+
 	//Graphing configurations [GRAPH]
 	plotBand = reader->GetBoolean("GRAPH", "plot_band", plotBand);
 	plotErrorTicks = reader->GetBoolean("GRAPH", "plot_error_ticks", plotErrorTicks);
@@ -502,7 +526,7 @@ void SPXSteeringFile::Parse(void) {
 	xLegend = reader->GetReal("GRAPH", "x_legend", xLegend);
 	yLegend = reader->GetReal("GRAPH", "y_legend", xLegend);
 	ratioTitle = reader->Get("GRAPH", "ratio_title", ratioTitle);
-	
+
 	//Parse Ratio Style
 	tmp = reader->Get("GRAPH", "ratio_style", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
@@ -513,13 +537,13 @@ void SPXSteeringFile::Parse(void) {
 			ratioStyle.Parse(tmp);
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
-			
+
 			std::ostringstream s;
 			s << "Invalid ratio style: Numerator = " << ratioStyle.GetNumerator() << " Denominator = " << ratioStyle.GetDenominator() << ": Check configuration string: ratio_style = " << tmp;
 			throw SPXINIParseException("GRAPH", "ratio_style", s.str());
 		}
-	}	
-	
+	}
+
 	//Parse Overlay Style
 	tmp = reader->Get("GRAPH", "overlay_style", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
@@ -530,35 +554,35 @@ void SPXSteeringFile::Parse(void) {
 			overlayStyle.Parse(tmp);
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
-		
+
 			std::ostringstream s;
 			s << "Invalid overlay style: Style = " << overlayStyle.GetStyle() << ": Check configuration string: overlay_style = " << tmp;
 			throw SPXINIParseException("GRAPH", "overlay_style", s.str());
 		}
 	}
-	
+
 	//Parse Display Style
 	tmp = reader->Get("GRAPH", "display_style", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
 		if(debug) std::cout << cn << mn << "Display style configuration string empty: Defaulting to \"overlay, ratio\"" << std::endl;
 	} else {
-		//Attempt to parse display style		
+		//Attempt to parse display style
 		try {
 			displayStyle.Parse(tmp);
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
-			
+
 			std::ostringstream s;
 			s << "Invalid display style: Style = " << displayStyle.GetStyle() << ": Check configuration string: display_style = " << tmp;
 			throw SPXINIParseException("GRAPH", "display_style", s.str());
 		}
 	}
-	
+
 	yOverlayMin = reader->GetReal("GRAPH", "y_overlay_min", yOverlayMin);
 	yOverlayMax = reader->GetReal("GRAPH", "y_overlay_max", yOverlayMax);
 	yRatioMin = reader->GetReal("GRAPH", "y_ratio_min", yRatioMin);
 	yRatioMax = reader->GetReal("GRAPH", "y_ratio_max", yRatioMax);
-	
+
 	//PDF configurations [PDF]
 
 	//Parse PDF Steering Filepaths
@@ -586,28 +610,28 @@ void SPXSteeringFile::Parse(void) {
 			pdfSteeringFiles.push_back(pdfSteeringFile);
 		}
 	}
-	
+
 	pdfFillStyle = reader->GetInteger("PDF", "pdf_fill_style", pdfFillStyle);
 	pdfFillColor = reader->GetInteger("PDF", "pdf_fill_color", pdfFillColor);
 	pdfMarkerStyle = reader->GetInteger("PDF", "pdf_marker_style", pdfMarkerStyle);
-	
+
 	//Parse PDF Band Type
 	tmp = reader->Get("PDF", "pdf_band_type", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
 		std::cout << cn << mn << "No PDF Band Type override specified" << std::endl;
-	} else {		
+	} else {
 		//Attempt to parse the PDF band type
 		try {
 			pdfBandType.Parse(tmp);
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
-			
+
 			std::ostringstream s;
 			s << "Invalid PDF Band Type: Type = " << pdfBandType.GetType() << ": Check configuration string: pdf_band_type = " << tmp;
 			throw SPXINIParseException("PDF", "pdf_band_type", s.str());
 		}
 	}
-	
+
 	//Parse PDF Error Type
 	tmp = reader->Get("PDF", "pdf_error_type", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
@@ -618,13 +642,13 @@ void SPXSteeringFile::Parse(void) {
 			pdfErrorType.Parse(tmp);
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
-			
+
 			std::ostringstream s;
 			s << "Invalid PDF Error Type: Type = " << pdfErrorType.GetType() << ": Check configuration string: pdf_error_type = " << tmp;
 			throw SPXINIParseException("PDF", "pdf_error_type", s.str());
 		}
 	}
-	
+
 	//Parse PDF Error Size
 	tmp = reader->Get("PDF", "pdf_error_size", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
@@ -635,26 +659,26 @@ void SPXSteeringFile::Parse(void) {
 			pdfErrorSize.Parse(tmp);
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
-			
+
 			std::ostringstream s;
 			s << "Invalid PDF Error Size: Type = " << pdfErrorSize.GetType() << ": Check configuration string: pdf_error_size = " << tmp;
 			throw SPXINIParseException("PDF", "pdf_error_size", s.str());
 		}
 	}
-	
+
 	//Parse plots
 	numberOfPlots = this->ParseNumberOfPlots();
-	
+
 	if(numberOfPlots == 0) {
 		throw SPXParseException("No plot configurations found: Nothing will be plotted");
 	}
-	
+
 	//Attempt to parse plot configurations
 	try {
 		this->ParsePlotConfigurations(numberOfPlots);
 	} catch(const SPXException &e) {
 		std::cerr << e.what() << std::endl;
-		
+
 		throw SPXParseException("Could not parse plots: Verify correct plot configuration syntax");
 	}
 }
@@ -667,7 +691,7 @@ void SPXSteeringFile::PrintPDFSteeringFiles(void) {
 
 void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 	std::string mn = "ParsePDFSteeringFiles: ";
-	
+
 	//Parse each PDF Steering File in the vector
 	for(int i = 0; i < pdfSteeringFiles.size(); i++) {
 
@@ -678,7 +702,7 @@ void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 			pdfSteeringFile.Parse();
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
-			
+
 			std::ostringstream oss;
 			oss << "Unable to parse the PDF Steering File: " << pdfSteeringFile.GetFilename() << ": Aborting further parsing of remaining " << pdfSteeringFiles.size() - i << " files";
 			throw SPXParseException(oss.str());
@@ -697,19 +721,19 @@ void SPXSteeringFile::PrintDataSteeringFiles(void) {
 
 void SPXSteeringFile::ParseDataSteeringFiles(void) {
 	std::string mn = "ParseDataSteeringFiles: ";
-	
+
 	//Loop through all plot configurations instances for each plot option
 	for(int i = 0; i < plotConfigurations.size(); i++) {
 		for(int j = 0; j < plotConfigurations.at(i).GetNumberOfConfigurationInstances(); j++) {
-			
+
 			SPXDataSteeringFile &dataSteeringFile = plotConfigurations.at(i).GetPlotConfigurationInstance(j).dataSteeringFile;
-			
+
 			//Attempt to parse the Grid Steering File
 			try {
 				dataSteeringFile.Parse();
 			} catch(const SPXException &e) {
 				std::cerr << e.what() << std::endl;
-				
+
 				std::ostringstream oss;
 				oss << "Unable to parse the Data Steering File: " << dataSteeringFile.GetFilename() << ": Aborting further parsing of remaining files";
 				throw SPXParseException(oss.str());
@@ -729,23 +753,23 @@ void SPXSteeringFile::PrintGridSteeringFiles(void) {
 
 void SPXSteeringFile::ParseGridSteeringFiles(void) {
 	std::string mn = "ParseGridSteeringFiles: ";
-	
+
 	//Loop through all plot configurations instances for each plot option
 	for(int i = 0; i < plotConfigurations.size(); i++) {
 		for(int j = 0; j < plotConfigurations.at(i).GetNumberOfConfigurationInstances(); j++) {
-			
+
 			SPXGridSteeringFile &gridSteeringFile = plotConfigurations.at(i).GetPlotConfigurationInstance(j).gridSteeringFile;
-			
+
 			//Attempt to parse the Grid Steering File
 			try {
 				gridSteeringFile.Parse();
 			} catch(const SPXException &e) {
 				std::cerr << e.what() << std::endl;
-				
+
 				std::ostringstream oss;
 				oss << "Unable to parse the Grid Steering File: " << gridSteeringFile.GetFilename() << ": Aborting further parsing of remaining files";
 				throw SPXParseException(oss.str());
 			}
 		}
-	}	
+	}
 }
