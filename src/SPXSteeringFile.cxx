@@ -434,7 +434,7 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 			if(debug) std::cout << cn << mn << "X Log successfully parsed: " << (xLog ? "ON" : "OFF") << std::endl;
 		} else {
 			xLog = false;
-			if(Debug) std::cout << cn << mn << "X Log not specified: defaulting to OFF" << std::endl;
+			if(debug) std::cout << cn << mn << "X Log not specified: defaulting to OFF" << std::endl;
 		}
 
 		//Get the Y Log
@@ -444,7 +444,7 @@ void SPXSteeringFile::ParsePlotConfigurations(unsigned int numPlots) {
 			if(debug) std::cout << cn << mn << "Y Log successfully parsed: " << (yLog ? "ON" : "OFF") << std::endl;
 		} else {
 			yLog = false;
-			if(Debug) std::cout << cn << mn << "Y Log not specified: defaulting to OFF" << std::endl;
+			if(debug) std::cout << cn << mn << "Y Log not specified: defaulting to OFF" << std::endl;
 		}
 
 		//Get the description

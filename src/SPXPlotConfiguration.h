@@ -146,7 +146,7 @@ public:
 		SetDefaults();
 	}
 
-	SPXPlotConfiguration(std::map<std::string, std::vector<std::string> > & options, const std::string &description, unsigned int numberOfConfigurationInstances);
+	SPXPlotConfiguration(std::map<std::string, std::vector<std::string> > & options, bool xLog, bool yLog, const std::string &description, unsigned int numberOfConfigurationInstances);
 
 	//Add an configuration instance to the configurationInstances vector
 	void AddConfigurationInstance(const SPXPlotConfigurationInstance & instance) {
