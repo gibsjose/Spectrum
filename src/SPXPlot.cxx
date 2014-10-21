@@ -51,10 +51,14 @@ void SPXPlot::Plot(void) {
 	canvas = new TCanvas(canvasID.c_str(), pc.GetDescription().c_str(), wtopx, wtopy, ww, wh);
 	canvas->SetFillColor(0);
 	canvas->SetGrid();
+	canvas->SetLeftMargin(0.2);
+	canvas->SetRightMargin(0.1);
+	canvas->SetBottomMargin(0.15);
+	canvas->cd();
 
 	if(debug) {
-		std::cout << cn << mn << "Canvas (" << canvasID << ") created for Plot ID " << id << 
-			" with dimensions: " << ww << " x " << wh << " and title: " << pc.GetDescription() << std::endl; 
+		std::cout << cn << mn << "Canvas (" << canvasID << ") created for Plot ID " << id <<
+			" with dimensions: " << ww << " x " << wh << " and title: " << pc.GetDescription() << std::endl;
 	}
 
 	//@TODO Where should these come from?
@@ -65,7 +69,7 @@ void SPXPlot::Plot(void) {
 
 	//Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
 	std::vector<TGraphAsymmErrors *> graphs;
-	{	
+	{
 		//Data graphs
 		for(int i = 0; i < data.size(); i++) {
 			graphs.push_back(data[i].GetStatisticalErrorGraph());
@@ -92,8 +96,28 @@ void SPXPlot::Plot(void) {
 		}
 	}
 
-	//Draw the frame (xmin, ymin, xmax, ymax)
-	canvas->DrawFrame(xMin, yMin, xMax, yMax);
+	oss.clear();
+	oss << "overlay" << id;
+	std::string overlayPadID = oss.str();
+
+	//Create the Overlay Pad
+	overlayPad = new TPad(overlayPadID.c_str(), " ", xMin, yMin, xMax, yMax);
+
+	overlayPad->SetFillColor(0);
+	overlayPad->SetLeftMargin(0.15);
+	overlayPad->SetRightMargin(0.05);
+	overlayPad->SetBottomMargin(0.25);
+
+	if(steeringFile->IsXLog()) {
+		overlayPad->SetLogx();
+	}
+
+	if(steeringFile->IsYLog()) {
+		overlayPad->SetLogy();
+	}
+
+	//Draw the frame for the overlay pad (xmin, ymin, xmax, ymax)
+	overlayPad->DrawFrame(xMin, yMin, xMax, yMax);
 
 	if(debug) {
 		std::cout << cn << mn << "Canvas (" << canvasID << ") frame drawn with dimensions: " << std::endl;
@@ -102,6 +126,9 @@ void SPXPlot::Plot(void) {
 		std::cout << "\t yMin = " << yMin << std::endl;
 		std::cout << "\t yMax = " << yMax << std::endl;
 	}
+
+	//Make sure overlay pad is selected
+	overlayPad->cd();
 
 	//Draw data graphs
 	for(int i = 0; i < data.size(); i++) {
@@ -114,7 +141,8 @@ void SPXPlot::Plot(void) {
 		crossSections[i].GetPDFBandResults()->Draw("P");
 	}
 
-	//Update canvas
+	//Update overlay pad and canvas
+	overlayPad->Update();
 	canvas->Update();
 
 	//Create PNG Filename
@@ -122,7 +150,8 @@ void SPXPlot::Plot(void) {
 
 	//@TODO Spaces -> Underscores and handle duplicates
 	//@TODO Should probably write a function: string CreatePNGFilename(string output dir, string desc);
-	//pngFilename = PlotOutputDirectory + "/" + pc.GetDescription() + ".png";	//@TODO Implement passing plot output directory as arugment and defaulting to ./plots
+	//pngFilename = PlotOutputDirectory + "/" + pc.GetDescription() + ".png";
+	//@TODO Implement passing plot output directory as arugment and defaulting to ./plots
 
 	pngFilename = "./plots/" + pc.GetDescription() + "_plot_" + (ULong_t)id + ".png";
 
@@ -132,7 +161,6 @@ void SPXPlot::Plot(void) {
 	canvas->Print(pngFilename.c_str());
 }
 
-//@TODO Where do I normalize cross section???
 void SPXPlot::InitializeCrossSections(void) {
 	std::string mn = "InitializeCrossSections: ";
 
@@ -153,6 +181,17 @@ void SPXPlot::InitializeCrossSections(void) {
 		}
 	}
 }
+
+//@TODO See MyCrossSection.cxx:287-298
+/*
+void SPXPlot::ChangeDefaultPDFHistogramNames(void) {
+	std::string mn = "ChangeDefaultPDFHistogramNames: ";
+
+	for(int i = 0; i < crossSections.size(); i++) {
+		;
+	}
+}
+*/
 
 void SPXPlot::NormalizeCrossSections(void) {
 	std::string mn = "NormalizeCrossSections: ";
@@ -194,26 +233,29 @@ void SPXPlot::NormalizeCrossSections(void) {
 				std::cout << "\t X Scale: " << pci->xScale << std::endl;
 				std::cout << "\t Y Scale: " << pci->yScale << std::endl << std::endl;
 			}
-			
+
 
 			//Normalized to total sigma from the DATA steering file
 			bool normalizeToTotalSigma = pci->dataSteeringFile.IsNormalizedToTotalSigma();
 			bool dataDividedByBinWidth = pci->dataSteeringFile.IsDividedByBinWidth();
 			bool gridDividedByBinWidth = pci->gridSteeringFile.IsDividedByBinWidth();
-			
+
 			//@TODO Change back to being initialized as false
 			bool divideByBinWidth = true;
 
 			if(dataDividedByBinWidth && !gridDividedByBinWidth) {
-				if(debug) std::cout << cn << mn << "Data IS divided by bin width but the grid IS NOT. Will call Normalize with divideByBinWidth = true" << std::endl;
+				if(debug) std::cout << cn << mn << "Data IS divided by bin width but the grid IS NOT. Will call Normalize "\
+					"with divideByBinWidth = true" << std::endl;
 				divideByBinWidth = true;
 			}
 
 			double yBinWidthScale = 1.0;
 
-			//If the data is divided by the bin width, then set the yBinWidthScale, which is the scaling of the Data's Y Bin Width Units to the Data's X Units
+			//If the data is divided by the bin width, then set the yBinWidthScale, which is the scaling of the
+			// Data's Y Bin Width Units to the Data's X Units
 			if(dataDividedByBinWidth) {
-				yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), pci->dataSteeringFile.GetYBinWidthUnits());
+				yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), \
+					pci->dataSteeringFile.GetYBinWidthUnits());
 			}
 
 			if(debug) std::cout << cn << mn << "Y Bin Width Scale = " << yBinWidthScale << std::endl;
@@ -222,13 +264,13 @@ void SPXPlot::NormalizeCrossSections(void) {
 
 			//Normalize the cross section
 			SPXGraphUtilities::Normalize(crossSections[i].GetPDFBandResults(), yBinWidthScale, normalizeToTotalSigma, divideByBinWidth);
-			
+
 			if(debug) std::cout << cn << mn << "Sucessfully normalized Cross Section " << i << std::endl;
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
 			throw SPXGraphException("SPXPlot::NormalizeCrossSections: Unable to obtain X/Y Scale based on Data/Grid Units");
 		}
-		
+
 	}
 }
 
@@ -238,9 +280,9 @@ void SPXPlot::InitializeData(void) {
 	//Create data objects for each configuration instance of this plot and add them to vector
 	for(int i = 0; i < steeringFile->GetNumberOfConfigurationInstances(id); i++) {
 		SPXPlotConfigurationInstance &pci = steeringFile->GetPlotConfigurationInstance(id, i);
-		
+
 		SPXData dataInstance = SPXData(pci);
-	
+
 		try {
 			dataInstance.Parse();
 			dataInstance.Print();

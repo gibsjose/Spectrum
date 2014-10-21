@@ -46,7 +46,7 @@ class SPXPDF {
         TGraphAsymmErrors *h_AlphaS_results_ratio_to_ref;
 
         string calc_desc;
-        
+
         bool applgridok;
 
 
@@ -56,7 +56,7 @@ class SPXPDF {
         SPXPDF(SPXPDFSteeringFile *psf, const std::string &_gridName);
 
         virtual ~SPXPDF() { CleanUpSPXPDF(); }; //destructor
-        
+
         // method for PDF standalone plots
 
         TH1D * FillPdfHisto();
@@ -85,7 +85,7 @@ class SPXPDF {
         //@TODO Move to SPXGraphUtilities
         TGraphAsymmErrors* MyTGraphErrorsDivide(TGraphAsymmErrors* g1,TGraphAsymmErrors* g2, Int_t noerr=1);
         TGraphAsymmErrors* TH1TOTGraphAsymm(TH1 *h1);
-        
+
         //accessor methods
         bool IsDebugOn() const{return debug;};
         string GetPDFtype() const{return PDFtype;};
@@ -99,10 +99,10 @@ class SPXPDF {
         string GetPDFBandType() const{return PDFBandType;};
         string GetPDFErrorType() const{return PDFErrorType;};
         string GetPDFErrorSize() const{return PDFErrorSize;};
-        
+
         bool GetDoPDFBand() const{return do_PDFBand;};
         bool GetDoAlphaS() const{return do_AlphaS;};
-        
+
         int GetAlphaSmemberNumDown() const{return AlphaSmemberNumDown;};
         int GetAlphaSmemberNumUp() const{return AlphaSmemberNumUp;};
         string GetAlphaSPDFSetNameDown() const{return AlphaSPDFSetNameDown;};
@@ -111,7 +111,7 @@ class SPXPDF {
         string GetAlphaSPDFSetHistNameUp() const{return AlphaSPDFSetHistNameUp;};
 
         TGraphAsymmErrors *GetScaleDependence(double renscale, double facscale, int pdfset);
-        
+
         //mutator methods
         void SetDebug(bool _debug);
         void SetGridName(string _gridName);
@@ -126,13 +126,13 @@ class SPXPDF {
         void SetPDFBandType(string _PDFBandType);
         void SetPDFErrorType(string _PDFErrorType);
         void SetPDFErrorSize(string _PDFErrorSize);
-        
+
         void SetDoPDFBand(bool _doit);
         void SetDoAplphaS(bool _doit);
         //void SetDoRenormalizationScale(bool _doit);
         //void SetDoFactorizationScale(bool _doit);
         void SetDoTotError(bool _doit);
-        
+
         void SetAlphaSmemberNumDown(int _memberNum);
         void SetAlphaSmemberNumUp(int _memberNum);
         void SetAlphaSPDFSetNameDown(string _name);
@@ -174,20 +174,20 @@ class SPXPDF {
         bool f_PDFBandType;
         bool f_PDFErrorSize;
         string pdfSetPath;
-        
+
         // for HERA type PDFS
         bool includeEIG;  // include experimental eigenvectors
         bool includeQUAD; // include model variations added in quadrature
         bool includeMAX;  // include parameterisation variations take maximum among those
 
- 
+
         int AlphaSmemberNumDown; //needed if do_AlphaS is set. Can be read from steering or set by mutator
         int AlphaSmemberNumUp;
         string AlphaSPDFSetNameDown;
         string AlphaSPDFSetNameUp;
         string AlphaSPDFSetHistNameDown;
         string AlphaSPDFSetHistNameUp;
-        
+
         appl::grid *my_grid;
 
         std::vector<TH1D*> h_errors_AlphaS;
@@ -200,14 +200,14 @@ class SPXPDF {
         std::vector<TH1D*> h_errors_FactorizationScale;
         */
         string gridName;
-        
+
         //double xscale;
         bool do_PDFBand;
         bool do_AlphaS;
         //bool do_RenormalizationScale;
         //bool do_FactorizationScale;
         //bool do_TotError;
-        
+
         //METHODS
         void SetVariablesDefault();
         //void SetSteeringFileNameAndDir(const string _path);
@@ -216,7 +216,7 @@ class SPXPDF {
         // variable for PDF plotting
         int ifl; // flavour as from LHAPDF
         double Q2; // Q2 value used in LHAPDF
-        TH1D * hpdf; //histo to store PDS PDF vs x 
+        TH1D * hpdf; //histo to store PDS PDF vs x
 
 };
 
