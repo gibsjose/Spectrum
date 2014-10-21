@@ -39,7 +39,7 @@ void SPXPlot::Plot(void) {
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 
 	std::ostringstream oss;
-	oss << "canvas" << id;
+	oss << "canvas_" << id;
 	std::string canvasID = oss.str();
 
 	//@TODO Where should these come from? Or are they just initial values that are set later?
@@ -96,53 +96,74 @@ void SPXPlot::Plot(void) {
 		}
 	}
 
-	oss.clear();
-	oss << "overlay" << id;
-	std::string overlayPadID = oss.str();
+	std::ostringstream p_oss;
+	p_oss << "overlay_" << id;
+	std::string overlayPadID = p_oss.str();
 
 	//Create the Overlay Pad
-	overlayPad = new TPad(overlayPadID.c_str(), " ", xMin, yMin, xMax, yMax);
+	//overlayPad = new TPad(overlayPadID.c_str(), "TEST", xMin, yMin, xMax, yMax);
+
+	//Divide the canvas into Overlay/Ratio Pads
+	canvas->Divide(1, 2);
+
+	overlayPad = (TPad *)canvas->GetListOfPrimitives()->FindObject(TString(canvasID + "_1"));
+	ratioPad = (TPad *)canvas->GetListOfPrimitives()->FindObject(TString(canvasID + "_2"));
+
+	if(debug) std::cout << cn << mn << "Overlay Pad (" << overlayPadID << ") created" << std::endl;
 
 	overlayPad->SetFillColor(0);
 	overlayPad->SetLeftMargin(0.15);
 	overlayPad->SetRightMargin(0.05);
-	overlayPad->SetBottomMargin(0.25);
+	//overlayPad->SetBottomMargin(0.25);
+
+	ratioPad->SetFillColor(1);
 
 	if(pc.IsXLog()) {
+		if(debug) std::cout << cn << mn << "Setting X Axis to Logarithmic Scale for Plot " << id << std::endl;
 		overlayPad->SetLogx();
 	}
 
 	if(pc.IsYLog()) {
+		if(debug) std::cout << cn << mn << "Setting Y Axis to Logarithmic Scale for Plot " << id << std::endl;
 		overlayPad->SetLogy();
 	}
 
+	overlayPad->cd();
+
 	//Draw the frame for the overlay pad (xmin, ymin, xmax, ymax)
 	overlayPad->DrawFrame(xMin, yMin, xMax, yMax);
+	
+
+	ratioPad->cd();
+	ratioPad->DrawFrame(xMin, yMin, xMax, yMax);
+
+	overlayPad->cd();
 
 	if(debug) {
-		std::cout << cn << mn << "Canvas (" << canvasID << ") frame drawn with dimensions: " << std::endl;
+		std::cout << cn << mn << "Overlay Pad (" << overlayPadID << ") frame drawn with dimensions: " << std::endl;
 		std::cout << "\t xMin = " << xMin << std::endl;
 		std::cout << "\t xMax = " << xMax << std::endl;
 		std::cout << "\t yMin = " << yMin << std::endl;
 		std::cout << "\t yMax = " << yMax << std::endl;
 	}
 
-	//Make sure overlay pad is selected
-	overlayPad->cd();
-
-	//Draw data graphs
+	//Draw data graphs on Overlay Pad
 	for(int i = 0; i < data.size(); i++) {
 		data[i].GetSystematicErrorGraph()->Draw("P");
 		data[i].GetStatisticalErrorGraph()->Draw("||");
+
+		if(debug) std::cout << cn << mn << "Sucessfully drew data for Plot " << id << " data " << i << std::endl;
 	}
 
-	//Draw cross sections
+	//Draw cross sections on Overlay Pad
 	for(int i = 0; i < crossSections.size(); i++) {
 		crossSections[i].GetPDFBandResults()->Draw("P");
+
+		if(debug) std::cout << cn << mn << "Sucessfully drew cross section for Plot " << id << " cross section " << i << std::endl;
 	}
 
-	//Update overlay pad and canvas
-	overlayPad->Update();
+	//Update Overlay Pad
+	canvas->Modified();
 	canvas->Update();
 
 	//Create PNG Filename
