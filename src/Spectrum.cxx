@@ -16,7 +16,7 @@
 #include "SPXException.h"
 
 //Determines whether or not to draw the actual ROOT application canvases
-#define DRAW_APPLICATION 	false
+#define DRAW_APPLICATION 	true
 
 int main(int argc, char *argv[]) {
 
