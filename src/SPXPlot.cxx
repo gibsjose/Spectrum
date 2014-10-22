@@ -96,46 +96,89 @@ void SPXPlot::Plot(void) {
 		}
 	}
 
-	std::ostringstream p_oss;
-	p_oss << "overlay_" << id;
-	std::string overlayPadID = p_oss.str();
+	//Divide the canvas into Overlay/Ratio Pads as required
+	SPXDisplayStyle &ds = steeringFile->GetDisplayStyle();
 
-	//Create the Overlay Pad
-	//overlayPad = new TPad(overlayPadID.c_str(), "TEST", xMin, yMin, xMax, yMax);
+	double xLowOverlay = 0.0;
+	double xUpOverlay = 1.0;
+	double yLowOverlay = 0.4;
+	double yUpOverlay = 1.0;
 
-	//Divide the canvas into Overlay/Ratio Pads
+	double xLowRatio = 0.0;
+	double xUpRatio = 1.0;
+	double yLowRatio = 0.0;
+	double yUpRatio = 1.0;
+
+	double leftMargin = 0.15
+	double rightMargin = 0.05;
+	double bottomMargin = 0.001;
+	double topMargin = 0.001;
+
+	//Divide the TCanvas and get pointers to TPads
 	canvas->Divide(1, 2);
-
 	overlayPad = (TPad *)canvas->GetListOfPrimitives()->FindObject(TString(canvasID + "_1"));
 	ratioPad = (TPad *)canvas->GetListOfPrimitives()->FindObject(TString(canvasID + "_2"));
 
-	if(debug) std::cout << cn << mn << "Overlay Pad (" << overlayPadID << ") created" << std::endl;
+	if(ds.ContainsOverlay() && ds.ContainsRatio()) {
+		if(debug) std::cout << cn << mn << "Plotting Overlay and Ratio" << std::endl;
 
+		yUpRatio = 0.4;
+
+		//Only set top/bottom margins for ratio pad when both are plotted
+		ratioPad->SetBottomMargin(0.25);
+		ratioPad->SetTopMargin(topMargin);
+
+	} else if(ds.ContainsOverlay() && !ds.ContainsRatio()) {
+		if(debug) std::cout << cn << mn << "Only plotting Overlay" << std::endl;
+		//overlayPad = (TPad *)canvas->GetListOfPrimitives()->FindObject(TString(canvasID + "_1"));
+		//ratioPad = NULL;
+
+		yLowOverlay = 0.0;
+		bottomMargin = 0.15;
+		yUpRatio = 0.0;
+
+	} else if(!ds.ContainsOverlay() && ds.ContainsRatio()) {
+		if(debug) std::cout << cn << mn << "Only plotting Ratio" << std::endl;
+		//overlayPad = NULL;
+		//ratioPad = (TPad *)canvas->GetListOfPrimitives()->FindObject(TString(canvasID + "_1"));
+
+		yLowOverlay = 1.0;
+		yUpRatio = 1.0;
+	}
+
+	//Resize and style overlay pad
+	overlayPad->SetPad(xLowOverlay, yLowOverlay, xUpOverlay, yUpOverlay);
 	overlayPad->SetFillColor(0);
-	overlayPad->SetLeftMargin(0.15);
-	overlayPad->SetRightMargin(0.05);
-	//overlayPad->SetBottomMargin(0.25);
+	overlayPad->SetLeftMargin(leftMargin);
+	overlayPad->SetRightMargin(rightMargin);
+	overlayPad->SetBottomMargin(bottomMargin);
+	overlayPad->Draw();
 
-	ratioPad->SetFillColor(1);
+	//Resize and style ratio pad
+	ratioPad->SetPad(xLowRatio, yLowRatio, xUpRatio, yUpRatio);
+	ratioPad->SetFillColor(0);
+	ratioPad->SetLeftMargin(leftMargin);
+	ratioPad->SetRightMargin(rightMargin);
+	ratioPad->Draw();
 
 	if(pc.IsXLog()) {
 		if(debug) std::cout << cn << mn << "Setting X Axis to Logarithmic Scale for Plot " << id << std::endl;
 		overlayPad->SetLogx();
+		ratioPad->SetLogx();
 	}
 
 	if(pc.IsYLog()) {
 		if(debug) std::cout << cn << mn << "Setting Y Axis to Logarithmic Scale for Plot " << id << std::endl;
 		overlayPad->SetLogy();
+		//ratioPad->SetLogy();	//@TODO How to handle this in SF? What to do for negatives?
 	}
 
 	overlayPad->cd();
-
-	//Draw the frame for the overlay pad (xmin, ymin, xmax, ymax)
 	overlayPad->DrawFrame(xMin, yMin, xMax, yMax);
-	
+
 
 	ratioPad->cd();
-	ratioPad->DrawFrame(xMin, yMin, xMax, yMax);
+	ratioPad->DrawFrame(xMin, -1, xMax, 1);
 
 	overlayPad->cd();
 
