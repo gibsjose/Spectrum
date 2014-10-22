@@ -319,9 +319,11 @@ void SPXPlot::DrawRatioPadFrame(void) {
 	//Force xMin/Max to match Overlay (already should)
 	double xMinOverlay, xMaxOverlay, yMinOverlay, yMaxOverlay;
 	overlayPad->GetRangeAxis(xMinOverlay, yMinOverlay, xMaxOverlay, yMaxOverlay);
-	
+
 	xMin = xMinOverlay;
 	xMax = xMaxOverlay;
+
+	if(debug) std::cout << xMin << std::endl << xMax << std::endl << yMin << std::endl << yMax << std::endl;
 
 	ratioPad->DrawFrame(xMin, yMin, xMax, yMax);
 
