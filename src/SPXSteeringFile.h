@@ -58,7 +58,7 @@ private:
 	std::string pdfDirectory;		//Directory prepended to PDF steering files
 	std::string dataDirectory;		//Directory prepended to data steering files
 	std::string gridDirectory;		//Directory prepended to grid steering files
-	
+
 	//[GRAPH]
 	bool plotBand;					//Flag to indicate that error bands should be plotted
 	bool plotErrorTicks;			//Flag to indicate that tick marks should be used at the end of error bars
@@ -75,7 +75,7 @@ private:
 	double yOverlayMax;				//Force Y-Axis maximum for overlay section
 	double yRatioMin;				//Force Y-Axis minimum for ratio section
 	double yRatioMax;				//Force Y-Axis maximum for ratio section
-	
+
 	//[PDF]
 	std::vector<SPXPDFSteeringFile> pdfSteeringFiles;	//PDF Steering Files
 	int pdfFillStyle;				//Override PDF fill style
@@ -84,14 +84,14 @@ private:
 	SPXPDFBandType pdfBandType;		//Override PDF band type
 	SPXPDFErrorType pdfErrorType;	//Override PDF error type
 	SPXPDFErrorSize pdfErrorSize;	//Override PDF error size
-	
+
 	//[FRAME_n]
 	std::vector<SPXPlotConfiguration> plotConfigurations;	//Options for each plot
-	
+
 	void SetDefaults(void);
 	unsigned int ParseNumberOfPlots(void);
 	void ParsePlotConfigurations(unsigned int numPlots);
-	
+
 public:
 
 	//These functions simplify the main file's interface to parsing
@@ -103,29 +103,29 @@ public:
 	void PrintPDFSteeringFiles(void);
 	void PrintDataSteeringFiles(void);
 	void PrintGridSteeringFiles(void);
-	
+
 	void Parse(void);
 	void ParsePDFSteeringFiles(void);
 	void ParseDataSteeringFiles(void);
 	void ParseGridSteeringFiles(void);
-	
-	explicit SPXSteeringFile(const std::string &filename) : debug(false){	
+
+	explicit SPXSteeringFile(const std::string &filename) : debug(false){
 		//Set filename
-		this->filename = filename;		
+		this->filename = filename;
 	}
-	
+
 	const std::string & GetFilename(void) const {
 		return this->filename;
 	}
-	
+
 	void SetDebug(bool b) {
 		debug = b;
 	}
-	
+
 	bool GetDebug(void) const {
 		return this->debug;
 	}
-	
+
 	const std::string & GetPDFDirectory(void) const {
 		return this->pdfDirectory;
 	}
@@ -133,67 +133,67 @@ public:
 	const std::string & GetDataDirectory(void) const {
 		return this->dataDirectory;
 	}
-	
+
 	const std::string & GetGridDirectory(void) const {
 		return this->gridDirectory;
 	}
-	
+
 	bool GetPlotBand(void) const {
 		return this->plotBand;
 	}
-	
+
 	bool GetPlotErrorTicks(void) const {
 		return this->plotErrorTicks;
 	}
-	
+
 	bool GetPlotMarker(void) const {
 		return this->plotMarker;
 	}
-	
+
 	bool GetPlotStaggered(void) const {
 		return this->plotStaggered;
 	}
-	
+
 	double GetXLegend(void) const {
 		return this->xLegend;
 	}
-	
+
 	double GetYLegend(void) const {
 		return this->yLegend;
 	}
-	
+
 	const std::string & GetRatioTitle(void) const {
 		return this->ratioTitle;
 	}
-	
-	const SPXRatioStyle & GetRatioStyle(void) const {
+
+	SPXRatioStyle & GetRatioStyle(void) {
 		return this->ratioStyle;
 	}
-	
-	const SPXOverlayStyle & GetOverlayStyle(void) const {
+
+	SPXOverlayStyle & GetOverlayStyle(void) {
 		return this->overlayStyle;
 	}
-	
-	const SPXDisplayStyle & GetDisplayStyle(void) const {
+
+	SPXDisplayStyle & GetDisplayStyle(void) {
 		return this->displayStyle;
 	}
-	
+
 	double GetYOverlayMin(void) const {
 		return this->yOverlayMin;
 	}
-	
+
 	double GetYOverlayMax(void) const {
 		return this->yOverlayMax;
 	}
-	
+
 	double GetYRatioMin(void) const {
 		return this->yRatioMin;
 	}
-	
+
 	double GetYRatioMax(void) const {
 		return this->yRatioMax;
 	}
-	
+
 	const std::vector<std::string> GetPDFSteeringFilepaths(void) const {
 		std::vector<std::string> tmpVector;
 		for(int i = 0; i < pdfSteeringFiles.size(); i++) {
@@ -205,59 +205,59 @@ public:
 	unsigned int GetNumberOfPDFSteeringFiles(void) const {
 		return this->pdfSteeringFiles.size();
 	}
-	
+
 	std::vector<SPXPDFSteeringFile> & GetPDFSteeringFiles(void) {
 		return this->pdfSteeringFiles;
 	}
-	
+
 	SPXPDFSteeringFile & GetPDFSteeringFile(unsigned int index) {
 		if((index + 1) > pdfSteeringFiles.size()) {
 			int top = pdfSteeringFiles.size() - 1;
 			throw SPXOutOfRangeException(top, index, "SPXSteeringFile::GetPDFSteeringFile: Index out of range");
 		}
-		
+
 		return pdfSteeringFiles.at(index);
 	}
-	
+
 	int GetPDFFillStyle(void) const {
 		return this->pdfFillStyle;
 	}
-	
+
 	int GetPDFFillColor(void) const {
 		return this->pdfFillColor;
-	}	
-	
+	}
+
 	int GetPDFMarkerStyle(void) const {
 		return this->pdfMarkerStyle;
 	}
-	
+
 	const SPXPDFBandType & GetPDFBandType(void) const {
 		return this->pdfBandType;
 	}
-	
+
 	const SPXPDFErrorType & GetPDFErrorType(void) const {
 		return this->pdfErrorType;
 	}
-	
+
 	const SPXPDFErrorSize & GetPDFErrorSize(void) const {
 		return this->pdfErrorSize;
 	}
-	
+
 	unsigned int GetNumberOfPlotConfigurations(void) const {
 		return this->plotConfigurations.size();
 	}
-	
+
 	std::vector<SPXPlotConfiguration> & GetPlotConfigurationsVector(void) {
 		return this->plotConfigurations;
 	}
-	
+
 	SPXPlotConfiguration & GetPlotConfiguration(unsigned int index) {
-		
+
 		if((index + 1) > plotConfigurations.size()) {
 			int top = plotConfigurations.size() - 1;
 			throw SPXOutOfRangeException(top, index, "SPXSteeringFile::GetPlotConfiguration: Index out of range");
 		}
-		
+
 		return plotConfigurations.at(index);
 	}
 
@@ -268,7 +268,7 @@ public:
 	SPXPlotConfigurationInstance & GetPlotConfigurationInstance(unsigned int pci, unsigned int pcii) {
 		return plotConfigurations.at(pci).GetPlotConfigurationInstance(pcii);
 	}
-	
+
 	SPXDataSteeringFile & GetDataSteeringFile(unsigned int pci, unsigned int pcii) {
 		return plotConfigurations.at(pci).GetPlotConfigurationInstance(pcii).dataSteeringFile;
 	}
@@ -276,7 +276,7 @@ public:
 	SPXGridSteeringFile & GetGridSteeringFile(unsigned int pci, unsigned int pcii) {
 		return plotConfigurations.at(pci).GetPlotConfigurationInstance(pcii).gridSteeringFile;
 	}
-	
+
 };
 
 #endif

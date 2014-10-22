@@ -97,7 +97,7 @@ void SPXPlot::Plot(void) {
 	}
 
 	//Divide the canvas into Overlay/Ratio Pads as required
-	const SPXDisplayStyle &ds = steeringFile->GetDisplayStyle();
+	SPXDisplayStyle &ds = steeringFile->GetDisplayStyle();
 
 	double xLowOverlay = 0.0;
 	double xUpOverlay = 1.0;
