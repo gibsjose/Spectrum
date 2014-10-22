@@ -47,7 +47,7 @@ public:
 	void DrawRatio(void);
 	void UpdateCanvas(void);
 	void CanvasToPNG(void);
-	std::string GetPNGFilename(std::string desc)
+	std::string GetPNGFilename(std::string desc);
 
 	static bool GetDebug(void) {
 		return debug;
