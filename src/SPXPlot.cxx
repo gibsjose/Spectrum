@@ -97,7 +97,7 @@ void SPXPlot::Plot(void) {
 	}
 
 	//Divide the canvas into Overlay/Ratio Pads as required
-	SPXDisplayStyle &ds = steeringFile->GetDisplayStyle();
+	const SPXDisplayStyle &ds = steeringFile->GetDisplayStyle();
 
 	double xLowOverlay = 0.0;
 	double xUpOverlay = 1.0;
@@ -109,7 +109,7 @@ void SPXPlot::Plot(void) {
 	double yLowRatio = 0.0;
 	double yUpRatio = 1.0;
 
-	double leftMargin = 0.15
+	double leftMargin = 0.15;
 	double rightMargin = 0.05;
 	double bottomMargin = 0.001;
 	double topMargin = 0.001;
@@ -183,7 +183,7 @@ void SPXPlot::Plot(void) {
 	overlayPad->cd();
 
 	if(debug) {
-		std::cout << cn << mn << "Overlay Pad (" << overlayPadID << ") frame drawn with dimensions: " << std::endl;
+		std::cout << cn << mn << "Overlay Pad frame drawn with dimensions: " << std::endl;
 		std::cout << "\t xMin = " << xMin << std::endl;
 		std::cout << "\t xMax = " << xMax << std::endl;
 		std::cout << "\t yMin = " << yMin << std::endl;
