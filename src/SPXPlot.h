@@ -34,11 +34,15 @@ public:
 
 	void Initialize(void);
 	void Plot(void);
-	
+
+	//Helper methods
+	void SPXPlot::CreateCanvas(void);
+	void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax);
+
 	static bool GetDebug(void) {
 		return debug;
 	}
-	
+
 	static void SetDebug(bool b) {
 		debug = b;
 

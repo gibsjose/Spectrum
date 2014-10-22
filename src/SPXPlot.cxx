@@ -36,6 +36,21 @@ void SPXPlot::Initialize(void) {
 void SPXPlot::Plot(void) {
 	std::string mn = "Plot:: ";
 
+	//Perform plotting
+	CreateCanvas();
+	DivideCanvasIntoPads();
+	ConfigurePads();
+	DrawOverlayPadFrame();
+	DrawRatioPadFrame();
+	DrawOverlay();
+	DrawRatio();
+	UpdateCanvas();
+
+	//Create a PNG of the canvas
+	CanvasToPNG();
+}
+
+void SPXPlot::CreateCanvas(void) {
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 
 	std::ostringstream oss;
@@ -60,14 +75,11 @@ void SPXPlot::Plot(void) {
 		std::cout << cn << mn << "Canvas (" << canvasID << ") created for Plot ID " << id <<
 			" with dimensions: " << ww << " x " << wh << " and title: " << pc.GetDescription() << std::endl;
 	}
+}
 
-	//@TODO Where should these come from?
-	double xMin; // = 0;
-	double xMax; // = 3000;
-	double yMin; // = 0;
-	double yMax; // = 0.003;
+//Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
+void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax) {
 
-	//Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
 	std::vector<TGraphAsymmErrors *> graphs;
 	{
 		//Data graphs
@@ -95,29 +107,131 @@ void SPXPlot::Plot(void) {
 			throw SPXGraphException("yMin calculated to be larger than yMax");
 		}
 	}
+}
 
-	//Divide the canvas into Overlay/Ratio Pads as required
-	SPXDisplayStyle &ds = steeringFile->GetDisplayStyle();
+//Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
+void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax) {
 
-	double xLowOverlay = 0.0;
-	double xUpOverlay = 1.0;
-	double yLowOverlay = 0.4;
-	double yUpOverlay = 1.0;
+	std::vector<TGraphAsymmErrors *> graphs;
+	{
+		//Data graphs
+		for(int i = 0; i < data.size(); i++) {
+			graphs.push_back(data[i].GetStatisticalErrorGraph());
+			graphs.push_back(data[i].GetSystematicErrorGraph());
+		}
 
-	double xLowRatio = 0.0;
-	double xUpRatio = 1.0;
-	double yLowRatio = 0.0;
-	double yUpRatio = 1.0;
+		//Cross sections
+		for(int i = 0; i < crossSections.size(); i++) {
+			graphs.push_back(crossSections[i].GetPDFBandResults());
+		}
 
-	double leftMargin = 0.15;
-	double rightMargin = 0.05;
-	double bottomMargin = 0.001;
-	double topMargin = 0.001;
+		xMin = SPXGraphUtilities::GetXMin(graphs);
+		xMax = SPXGraphUtilities::GetXMax(graphs);
+		yMin = SPXGraphUtilities::GetYMin(graphs);
+		yMax = SPXGraphUtilities::GetYMax(graphs);
+
+		//Sanity check
+		if(xMin > xMax) {
+			throw SPXGraphException("xMin calculated to be larger than xMax");
+		}
+
+		if(yMin > yMax) {
+			throw SPXGraphException("yMin calculated to be larger than yMax");
+		}
+	}
+}
+
+//Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
+void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax) {
+
+	//@TODO Implement determining ratio frame bounds
+	/*
+	std::vector<TGraphAsymmErrors *> graphs;
+	{
+		//Data graphs
+		for(int i = 0; i < data.size(); i++) {
+			graphs.push_back(data[i].GetStatisticalErrorGraph());
+			graphs.push_back(data[i].GetSystematicErrorGraph());
+		}
+
+		//Cross sections
+		for(int i = 0; i < crossSections.size(); i++) {
+			graphs.push_back(crossSections[i].GetPDFBandResults());
+		}
+
+		xMin = SPXGraphUtilities::GetXMin(graphs);
+		xMax = SPXGraphUtilities::GetXMax(graphs);
+		yMin = SPXGraphUtilities::GetYMin(graphs);
+		yMax = SPXGraphUtilities::GetYMax(graphs);
+
+		//Sanity check
+		if(xMin > xMax) {
+			throw SPXGraphException("xMin calculated to be larger than xMax");
+		}
+
+		if(yMin > yMax) {
+			throw SPXGraphException("yMin calculated to be larger than yMax");
+		}
+	}
+	*/
+
+	xMin = 0;
+	xMax = 0;
+	yMin = 0;
+	yMax = 0;
+}
+
+void SPXPlot::DivideCanvasIntoPads(void) {
+	std::string mn = "DivideCanvasIntoPads: ";
+
+	if(!canvas) {
+		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::CreateCanvas before creating the pads");
+	}
 
 	//Divide the TCanvas and get pointers to TPads
 	canvas->Divide(1, 2);
 	overlayPad = (TPad *)canvas->GetListOfPrimitives()->FindObject(TString(canvasID + "_1"));
 	ratioPad = (TPad *)canvas->GetListOfPrimitives()->FindObject(TString(canvasID + "_2"));
+
+	if(!overlayPad || !ratioPad) {
+		throw SPXROOTException(cn + mn + "There was an error while getting the TPads from the divided TCanvas");
+	}
+}
+
+void SPXPlot::ConfigurePads(void) {
+	std::string mn = "ConfigurePads: ";
+
+	if(!overlayPad || !ratioPad) {
+		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DivideCanvasIntoPads before configuring the pads");
+	}
+
+	//Get the plot configuration and display style from steering file
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXDisplayStyle &ds = steeringFile->GetDisplayStyle();
+
+	//xLow/Up and yLow/Up: The TPad bounds for the Overlay and Ratio TPads
+	double xLowOverlay, xUpOverlay, yLowOverlay, yUpOverlay;
+	double xLowRatio, xUpRatio, yLowRatio, yUpRatio;
+
+	//Margins
+	double leftMargin, rightMargin, bottomMargin, topMargin;
+
+	//Set defaults for TPad bounds
+	xLowOverlay = 0.0;
+	xUpOverlay = 1.0;
+	yLowOverlay = 0.4;
+	yUpOverlay = 1.0;
+
+	xLowRatio = 0.0;
+	xUpRatio = 1.0;
+	yLowRatio = 0.0;
+	yUpRatio = 0.0;
+
+	//Set defaults for margins
+	leftMargin = 0.15;
+	rightMargin = 0.05;
+	bottomMargin = 0.001;
+	topMargin = 0.001;
 
 	if(ds.ContainsOverlay() && ds.ContainsRatio()) {
 		if(debug) std::cout << cn << mn << "Plotting Overlay and Ratio" << std::endl;
@@ -130,8 +244,6 @@ void SPXPlot::Plot(void) {
 
 	} else if(ds.ContainsOverlay() && !ds.ContainsRatio()) {
 		if(debug) std::cout << cn << mn << "Only plotting Overlay" << std::endl;
-		//overlayPad = (TPad *)canvas->GetListOfPrimitives()->FindObject(TString(canvasID + "_1"));
-		//ratioPad = NULL;
 
 		yLowOverlay = 0.0;
 		bottomMargin = 0.15;
@@ -139,8 +251,6 @@ void SPXPlot::Plot(void) {
 
 	} else if(!ds.ContainsOverlay() && ds.ContainsRatio()) {
 		if(debug) std::cout << cn << mn << "Only plotting Ratio" << std::endl;
-		//overlayPad = NULL;
-		//ratioPad = (TPad *)canvas->GetListOfPrimitives()->FindObject(TString(canvasID + "_1"));
 
 		yLowOverlay = 1.0;
 		yUpRatio = 1.0;
@@ -154,6 +264,19 @@ void SPXPlot::Plot(void) {
 	overlayPad->SetBottomMargin(bottomMargin);
 	overlayPad->Draw();
 
+	if(debug) {
+		std::cout << cn << mn << "Configured Overlay Pad:" << std::endl;
+		std::cout << "\t xLow = " << xLowOverlay << std::endl;
+		std::cout << "\t xUp  = " << xUpOverlay << std::endl;
+		std::cout << "\t yLow = " << yLowOverlay << std::endl;
+		std::cout << "\t yUp  = " << yUpOverlay << std::endl;
+		std::cout << "\t Fill Color = " << 0 << std::endl;
+		std::cout << "\t Left Margin = " << overlayPad->GetLeftMargin() << std::endl;
+		std::cout << "\t Right Margin = " << overlayPad->GetRightMargin() << std::endl;
+		std::cout << "\t Top Margin = " << overlayPad->GetTopMargin() << std::endl;
+		std::cout << "\t Bottom Margin = " << overlayPad->GetBottomMargin() << std::endl;
+ 	}
+
 	//Resize and style ratio pad
 	ratioPad->SetPad(xLowRatio, yLowRatio, xUpRatio, yUpRatio);
 	ratioPad->SetFillColor(0);
@@ -161,6 +284,20 @@ void SPXPlot::Plot(void) {
 	ratioPad->SetRightMargin(rightMargin);
 	ratioPad->Draw();
 
+	if(debug) {
+		std::cout << cn << mn << "Configured Ratio Pad:" << std::endl;
+		std::cout << "\t xLow = " << xLowRatio << std::endl;
+		std::cout << "\t xUp  = " << xUpRatio << std::endl;
+		std::cout << "\t yLow = " << yLowRatio << std::endl;
+		std::cout << "\t yUp  = " << yUpRatio << std::endl;
+		std::cout << "\t Fill Color = " << 0 << std::endl;
+		std::cout << "\t Left Margin = " << ratioPad->GetLeftMargin() << std::endl;
+		std::cout << "\t Right Margin = " << ratioPad->GetRightMargin() << std::endl;
+		std::cout << "\t Top Margin = " << ratioPad->GetTopMargin() << std::endl;
+		std::cout << "\t Bottom Margin = " << ratioPad->GetBottomMargin() << std::endl;
+	}
+
+	//Set linear/logarithmic axes
 	if(pc.IsXLog()) {
 		if(debug) std::cout << cn << mn << "Setting X Axis to Logarithmic Scale for Plot " << id << std::endl;
 		overlayPad->SetLogx();
@@ -172,15 +309,18 @@ void SPXPlot::Plot(void) {
 		overlayPad->SetLogy();
 		//ratioPad->SetLogy();	//@TODO How to handle this in SF? What to do for negatives?
 	}
+}
 
-	overlayPad->cd();
+void SPXPlot::DrawOverlayPadFrame(void) {
+	std::String mn = "DrawOverlayPadFrame: ";
+
+	if(!overlayPad) {
+		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::ConfigurePads before drawing the pad frame");
+	}
+
+	double xMin, xMax, yMin, yMax;
+	DetermineOverlayFrameBounds(xMin, xMax, yMin, yMax);
 	overlayPad->DrawFrame(xMin, yMin, xMax, yMax);
-
-
-	ratioPad->cd();
-	ratioPad->DrawFrame(xMin, -1, xMax, 1);
-
-	overlayPad->cd();
 
 	if(debug) {
 		std::cout << cn << mn << "Overlay Pad frame drawn with dimensions: " << std::endl;
@@ -189,6 +329,53 @@ void SPXPlot::Plot(void) {
 		std::cout << "\t yMin = " << yMin << std::endl;
 		std::cout << "\t yMax = " << yMax << std::endl;
 	}
+}
+
+void SPXPlot::DrawRatioPadFrame(double xMinOverlay, double xMaxOverlay) {
+	std::string mn = "DrawRatioPadFrame: ";
+
+	if(!ratioPad) {
+		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::ConfigurePads before drawing the pad frame");
+	}
+
+	double xMin, xMax, yMin, yMax;
+	DetermineRatioFrameBounds(xMin, xMax, yMin, yMax);
+
+	//@TODO DEBUG! Remove...
+	yMin = -1;
+	yMax = 1;
+
+	//Force xMin/Max to match Overlay (already should)
+	xMin = xMinOverlay;
+	xMax = xMaxOverlay;
+
+	ratioPad->DrawFrame(xMin, yMin, xMax, yMax);
+
+	if(debug) {
+		std::cout << cn << mn << "Ratio Pad frame drawn with dimensions: " << std::endl;
+		std::cout << "\t xMin = " << xMin << std::endl;
+		std::cout << "\t xMax = " << xMax << std::endl;
+		std::cout << "\t yMin = " << yMin << std::endl;
+		std::cout << "\t yMax = " << yMax << std::endl;
+	}
+}
+
+void SPXPlot::DrawOverlay(void) {
+	std::string mn = "DrawOverlay: ";
+
+	if(!overlayPad) {
+		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DrawOverlayPadFrame before drawing the overlay graphs");
+	}
+
+	//Do nothing if not drawing overlay
+	SPXDisplayStyle &ds = steeringFile->GetDisplayStyle();
+
+	if(!ds.ContainsOverlay()) {
+		return;
+	}
+
+	//Change to the overlay pad
+	overlayPad->cd();
 
 	//Draw data graphs on Overlay Pad
 	for(int i = 0; i < data.size(); i++) {
@@ -204,25 +391,71 @@ void SPXPlot::Plot(void) {
 
 		if(debug) std::cout << cn << mn << "Sucessfully drew cross section for Plot " << id << " cross section " << i << std::endl;
 	}
+}
 
-	//Update Overlay Pad
+void SPXPlot::DrawRatio(void) {
+	std::string mn = "DrawRatio: ";
+
+	if(!ratioPad) {
+		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DrawRatioPadFrame before drawing the ratio graphs");
+	}
+
+	//Do nothing if not drawing ratio
+	SPXDisplayStyle &ds = steeringFile->GetDisplayStyle();
+
+	if(!ds.ContainsRatio()) {
+		return;
+	}
+
+	//Change to the ratio pad
+	ratioPad->cd();
+
+	//@TODO Create and draw ratio graphs
+}
+
+void SPXPlot::UpdateCanvas(void) {
+	std::string mn = "UpdateCanvas: ";
+
+	if(!canvas) {
+		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::CreateCanvas before updating the canvas");
+	}
+
 	canvas->Modified();
 	canvas->Update();
+}
 
-	//Create PNG Filename
-	std::string pngFilename;
+void SPXPlot::CanvasToPNG(void) {
+	std::string mn = "CanvasToPNG: ";
 
-	//@TODO Spaces -> Underscores and handle duplicates
-	//@TODO Should probably write a function: string CreatePNGFilename(string output dir, string desc);
-	//pngFilename = PlotOutputDirectory + "/" + pc.GetDescription() + ".png";
-	//@TODO Implement passing plot output directory as arugment and defaulting to ./plots
+	if(!canvas) {
+		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::CreateCanvas before printing the canvas as a PNG");
+	}
 
-	pngFilename = "./plots/" + pc.GetDescription() + "_plot_" + (ULong_t)id + ".png";
+	//Get the plot configuration
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 
-	if(debug) std::cout << cn << mn << "Creating Plot PNG with name = " << pngFilename << std::endl;
+	//Create/get the PNG filename
+	std::string filename;
+	filename = GetPNGFilename(pc.GetDescription());
 
 	//Draw PNG File
-	canvas->Print(pngFilename.c_str());
+	canvas->Print(filename.c_str());
+}
+
+std::string SPXPlot::GetPNGFilename(std::string desc) {
+
+	std::string filename;
+
+	//Fill in dummy description if empty
+	if(desc.empty()) {
+		desc = std::string("general");
+	}
+
+	filename = "./plots/" + desc + "_plot_" + (ULong_t)id + ".png";
+
+	if(debug) std::cout << cn << mn << "Created PNG Filename: " << filename << std::endl;
+
+	return filename;
 }
 
 void SPXPlot::InitializeCrossSections(void) {
