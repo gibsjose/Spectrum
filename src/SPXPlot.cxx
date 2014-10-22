@@ -291,6 +291,8 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 
 	double xMin, xMax, yMin, yMax;
 	DetermineOverlayFrameBounds(xMin, xMax, yMin, yMax);
+
+	overlayPad->cd();
 	overlayPad->DrawFrame(xMin, yMin, xMax, yMax);
 
 	if(debug) {
@@ -325,6 +327,7 @@ void SPXPlot::DrawRatioPadFrame(void) {
 
 	if(debug) std::cout << xMin << std::endl << xMax << std::endl << yMin << std::endl << yMax << std::endl;
 
+	ratioPad->cd();
 	ratioPad->DrawFrame(xMin, yMin, xMax, yMax);
 
 	if(debug) {
