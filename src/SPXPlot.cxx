@@ -59,9 +59,9 @@ void SPXPlot::SetAxisLabels(void) {
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXDisplayStyle &ds = steeringFile->GetDisplayStyle();
 
-	std::string xLabel = pc.GetConfigurationInstance(0).dataSteeringFile.GetXLabel();	//0th instance is master
-	std::string yLabelOverlay = pc.GetConfigurationInstance(0).dataSteeringFile.GetYLabel();
-	std::string yLabelRatio = (!steeringFile->GetRatioTitle().empty ? steeringFile->GetRatioTitle() : steeringFile->GetRatioStyle().ToString());
+	std::string xLabel = pc.GetPlotConfigurationInstance(0).dataSteeringFile.GetXLabel();	//0th instance is master
+	std::string yLabelOverlay = pc.GetPlotConfigurationInstance(0).dataSteeringFile.GetYLabel();
+	std::string yLabelRatio = (!steeringFile->GetRatioTitle().empty() ? steeringFile->GetRatioTitle() : steeringFile->GetRatioStyle().ToString());
 
 	//Set Overlay Y-Axis Label
 	overlayFrameHisto->SetYTitle(yLabelOverlay.c_str());
@@ -72,11 +72,11 @@ void SPXPlot::SetAxisLabels(void) {
 	//Set X-Axis Label
 	if(ds.ContainsOverlay() && ds.ContainsRatio()) {
 		//Set Overlay X-Axis Label
-		overlayFrameHisto->SetXTitle(xLabel);
+		overlayFrameHisto->SetXTitle(xLabel.c_str());
 
 	} else {
 		//Set Ratio X-Axis Label
-		ratioFrameHisto->SetXTitle(xLabel);
+		ratioFrameHisto->SetXTitle(xLabel.c_str());
 	}
 
 	overlayPad->cd();
@@ -379,7 +379,7 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::ConfigurePads before drawing the pad frame");
 	}
 
-	DetermineOverlayFrameBounds(xMinOvleray, xMaxOverlay, yMinOverlay, yMaxOverlay);
+	DetermineOverlayFrameBounds(xMinOverlay, xMaxOverlay, yMinOverlay, yMaxOverlay);
 
 	overlayPad->cd();
 	overlayFrameHisto = overlayPad->DrawFrame(xMinOverlay, yMinOverlay, xMaxOverlay, yMaxOverlay);
