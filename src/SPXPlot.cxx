@@ -42,10 +42,10 @@ void SPXPlot::Plot(void) {
 	ConfigurePads();
 	DrawOverlayPadFrame();
 	DrawRatioPadFrame();
-	DrawOverlay();
-	DrawRatio();
 	SetAxisLabels();
 	ScaleAxes();
+	DrawOverlay();
+	DrawRatio();
 	//DrawLegend();
 	UpdateCanvas();
 
