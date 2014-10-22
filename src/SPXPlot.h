@@ -36,6 +36,8 @@ public:
 	void Plot(void);
 
 	//Helper methods //@TODO Public or private?
+	void SetAxisLabels(void);
+	void ScaleAxes(void);
 	void CreateCanvas(void);
 	void DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax);
 	void DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax);
@@ -73,6 +75,24 @@ private:
 	TCanvas *canvas;
 	TPad *overlayPad;
 	TPad *ratioPad;
+
+	TH1F *overlayFrameHisto;
+	TH1F *ratioFrameHisto;
+
+	TAxis *xAxisOverlay;
+	TAxis *yAxisOverlay;
+	TAxis *xAxisRatio;
+	TAxis *yAxisRatio;
+
+	//Frame Bounds
+	double xMinOverlay;
+	double xMaxOverlay;
+	double yMinOverlay;
+	double yMaxOverlay;
+	double xMinRatio;
+	double xMaxRatio;
+	double yMinRatio;
+	double yMaxRatio;
 
 	void InitializeData(void);
 	void InitializeCrossSections(void);

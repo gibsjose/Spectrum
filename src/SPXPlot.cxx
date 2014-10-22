@@ -44,10 +44,100 @@ void SPXPlot::Plot(void) {
 	DrawRatioPadFrame();
 	DrawOverlay();
 	DrawRatio();
+	SetAxisLabels();
+	ScaleAxes();
+	//DrawLegend();
 	UpdateCanvas();
 
 	//Create a PNG of the canvas
 	CanvasToPNG();
+}
+
+void SPXPlot::SetAxisLabels(void) {
+	std::string mn = "SetAxisLabels: ";
+
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXDisplayStyle &ds = steeringFile->GetDisplayStyle();
+
+	std::string xLabel = pc.GetConfigurationInstance(0).dataSteeringFile.GetXLabel();	//0th instance is master
+	std::string yLabelOverlay = pc.GetConfigurationInstance(0).dataSteeringFile.GetYLabel();
+	std::string yLabelRatio = (!steeringFile->GetRatioTitle().empty ? steeringFile->GetRatioTitle() : steeringFile->GetRatioStyle().ToString());
+
+	//Set Overlay Y-Axis Label
+	overlayFrameHisto->SetYTitle(yLabelOverlay.c_str());
+
+	//Set Ratio Y-Axis Label
+	ratioFrameHisto->SetYTitle(yLabelRatio.c_str());
+
+	//Set X-Axis Label
+	if(ds.ContainsOverlay() && ds.ContainsRatio()) {
+		//Set Overlay X-Axis Label
+		overlayFrameHisto->SetXTitle(xLabel);
+
+	} else {
+		//Set Ratio X-Axis Label
+		ratioFrameHisto->SetXTitle(xLabel);
+	}
+
+	overlayPad->cd();
+	overlayFrameHisto->Draw();
+
+	ratioPad->cd();
+	ratioFrameHisto->Draw();
+}
+
+void SPXPlot::ScaleAxes(void) {
+	std::string mn = "ScaleAxes: ";
+
+	SPXDisplayStyle &ds = steeringFile->GetDisplayStyle();
+
+	double scale = 1.0;
+
+	//Change scale to 1.5 if only 1 are plotted
+	if(ds.ContainsOverlay() ^ ds.ContainsRatio()) {
+		scale = 1.5;
+	}
+
+	double xTitleOffset, yTitleOffset;
+
+	xTitleOffset = 1.1;
+	yTitleOffset = 0.8;
+
+	//Scale Overlay Axes
+	xAxisOverlay->SetTitleOffset(xTitleOffset);
+	yAxisOverlay->SetTitleOffset(yTitleOffset);
+
+	xAxisOverlay->SetLabelSize(xAxisOverlay->GetLabelSize() / scale);
+	yAxisOverlay->SetLabelSize(yAxisOverlay->GetLabelSize() / scale);
+
+	xAxisOverlay->SetTitleSize(xAxisOverlay->GetTitleSize() / scale);
+	yAxisOverlay->SetTitleSize(yAxisOverlay->GetTitleSize() / scale);
+
+	//Scale Ratio Axes
+	xAxisRatio->SetTitleOffset(xTitleOffset);
+
+	double distScale = 0.0;		//Add an offset to y ratio title offset if only ratio is plotted
+	if(!ds.ContainsOverlay() && ds.ContainsRatio()) {
+		distScale = 0.5;
+	}
+	yAxisRatio->SetTitleOffset(yTitleOffset + distScale);
+
+	double rScale = 1.0;
+	if(ds.ContainsOverlay()) {
+		rScale = (0.4 - 0.0) / (1.0 - 0.4);
+	}
+
+	xAxisRatio->SetLabelSize(xAxisOverlay->GetLabelSize() / rScale);
+	yAxisRatio->SetLabelSize(yAxisOverlay->GetLabelSize() / rScale);
+
+	xAxisRatio->SetTitleSize(xAxisOverlay->GetTitleSize() / rScale);
+	yAxisRatio->SetTitleSize(yAxisOverlay->GetTitleSize() / rScale);
+
+	overlayPad->cd();
+	overlayFrameHisto->Draw();
+
+	ratioPad->cd();
+	ratioFrameHisto->Draw();
 }
 
 void SPXPlot::CreateCanvas(void) {
@@ -289,18 +379,20 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::ConfigurePads before drawing the pad frame");
 	}
 
-	double xMin, xMax, yMin, yMax;
-	DetermineOverlayFrameBounds(xMin, xMax, yMin, yMax);
+	DetermineOverlayFrameBounds(xMinOvleray, xMaxOverlay, yMinOverlay, yMaxOverlay);
 
 	overlayPad->cd();
-	overlayPad->DrawFrame(xMin, yMin, xMax, yMax);
+	overlayFrameHisto = overlayPad->DrawFrame(xMinOverlay, yMinOverlay, xMaxOverlay, yMaxOverlay);
+
+	xAxisOverlay = overlayFrameHisto->GetXaxis();
+	yAxisOverlay = overlayFrameHisto->GetYaxis();
 
 	if(debug) {
 		std::cout << cn << mn << "Overlay Pad frame drawn with dimensions: " << std::endl;
-		std::cout << "\t xMin = " << xMin << std::endl;
-		std::cout << "\t xMax = " << xMax << std::endl;
-		std::cout << "\t yMin = " << yMin << std::endl;
-		std::cout << "\t yMax = " << yMax << std::endl;
+		std::cout << "\t xMin = " << xMinOverlay << std::endl;
+		std::cout << "\t xMax = " << xMaxOverlay << std::endl;
+		std::cout << "\t yMin = " << yMinOverlay << std::endl;
+		std::cout << "\t yMax = " << yMaxOverlay << std::endl;
 	}
 }
 
@@ -311,31 +403,27 @@ void SPXPlot::DrawRatioPadFrame(void) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::ConfigurePads before drawing the pad frame");
 	}
 
-	double xMin, xMax, yMin, yMax;
-	DetermineRatioFrameBounds(xMin, xMax, yMin, yMax);
+	DetermineRatioFrameBounds(xMinRatio, xMaxRatio, yMinRatio, yMaxRatio);
 
-	//@TODO DEBUG! Remove...
-	yMin = -1;
-	yMax = 1;
+	//@TODO DEBUG! Set properly...
+	yMinRatio = -1;
+	yMaxRatio = 1;
 
-	//Force xMin/Max to match Overlay (already should)
-	double xMinOverlay, xMaxOverlay, yMinOverlay, yMaxOverlay;
-	overlayPad->GetRangeAxis(xMinOverlay, yMinOverlay, xMaxOverlay, yMaxOverlay);
-
-	xMin = xMinOverlay;
-	xMax = xMaxOverlay;
-
-	if(debug) std::cout << xMin << std::endl << xMax << std::endl << yMin << std::endl << yMax << std::endl;
+	xMinRatio = xMinOverlay;
+	xMaxRatio = xMaxOverlay;
 
 	ratioPad->cd();
-	ratioPad->DrawFrame(xMin, yMin, xMax, yMax);
+	ratioFrameHisto = ratioPad->DrawFrame(xMinRatio, yMinRatio, xMaxRatio, yMaxRatio);
+
+	xAxisRatio = ratioFrameHisto->GetXaxis();
+	yAxisRatio = ratioFrameHisto->GetYaxis();
 
 	if(debug) {
 		std::cout << cn << mn << "Ratio Pad frame drawn with dimensions: " << std::endl;
-		std::cout << "\t xMin = " << xMin << std::endl;
-		std::cout << "\t xMax = " << xMax << std::endl;
-		std::cout << "\t yMin = " << yMin << std::endl;
-		std::cout << "\t yMax = " << yMax << std::endl;
+		std::cout << "\t xMin = " << xMinRatio << std::endl;
+		std::cout << "\t xMax = " << xMaxRatio << std::endl;
+		std::cout << "\t yMin = " << yMinRatio << std::endl;
+		std::cout << "\t yMax = " << yMaxRatio << std::endl;
 	}
 }
 
