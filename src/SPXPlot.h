@@ -35,9 +35,19 @@ public:
 	void Initialize(void);
 	void Plot(void);
 
-	//Helper methods
+	//Helper methods //@TODO Public or private?
 	void SPXPlot::CreateCanvas(void);
 	void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax);
+	void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax);
+	void SPXPlot::DivideCanvasIntoPads(void);
+	void SPXPlot::ConfigurePads(void);
+	void SPXPlot::DrawOverlayPadFrame(void);
+	void SPXPlot::DrawRatioPadFrame(void);
+	void SPXPlot::DrawOverlay(void);
+	void SPXPlot::DrawRatio(void);
+	void SPXPlot::UpdateCanvas(void);
+	void SPXPlot::CanvasToPNG(void);
+	std::string SPXPlot::GetPNGFilename(std::string desc)
 
 	static bool GetDebug(void) {
 		return debug;
