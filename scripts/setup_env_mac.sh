@@ -10,6 +10,7 @@
 #
 #Base directory for installation of APPLgrid, LHAPDF, Hoppet, FastJet, etc.
 #export BASEDIR=/afs/cern.ch/work/$U/$USER/usr/
+export BASEDIR=/usr/local
 
 #
 #
@@ -31,29 +32,27 @@
 ### ROOT ###
 # Uncomment to use ROOT v5.34.05
 #export ROOTSYS=/afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.05/${platform}/root
-ROOTSYS=/usr/local/root
+export ROOTSYS=/usr/local/root
 
 ### LHAPDF ###
-#export LHAPDFPATH=${BASEDIR}/lhapdf/5.9.1
+export LHAPDFPATH=${BASEDIR}/lhapdf/5.9.1
 
 ### FASTJET ###
 #export FASTJET=/afs/cern.ch/sw/lcg/external/fastjet/3.0.3/${platform}
 
 ### HOPPET ###
-#export HOPPET=${BASEDIR}/hoppet/1.1.5
+export HOPPET=${BASEDIR}/hoppet/1.1.5
 
 ### APPLGRID ###
-#export APPLGRID=${BASEDIR}/applgrid/1.4.56
+export APPLGRID=${BASEDIR}/applgrid/1.4.56
 
 ### SHERPA ###
 #export SHERPA=${BASEDIR}/sherpa
 
 #
 ### explicitly update paths
-#export PATH=${FASTJET}/bin:${HOPPET}/bin:${APPLGRID}/bin:${SHERPA}/bin:${ROOTSYS}/bin:${LHAPDFPATH}/bin:${PATH}
-export PATH=${PATH}:${ROOTSYS}/bin
-#export LD_LIBRARY_PATH=${FASTJET}/lib:${HOPPET}/lib:${APPLGRID}/lib:${SHERPA}/lib:${ROOTSYS}/lib:${LHAPDFPATH}/lib:${LD_LIBRARY_PATH}
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${ROOTSYS}/lib
+export PATH=${HOPPET}/bin:${APPLGRID}/bin:${ROOTSYS}/bin:${LHAPDFPATH}/bin:${PATH}
+export LD_LIBRARY_PATH=${HOPPET}/lib:${APPLGRID}/lib:${ROOTSYS}/lib:${LHAPDFPATH}/lib:${LD_LIBRARY_PATH}
 #
 #
 #
