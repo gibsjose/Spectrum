@@ -51,6 +51,8 @@ void SPXPlot::Plot(void) {
 }
 
 void SPXPlot::CreateCanvas(void) {
+	std::string mn = "CreateCanvas: ";
+
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 
 	std::ostringstream oss;
@@ -74,38 +76,6 @@ void SPXPlot::CreateCanvas(void) {
 	if(debug) {
 		std::cout << cn << mn << "Canvas (" << canvasID << ") created for Plot ID " << id <<
 			" with dimensions: " << ww << " x " << wh << " and title: " << pc.GetDescription() << std::endl;
-	}
-}
-
-//Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
-void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax) {
-
-	std::vector<TGraphAsymmErrors *> graphs;
-	{
-		//Data graphs
-		for(int i = 0; i < data.size(); i++) {
-			graphs.push_back(data[i].GetStatisticalErrorGraph());
-			graphs.push_back(data[i].GetSystematicErrorGraph());
-		}
-
-		//Cross sections
-		for(int i = 0; i < crossSections.size(); i++) {
-			graphs.push_back(crossSections[i].GetPDFBandResults());
-		}
-
-		xMin = SPXGraphUtilities::GetXMin(graphs);
-		xMax = SPXGraphUtilities::GetXMax(graphs);
-		yMin = SPXGraphUtilities::GetYMin(graphs);
-		yMax = SPXGraphUtilities::GetYMax(graphs);
-
-		//Sanity check
-		if(xMin > xMax) {
-			throw SPXGraphException("xMin calculated to be larger than xMax");
-		}
-
-		if(yMin > yMax) {
-			throw SPXGraphException("yMin calculated to be larger than yMax");
-		}
 	}
 }
 
@@ -190,6 +160,7 @@ void SPXPlot::DivideCanvasIntoPads(void) {
 
 	//Divide the TCanvas and get pointers to TPads
 	canvas->Divide(1, 2);
+	std::string canvasID = canvas->GetName();
 	overlayPad = (TPad *)canvas->GetListOfPrimitives()->FindObject(TString(canvasID + "_1"));
 	ratioPad = (TPad *)canvas->GetListOfPrimitives()->FindObject(TString(canvasID + "_2"));
 
@@ -312,7 +283,7 @@ void SPXPlot::ConfigurePads(void) {
 }
 
 void SPXPlot::DrawOverlayPadFrame(void) {
-	std::String mn = "DrawOverlayPadFrame: ";
+	std::string mn = "DrawOverlayPadFrame: ";
 
 	if(!overlayPad) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::ConfigurePads before drawing the pad frame");
@@ -331,7 +302,7 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 	}
 }
 
-void SPXPlot::DrawRatioPadFrame(double xMinOverlay, double xMaxOverlay) {
+void SPXPlot::DrawRatioPadFrame(void) {
 	std::string mn = "DrawRatioPadFrame: ";
 
 	if(!ratioPad) {
@@ -346,6 +317,9 @@ void SPXPlot::DrawRatioPadFrame(double xMinOverlay, double xMaxOverlay) {
 	yMax = 1;
 
 	//Force xMin/Max to match Overlay (already should)
+	double xMinOverlay, xMaxOverlay, yMinOverlay, yMaxOverlay;
+	overlayPad->GetRangeAxis(xMinOverlay, yMinOverlay, xMaxOverlay, yMaxOverlay);
+	
 	xMin = xMinOverlay;
 	xMax = xMaxOverlay;
 
@@ -443,6 +417,7 @@ void SPXPlot::CanvasToPNG(void) {
 }
 
 std::string SPXPlot::GetPNGFilename(std::string desc) {
+	std::string mn = "GetPNGFilename: ";
 
 	std::string filename;
 
