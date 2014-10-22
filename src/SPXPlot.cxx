@@ -70,7 +70,7 @@ void SPXPlot::SetAxisLabels(void) {
 	ratioFrameHisto->SetYTitle(yLabelRatio.c_str());
 
 	//Set X-Axis Label
-	if(ds.ContainsOverlay() && ds.ContainsRatio()) {
+	if(ds.ContainsOverlay() && !ds.ContainsRatio()) {
 		//Set Overlay X-Axis Label
 		overlayFrameHisto->SetXTitle(xLabel.c_str());
 
