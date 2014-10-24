@@ -383,7 +383,6 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 
 	overlayPad->cd();
 	overlayFrameHisto = overlayPad->DrawFrame(xMinOverlay, yMinOverlay, xMaxOverlay, yMaxOverlay);
-
 	xAxisOverlay = overlayFrameHisto->GetXaxis();
 	yAxisOverlay = overlayFrameHisto->GetYaxis();
 
@@ -409,12 +408,12 @@ void SPXPlot::DrawRatioPadFrame(void) {
 	yMinRatio = 0.9;
 	yMaxRatio = 1.1;
 
+	//Force Ratio X Min/Max to match Overlay (should alread match anyway...)
 	xMinRatio = xMinOverlay;
 	xMaxRatio = xMaxOverlay;
 
 	ratioPad->cd();
 	ratioFrameHisto = ratioPad->DrawFrame(xMinRatio, yMinRatio, xMaxRatio, yMaxRatio);
-
 	xAxisRatio = ratioFrameHisto->GetXaxis();
 	yAxisRatio = ratioFrameHisto->GetYaxis();
 
