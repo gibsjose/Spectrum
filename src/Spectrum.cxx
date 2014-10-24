@@ -15,28 +15,45 @@
 #include "SPXAnalysis.h"
 #include "SPXException.h"
 
-//Determines whether or not to draw the actual ROOT application canvases
-#define DRAW_APPLICATION 	true
-
 int main(int argc, char *argv[]) {
 
 	if((argc - 1) < 1) {
-		std::cout << "@usage: Spectrum <steering_file>" << std::endl;
+		std::cout << "@usage: Spectrum [-p] <steering_file>" << std::endl;
 		exit(0);
 	}
 
+	std::string flag;
 	std::string file;
+
+	bool drawApplication = true;
 
 	std::cout << "==================================" << std::endl;
 	std::cout << "      	   Spectrum		        " << std::endl;
 	std::cout << "==================================" << std::endl <<std::endl;
 
-#if DRAW_APPLICATION
-	TApplication *spectrum = new TApplication("Spectrum",0,0);
-  	spectrum->SetReturnFromRun(true);
-#endif
+	//A flag was specified
+	if((argc - 1) > 1) {
+		flag = std::string(argv[1]);
+		file = std::string(argv[2]);
 
-	file = std::string(argv[1]);
+		//PNG-Only mode
+		if(!flag.compare("-p")) {
+			drawApplication = false;
+		}
+	}
+
+	//No flags
+	else {
+		file = std::string(argv[1]);
+		drawApplication = true;
+	}
+
+	TApplication *spectrum;
+
+	if(drawApplication) {
+		spectrum = new TApplication("Spectrum",0,0);
+		spectrum->SetReturnFromRun(true);
+	}
 
 	SPXSteeringFile steeringFile = SPXSteeringFile(file);
 
@@ -63,9 +80,9 @@ int main(int argc, char *argv[]) {
     	exit(-1);
     }
 
-#if DRAW_APPLICATION
-	spectrum->Run(kTRUE);
-#endif
+	if(drawApplication) {
+		spectrum->Run(kTRUE);
+	}
 
 	return 0;
 }
