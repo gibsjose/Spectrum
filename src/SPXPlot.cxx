@@ -406,8 +406,8 @@ void SPXPlot::DrawRatioPadFrame(void) {
 	DetermineRatioFrameBounds(xMinRatio, xMaxRatio, yMinRatio, yMaxRatio);
 
 	//@TODO DEBUG! Set properly...
-	yMinRatio = -1;
-	yMaxRatio = 1;
+	yMinRatio = 0.9;
+	yMaxRatio = 1.1;
 
 	xMinRatio = xMinOverlay;
 	xMaxRatio = xMaxOverlay;
