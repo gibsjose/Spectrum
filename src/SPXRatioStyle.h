@@ -20,7 +20,7 @@
 //Bitfields for determining numerator/denominator contents
 const int RS_INVALID =		-1;
 const int RS_DATA = 		(1 << 0);	//0b00000001
-const int RS_REFERENCE = 	(1 << 1);	//0b00000010	
+const int RS_REFERENCE = 	(1 << 1);	//0b00000010
 const int RS_CONVOLUTE = 	(1 << 2);	//0b00000100
 
 class SPXRatioStyle {
@@ -32,49 +32,49 @@ public:
 		this->denominator = denominator;
 	}
 	explicit SPXRatioStyle(std::string s);
-	
+
 	void Parse(std::string s);
 	void Print(void);
 	std::string ToString(void);
 	bool IsEmpty(void);
 	bool IsValid(void);
-	
+
 	void Clear(void) {
 		numerator = 0;
 		denominator = 0;
 	}
-	
+
 	static bool GetDebug(void) {
 		return debug;
 	}
-	
+
 	static void SetDebug(bool b) {
 		debug = b;
 	}
-	
+
 	//Return cast as (int) so it can be represented
 	// as '-1' during debug and error output
 	int GetNumerator(void) {
 		return (int)numerator;
 	}
-	
+
 	int GetDenominator(void) {
 		return (int)denominator;
 	}
-	
+
 	bool NumeratorContains(unsigned char mask) {
 		if((numerator & mask) && this->IsValid()) {
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	bool DenominatorContains(unsigned char mask) {
 		if((denominator & mask) && this->IsValid()) {
 			return true;
 		}
-		
+
 		return false;
 	}
 
