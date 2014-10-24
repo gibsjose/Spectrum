@@ -21,6 +21,13 @@
 #include "SPXROOT.h"
 #include "SPXException.h"
 
+//Adds extra space for the frame bounds
+#define PERFORM_DELTA_MIN_MAX true
+
+#if PERFORM_DELTA_MIN_MAX
+const double DELTA_MIN_MAX = 0.10;	//Extra space on the graph for min/max: 0.10 = 10%
+#endif
+
 typedef enum DivideErrorType {
 	//@TODO Fill in options here...
 	ZeroAllErrors = 0,				//Set all errors to zero
@@ -46,11 +53,15 @@ public:
 			}
 		}
 
+#if PERFORM_DELTA_MIN_MAX
+		min -= (min * DELTA_MIN_MAX);
+#endif
+
 		return min;
 	}
 
 	static double GetXMax(std::vector<TGraphAsymmErrors *> graphs) {
-		
+
 		double max = -1e30;
 
 		for(int i = 0; i < graphs.size(); i++) {
@@ -63,11 +74,15 @@ public:
 			}
 		}
 
+#if PERFORM_DELTA_MIN_MAX
+		max += (max * DELTA_MIN_MAX);
+#endif
+
 		return max;
 	}
 
 	static double GetYMin(std::vector<TGraphAsymmErrors *> graphs) {
-		
+
 		double min = 1e30;
 
 		for(int i = 0; i < graphs.size(); i++) {
@@ -80,11 +95,14 @@ public:
 			}
 		}
 
+#if PERFORM_DELTA_MIN_MAX
+		min -= (min * DELTA_MIN_MAX);
+#endif
 		return min;
 	}
 
 	static double GetYMax(std::vector<TGraphAsymmErrors *> graphs) {
-		
+
 		double max = -1e30;
 
 		for(int i = 0; i < graphs.size(); i++) {
@@ -97,11 +115,14 @@ public:
 			}
 		}
 
+#if PERFORM_DELTA_MIN_MAX
+		max += (max * DELTA_MIN_MAX);
+#endif
 		return max;
 	}
 
 	static TGraphAsymmErrors * Divide(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, DivideErrorType dt) {
-		
+
 		//Make sure graphs are valid
 		if((!g1) || (!g2)) {
 			throw SPXGraphException("SPXGraphUtilities::Divide: At least one of the operand graphs is invalid");
@@ -213,7 +234,7 @@ public:
 	}
 
 	static TGraphAsymmErrors * HistogramToGraph(TH1 *h) {
-		
+
 		//Make sure histogram is valid
 		if(!h) {
 			throw SPXGraphException("SPXGraphUtilities::HistogramToGraph: Histogram provided was invalid");
@@ -229,7 +250,7 @@ public:
 			ey = h->GetBinError(i + 1);
 			x =  h->GetBinCenter(i + 1);
 			ex = h->GetBinWidth(i + 1) / 2.0;
-			
+
 			graph->SetPoint(i, x, y);
 			graph->SetPointError(i, ex, ex, ey, ey);
 		}
@@ -264,7 +285,7 @@ public:
 			if(debug) std::cout << "Found masterIndex = " << masterIndex << std::endl;
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
-			
+
 			throw SPXGraphException("SPXGraphUtilities::GetXUnitsScale: Master units (\"" + master + "\") are invalid");
 		}
 
@@ -324,7 +345,7 @@ public:
 
 		for(int i = 0; i < graph->GetN(); i++) {
 			graph->SetPoint(i, (x[i] * xScale), (y[i] * yScale));
-			graph->SetPointError(i, (exl[i] * xScale), (exh[i] * xScale), 
+			graph->SetPointError(i, (exl[i] * xScale), (exh[i] * xScale),
 				(eyl[i] * yScale), (eyh[i] * yScale));
 		}
 	}
@@ -362,7 +383,7 @@ public:
 			if(debug) std::cout << "Bin[" << i << "]: sigma = " << sigma << std::endl;
 
 			if(debug) std::cout << "Bin[" << i << "]: binWidth = " << binWidth << std::endl;
-			
+
 			if(divideByBinWidth) {
 				totalSigma += sigma * binWidth;
 			} else {
@@ -383,7 +404,7 @@ public:
 
 		//Normalize
 		for(int i = 0; i < numberOfBins; i++) {
-			
+
 			if(debug) std::cout << "Bin[" << i << "]: scale = "  << scale << std::endl;
 
 			double binWidth = 1;
