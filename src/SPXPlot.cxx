@@ -150,10 +150,10 @@ void SPXPlot::CreateCanvas(void) {
 	std::string canvasID = oss.str();
 
 	//@TODO Where should these come from? Or are they just initial values that are set later?
-	int wtopx = 200;	//Window top x
-	int wtopy = 10;		//Window top y
-	int ww = 700;		//Window width
-	int wh = 500;		//Window height
+	int wtopx = 400;	//Window top x
+	int wtopy = 0;		//Window top y
+	int ww = 1000;		//Window width
+	int wh = 1000;		//Window height
 
 	canvas = new TCanvas(canvasID.c_str(), pc.GetDescription().c_str(), wtopx, wtopy, ww, wh);
 	canvas->SetFillColor(0);
