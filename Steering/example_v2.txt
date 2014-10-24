@@ -1,0 +1,162 @@
+;==============================================================
+;
+; Description:
+;	Example Steering File
+;
+; Authors:
+;	Jon Doe
+;	Jean Pierre Larousse
+;	...
+;
+; Date:
+;	17.09.2014
+;
+; Other:
+;	Other information...
+;
+;==============================================================
+
+;--------------------------------------------------------------
+; NOTE:
+;
+; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
+;
+;	"  some_thing = "  <--- BAD
+;	"; some_thing = "  <--- OKAY
+;
+; If you forget to do this, some trailing comments could
+; be included in the option's value
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = true													;[Optional] Turn on/off debug statements - [default = false]
+pdf_directory = PDF 											;[Optional] If specified, will prepend this directory before
+																;			all PDF steering file paths below
+data_directory = Data/datanew									;[Optional] If specified, will prepend this directory before
+																;			all data steering file paths below
+grid_directory = Grids/top/mcfm									;[Optional] If specified, will prepend this directory before
+																;			all grid steering file paths below
+
+;==============================================================
+; Graphing Options
+;==============================================================
+[GRAPH]
+; plot_band = 													;[Optional] Plot error bands on top of data points - [default = false]
+; plot_error_ticks = 											;[Optional] Use small 'ticks' at end of error  bars - [default = false]
+plot_marker = true												;[Optional] Plot a marker on data points - [default = false]
+plot_staggered = true											;[Optional] Stagger points horizontally to improve readability - [default = false]
+label_sqrt_s = true												;[Optional] Specify to show the Sqrt(s) on the legend - [default = false]
+x_legend = 0.9													;[Optional] X(Right)-Position of Legend, based on top right side
+y_legend = 0.9													;[Optional]	Y(Top)-Position of legend, based on top right side
+; y_overlay_min = 												;[Optional] Force Y-Axis minimum for overlay section
+; y_overlay_max = 												;[Optional] Force Y-Axis maximum for overlay section
+; y_ratio_min =													;[Optional] Force Y-Axis minimum for ratio section
+; y_ratio_max = 												;[Optional] Force Y-Axis maximum for ratio section
+
+;--------------------------------------------------------------
+; NOTE:
+;
+; Below is where you define the options for each plot.
+; To define a new plot, create a section with the format:
+;		[PLOT_n]	where n starts at 0
+;
+; Plot Types:
+;
+;		There are four supported plot types:
+;			data, grid, pdf 		<-- One data source, one grid, one PDF
+;			data[], grid[], pdf		<-- Multiple data sources with (1:1) corresponding grids, one PDF
+;			data, grid, pdf[]		<-- One data source, one grid source, with multiple PDFs
+;			data, grid[], pdf		<-- One data source, multiple grids, one PDF
+;
+;		This means, for example, you CAN NOT define multiple data files AND multiple PDFs
+;
+; To give a plot more than one data file, etc., just use a comma
+; separated list:
+;
+;		data_steering_files = file1.txt, file2.txt
+;		...
+;		data_marker_style = 20, 21
+;		...
+;
+; In that example, file1.txt would use the marker style '20',
+; while file2.txt would use '21'
+;
+; Each plot is performed on it's own ROOT canvas
+;--------------------------------------------------------------
+
+;==============================================================
+; Plot 0 Options : A Simple data, grid, pdf plot
+;==============================================================
+[PLOT_0]
+plot_type = data, grid, pdf 									;[REQUIRED] The plot type
+desc = atlas_mtt_5fb											;[REQUIRED] Description of plot (used as the plot title)
+data_steering_files = atlas2012_5fb_top_mtt_ljet.txt			;[REQUIRED] List of all data steering files
+grid_steering_files = grid--TTbar_mttatlas.txt					;[REQUIRED] List of all grid steering files
+pdf_steering_files = CT10.txt									;[REQUIRED] List of all PDF steering files
+data_marker_style = 20											;[REQUIRED] List of data marker styles
+data_marker_color = 1											;[REQUIRED] List of data marker colors
+pdf_fill_style = 3005											;[Optional] List of PDF fill style OVERRIDES
+pdf_fill_color = 600											;[Optional] List of PDF fill color OVERRIDES
+pdf_marker_style = 20											;[Optional] List of PDF marker style OVERRIDES
+; ref_line_style =												;[Optional] List of reference line styles
+; ref_line_color = 												;[Optional] List of reference line colors
+; x_scale =														;[Optional] List: Artificially scale each data plot's X-Axis
+; y_scale =														;[Optional] List: Artificially scale each data plot's Y-Axis
+x_log = true													;[Optional] Plot the X Axis logarithmically
+y_log = true													;[Optional] Plot the Y Axis logarithmically
+display_style =	overlay, ratio									;[REQUIRED] What to display: overlay and/or ratio
+overlay_style = data, convolute									;[REQUIRED]	What to plot in the overlay section:
+																;			data, reference, and/or convolute
+
+;--------------------------------------------------------------
+; NOTE:
+;
+; [REQUIRED]: If ratio is plotted
+;
+; For each plot (in which display_style includes 'ratio'),
+; you can define any number of ratios below with the format:
+;		ratio_n 	where n starts at 0
+;
+; There are either 3 or 4 supported ratio formats, depending on the
+; plot_type:
+;
+;		(data_file) / (data_file) 				<-- Data / Data 			Supported ONLY for: plot_type = data[], grid[], pdf
+;		(data_file) / ([grid_file, pdf_file])	<-- Data / Convolute: 		Supported for all plot_types
+;		([grid_file, pdf_file]) / (data_file)   <-- Convolute / Data: 		Supported for all plot_types
+;		([grid_file, pdf_file]) / (grid_file)	<-- Convolute / Reference: 	Supported for all plot_types:
+;													NOTE: You MUST use the same grid file for conv. and ref.
+;--------------------------------------------------------------
+
+;For example, this defines a convolute / data ratio, and a convolute / reference ratio,
+; which will both be plotted in the ratio section of the same plot
+ratio_title = "Ratio"
+ratio_0 = ([grid--TTbar_mttatlas.txt, CT10.txt]) / (atlas2012_5fb_top_mttljet.txt)
+ratio_1 = ([grid--TTbar_mttatlas.txt, CT10.txt]) / (grid--TTbar_mttatlas.txt)
+
+;==============================================================
+; Plot 1 Options : Plotting multiple data sets with one PDF
+;==============================================================
+[PLOT_1]
+plot_type = data[], grid[], pdf
+desc = atlas_ptt_5fb
+data_steering_files = atlas2012_5fb_top_ptt_ljet.txt, some_cms_data_file.txt
+grid_steering_files = grid--TTbar_pttatlas.txt, some_cms_grid_file.txt
+pdf_steering_files = CT10.txt
+data_marker_style = 20, 21
+data_marker_color = 1, 2
+pdf_fill_style = 3005
+pdf_fill_color = 600
+pdf_marker_style = 20
+; x_scale =
+; y_Scale =
+x_log = false
+y_log = false
+display_style = overlay, ratio
+overlay_style = data, convolute
+; ratio_title =
+ratio_0 = (atlas2012_5fb_top_ptt_ljet.txt) / (some_cms_data.txt)
+ratio_1 = (atlas2012_5fb_top_ptt_ljet.txt) / ([grid--TTbar_pttatlas.txt, CT10.txt])
+ratio_2 = (some_cms_data.txt) / ([grid--TTbar_pttatlas.txt, CT10.txt])

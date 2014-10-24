@@ -1,0 +1,76 @@
+;==============================================================
+;
+; Description:
+;	Example of a valid Steering File
+;
+; Authors:
+;	Jon Doe
+;	Jean Pierre Larousse
+;	...
+;
+; Date:
+;	17.09.2014
+;
+; Other:
+;	Other information...
+;
+;==============================================================
+
+;--------------------------------------------------------------
+; NOTE:
+;
+; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
+;
+;	"  some_thing = "  <--- BAD
+;	"; some_thing = "  <--- OKAY
+;
+; If you forget to do this, some trailing comments could
+; be included in the option's value
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = true
+; pdf_directory =
+; data_directory =
+; grid_directory =
+
+;==============================================================
+; Graphing Options
+;==============================================================
+[GRAPH]
+; plot_band =
+; plot_error_ticks =
+plot_marker = true
+plot_staggered = true
+label_sqrt_s = true
+x_legend = 0.9
+y_legend = 0.9
+; y_overlay_min =
+; y_overlay_max =
+; y_ratio_min =
+; y_ratio_max =
+
+;==============================================================
+; Plot 0 Options
+;==============================================================
+[PLOT_0]
+plot_type = data, grid, pdf
+data_steering_files = Data/good_test.txt
+grid_steering_files = Grids/good_test.txt
+pdf_steering_files = PDF/good_test.txt
+x_scale = 1.0
+y_scale = 1.0
+data_marker_style = 20
+data_marker_color = 1
+pdf_fill_style = 3005
+pdf_fill_color = 600
+pdf_marker_style = 21
+x_log = true
+y_log = true
+desc = atlas_mtt_5fb
+display_style = overlay, ratio
+overlay_style = data, convolute
+ratio_0 = ([Grids/good_test, PDF/good_test]) / (Data/good_test)
