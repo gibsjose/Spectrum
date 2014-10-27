@@ -129,7 +129,7 @@ void SPXSteeringFile::Print(void) {
 			std::cout << "\t\t\t Ratio " << j << ": " << plotConfigurations[i].GetRatio(j) << std::endl;
 		}
 		std::cout << "\t\t X Log: " << (plotConfigurations[i].IsXLog() ? "YES" : "NO") << std::endl;
-		std::cout << "\t\t Y Log: " << (plotConfigurations[i].IsYLog() ? "YES" : "NO") << std::endl << std::endl; 
+		std::cout << "\t\t Y Log: " << (plotConfigurations[i].IsYLog() ? "YES" : "NO") << std::endl << std::endl;
 
 		for(int j = 0; j < plotConfigurations[i].GetNumberOfConfigurationInstances(); j++) {
 			SPXPlotConfigurationInstance tmp;
@@ -587,7 +587,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		std::vector<std::string> rVector;
 
 		for(int j = 0; j < numberOfRatios; j++) {
-			
+
 			std::ostringstream rsss;
 			std::ostringstream rss;
 			rsss << "ratio_style_" << j;
@@ -657,13 +657,16 @@ void SPXSteeringFile::Parse(void) {
 	//Enable all debug configurations if debug is on
 	if(debug) {
 		std::cout << cn << mn << "Debug is ON" << std::endl;
+		SPXPlot::SetDebug(true);
+		SPXPlotType::SetDebug(true);
+		SPXPlotConfiguration::SetDebug(true);
+		SPXRatio::SetDebug(true);
 		SPXRatioStyle::SetDebug(true);
 		SPXOverlayStyle::SetDebug(true);
 		SPXDisplayStyle::SetDebug(true);
 		SPXPDFBandType::SetDebug(true);
 		SPXPDFErrorType::SetDebug(true);
 		SPXPDFErrorSize::SetDebug(true);
-		SPXPlotConfiguration::SetDebug(true);
 	}
 
 	//Graphing configurations [GRAPH]
