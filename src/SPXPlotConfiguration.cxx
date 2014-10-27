@@ -36,23 +36,27 @@ bool SPXPlotConfigurationInstance::debug;
 //Constructs an SPXPlotConfiguration object with a map of string vectors, where keys are
 //	options["data_steering_files"] --> Vector of data steering files
 //	options["grid_steering_files"] --> Vector of grid steering files
-//	options["marker_style"] --> Vector of marker styles
-//	options["marker_color"] --> Vector of marker colors
-// 	options["ref_line_style"] --> Vector of reference line styles (optional)
-//	options["ref_line_color"] --> Vector of reference line colors (optional)
+//	options["pdf_steering_files"] --> Vector of PDF steering files
+//	options["data_marker_style"] --> Vector of data marker styles
+//	options["data_marker_color"] --> Vector of data marker colors
+//	options["pdf_fill_style"] --> Vector of PDF fill style (optional)
+//	options["pdf_fill_color"] --> Vector of PDF fill colors (optional)
+//	options["pdf_marker_style"] --> Vector of PDF marker styles (optional)
 //	options["x_scale"] --> Vector of X Scales (optional)
 //	options["y_scale"] --> Vector of Y Scales (optional)
 //
-//xLog is whether or not to plot the X Axis Logarithmically
-//yLog is whether or not to plot the Y Axis Logarithmically
-//Description is the (optional) frame description
-//And numberOfConfigurationInstances is the size of the vector of string vectors
-SPXPlotConfiguration::SPXPlotConfiguration(std::map<std::string, std::vector<std::string> > & options, bool xLog, bool yLog, const std::string & description, unsigned int numberOfConfigurationInstances) {
+//	options["plot_type"] --> Plot type
+//	options["desc"] --> Description
+//	options["display_style"] --> Display style
+//	options["overlay_style"] --> Overlay style
+//	options["ratio_title"] --> Title for the ratio section
+//	options["ratio_style"] --> Vector of ratio Styles
+//	options["ratio"] --> Vector of ratio strings
+//	options["x_log"] --> X Axis logarithmic
+//	options["y_log"] --> Y Axis logarithmic
+
+SPXPlotConfiguration::SPXPlotConfiguration(std::map<std::string, std::vector<std::string> > & options) {
 	this->SetDefaults();
-	this->xLog = xLog;
-	this->yLog = yLog;
-	this->description = description;
-	this->numberOfConfigurationInstances = numberOfConfigurationInstances;
 
 	//Attempt to parse the options instances
 	try {
@@ -72,6 +76,44 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 	//Make sure all required vectors exist
 	{
+		if(options.count("plot_type") == 0) {
+			throw SPXParseException("The options map MUST contain an entry for plot_type");
+		}
+
+		if(options.count("desc") == 0) {
+			throw SPXParseException("The options map MUST contain an entry for desc");
+		}
+
+		if(options.count("display_style") == 0) {
+			throw SPXParseException("The options map MUST contain an entry for display_style");
+		}
+
+		//@TODO If display style doesn't contain overlay, this shouldn't be required
+		if(options.count("overlay_style") == 0) {
+			throw SPXParseException("The options map MUST contain an entry for overlay_style");
+		}
+
+		//@TODO If display style doesn't contain ratio, these shouldn't be required
+		if(options.count("ratio_title") == 0) {
+			throw SPXParseException("The options map MUST contain an entry for ratio_title");
+		}
+
+		if(options.count("ratio_style") == 0) {
+			throw SPXParseException("The options map MUST contain a vector for ratio_style");
+		}
+
+		if(options.count("ratio") == 0) {
+			throw SPXParseException("The options map MUST contain a vector for ratio");
+		}
+
+		if(options.count("x_log") == 0) {
+			throw SPXParseException("The options map MUST contain an entry for x_log");
+		}
+
+		if(options.count("y_log") == 0) {
+			throw SPXParseException("The options map MUST contain an entry for y_log");
+		}
+
 		if(options.count("data_steering_files") == 0) {
 			throw SPXParseException("The options map MUST contain a vector for data_steering_files");
 		}
@@ -80,12 +122,16 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			throw SPXParseException("The options map MUST contain a vector for grid_steering_files");
 		}
 
-		if(options.count("marker_style") == 0) {
-			throw SPXParseException("The options map MUST contain a vector for marker_style");
+		if(options.count("pdf_steering_files") == 0) {
+			throw SPXParseException("The options map MUST contain a vector for pdf_steering_files");
 		}
 
-		if(options.count("marker_color") == 0) {
-			throw SPXParseException("The options map MUST contain a vector for marker_color");
+		if(options.count("data_marker_style") == 0) {
+			throw SPXParseException("The options map MUST contain a vector for data_marker_style");
+		}
+
+		if(options.count("data_marker_color") == 0) {
+			throw SPXParseException("The options map MUST contain a vector for data_marker_color");
 		}
 	}
 
@@ -94,30 +140,64 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		std::vector<std::string> tmpVector;
 
+		tmpVector = options["plot_type"];
+		std::cout << "\tplot_type = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+
+		tmpVector = options["desc"];
+		std::cout << "\tdesc = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+
+		tmpVector = options["display_style"];
+		std::cout << "\tdisplay_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+
+		tmpVector = options["overlay_style"];
+		std::cout << "\toverlay_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+
+		tmpVector = options["ratio_title"];
+		std::cout << "\tratio_title = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+
+		tmpVector = options["ratio_style"];
+		std::cout << "\tratio_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+
+		tmpVector = options["ratio"];
+		std::cout << "\tratio = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+
+		tmpVector = options["x_log"];
+		std::cout << "\tx_log = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+
+		tmpVector = options["y_log"];
+		std::cout << "\ty_log = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+
 		tmpVector = options["data_steering_files"];
 		std::cout << "\tdata_steering_files = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 
 		tmpVector = options["grid_steering_files"];
 		std::cout << "\tgrid_steering_files = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 
-		tmpVector = options["marker_style"];
-		std::cout << "\tmarker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		tmpVector = options["data_marker_style"];
+		std::cout << "\tdata_marker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 
-		tmpVector = options["marker_color"];
-		std::cout << "\tmarker_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		tmpVector = options["data_marker_color"];
+		std::cout << "\tdata_marker_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 
-		if(options.count("ref_line_style")) {
-			tmpVector = options["ref_line_style"];
-			std::cout << "\tref_line_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		if(options.count("pdf_fill_style")) {
+			tmpVector = options["pdf_fill_style"];
+			std::cout << "\tpdf_fill_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
-			if(debug) std::cout << cn << mn << "No reference line style option specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No PDF fill style option specified" << std::endl;
 		}
 
-		if(options.count("ref_line_color")) {
-			tmpVector = options["ref_line_color"];
-			std::cout << "\tref_line_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		if(options.count("pdf_fill_color")) {
+			tmpVector = options["pdf_fill_color"];
+			std::cout << "\tpdf_fill_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
-			if(debug) std::cout << cn << mn << "No reference line color option specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No PDF fill color option specified" << std::endl;
+		}
+
+		if(options.count("pdf_marker_style")) {
+			tmpVector = options["pdf_marker_style"];
+			std::cout << "\tpdf_marker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No PDF marker style option specified" << std::endl;
 		}
 
 		if(options.count("x_scale")) {
@@ -135,7 +215,97 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		}
 	}
 
-	if(debug) std::cout << cn << mn << "numberOfConfigurationInstances = " << numberOfConfigurationInstances << std::endl;
+	//Parse the plot_type
+	try {
+		plotType = SPXPlotType(options["plot_type"][0]);
+	} catch(const SPXException &e) {
+		std::cerr << e.what() << std::endl;
+
+		throw SPXParseException("Could not parse Plot Type");
+	}
+
+	//Get vector sizes
+	unsigned int rsSize = options["ratio_style"].size();
+	unsigned int rSize = options["ratio"].size();
+	unsigned int dsfSize = options["data_steering_files"].size();
+	unsigned int gsfSize = options["grid_steering_files"].size();
+	unsigned int psfSize = options["pdf_steering_files"].size();
+	unsigned int dmsSize = options["data_marker_style"].size();
+	unsigned int dmcSize = options["data_marker_color"].size();
+	unsigned int pfsSize = 0;
+	unsigned int pfcSize = 0;
+	unsigned int pmsSize = 0;
+	unsigned int xsSize = 0;
+	unsigned int ysSize = 0;
+	if(options.count("pdf_fill_style")) {
+		pfsSize = options["pdf_fill_style"].size();
+	}
+	if(options.count("pdf_fill_color")) {
+		pfcSize = options["pdf_fill_color"].size();
+	}
+	if(options.count("pdf_marker_style")) {
+		pmsSize = options["pdf_marker_style"].size();
+	}
+	if(options.count("x_scale")) {
+		xsSize = options["x_scale"].size();
+	}
+	if(options.count("y_scale")) {
+		ysSize = options["y_scale"].size();
+	}
+
+	//Check vector sizes that do not depend on the plot type
+	if(dmsSize != dsfSize) {
+		throw SPXParseException("Size of data_marker_style vector DOES NOT match the size of the data_steering_files vector");
+	}
+	if(dmcSize != dsfSize) {
+		throw SPXParseException("Size of data_marker_color vector DOES NOT match the size of the data_steering_files vector");
+	}
+	if(xsSize != dsfSize) {
+		throw SPXParseException("Size of x_scale vector DOES NOT match the size of the data_steering_files vector");
+	}
+	if(ysSize != dsfSize) {
+		throw SPXParseException("Size of y_scale vector DOES NOT match the size of the data_steering_files vector");
+	}
+	if((pfsSize != 0) && (pfsSize != psfSize)) {
+		throw SPXParseException("Size of pdf_fill_style vector DOES NOT match the size of the pdf_steering_files vector");
+	}
+	if((pfcSize != 0) && (pfcSize != psfSize)) {
+		throw SPXParseException("Size of pdf_fill_color vector DOES NOT match the size of the pdf_steering_files vector");
+	}
+	if((pmsSize != 0) && (pmsSize != psfSize)) {
+		throw SPXParseException("Size of pdf_marker_style vector DOES NOT match the size of the pdf_steering_files vector");
+	}
+
+	//Check the rest of the vector sizes based on the plot type
+
+	//data, grid, pdf
+	if(plotType.IsType1()) {
+		if(dsfSize != 1) {
+			throw SPXParseException("Size of data_steering_files vector MUST be 1 (ONE) for Plot Type 1 (data, grid, pdf)");
+		}
+		if(gsfSize != 1) {
+			throw SPXParseException("Size of grid_steering_files vector MUST be 1 (ONE) for Plot Type 1 (data, grid, pdf)");
+		}
+		if(psfSize != 1) {
+			throw SPXParseException("Size of pdf_steering_files vector MUST be 1 (ONE) for Plot Type 1 (data, grid, pdf)");
+		}
+
+	}
+
+	//data[], grid[], pdf
+	else if(plotType.IsType2()) {
+
+	}
+
+	//data, grid, pdf[]
+	else if(plotType.IsType3()) {
+
+	}
+
+	//data, grid[], pdf
+	else if(plotType.IsType4()) {
+
+	}
 
 	//Check options vector sizes against numberOfConfigurationInstances (should ALL be equal)
 	if(numberOfConfigurationInstances != options["data_steering_files"].size()) {

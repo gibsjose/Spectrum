@@ -44,10 +44,12 @@ const std::string foicn = "SPXPlotConfigurationInstance::";
 struct SPXPlotConfigurationInstance {
 	SPXDataSteeringFile dataSteeringFile;
 	SPXGridSteeringFile gridSteeringFile;
-	int markerStyle;
-	int markerColor;
-	int refLineStyle;
-	int refLineColor;
+	SPXPDFSteeringFile pdfSteeringFile;
+	int dataMarkerStyle;
+	int dataMarkerColor;
+	int pdfFillColor;
+	int pdfFillStyle;
+	int pdfMarkerStyle;
 	double xScale;
 	double yScale;
 	static bool debug;
@@ -57,10 +59,13 @@ struct SPXPlotConfigurationInstance {
 	}
 
 	void SetDefaults(void) {
-		markerStyle = FO_EMPTY_STYLE;
-		markerColor = FO_EMPTY_COLOR;
-		refLineStyle = FO_EMPTY_STYLE;
-		refLineColor = FO_EMPTY_COLOR;
+		dataMarkerStyle = FO_EMPTY_STYLE;
+		dataMarkerColor = FO_EMPTY_COLOR;
+		pdfFillStyle = FO_EMPTY_STYLE;
+		pdfFillColor = FO_EMPTY_COLOR;
+		pdfMarkerStyle = FO_EMPTY_STYLE;
+		xScale = 1.0;
+		yScale = 1.0;
 	}
 
 	//Returns true if ALL required fields are empty
@@ -77,13 +82,17 @@ struct SPXPlotConfigurationInstance {
 			return false;
 		}
 
-		if(markerStyle != FO_EMPTY_STYLE) {
-			//std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Marker style = " << markerStyle << std::endl;
+		if(!pdfSteeringFile.GetFilename().empty()) {
 			return false;
 		}
 
-		if(markerColor != FO_EMPTY_STYLE) {
-			//std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Marker color = " << markerColor << std::endl;
+		if(dataMarkerStyle != FO_EMPTY_STYLE) {
+			//std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Marker style = " << dataMarkerStyle << std::endl;
+			return false;
+		}
+
+		if(dataMarkerColor != FO_EMPTY_STYLE) {
+			//std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Marker color = " << dataMarkerColor << std::endl;
 			return false;
 		}
 
@@ -111,12 +120,17 @@ struct SPXPlotConfigurationInstance {
 			return false;
 		}
 
-		if(markerStyle == FO_EMPTY_STYLE) {
+		if(pdfSteeringFile.GetFilename().empty()) {
+			if(debug) std::cout << foicn << mn << "PDF Steering Filename field missing from FrameOptionsInstance Object" << std::endl;
+			return false;
+		}
+
+		if(dataMarkerStyle == FO_EMPTY_STYLE) {
 			if(debug) std::cout << foicn << mn << "Marker Style field missing from FrameOptionsInstance Object" << std::endl;
 			return false;
 		}
 
-		if(markerColor == FO_EMPTY_COLOR) {
+		if(dataMarkerColor == FO_EMPTY_COLOR) {
 			if(debug) std::cout << foicn << mn << "Marker Color field missing from FrameOptionsInstance Object" << std::endl;
 			return false;
 		}
@@ -128,12 +142,8 @@ struct SPXPlotConfigurationInstance {
 	const std::string ToString(void) const {
 		std::ostringstream tmp;
 
-		//tmp << "\t\t\tData steering file: " << dataSteeringFile << std::endl;
-		//tmp << "\t\t\tGrid steering file: " << gridSteeringFile << std::endl;
-		tmp << "\t\t\tMarker Style: " << markerStyle << std::endl;
-		tmp << "\t\t\tMarker Color: " << markerColor << std::endl;
-		tmp << "\t\t\tReference Line Style: " << refLineStyle << std::endl;
-		tmp << "\t\t\tReference Line Color: " << refLineColor << std::endl;
+		tmp << "\t\t\tData Marker Style: " << dataMarkerStyle << std::endl;
+		tmp << "\t\t\tData Marker Color: " << dataMarkerColor << std::endl;
 
 		return tmp.str();
 	}
@@ -142,11 +152,11 @@ struct SPXPlotConfigurationInstance {
 class SPXPlotConfiguration {
 
 public:
-	SPXPlotConfiguration () : numberOfConfigurationInstances(0) {
+	SPXPlotConfiguration () {
 		SetDefaults();
 	}
 
-	SPXPlotConfiguration(std::map<std::string, std::vector<std::string> > & options, bool xLog, bool yLog, const std::string &description, unsigned int numberOfConfigurationInstances);
+	SPXPlotConfiguration(std::map<std::string, std::vector<std::string> > & options);
 
 	//Add an configuration instance to the configurationInstances vector
 	void AddConfigurationInstance(const SPXPlotConfigurationInstance & instance) {
@@ -182,8 +192,42 @@ public:
 		SPXPlotConfigurationInstance::SetDebug(b);
 	}
 
-	std::string GetDescription(void) const {
+	std::string & GetDescription(void) {
 		return description;
+	}
+
+	SPXDisplayStyle & GetDisplayStyle(void) {
+		return displayStyle;
+	}
+
+	SPXOverlayStyle & GetOverlayStyle(void) {
+		return overlayStyle;
+	}
+
+	std::string & GetRatioTitle(void) {
+		return ratioTitle;
+	}
+
+	unsigned int GetNumberOfRatios(void) const {
+		return ratios.size();
+	}
+
+	SPXRatioStyle & GetRatioStyle(unsigned int index) {
+		if((index + 1) > ratios.size()) {
+			int top = ratios.size() - 1;
+			throw SPXOutOfRangeException(top, index, "SPXPlotConfiguration::GetRatioStyle: Index out of range");
+		}
+
+		return ratioStyles.at(index);
+	}
+
+	std::string & GetRatio(unsigned int index) {
+		if((index + 1) > ratios.size()) {
+			int top = ratios.size() - 1;
+			throw SPXOutOfRangeException(top, index, "SPXPlotConfiguration::GetRatio: Index out of range");
+		}
+
+		return ratios.at(index);
 	}
 
 	bool IsXLog(void) const {
@@ -198,7 +242,7 @@ public:
 		return configurationInstances.size();
 	}
 
-	const std::vector<SPXPlotConfigurationInstance> & GetPlotConfigurationInstances(void) const {
+ 	std::vector<SPXPlotConfigurationInstance> & GetPlotConfigurationInstances(void) {
 		return configurationInstances;
 	}
 
@@ -218,7 +262,13 @@ private:
 	bool xLog;
 	bool yLog;
 	std::string description;
-	unsigned int numberOfConfigurationInstances;
+	SPXPlotType plotType;
+	SPXDisplayStyle displayStyle;
+	SPXOverlayStyle overlayStyle;
+	std::string ratioTitle;
+	std::vector<SPXRatioStyle> ratioStyles;
+	std::vector<std::string> ratios;
+
 	std::vector<SPXPlotConfigurationInstance> configurationInstances;
 
 	void SetDefaults(void) {
@@ -227,7 +277,9 @@ private:
 		xLog = false;
 		yLog = false;
 		description.clear();
-		numberOfConfigurationInstances = 0;
+		ratioTitle.clear();
+		ratioStyles.clear();
+		ratioStrings.clear();
 		configurationInstances.clear();
 	}
 };
