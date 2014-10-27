@@ -84,6 +84,7 @@ void SPXRatio::Parse(std::string &s) {
 
     //Check the RatioStyle:
     if(ratioStyle.IsDataOverConvolute()) {
+        if(debug) std::cout << cn << mn << "Data over Convolute" << std::endl;
 
         //Error if numBlob matches a convolute string
         if(MatchesConvoluteString(numBlob)) {
@@ -119,6 +120,7 @@ void SPXRatio::Parse(std::string &s) {
     }
 
    	else if(ratioStyle.IsConvoluteOverData()) {
+        if(debug) std::cout << cn << mn << "Convolute over Data" << std::endl;
 
         //Error if numBlob does NOT match a convolute string
         if(!MatchesConvoluteString(numBlob)) {
@@ -153,6 +155,7 @@ void SPXRatio::Parse(std::string &s) {
     }
 
     else if(ratioStyle.IsConvoluteOverReference()) {
+        if(debug) std::cout << cn << mn << "Convolute over reference" << std::endl;
 
         //Error if numBlob does NOT match a convolute string
         if(!MatchesConvoluteString(numBlob)) {
@@ -193,6 +196,7 @@ void SPXRatio::Parse(std::string &s) {
     }
 
     else if(ratioStyle.IsDataOverData()) {
+        if(debug) std::cout << cn << mn << "Data Over Data" << std::endl;
 
         //Error if numerator or denominator matches convolute string
         if(MatchesConvoluteString(numBlob) || MatchesConvoluteString(denBlob)) {
@@ -225,12 +229,16 @@ void SPXRatio::GetGraphs(void) {
 bool SPXRatio::MatchesConvoluteString(std::string &s) {
     std::string mn = "MatchesConvoluteString: ";
 
+    SPXStringUtilities::RemoveCharacters(s, "()");
+
     if(debug) std::cout << cn << mn << "Checking \"" << s << "\" against convolute pattern" << std::endl;
-    
+
     //Convolute strings MUST begin with '[', end with ']', and have a ',' somewhere in the middle
     if((s.at(0) == '[') && (s.at(s.size() - 1) == ']') && (s.find(",") != std::string::npos)) {
+        if(debug) std::cout << cn << mn << s << " matches convolute pattern" << std::endl;
         return true;
     } else {
+        if(debug) std::cout << cn << mn << s << " does NOT match convolute pattern" << std::endl;
         return false;
     }
 }
