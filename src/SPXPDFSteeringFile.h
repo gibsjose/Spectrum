@@ -97,6 +97,8 @@ public:
 
 	void Print(void);
 	void Parse(void);
+
+	SPXPDFSteeringFile(void) : filename(""), debug(false) {}
 	
 	explicit SPXPDFSteeringFile(const std::string &filename) : debug(false) {	
 		this->filename = filename;		
