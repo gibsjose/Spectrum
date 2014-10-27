@@ -57,11 +57,11 @@ void SPXPlot::SetAxisLabels(void) {
 	std::string mn = "SetAxisLabels: ";
 
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
-	SPXDisplayStyle &ds = steeringFile->GetDisplayStyle();
+	SPXDisplayStyle &ds = pc.GetDisplayStyle();
 
 	std::string xLabel = pc.GetPlotConfigurationInstance(0).dataSteeringFile.GetXLabel();	//0th instance is master
 	std::string yLabelOverlay = pc.GetPlotConfigurationInstance(0).dataSteeringFile.GetYLabel();
-	std::string yLabelRatio = (!steeringFile->GetRatioTitle().empty() ? steeringFile->GetRatioTitle() : steeringFile->GetRatioStyle().ToString());
+	std::string yLabelRatio = (!pc.GetRatioTitle().empty() ? pc.GetRatioTitle() : "Ratio");
 
 	//Set Overlay Y-Axis Label
 	overlayFrameHisto->SetYTitle(yLabelOverlay.c_str());
@@ -89,7 +89,8 @@ void SPXPlot::SetAxisLabels(void) {
 void SPXPlot::ScaleAxes(void) {
 	std::string mn = "ScaleAxes: ";
 
-	SPXDisplayStyle &ds = steeringFile->GetDisplayStyle();
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXDisplayStyle &ds = pc.GetDisplayStyle();
 
 	double scale = 1.0;
 
@@ -268,7 +269,7 @@ void SPXPlot::ConfigurePads(void) {
 
 	//Get the plot configuration and display style from steering file
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
-	SPXDisplayStyle &ds = steeringFile->GetDisplayStyle();
+	SPXDisplayStyle &ds = pc.GetDisplayStyle();
 
 	//xLow/Up and yLow/Up: The TPad bounds for the Overlay and Ratio TPads
 	double xLowOverlay, xUpOverlay, yLowOverlay, yUpOverlay;
@@ -434,7 +435,8 @@ void SPXPlot::DrawOverlay(void) {
 	}
 
 	//Do nothing if not drawing overlay
-	SPXDisplayStyle &ds = steeringFile->GetDisplayStyle();
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXDisplayStyle &ds = pc.GetDisplayStyle();
 
 	if(!ds.ContainsOverlay()) {
 		return;
@@ -467,7 +469,8 @@ void SPXPlot::DrawRatio(void) {
 	}
 
 	//Do nothing if not drawing ratio
-	SPXDisplayStyle &ds = steeringFile->GetDisplayStyle();
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXDisplayStyle &ds = pc.GetDisplayStyle();
 
 	if(!ds.ContainsRatio()) {
 		return;
@@ -532,20 +535,18 @@ std::string SPXPlot::GetPNGFilename(std::string desc) {
 void SPXPlot::InitializeCrossSections(void) {
 	std::string mn = "InitializeCrossSections: ";
 
-	//Create cross sections for each configuration instance (and each PDF)
+	//Create cross sections for each configuration instance
 	for(int i = 0; i < steeringFile->GetNumberOfConfigurationInstances(id); i++) {
-		for(int j = 0; j < steeringFile->GetNumberOfPDFSteeringFiles(); j++) {
-			SPXPDFSteeringFile &psf = steeringFile->GetPDFSteeringFile(j);
-			SPXPlotConfigurationInstance &pci = steeringFile->GetPlotConfigurationInstance(id, i);
+		SPXPlotConfigurationInstance &pci = steeringFile->GetPlotConfigurationInstance(id, i);
+		SPXPDFSteeringFile &psf = pci.pdfSteeringFile;
 
-			SPXCrossSection crossSectionInstance = SPXCrossSection(&psf, &pci);
+		SPXCrossSection crossSectionInstance = SPXCrossSection(&psf, &pci);
 
-			try {
-				crossSectionInstance.Create();
-				crossSections.push_back(crossSectionInstance);
-			} catch(const SPXException &e) {
-				throw;
-			}
+		try {
+			crossSectionInstance.Create();
+			crossSections.push_back(crossSectionInstance);
+		} catch(const SPXException &e) {
+			throw;
 		}
 	}
 }
@@ -687,11 +688,11 @@ void SPXPlot::InitializeData(void) {
 		SPXGraphUtilities::Scale(systGraph, xScale, yScale);
 
 		//Modify Data Graph styles
-		statGraph->SetMarkerStyle(pci.markerStyle);
-		systGraph->SetMarkerStyle(pci.markerStyle);
+		statGraph->SetMarkerStyle(pci.dataMarkerStyle);
+		systGraph->SetMarkerStyle(pci.dataMarkerStyle);
 
-		statGraph->SetMarkerColor(pci.markerColor);
-		systGraph->SetMarkerColor(pci.markerColor);
+		statGraph->SetMarkerColor(pci.dataMarkerColor);
+		systGraph->SetMarkerColor(pci.dataMarkerColor);
 
 		statGraph->SetMarkerSize(1.0);
 		systGraph->SetMarkerSize(1.0);
