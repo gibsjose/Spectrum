@@ -51,7 +51,6 @@ private:
 
 	//Metadata
 	std::string filename;
-	unsigned int numberOfPlots;
 
 	//[GEN]
 	bool debug;						//Flag to indicate debug mode
@@ -67,29 +66,17 @@ private:
 	bool labelSqrtS;				//Flag to indicate that the Sqrt(s) value should be shown in the legend
 	double xLegend;					//X Position of the legend, based on top-right corner
 	double yLegend;					//Y Position of the legend, based on top-right corner
-	std::string ratioTitle;			//Force Ratio Section Y-Axis Label to a certain value
-	SPXRatioStyle ratioStyle;		//What to plot in the ratio section
-	SPXOverlayStyle overlayStyle;	//What to plot in the overlay section
-	SPXDisplayStyle displayStyle;	//What to plot: overlay AND/OR ratio
 	double yOverlayMin;				//Force Y-Axis minimum for overlay section
 	double yOverlayMax;				//Force Y-Axis maximum for overlay section
 	double yRatioMin;				//Force Y-Axis minimum for ratio section
 	double yRatioMax;				//Force Y-Axis maximum for ratio section
-
-	//[PDF]
-	std::vector<SPXPDFSteeringFile> pdfSteeringFiles;	//PDF Steering Files
-	int pdfFillStyle;				//Override PDF fill style
-	int pdfFillColor;				//Override PDF fill color
-	int pdfMarkerStyle;				//Override PDF marker style
-	SPXPDFBandType pdfBandType;		//Override PDF band type
-	SPXPDFErrorType pdfErrorType;	//Override PDF error type
-	SPXPDFErrorSize pdfErrorSize;	//Override PDF error size
 
 	//[FRAME_n]
 	std::vector<SPXPlotConfiguration> plotConfigurations;	//Options for each plot
 
 	void SetDefaults(void);
 	unsigned int ParseNumberOfPlots(void);
+	unsigned int ParseNumberOfRatios(unsigned int plotNumber);
 	void ParsePlotConfigurations(unsigned int numPlots);
 
 public:

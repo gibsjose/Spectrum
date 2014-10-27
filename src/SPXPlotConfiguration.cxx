@@ -254,6 +254,9 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	}
 
 	//Check vector sizes that do not depend on the plot type
+	if(rSize != rsSize) {
+		throw SPXParseException("Size of ratio vector DOES NOT match the size of the ratio_style vector");
+	}
 	if(dmsSize != dsfSize) {
 		throw SPXParseException("Size of data_marker_style vector DOES NOT match the size of the data_steering_files vector");
 	}
@@ -277,6 +280,8 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	}
 
 	//Check the rest of the vector sizes based on the plot type
+	// AND determine the number of configuration instances
+	unsigned int numberOfConfigurationInstances;
 
 	//data, grid, pdf
 	if(plotType.IsType1()) {
@@ -290,75 +295,97 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			throw SPXParseException("Size of pdf_steering_files vector MUST be 1 (ONE) for Plot Type 1 (data, grid, pdf)");
 		}
 
+		numberOfConfigurationInstances = 1;
 	}
 
 	//data[], grid[], pdf
 	else if(plotType.IsType2()) {
+		if(dsfSize <= 1) {
+			throw SPXParseException("Size of data_steering_files vector MUST be > 1 for Plot Type 2 (data[], grid[], pdf)");
+		}
+		if(gsfSize <= 1) {
+			throw SPXParseException("Size of grid_steering_files vector MUST be > 1 for Plot Type 2 (data[], grid[], pdf)");
+		}
+		if(psfSize != 1) {
+			throw SPXParseException("Size of pdf_steering_files vector MUST be 1 (ONE) for Plot Type 2 (data[], grid[], pdf)");
+		}
 
+		if(dsfSize != gsfSize) {
+			throw SPXParseException("Size of data_steering_files vector MUST match the size of the grid_steering_files vector for Plot Type 2");
+		}
+
+		numberOfConfigurationInstances = dsfSize;
 	}
 
 	//data, grid, pdf[]
 	else if(plotType.IsType3()) {
+		if(dsfSize != 1) {
+			throw SPXParseException("Size of data_steering_files vector MUST be 1 (ONE) for Plot Type 3 (data, grid, pdf[])");
+		}
+		if(gsfSize != 1) {
+			throw SPXParseException("Size of grid_steering_files vector MUST be 1 (ONE) for Plot Type 3 (data, grid, pdf[])");
+		}
+		if(psfSize <= 1) {
+			throw SPXParseException("Size of pdf_steering_files vector MUST be > 1 for Plot Type 3 (data, grid, pdf[])");
+		}
 
+		numberOfConfigurationInstances = psfSize;
 	}
 
 	//data, grid[], pdf
 	else if(plotType.IsType4()) {
+		if(dsfSize != 1) {
+			throw SPXParseException("Size of data_steering_files vector MUST be 1 (ONE) for Plot Type 4 (data, grid[], pdf)");
+		}
+		if(gsfSize <= 1) {
+			throw SPXParseException("Size of grid_steering_files vector MUST be > 1 for Plot Type 4 (data, grid[], pdf)");
+		}
+		if(psfSize != 1) {
+			throw SPXParseException("Size of pdf_steering_files vector MUST be 1 (ONE) for Plot Type 4 (data, grid[], pdf)");
+		}
 
-	}
-
-	//Check options vector sizes against numberOfConfigurationInstances (should ALL be equal)
-	if(numberOfConfigurationInstances != options["data_steering_files"].size()) {
-		std::ostringstream oss;
-		oss << "Size of Data Steering File vector (" << options["data_steering_files"].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
-		throw SPXParseException(oss.str());
-	}
-	if(numberOfConfigurationInstances != options["grid_steering_files"].size()) {
-		std::ostringstream oss;
-		oss << "Size of Grid Steering File vector (" << options["grid_steering_files"].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
-		throw SPXParseException(oss.str());
-	}
-	if(numberOfConfigurationInstances != options["marker_style"].size()) {
-		std::ostringstream oss;
-		oss << "Size of Marker Style vector (" << options["marker_style"].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
-		throw SPXParseException(oss.str());
-	}
-	if(numberOfConfigurationInstances != options["marker_color"].size()) {
-		std::ostringstream oss;
-		oss << "Size of Marker Color vector (" << options["marker_color"].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
-		throw SPXParseException(oss.str());
+		numberOfConfigurationInstances = gsfSize;
 	}
 
-	if(options.count("ref_line_style")) {
-		if(numberOfConfigurationInstances != options["ref_line_style"].size()) {
+	//Set the general plot configuration data
+	description = options["desc"].at(0);
+	displayStyle = SPXDisplayStyle(options["display_style"].at(0));
+	overlayStyle = SPXOverlayStyle(options["overlay_style"].at(0));
+	ratioTitle = options["ratio_title"].at(0);
+
+	//Parse the ratio_style vector
+	for(int i = 0; i < options["ratio_style"].size(); i++) {
+		SPXRatioStyle rs;
+
+		try {
+			rs = SPXRatioStyle(options["ratio_style"].at(i));
+			ratioStyles.push_back(rs);
+		} catch(const SPXException &e) {
+			std::cerr << e.what() << std::endl;
+
 			std::ostringstream oss;
-			oss << "Size of Reference Line Style vector (" << options["ref_line_style"].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
+			oss << "Unable to parse ratio_style_" << i;
 			throw SPXParseException(oss.str());
 		}
 	}
 
-	if(options.count("ref_line_color")) {
-		if(numberOfConfigurationInstances != options["ref_line_color"].size()) {
-			std::ostringstream oss;
-			oss << "Size of Reference Line Color vector (" << options["ref_line_color"].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
-			throw SPXParseException(oss.str());
-		}
+	//Copy the ratio string vector
+	ratios = options["ratio"];
+
+	//Parse the xLog and yLog
+	std::string xls = options["x_log"].at(0);
+	std::string yls = options["y_log"].at(0);
+
+	if(!xls.compare("true")) {
+		xLog = true;
+	} else {
+		xLog = false;
 	}
 
-	if(options.count("x_scale")) {
-		if(numberOfConfigurationInstances != options["x_scale"].size()) {
-			std::ostringstream oss;
-			oss << "Size of X Scale vector (" << options["x_scale"].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
-			throw SPXParseException(oss.str());
-		}
-	}
-
-	if(options.count("y_scale")) {
-		if(numberOfConfigurationInstances != options["y_scale"].size()) {
-			std::ostringstream oss;
-			oss << "Size of Y Scale vector (" << options["y_scale"].size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")";
-			throw SPXParseException(oss.str());
-		}
+	if(!yls.compare("true")) {
+		yLog = true;
+	} else {
+		yLog = false;
 	}
 
 	//For each options instance, create an SPXPlotConfigurationInstance object and add it to the vector
@@ -366,28 +393,35 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		SPXPlotConfigurationInstance pci;
 		pci.SetDefaults();
 
-		//Create objects and set the filename for the Data/Grid Steering Files
+		pci.id = i;
+
+		//Create objects and set the filename for the Data, Grid, and PDF Steering Files
 		pci.dataSteeringFile = SPXDataSteeringFile(options["data_steering_files"][i]);
 		pci.gridSteeringFile = SPXGridSteeringFile(options["grid_steering_files"][i]);
+		pci.pdfSteeringFile = SPXPDFSteeringFile(options["pdf_steering_files"][i]);
 
-		pci.markerStyle = atoi(options["marker_style"][i].c_str());
-		pci.markerColor = atoi(options["marker_color"][i].c_str());
+		pci.dataMarkerStyle = atoi(options["data_marker_style"][i].c_str());
+		pci.dataMarkerColor = atoi(options["data_marker_color"][i].c_str());
 
-		if(options.count("ref_line_style")) {
-			pci.refLineStyle = atoi(options["ref_line_style"][i].c_str());
+		if(pfsSize) {
+			pci.pdfFillStyle = atoi(options["pdf_fill_style"][i].c_str());
 		}
 
-		if(options.count("ref_line_color")) {
-			pci.refLineColor = atoi(options["ref_line_color"][i].c_str());
+		if(pfcSize) {
+			pci.pdfFillColor = atoi(options["pdf_fill_color"][i].c_str());
 		}
 
-		if(options.count("x_scale")) {
+		if(pmsSize) {
+			pci.pdfMarkerStyle = atoi(options["pdf_marker_style"][i].c_str());
+		}
+
+		if(xsSize) {
 			pci.xScale = atoi(options["x_scale"][i].c_str());
 		} else {
 			pci.xScale = 1.0;
 		}
 
-		if(options.count("y_scale")) {
+		if(ysSize) {
 			pci.yScale = atoi(options["y_scale"][i].c_str());
 		} else {
 			pci.yScale = 1.0;

@@ -52,6 +52,7 @@ struct SPXPlotConfigurationInstance {
 	int pdfMarkerStyle;
 	double xScale;
 	double yScale;
+	unsigned int id;
 	static bool debug;
 
 	static void SetDebug(bool b) {
@@ -156,7 +157,7 @@ public:
 		SetDefaults();
 	}
 
-	SPXPlotConfiguration(std::map<std::string, std::vector<std::string> > & options);
+	SPXPlotConfiguration(std::map<std::string, std::vector<std::string> > & options, unsigned int id);
 
 	//Add an configuration instance to the configurationInstances vector
 	void AddConfigurationInstance(const SPXPlotConfigurationInstance & instance) {
@@ -190,6 +191,10 @@ public:
 	static void SetDebug(bool b) {
 		debug = b;
 		SPXPlotConfigurationInstance::SetDebug(b);
+	}
+
+	unsigned int GetID(void) const {
+		return id;
 	}
 
 	std::string & GetDescription(void) {
@@ -259,6 +264,7 @@ public:
 
 private:
 	static bool debug;
+	unsigned int id;
 	bool xLog;
 	bool yLog;
 	std::string description;

@@ -678,9 +678,9 @@ void SPXSteeringFile::Parse(void) {
 	labelSqrtS = reader->GetBoolean("GRAPH", "label_sqrt_s", labelSqrtS);
 	xLegend = reader->GetReal("GRAPH", "x_legend", xLegend);
 	yLegend = reader->GetReal("GRAPH", "y_legend", xLegend);
-	ratioTitle = reader->Get("GRAPH", "ratio_title", ratioTitle);
 
 	//Parse Ratio Style
+	/*
 	tmp = reader->Get("GRAPH", "ratio_style", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
 		throw SPXINIParseException("GRAPH", "ratio_style", "You MUST specify the ratio_style");
@@ -730,15 +730,15 @@ void SPXSteeringFile::Parse(void) {
 			throw SPXINIParseException("GRAPH", "display_style", s.str());
 		}
 	}
+	*/
 
 	yOverlayMin = reader->GetReal("GRAPH", "y_overlay_min", yOverlayMin);
 	yOverlayMax = reader->GetReal("GRAPH", "y_overlay_max", yOverlayMax);
 	yRatioMin = reader->GetReal("GRAPH", "y_ratio_min", yRatioMin);
 	yRatioMax = reader->GetReal("GRAPH", "y_ratio_max", yRatioMax);
 
-	//PDF configurations [PDF]
-
 	//Parse PDF Steering Filepaths
+	/*
 	tmp = reader->Get("PDF", "pdf_steering_files", "EMPTY");
 	if(!tmp.compare("EMPTY")){
 		//Required if Overlay -> Convolute is plotted
@@ -763,103 +763,15 @@ void SPXSteeringFile::Parse(void) {
 			pdfSteeringFiles.push_back(pdfSteeringFile);
 		}
 	}
-
-	pdfFillStyle = reader->GetInteger("PDF", "pdf_fill_style", pdfFillStyle);
-	pdfFillColor = reader->GetInteger("PDF", "pdf_fill_color", pdfFillColor);
-	pdfMarkerStyle = reader->GetInteger("PDF", "pdf_marker_style", pdfMarkerStyle);
-
-	//Parse PDF Band Type
-	tmp = reader->Get("PDF", "pdf_band_type", "EMPTY");
-	if(!tmp.compare("EMPTY")) {
-		std::cout << cn << mn << "No PDF Band Type override specified" << std::endl;
-	} else {
-		//Attempt to parse the PDF band type
-		try {
-			pdfBandType.Parse(tmp);
-		} catch(const SPXException &e) {
-			std::cerr << e.what() << std::endl;
-
-			std::ostringstream s;
-			s << "Invalid PDF Band Type: Type = " << pdfBandType.GetType() << ": Check configuration string: pdf_band_type = " << tmp;
-			throw SPXINIParseException("PDF", "pdf_band_type", s.str());
-		}
-	}
-
-	//Parse PDF Error Type
-	tmp = reader->Get("PDF", "pdf_error_type", "EMPTY");
-	if(!tmp.compare("EMPTY")) {
-		std::cout << cn << mn << "No PDF Error Type override specified" << std::endl;
-	} else {
-		//Attempt to parse the PDF error type
-		try {
-			pdfErrorType.Parse(tmp);
-		} catch(const SPXException &e) {
-			std::cerr << e.what() << std::endl;
-
-			std::ostringstream s;
-			s << "Invalid PDF Error Type: Type = " << pdfErrorType.GetType() << ": Check configuration string: pdf_error_type = " << tmp;
-			throw SPXINIParseException("PDF", "pdf_error_type", s.str());
-		}
-	}
-
-	//Parse PDF Error Size
-	tmp = reader->Get("PDF", "pdf_error_size", "EMPTY");
-	if(!tmp.compare("EMPTY")) {
-		std::cout << cn << mn << "No PDF Error Size override specified" << std::endl;
-	} else {
-		//Attempt to parse the PDF error size
-		try {
-			pdfErrorSize.Parse(tmp);
-		} catch(const SPXException &e) {
-			std::cerr << e.what() << std::endl;
-
-			std::ostringstream s;
-			s << "Invalid PDF Error Size: Type = " << pdfErrorSize.GetType() << ": Check configuration string: pdf_error_size = " << tmp;
-			throw SPXINIParseException("PDF", "pdf_error_size", s.str());
-		}
-	}
-
-	//Parse plots
-	numberOfPlots = this->ParseNumberOfPlots();
-
-	if(numberOfPlots == 0) {
-		throw SPXParseException("No plot configurations found: Nothing will be plotted");
-	}
+	*/
 
 	//Attempt to parse plot configurations
 	try {
-		this->ParsePlotConfigurations(numberOfPlots);
+		this->ParsePlotConfigurations();
 	} catch(const SPXException &e) {
 		std::cerr << e.what() << std::endl;
 
 		throw SPXParseException("Could not parse plots: Verify correct plot configuration syntax");
-	}
-}
-
-void SPXSteeringFile::PrintPDFSteeringFiles(void) {
-	for(int i = 0; i < pdfSteeringFiles.size(); i++) {
-		pdfSteeringFiles.at(i).Print();
-	}
-}
-
-void SPXSteeringFile::ParsePDFSteeringFiles(void) {
-	std::string mn = "ParsePDFSteeringFiles: ";
-
-	//Parse each PDF Steering File in the vector
-	for(int i = 0; i < pdfSteeringFiles.size(); i++) {
-
-		SPXPDFSteeringFile & pdfSteeringFile = pdfSteeringFiles.at(i);
-
-		//Attempt to parse the PDF steering file
-		try {
-			pdfSteeringFile.Parse();
-		} catch(const SPXException &e) {
-			std::cerr << e.what() << std::endl;
-
-			std::ostringstream oss;
-			oss << "Unable to parse the PDF Steering File: " << pdfSteeringFile.GetFilename() << ": Aborting further parsing of remaining " << pdfSteeringFiles.size() - i << " files";
-			throw SPXParseException(oss.str());
-		}
 	}
 }
 
@@ -881,7 +793,7 @@ void SPXSteeringFile::ParseDataSteeringFiles(void) {
 
 			SPXDataSteeringFile &dataSteeringFile = plotConfigurations.at(i).GetPlotConfigurationInstance(j).dataSteeringFile;
 
-			//Attempt to parse the Grid Steering File
+			//Attempt to parse the Data Steering File
 			try {
 				dataSteeringFile.Parse();
 			} catch(const SPXException &e) {
@@ -921,6 +833,38 @@ void SPXSteeringFile::ParseGridSteeringFiles(void) {
 
 				std::ostringstream oss;
 				oss << "Unable to parse the Grid Steering File: " << gridSteeringFile.GetFilename() << ": Aborting further parsing of remaining files";
+				throw SPXParseException(oss.str());
+			}
+		}
+	}
+}
+
+void SPXSteeringFile::PrintPDFSteeringFiles(void) {
+	for(int i = 0; i < plotConfigurations.size(); i++) {
+		for(int j = 0; j < plotConfigurations.at(i).GetNumberOfConfigurationInstances(); j++) {
+			SPXPDFSteeringFile &pdfSteeringFile = plotConfigurations.at(i).GetPlotConfigurationInstance(j).pdfSteeringFile;
+			pdfSteeringFile.Print();
+		}
+	}
+}
+
+void SPXSteeringFile::ParsePDFSteeringFiles(void) {
+	std::string mn = "ParsePDFSteeringFiles: ";
+
+	//Loop through all plot configurations instances for each plot option
+	for(int i = 0; i < plotConfigurations.size(); i++) {
+		for(int j = 0; j < plotConfigurations.at(i).GetNumberOfConfigurationInstances(); j++) {
+
+			SPXPDFSteeringFile &pdfSteeringFile = plotConfigurations.at(i).GetPlotConfigurationInstance(j).pdfSteeringFile;
+
+			//Attempt to parse the PDF Steering File
+			try {
+				pdfSteeringFile.Parse();
+			} catch(const SPXException &e) {
+				std::cerr << e.what() << std::endl;
+
+				std::ostringstream oss;
+				oss << "Unable to parse the PDF Steering File: " << pdfSteeringFile.GetFilename() << ": Aborting further parsing of remaining files";
 				throw SPXParseException(oss.str());
 			}
 		}
