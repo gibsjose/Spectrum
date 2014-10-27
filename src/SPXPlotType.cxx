@@ -77,7 +77,7 @@ void SPXPlotType::Parse(std::string s) {
 	
 	//Check the parsed type options vector for size errors
 	if(v.size() != 3) {
-		type = DS_INVALID;
+		type = PT_INVALID;
 		throw SPXParseException("Incorrect plot type: Configuration string MUST be a combination of ALL three: \"data\", grid, and \"pdf\"");
 	}
 
@@ -91,7 +91,7 @@ void SPXPlotType::Parse(std::string s) {
 		type &= ~PT_DATA;
 	}
 	else if(!data.compare("data[]")) {
-		if(debug) std::cout << cn << mn << "Successfully matches \"data[]\"" << std:endl;
+		if(debug) std::cout << cn << mn << "Successfully matched \"data[]\"" << std::endl;
 		type |= PT_DATA;
 	}
 	else {
@@ -104,7 +104,7 @@ void SPXPlotType::Parse(std::string s) {
 		type &= ~PT_GRID;
 	}
 	else if(!grid.compare("grid[]")) {
-		if(debug) std::cout << cn << mn << "Successfully matches \"grid[]\"" << std:endl;
+		if(debug) std::cout << cn << mn << "Successfully matched \"grid[]\"" << std::endl;
 		type |= PT_GRID;
 	}
 	else {
@@ -117,7 +117,7 @@ void SPXPlotType::Parse(std::string s) {
 		type &= ~PT_PDF;
 	}
 	else if(!pdf.compare("pdf[]")) {
-		if(debug) std::cout << cn << mn << "Successfully matches \"pdf[]\"" << std:endl;
+		if(debug) std::cout << cn << mn << "Successfully matched \"pdf[]\"" << std::endl;
 		type |= PT_PDF;
 	}
 	else {
@@ -126,7 +126,7 @@ void SPXPlotType::Parse(std::string s) {
 
 	//Check for incorrect combinations
 	if(!IsValid()) {
-		throw SPXParseException("Incorrect plot type: The combination: " << this->ToString() << " is invalid" << std::endl;
+		throw SPXParseException("Incorrect plot type: The combination: " + this->ToString() + " is invalid");
 	}
 
 }
@@ -141,11 +141,6 @@ void SPXPlotType::Print(void) {
 // the object's type data
 std::string SPXPlotType::ToString(void) {
 	std::string mn = "ToString: ";
-	
-	//Empty type
-	if(this->IsEmpty()) {
-		return "";
-	}
 	
 	//Check for validity
 	if(!this->IsValid()) {

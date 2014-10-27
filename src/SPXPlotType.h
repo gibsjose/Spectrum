@@ -63,7 +63,6 @@ public:
 	void Parse(std::string s);
 	void Print(void);
 	std::string ToString(void);
-	bool IsEmpty(void);
 	bool IsValid(void);
 	
 	void Clear(void) {
@@ -148,39 +147,6 @@ public:
 			return true;
 		}
 
-		return false;
-	}
-	
-	bool Contains(int mask) {
-		//Invalid mask... Does not contain data, reference, or convolute
-		if(!(mask & (DS_OVERLAY | DS_RATIO))) {
-			return false;
-		}
-
-		if(((type & mask) == DS_OVERLAY) && (this->IsValid())) {
-			return true;
-		} else if(((type & mask) == DS_RATIO) && (this->IsValid())) {
-			return true;
-		} else {
-			return false;
-		}
-
-		return false;
-	}
-
-	bool ContainsOverlay(void) {
-		if((type & DS_OVERLAY) && this->IsValid()) {
-			return true;
-		}
-		
-		return false;
-	}
-	
-	bool ContainsRatio(void) {
-		if((type & DS_RATIO) && this->IsValid()) {
-			return true;
-		}
-		
 		return false;
 	}
 

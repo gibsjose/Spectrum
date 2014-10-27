@@ -22,11 +22,11 @@
 #include "SPXUtilities.h"
 #include "SPXException.h"
 
-class SXPRatio {
+class SPXRatio {
 
 public:
 
-    SPXRatioStyle(SPXRatioStyle &rs, std::string &s) {
+    SPXRatio(SPXRatioStyle &rs, std::string &s) {
     	ratioStyle = rs;
     	Parse(s);
     }
@@ -54,7 +54,7 @@ public:
     
     	try {
     		ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, AddErrors);
-    		return ratio;
+    		return ratioGraph;
     	} catch(const SPXException &e) {
     		std::cerr << e.what() << std::endl;
     		
@@ -100,10 +100,10 @@ private:
     std::string denominatorReferenceGridFile;		//Grid file if denominator contains reference
     std::string denominatorDataFile;				//Data file if denominator contains data
     
-    TGraphAsymmError *numeratorGraph;
-    TGraphAsymmError *denominatorGraph;
+    TGraphAsymmErrors *numeratorGraph;
+    TGraphAsymmErrors *denominatorGraph;
     
-    TGraphAsymmError *ratioGraph;
+    TGraphAsymmErrors *ratioGraph;
 
     bool MatchesConvoluteString(std::string &s);
     void GetGraphs(void);

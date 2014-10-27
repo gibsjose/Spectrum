@@ -216,14 +216,14 @@ void SPXRatio::Parse(std::string &s) {
     GetGraphs();
 }
 
-void GetGraphs(void) {
-    ;
+void SPXRatio::GetGraphs(void) {
+    return;
 }
 
 bool SPXRatio::MatchesConvoluteString(std::string &s) {
 
     //Convolute strings MUST begin with '[', end with ']', and have a ',' somewhere in the middle
-    if((s.at(0) == '[') && (s.at(s.size() - 1) == ']') && (s.contains(","))) {
+    if((s.at(0) == '[') && (s.at(s.size() - 1) == ']') && (s.find(",") != std::string::npos)) {
         return true;
     } else {
         return false;
