@@ -122,12 +122,16 @@ public:
 		if(numerator == mask) {
 			return true;
 		}
+
+		return false;
 	}
 
 	bool DenominatorIs(unsigned char mask) {
 		if(denominator == mask) {
 			return true;
 		}
+
+		return false;
 	}
 
 private:

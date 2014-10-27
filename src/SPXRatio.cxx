@@ -83,22 +83,6 @@ void SPXRatio::Parse(std::string &s) {
     if(debug) std::cout << cn << mn << "Ratio style is: " << ratioStyle.ToString() << " (" << ratioStyle.GetNumerator() \
         << " / " << ratioStyle.GetDenominator() << ")" << std::endl;
 
-    if(ratioStyle.IsConvoluteOverData()) {
-        std::cout << "Conv / Dat" << std::endl;
-    }
-
-    if(ratioStyle.IsDataOverConvolute()) {
-        std::cout << "Dat / Conv" << std::endl;
-    }
-
-    if(ratioStyle.IsConvoluteOverReference()) {
-        std::cout << "Conv / Ref" << std::endl;
-    }
-
-    if(ratioStyle.IsDataOverData()) {
-        std::cout << "Dat / Dat" << std::endl;
-    }
-
     //Check the RatioStyle:
     if(ratioStyle.IsDataOverConvolute()) {
         if(debug) std::cout << cn << mn << "Data over Convolute" << std::endl;
