@@ -48,8 +48,8 @@ private:
 public:
 	
 	//Removes any of the characters in the 'remove' string from the string s
-	static std::string RemoveCharacters(std::string s, char *remove) {
-		s.erase(std::remove_if(s.begin(), s.end(), IsChars(remove)), s.end());
+	static std::string RemoveCharacters(std::string s, std::string remove) {
+		s.erase(std::remove_if(s.begin(), s.end(), IsChars(remove.c_str())), s.end());
 		
 		return s;
 	}
