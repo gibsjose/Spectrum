@@ -46,14 +46,19 @@ private:
 	};
 
 public:
-	
+
 	//Removes any of the characters in the 'remove' string from the string s
 	static std::string RemoveCharacters(std::string s, std::string remove) {
+
+		std::cout << "Input is: " << s << std::endl;
+
 		s.erase(std::remove_if(s.begin(), s.end(), IsChars(remove.c_str())), s.end());
-		
+
+		std::cout << "Output is: " << s << std::endl;
+
 		return s;
 	}
-	
+
 	static std::string ToUpper(const std::string & s) {
 		return boost::to_upper_copy(s);
 	}
@@ -77,9 +82,9 @@ public:
 		cell.erase( std::remove(cell.begin(), cell.end(), ' '), cell.end() ); //remove any whitespace
 		parsedDataVec.push_back(cell);
 	  }
-		
-	  if(parsedDataVec.size()==0) parsedDataVec.push_back(rawData);    
-		
+
+	  if(parsedDataVec.size()==0) parsedDataVec.push_back(rawData);
+
 	  return parsedDataVec;
 	}
 
@@ -89,17 +94,17 @@ public:
 
 	static std::string VectorToCommaSeparatedList(std::vector<std::string> &v) {
 		std::string csl;
-		
+
 		csl.clear();
-	 	
+
 	 	for(std::vector<std::string>::iterator it = v.begin(); it != v.end(); ++it) {
 	 		csl += *it;
-	 		
+
 	 		if((it + 1) != v.end()) {
 	 			csl += ", ";
 	 		}
 	 	}
-	 	
+
 	 	return csl;
 	}
 };

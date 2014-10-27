@@ -80,8 +80,12 @@ void SPXRatio::Parse(std::string &s) {
 		std::cout << cn << mn << "Denominator blob parsed as: " << denominatorBlob << std::endl;
 	}
 
-    if(debug) std::cout << cn << mn << "Ratio style is: " << ratioStyle.ToString() << "(" << ratioStyle.GetNumerator() \
+    if(debug) std::cout << cn << mn << "Ratio style is: " << ratioStyle.ToString() << " (" << ratioStyle.GetNumerator() \
         << " / " << ratioStyle.GetDenominator() << ")" << std::endl;
+
+    if(ratioStyle.IsConvoluteOverData()) {
+        std::cout << "Conv / Dat" << std::endl;
+    }
 
     //Check the RatioStyle:
     if(ratioStyle.IsDataOverConvolute()) {
@@ -230,7 +234,7 @@ void SPXRatio::GetGraphs(void) {
 bool SPXRatio::MatchesConvoluteString(std::string &s) {
     std::string mn = "MatchesConvoluteString: ";
 
-    SPXStringUtilities::RemoveCharacters(s, "()");
+    s = SPXStringUtilities::RemoveCharacters(s, "()");
 
     if(debug) std::cout << cn << mn << "Checking \"" << s << "\" against convolute pattern" << std::endl;
 
