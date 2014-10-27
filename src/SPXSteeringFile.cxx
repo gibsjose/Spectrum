@@ -661,10 +661,8 @@ void SPXSteeringFile::Parse(void) {
 	//Enable all debug configurations if debug is on
 	if(debug) {
 		std::cout << cn << mn << "Debug is ON" << std::endl;
-		SPXPlot::SetDebug(true);
 		SPXPlotType::SetDebug(true);
 		SPXPlotConfiguration::SetDebug(true);
-		SPXRatio::SetDebug(true);
 		SPXRatioStyle::SetDebug(true);
 		SPXOverlayStyle::SetDebug(true);
 		SPXDisplayStyle::SetDebug(true);

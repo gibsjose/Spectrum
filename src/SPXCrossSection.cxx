@@ -52,7 +52,7 @@ void SPXCrossSection::ConfigureStyle(void) {
 
 	//Set marker size
 	pdf->h_PDFBand_results->SetMarkerSize(1.0);
-	
+
 	//Set line color
 	pdf->h_PDFBand_results->SetLineColor(1);
 

@@ -19,6 +19,7 @@
 
 #include "SPXSteeringFile.h"
 
+#include "SPXRatio.h"
 #include "SPXCrossSection.h"
 #include "SPXData.h"
 
@@ -30,6 +31,11 @@ public:
 	explicit SPXPlot(SPXSteeringFile *steeringFile, unsigned int plotNumber) {
 		this->steeringFile = steeringFile;
 		this->id = plotNumber;
+
+		if(debug) {
+			SPXCrossSection::SetDebug(true);
+			SPXRatio::SetDebug(true);
+		}
 	}
 
 	void Initialize(void);
