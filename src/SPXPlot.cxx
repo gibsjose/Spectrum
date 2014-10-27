@@ -659,16 +659,16 @@ void SPXPlot::NormalizeCrossSections(void) {
 			SPXGraphUtilities::Normalize(crossSections[i].GetPDFBandResults(), yBinWidthScale, normalizeToTotalSigma, divideByBinWidth);
 
 			if(debug) std::cout << cn << mn << "Sucessfully normalized Cross Section " << i << std::endl;
+
+			//Add pdf to fileToGraphMap for convolute
+			fileToGraphMap.insert(std::pair<std::string, TGraphAsymmErrors *>(pci->pdfSteeringFile.GetFilename(), \
+				crossSections[i].GetPDFBandResults()));
+
+			//@TODO Add grid to fileToGraphMap for reference...
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
 			throw SPXGraphException("SPXPlot::NormalizeCrossSections: Unable to obtain X/Y Scale based on Data/Grid Units");
 		}
-
-		//Add pdf to fileToGraphMap for convolute
-		fileToGraphMap.insert(std::pair<std::string, TGraphAsymmErrors *>(pci->pdfSteeringFile.GetFilename(), \
-			crossSections[i].GetPDFBandResults()));
-
-		//@TODO Add grid to fileToGraphMap for reference...
 	}
 }
 
