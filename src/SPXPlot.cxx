@@ -545,7 +545,7 @@ void SPXPlot::InitializeRatios(void) {
 		std::string ratioString = pc.GetRatio(i);
 
 		try {
-			SPXRatio ratioInstance = SPXRatio(ratioString);
+			SPXRatio ratioInstance = SPXRatio(ratioStyle, ratioString);
 
 			ratios.push_back(ratioInstance);
 
