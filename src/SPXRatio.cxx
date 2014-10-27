@@ -27,7 +27,7 @@ const std::string cn = "SPXRatio::";
 bool SPXRatio::debug;
 
 //Takes a string argument in the following form:
-//	
+//
 //	(numerator) / (denominator) 							<-- MUST have the parenthesis!
 //
 // 	Where the options for numerator and denominator are:
@@ -45,44 +45,46 @@ bool SPXRatio::debug;
 //
 void SPXRatio::Parse(std::string &s) {
     std::string mn = "Parse: ";
-	
+
 	std::string numBlob;
 	std::string denBlob;
-	
+
     if(debug) std::cout << cn << mn << "Parsing ratio string: " << s << std::endl;
 
     //Parse the string into numerator and denominator (delimit with '/')
     std::vector<std::string> v = SPXStringUtilities::ParseString(s, '/');
-    
+
     //Make sure vector is EXACTLY 2 strings long
     if(v.size() != 2) {
     	throw SPXParseException(cn + mn + "Ratio string: " + s + " is NOT in the form (numerator) / (denominator)");
     }
-    
+
     //Obtain the numerator and denominator blobs from parsed list
 	numBlob = v.at(0);
 	denBlob = v.at(1);
-	
+
 	if(numBlob.empty()) {
 		throw SPXParseException(cn + mn + "Numerator blob is empty");
 	} else {
 		numeratorBlob = numBlob;
 	}
-	
+
 	if(denBlob.empty()) {
 		throw SPXParseException(cn + mn + "Denominator blob is empty");
 	} else {
 		denominatorBlob = denBlob;
 	}
-	
+
 	if(debug) {
 		std::cout << cn << mn << "Numerator blob parsed as: " << numeratorBlob << std::endl;
 		std::cout << cn << mn << "Denominator blob parsed as: " << denominatorBlob << std::endl;
 	}
- 
+
+    if(debug) std::cout << cn << mn << "Ratio style is: " << ratioStyle.ToString() << std::endl;
+
     //Check the RatioStyle:
     if(ratioStyle.IsDataOverConvolute()) {
-        
+
         //Error if numBlob matches a convolute string
         if(MatchesConvoluteString(numBlob)) {
             throw SPXParseException(cn + mn + "Numerator blob should have a \"data\" style, but has \"convolute\" style");
@@ -112,12 +114,12 @@ void SPXRatio::Parse(std::string &s) {
             std::ostringstream oss;
             oss << numeratorDataFile << " / " << "[" << denominatorConvoluteGridFile << ", " << denominatorConvolutePDFFile << "]";
             ratioString = oss.str();
-            std::cout << "\t " << ratioString << std::endl;        
+            std::cout << "\t " << ratioString << std::endl;
         }
     }
-    
+
    	else if(ratioStyle.IsConvoluteOverData()) {
-        
+
         //Error if numBlob does NOT match a convolute string
         if(!MatchesConvoluteString(numBlob)) {
             throw SPXParseException(cn + mn + "Numerator blob should have a \"convolute\" style, but does not");
@@ -146,10 +148,10 @@ void SPXRatio::Parse(std::string &s) {
             std::ostringstream oss;
             oss << "[" << numeratorConvoluteGridFile << ", " << numeratorConvolutePDFFile << "]" << " / " << denominatorDataFile;
             ratioString = oss.str();
-            std::cout << "\t " << ratioString << std::endl;  
+            std::cout << "\t " << ratioString << std::endl;
         }
     }
-    
+
     else if(ratioStyle.IsConvoluteOverReference()) {
 
         //Error if numBlob does NOT match a convolute string
@@ -186,12 +188,12 @@ void SPXRatio::Parse(std::string &s) {
             std::ostringstream oss;
             oss << "[" << numeratorConvoluteGridFile << ", " << numeratorConvolutePDFFile << "]" << " / " << denominatorReferenceGridFile;
             ratioString = oss.str();
-            std::cout << "\t " << ratioString << std::endl;  
+            std::cout << "\t " << ratioString << std::endl;
         }
     }
-    
+
     else if(ratioStyle.IsDataOverData()) {
-        
+
         //Error if numerator or denominator matches convolute string
         if(MatchesConvoluteString(numBlob) || MatchesConvoluteString(denBlob)) {
             throw SPXParseException(cn + mn + "Numerator AND denominator blob should have a \"data\" style, but at least one has \"convolute\" style");
@@ -208,7 +210,7 @@ void SPXRatio::Parse(std::string &s) {
             std::ostringstream oss;
             oss << numeratorDataFile << " / " << denominatorDataFile;
             ratioString = oss.str();
-            std::cout << "\t " << ratioString << std::endl;  
+            std::cout << "\t " << ratioString << std::endl;
         }
     }
 
@@ -221,7 +223,10 @@ void SPXRatio::GetGraphs(void) {
 }
 
 bool SPXRatio::MatchesConvoluteString(std::string &s) {
+    std::string mn = "MatchesConvoluteString: ";
 
+    if(debug) std::cout << cn << mn << "Checking \"" << s << "\" against convolute pattern" << std::endl;
+    
     //Convolute strings MUST begin with '[', end with ']', and have a ',' somewhere in the middle
     if((s.at(0) == '[') && (s.at(s.size() - 1) == ']') && (s.find(",") != std::string::npos)) {
         return true;
