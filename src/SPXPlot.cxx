@@ -28,6 +28,7 @@ void SPXPlot::Initialize(void) {
 		InitializeData();
 		InitializeCrossSections();
 		NormalizeCrossSections();
+		InitializeRatios();
 	} catch(const SPXException &e) {
 		throw;
 	}
@@ -530,6 +531,28 @@ std::string SPXPlot::GetPNGFilename(std::string desc) {
 	if(debug) std::cout << cn << mn << "Created PNG Filename: " << filename << std::endl;
 
 	return filename;
+}
+
+void SPXPlot::InitializeRatios(void) {
+	std::string mn = "InitializeRatios: ";
+
+	//Create a ratio for each ratio instance
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+
+	for(int i = 0; i < pc.GetNumberOfRatios(); i++) {
+
+		SPXRatioStyle ratioStyle = pc.GetRatioStyle(i);
+		std::string ratioString = pc.GetRatio(i);
+
+		try {
+			SPXRatio ratioInstance = SPXRatio(ratioString);
+
+			ratios.push_back(ratioInstance);
+
+		} catch(const SPXException &e) {
+			throw;
+		}
+	}
 }
 
 void SPXPlot::InitializeCrossSections(void) {

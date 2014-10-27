@@ -175,6 +175,9 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		tmpVector = options["grid_steering_files"];
 		std::cout << "\tgrid_steering_files = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 
+		tmpVector = options["pdf_steering_files"];
+		std::cout << "\tpdf_steering_files = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+
 		tmpVector = options["data_marker_style"];
 		std::cout << "\tdata_marker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 
