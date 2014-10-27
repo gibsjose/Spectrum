@@ -227,6 +227,8 @@ unsigned int SPXSteeringFile::ParseNumberOfRatios(unsigned int plotNumber) {
 	} while(!noMoreRatios);
 
 	if(debug) std::cout << cn << mn << "Done searching for ratios for plot [" << plotSection << "]: " << ratioNumber << " ratios found" << std::endl;
+
+	return ratioNumber;
 }
 
 void SPXSteeringFile::ParsePlotConfigurations(void) {
@@ -585,6 +587,8 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		std::string ratio;
 		std::vector<std::string> rsVector;
 		std::vector<std::string> rVector;
+
+		if(debug) std::cout << cn << mn << "numberOfRatios = " << numberOfRatios << std::endl;
 
 		for(int j = 0; j < numberOfRatios; j++) {
 
