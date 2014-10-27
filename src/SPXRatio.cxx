@@ -224,6 +224,18 @@ void SPXRatio::Parse(std::string &s) {
 }
 
 void SPXRatio::GetGraphs(void) {
+    if(ratioStyle.IsConvoluteOverData()) {
+        numeratorGraph = fileToGraphMap[numeratorConvolutePDFFile];
+        denominatorGraph = fileToGraphMap[denominatorDataFile];
+    }
+
+    if(ratioStyle.IsDataOverConvolute()) {
+        numeratorGraph = fileToGraphMap[numeratorDataFile];
+        denominatorGraph = fileToGraphMap[denominatorConvolutePDFFile];
+    }
+
+    //@TODO Others...
+    
     return;
 }
 

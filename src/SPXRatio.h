@@ -16,6 +16,8 @@
 #ifndef SPXRATIO_H
 #define SPXRATIO_H
 
+#include <map>
+
 #include "SPXROOT.h"
 
 #include "SPXRatioStyle.h"
@@ -26,8 +28,9 @@ class SPXRatio {
 
 public:
 
-    SPXRatio(SPXRatioStyle &rs, std::string &s) {
+    SPXRatio(SPXRatioStyle &rs, std::string &s, std::map<std::string, TGraphAsymmErrors *> &fileToGraphMap) {
     	ratioStyle = rs;
+        this->fileToGraphMap = fileToGraphMap;
     	Parse(s);
     }
 
@@ -51,30 +54,30 @@ public:
     }
 
     TGraphAsymmErrors *GetRatioGraph(void) {
-    
+
     	try {
     		ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, AddErrors);
     		return ratioGraph;
     	} catch(const SPXException &e) {
     		std::cerr << e.what() << std::endl;
-    		
+
     		throw SPXGraphException("SPXRatio::GetRatioGraph: Unable to divide numerator and denominator to calculate ratio");
     	}
     }
-    
-    TGraphAsymmErrors *GetNumeratorGraph(void) {	
+
+    TGraphAsymmErrors *GetNumeratorGraph(void) {
     	if(!numeratorGraph) {
     		throw SPXGraphException("SPXRatio::GetNumeratorGraph: Numerator graph is empty");
     	}
-    	
+
     	return numeratorGraph;
     }
-    
+
     TGraphAsymmErrors *GetDenominatorGraph(void) {
     	if(!denominatorGraph) {
     		throw SPXGraphException("SPXRatio::GetDenominatorGraph: Denominator graph is empty");
     	}
-    	
+
     	return denominatorGraph;
     }
 
@@ -84,14 +87,14 @@ public:
 
 private:
     static bool debug;
-    
+
     SPXRatioStyle ratioStyle;
-    
+
     std::string numeratorBlob;
     std::string denominatorBlob;
 
     std::string ratioString;
-    
+
     std::string numeratorConvoluteGridFile;			//Grid file if numerator contains convolute
     std::string numeratorConvolutePDFFile;			//PDF file if numerator contains convolute
     std::string numeratorDataFile;					//Data file if numerator contains data
@@ -99,11 +102,13 @@ private:
     std::string denominatorConvolutePDFFile;		//PDF file if denomintator contains convolute
     std::string denominatorReferenceGridFile;		//Grid file if denominator contains reference
     std::string denominatorDataFile;				//Data file if denominator contains data
-    
+
     TGraphAsymmErrors *numeratorGraph;
     TGraphAsymmErrors *denominatorGraph;
-    
+
     TGraphAsymmErrors *ratioGraph;
+
+    std::map<std::string, TGraphAsymmErrors *> fileToGraphMap;
 
     bool MatchesConvoluteString(std::string &s);
     void GetGraphs(void);

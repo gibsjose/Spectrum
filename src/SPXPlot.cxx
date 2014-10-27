@@ -484,7 +484,9 @@ void SPXPlot::DrawRatio(void) {
 	TLine *referenceLine = new TLine(xMinRatio, 1.0, xMaxRatio, 1.0);
 	referenceLine->Draw();
 
-	//@TODO Create and draw ratio graphs
+	for(int i = 0; i < pc.GetNumberOfRatios(); i++) {
+		ratios[i].GetRatioGraph()->Draw();
+	}
 }
 
 void SPXPlot::UpdateCanvas(void) {
@@ -545,8 +547,7 @@ void SPXPlot::InitializeRatios(void) {
 		std::string ratioString = pc.GetRatio(i);
 
 		try {
-			SPXRatio ratioInstance = SPXRatio(ratioStyle, ratioString);
-
+			SPXRatio ratioInstance = SPXRatio(ratioStyle, ratioString, fileToGraphMap);
 			ratios.push_back(ratioInstance);
 
 		} catch(const SPXException &e) {
@@ -663,6 +664,11 @@ void SPXPlot::NormalizeCrossSections(void) {
 			throw SPXGraphException("SPXPlot::NormalizeCrossSections: Unable to obtain X/Y Scale based on Data/Grid Units");
 		}
 
+		//Add pdf to fileToGraphMap for convolute
+		fileToGraphMap.insert(std::pair<std::string, TGraphAsymmErrors *>(pci->pdfSteeringFile.GetFilename(), \
+			crossSections[i].GetPDFBandResults()));
+
+		//@TODO Add grid to fileToGraphMap for reference...
 	}
 }
 
@@ -725,5 +731,8 @@ void SPXPlot::InitializeData(void) {
 
 		statGraph->SetLineWidth(1);
 		systGraph->SetLineWidth(1);
+
+		//Add to fileToGraphMap
+		fileToGraphMap.insert(std::pair<std::string, TGraphAsymmErrors *>(pci.dataSteeringFile.GetFilename(), systGraph));
 	}
 }

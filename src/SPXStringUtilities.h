@@ -50,11 +50,7 @@ public:
 	//Removes any of the characters in the 'remove' string from the string s
 	static std::string RemoveCharacters(std::string s, std::string remove) {
 
-		std::cout << "Input is: " << s << std::endl;
-
 		s.erase(std::remove_if(s.begin(), s.end(), IsChars(remove.c_str())), s.end());
-
-		std::cout << "Output is: " << s << std::endl;
 
 		return s;
 	}
