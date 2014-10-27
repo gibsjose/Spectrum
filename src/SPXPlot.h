@@ -79,7 +79,7 @@ private:
 	std::vector<SPXRatio> ratios;					//Vector of ratios
 
 	//@TODO: Upon initialization of each Data/Cross Section object, use the steering file as a key
-	// 		and get the corresponding TGraph from it. What to do for CrossSections? Convolutions?  
+	// 		and get the corresponding TGraph from it. What to do for CrossSections? Convolutions?
 	std::map<std::string, TGraphAsymmErrors *> fileToGraphMap;		//Steering File to TGraph Map
 
 	//ROOT Components
@@ -108,6 +108,7 @@ private:
 	void InitializeData(void);
 	void InitializeCrossSections(void);
 	void NormalizeCrossSections(void);
+	void InitializeRatios(void);
 };
 
 #endif
