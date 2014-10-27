@@ -91,8 +91,8 @@ void SPXRatio::Parse(std::string &s) {
         std::cout << "Dat / Conv" << std::endl;
     }
 
-    if(ratioStyle.IsConvoluteOverRatio()) {
-        std::cout << "Conv / Rat" << std::endl;
+    if(ratioStyle.IsConvoluteOverReference()) {
+        std::cout << "Conv / Ref" << std::endl;
     }
 
     if(ratioStyle.IsDataOverData()) {
