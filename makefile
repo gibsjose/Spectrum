@@ -32,7 +32,7 @@ SRC = $(SRC_DIR)/Spectrum.cxx $(SRC_DIR)/SPXSteeringFile.cxx $(SRC_DIR)/SPXRatio
 		$(SRC_DIR)/SPXOverlayStyle.cxx $(SRC_DIR)/SPXPDFBandType.cxx $(SRC_DIR)/SPXPDFErrorType.cxx $(SRC_DIR)/SPXPDFErrorSize.cxx \
 		$(SRC_DIR)/SPXPlotConfiguration.cxx $(SRC_DIR)/SPXPDFSteeringFile.cxx $(SRC_DIR)/SPXGridSteeringFile.cxx $(SRC_DIR)/SPXDataSteeringFile.cxx \
 		$(SRC_DIR)/SPXDataFormat.cxx $(SRC_DIR)/SPXData.cxx $(SRC_DIR)/SPXPlot.cxx $(SRC_DIR)/SPXCrossSection.cxx \
-		$(SRC_DIR)/SPXGrid.cxx $(SRC_DIR)/SPXPDF.cxx
+		$(SRC_DIR)/SPXGrid.cxx $(SRC_DIR)/SPXPDF.cxx $(SRC_DIR)/SPXRatio.cxx $(SRC_DIR)/SPXPlotType.cxx
 HDR = $(SRC_DIR)/*.h
 INC = -I./inih/include -I$(SRC_DIR)
 LIB_PATH = -L./inih/lib
