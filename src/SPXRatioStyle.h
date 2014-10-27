@@ -31,9 +31,11 @@ public:
 		this->numerator = numerator;
 		this->denominator = denominator;
 	}
-	explicit SPXRatioStyle(std::string s);
+	
+	//Constructor with style string, plot number string, and ratio style number string
+	SPXRatioStyle(std::string &s, std::string &pn, std::string &rsn);
 
-	void Parse(std::string s);
+	void Parse(std::string &s);
 	void Print(void);
 	std::string ToString(void);
 	bool IsEmpty(void);
@@ -61,27 +63,81 @@ public:
 	int GetDenominator(void) {
 		return (int)denominator;
 	}
-
-	bool NumeratorContains(unsigned char mask) {
-		if((numerator & mask) && this->IsValid()) {
+	
+	bool IsConvoluteOverData(void) {
+		if(NumeratorIsConvolute() && DenominatorIsData()) {
 			return true;
+		} else {
+			return false;	
 		}
-
-		return false;
 	}
-
-	bool DenominatorContains(unsigned char mask) {
-		if((denominator & mask) && this->IsValid()) {
+	
+	bool IsDataOverConvolute(void) {
+		if(NumeratorIsData() && DenominatorIsConvolute()) {
 			return true;
+		} else {
+			return false;
 		}
-
-		return false;
+	}
+	
+	bool IsConvoluteOverReference(void) {
+		if(NumeratorIsConvolute() && DenominatorIsReference()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	bool IsDataOverData(void) {
+		if(NumeratorIsData() && DenominatorIsData()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	//////////////////////////////////////////////////////////////////////
+	
+	bool NumeratorIsConvolute(void) {
+		return NumeratorIs(RS_CONVOLUTE);
+	}
+	
+	bool NumeratorIsData(void) {
+		return NumeratorIs(RS_DATA);
+	}
+	
+	bool DenominatorIsConvolute(void) {
+		return DenominatorIs(RS_CONVOLUTE);
+	}
+	
+	bool DenominatorIsReference(void) {
+		return DenominatorIs(RS_REFERENCE);
+	}
+	
+	bool DenominatorIsData(void) {
+		return DenominatorIs(RS_DATA);
+	}	
+	
+	bool NumeratorIs(unsigned char mask) {
+		if((numerator == mask) && this->IsValid()) {
+			return true;
+		} 
+	}
+	
+	bool DenominatorIs(unsigned char mask) {
+		if((denominator == mask) && this->IsValid()) {
+			return true;
+		} 
 	}
 
 private:
 	static bool debug;
 	unsigned int numerator;
 	unsigned int denominator;
+	
+	//Plot number and ratio style number for exception handling
+	std::string plotNumber;
+	std::string ratioStyleNumber;
 };
 
 #endif

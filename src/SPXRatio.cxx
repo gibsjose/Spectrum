@@ -1,6 +1,6 @@
 //************************************************************/
 //
-//	Ratio Style Implementation
+//	Ratio Implementation
 //
 //	Implements the SPXRatio class, which validates the ratio
 //  type string, and then grabs the required TGraphs and
@@ -12,6 +12,7 @@
 //	@Email:		gibsjose@mail.gvsu.edu
 //
 //************************************************************/
+
 #include <iostream>
 #include <sstream>
 
@@ -25,117 +26,76 @@ const std::string cn = "SPXRatio::";
 //Must define the static debug variable in the implementation
 bool SPXRatio::debug;
 
-//Constructs an SPXRatio object with a given string (effectively
-//	calls the Parse() method on the input string)
-SPXRatio::SPXRatio(std::string s) {
-    this->Clear();
-    this->Parse(s);
-}
-
-//Takes a string argument in the form:
-//	[data{,} | reference{,} | convolute]/[data XOR reference XOR convolute]
+//Takes a string argument in the following form:
+//	
+//	(numerator) / (denominator) 							<-- MUST have the parenthesis!
 //
-//	Such as:
-//		"data,reference/convolute"
-//	or
-//		"convolute/data"
-// but NOT
-//		"convolute/data,reference" <--- ERROR!
+// 	Where the options for numerator and denominator are:
 //
-// Sets the numerator and denominator bitfields based on the input string
+//		[grid_steering_file.txt, pdf_steering_file.txt]		<-- Convolute
+//		data_steering file									<-- Data
+//		grid_steering file 									<-- Reference
+//
+//	And the numerator/denominator pair options are:
+//
+//		data / convolute
+//		convolute / data
+//		data / data
+//		convolute / reference
+//
 void SPXRatio::Parse(std::string s) {
     std::string mn = "Parse: ";
-
-    if(debug) std::cout << cn << mn << "Parsing configuration string: " << s << std::endl;
-
-    std::string den;
-    std::vector<std::string> num;
-
-    //Clear the numerator/denominator each time it is parsed
-    this->Clear();
+	
+	std::string numBlob;
+	std::string denBlob;
+	
+    if(debug) std::cout << cn << mn << "Parsing ratio string: " << s << std::endl;
 
     //Parse the string into numerator and denominator (delimit with '/')
     std::vector<std::string> v = SPXStringUtilities::ParseString(s, '/');
-
-    //Parse the numerator by commas
-    num = SPXStringUtilities::CommaSeparatedListToVector(v[0]);
-
-    //Obtain the denominator
-    den = v[1];
-
-    if(debug) std::cout << cn << mn << "Denominator set to: " << den << std::endl;
-
-    //Check the numerator and denominator for size errors
-    if(num.size() > 3) {
-        numerator = RS_INVALID;
-        denominator = RS_INVALID;
-
-        throw SPXINIParseException("GRAPH", "ratio_style", "Incorrect ratio style: Numerator can only be a combination of: \"data\", \"reference\", and \"convolute\"");
+    
+    //Make sure vector is EXACTLY 2 strings long
+    if(v.size() != 2) {
+    	throw SPXParseException(cn + mn + "Ratio string: " + s + " is NOT in the form (numerator) / (denominator)");
     }
-    if(num.size() < 1) {
-        numerator = RS_INVALID;
-        denominator = RS_INVALID;
-
-        throw SPXINIParseException("GRAPH", "ratio_style", "ERROR: Incorrect ratio style: Numerator must be at least ONE of: \"data\", \"reference\", or \"convolute\"");
+    
+    //Obtain the numerator and denominator blobs from parsed list
+	numBlob = v.at(0);
+	denBlob = v.at(1);
+	
+	if(numBlob.empty()) {
+		throw SPXParseException(cn + mn + "Numerator blob is empty");
+	} else {
+		numeratorBlob = numBlob;
+	}
+	
+	if(denBlob.empty()) {
+		throw SPXParseException(cn + mn + "Denominator blob is empty");
+	} else {
+		denominatorBlob = denBlob;
+	}
+	
+	if(debug) {
+		std::cout << cn << mn << "Numerator blob parsed as: " << numeratorBlob << std::endl;
+		std::cout << cn << mn << "Denominator blob parsed as: " << denominatorBlob << std::endl;
+	}
+ 
+    //Check the RatioStyle:
+    if(ratioStyle.IsDataOverConvolute()) {
+    
     }
-    if(den.empty()) {
-        numerator = RS_INVALID;
-        denominator = RS_INVALID;
-
-        throw SPXINIParseException("GRAPH", "ratio_style", "ERROR: Incorrect ratio style: Denominator must be EXACTLY one of: \"data\", \"reference\", or \"convolute\"");
+    
+   	else if(ratioStyle.IsConvoluteOverData()) {
+    
     }
-
-    //Validate the numerator
-    for(int i = 0; i < num.size(); i++) {
-        if(debug) std::cout << cn << mn << "num[" << i << "] = " << num[i] << std::endl;
-
-        if(!num[i].compare("data")) {
-            if(debug) std::cout << cn << mn << "Found numerator string = \"data\"" << std::endl;
-            numerator |= RS_DATA;
-        }
-        else if(!num[i].compare("reference")) {
-            if(debug) std::cout << cn << mn << "Found numerator string = \"reference\"" << std::endl;
-            numerator |= RS_REFERENCE;
-        }
-        else if(!num[i].compare("convolute")) {
-            if(debug) std::cout << cn << mn << "Found numerator string = \"convolute\"" << std::endl;
-            numerator |= RS_CONVOLUTE;
-        }
-        else {
-            numerator = RS_INVALID;
-            denominator = RS_INVALID;
-
-            std::ostringstream oss;
-            oss << "Incorrect ratio style: Unrecognized ratio numerator option: \"" << num[i] << "\" is invalid";
-            throw SPXINIParseException("GRAPH", "ratio_style", oss.str());
-        }
+    
+    else if(ratioStyle.IsConvoluteOverReference()) {
+    
     }
-
-    if(debug) std::cout << cn << mn << "Numerator = " << numerator << std::endl;
-
-    //Validate the denominator
-    if(!den.compare("data")) {
-        if(debug) std::cout << cn << mn << "Found denominator string = \"data\"" << std::endl;
-        denominator = RS_DATA;
+    
+    else if(ratioStyle.IsDataOverData()) {
+    
     }
-    else if(!den.compare("reference")) {
-        if(debug) std::cout << cn << mn << "Found denominator string = \"reference\"" << std::endl;
-        denominator = RS_REFERENCE;
-    }
-    else if(!den.compare("convolute")) {
-        if(debug) std::cout << cn << mn << "Found denominator string = \"convolute\"" << std::endl;
-        denominator = RS_CONVOLUTE;
-    }
-    else {
-        numerator = RS_INVALID;
-        denominator = RS_INVALID;
-
-        std::ostringstream oss;
-        oss << "Incorrect ratio style: Unrecognized ratio denominator option: \"" << den << "\" is invalid";
-        throw SPXINIParseException("GRAPH", "ratio_style", oss.str());
-    }
-
-    if(debug) std::cout << cn << mn << "Denominator = " << denominator << std::endl;
 }
 
 //Print displays the output of ToString to the console

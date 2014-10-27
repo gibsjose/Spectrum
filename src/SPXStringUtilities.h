@@ -24,8 +24,36 @@
 
 class SPXStringUtilities {
 
-public:
+private:
 
+	//Class used for RemoveCharacters method
+	class IsChars
+	{
+	public:
+		IsChars(const char* charsToRemove) : chars(charsToRemove) {};
+
+		bool operator()(char c)
+		{
+		    for(const char* testChar = chars; *testChar != 0; ++testChar)
+		    {
+		        if(*testChar == c) { return true; }
+		    }
+		    return false;
+		}
+
+	private:
+		const char* chars;
+	};
+
+public:
+	
+	//Removes any of the characters in the 'remove' string from the string s
+	static std::string RemoveCharacters(std::string s, char *remove) {
+		s.erase(std::remove_if(s.begin(), s.end(), IsChars(remove)), s.end());
+		
+		return s;
+	}
+	
 	static std::string ToUpper(const std::string & s) {
 		return boost::to_upper_copy(s);
 	}

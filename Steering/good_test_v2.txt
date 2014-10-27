@@ -73,4 +73,7 @@ y_log = true
 desc = atlas_mtt_5fb
 display_style = overlay, ratio
 overlay_style = data, convolute
+ratio_style_0 = convolute / data
 ratio_0 = ([grid_good_test, pdf_good_test]) / (data_good_test)
+ratio_style_1 = data / convolute
+ratio_1 = (data_good_test) / ([grid_good_test, pdf_good_test])

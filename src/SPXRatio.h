@@ -1,12 +1,11 @@
 //************************************************************/
 //
-//	Ratio Style Header
+//	Ratio Header
 //
-//	Outlines the SPXRatioStyle class, which describes the type of
-//	ratio to be plotted in the ratio section. Ratio styles can
-//	include: [data AND/OR reference AND/OR convolute] in the
-//	numerator, and [data XOR reference XOR convolute] in the
-//	demominator.
+//	Outlines the SPXRatio class, which validates the ratio
+//  type string, and then grabs the required TGraphs and
+//  performs the necessary divisions, returning a fully
+//  configured and ready-to-draw TGraph.
 //
 //	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
 //	@Date:		25.09.2014
@@ -14,35 +13,29 @@
 //
 //************************************************************/
 
-#ifndef SPXRATIOSTYLE_H
-#define SPXRATIOSTYLE_H
+#ifndef SPXRATIO_H
+#define SPXRATIO_H
 
-//Bitfields for determining numerator/denominator contents
-const int RS_INVALID =		-1;
-const int RS_DATA = 		(1 << 0);	//0b00000001
-const int RS_REFERENCE = 	(1 << 1);	//0b00000010
-const int RS_CONVOLUTE = 	(1 << 2);	//0b00000100
+#include "SPXROOT.h"
 
-class SPXRatioStyle {
+#include "SPXRatioStyle.h"
+#include "SPXUtilities.h"
+#include "SPXException.h"
+
+class SXPRatio {
 
 public:
-    SPXRatioStyle () : numerator(0), denominator(0) {}
-    SPXRatioStyle(unsigned int numerator, unsigned int denominator) {
-        this->numerator = numerator;
-        this->denominator = denominator;
+
+    SPXRatioStyle(SPXRatioStyle &rs, std::string s) {
+    	ratioStyle = rs;
+    	Parse(s);
     }
-    explicit SPXRatioStyle(std::string s);
 
     void Parse(std::string s);
     void Print(void);
     std::string ToString(void);
     bool IsEmpty(void);
     bool IsValid(void);
-
-    void Clear(void) {
-        numerator = 0;
-        denominator = 0;
-    }
 
     static bool GetDebug(void) {
         return debug;
@@ -52,36 +45,62 @@ public:
         debug = b;
     }
 
-    //Return cast as (int) so it can be represented
-    // as '-1' during debug and error output
-    int GetNumerator(void) {
-        return (int)numerator;
+    std::string & GetNumerator(void) {
+        return numerator;
     }
 
-    int GetDenominator(void) {
-        return (int)denominator;
+    std::string & GetDenominator(void) {
+        return denominator;
     }
 
-    bool NumeratorContains(unsigned char mask) {
-        if((numerator & mask) && this->IsValid()) {
-            return true;
-        }
-
-        return false;
+    TGraphAsymmErrors *GetRatioGraph(void) {
+    
+    	try {
+    		ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, AddErrors);
+    		return ratio;
+    	} catch(const SPXException &e) {
+    		std::cerr << e.what() << std::endl;
+    		
+    		throw SPXGraphException("SPXRatio::GetRatioGraph: Unable to divide numerator and denominator to calculate ratio");
+    	}
     }
-
-    bool DenominatorContains(unsigned char mask) {
-        if((denominator & mask) && this->IsValid()) {
-            return true;
-        }
-
-        return false;
+    
+    TGraphAsymmErrors *GetNumeratorGraph(void) {	
+    	if(!numeratorGraph) {
+    		throw SPXGraphException("SPXRatio::GetNumeratorGraph: Numerator graph is empty");
+    	}
+    	
+    	return numeratorGraph;
+    }
+    
+    TGraphAsymmErrors *GetDenominatorGraph(void) {
+    	if(!denominatorGraph) {
+    		throw SPXGraphException("SPXRatio::GetDenominatorGraph: Denominator graph is empty");
+    	}
+    	
+    	return denominatorGraph;
     }
 
 private:
     static bool debug;
-    unsigned int numerator;
-    unsigned int denominator;
+    
+    SPXRatioStyle ratioStyle;
+    
+    std::string numeratorBlob;
+    std::string denominatorBlob;
+    
+    std::string numeratorConvoluteGridFile;			//Grid file if numerator contains convolute
+    std::string numeratorConvolutePDFFile;			//PDF file if numerator contains convolute
+    std::string numeratorDataFile;					//Data file if numerator contains data
+    std::string denominatorConvoluteGridFile;		//Grid file if denominator contains convolute
+    std::string denominatorConvolutePDFFile;		//PDF file if denomintator contains convolute
+    std::string denominatorReferenceGridFile;		//Grid file if denominator contains reference
+    std::string denominatorDataFile;				//Data file if denominator contains data
+    
+    TGraphAsymmError *numeratorGraph;
+    TGraphAsymmError *denominatorGraph;
+    
+    TGraphAsymmError *ratioGraph;
 };
 
 #endif

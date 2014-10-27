@@ -28,29 +28,28 @@ bool SPXRatioStyle::debug;
 
 //Constructs an SPXRatioStyle object with a given string (effectively
 //	calls the Parse() method on the input string)
-SPXRatioStyle::SPXRatioStyle(std::string s) {
+SPXRatioStyle::SPXRatioStyle(std::string &s, std::string &pn, std::string &rsn) {
 	this->Clear();
+	this->plotNumber = pn;
+	this->ratioStyleNumber = rsn;
 	this->Parse(s);
 }
 
-//Takes a string argument in the form:
-//	[data{,} | reference{,} | convolute]/[data XOR reference XOR convolute]
-//
-//	Such as:
-//		"data,reference/convolute"
-//	or
-//		"convolute/data"
-// but NOT
-//		"convolute/data,reference" <--- ERROR!
+//Takes a string argument in ONLY the following four forms:
+// 
+//		data / convolute
+//		convolute / data
+//		convolute / reference
+//		data / data
 //
 // Sets the numerator and denominator bitfields based on the input string
-void SPXRatioStyle::Parse(std::string s) {
+void SPXRatioStyle::Parse(std::string &s) {
 	std::string mn = "Parse: ";
 	
 	if(debug) std::cout << cn << mn << "Parsing configuration string: " << s << std::endl;
 	
 	std::string den;
-	std::vector<std::string> num;
+	std::string num;
 	
 	//Clear the numerator/denominator each time it is parsed
 	this->Clear();
@@ -58,61 +57,54 @@ void SPXRatioStyle::Parse(std::string s) {
 	//Parse the string into numerator and denominator (delimit with '/')
 	std::vector<std::string> v = SPXStringUtilities::ParseString(s, '/');
 	
+	if(v.size() != 2) {
+		throw SPXINIParseException(plotNumber, ratioStyleNumber, "Incorrect ratio style: Must be in the form: numerator / denominator");
+	}
+	
 	//Parse the numerator by commas
-	num = SPXStringUtilities::CommaSeparatedListToVector(v[0]);
+	num = v.at(0);
 	
 	//Obtain the denominator
-	den = v[1]; 
+	den = v.at(1); 
 	
+	if(debug) std::cout << cn << mn << "Numerator set to: " << num << std::endl;
 	if(debug) std::cout << cn << mn << "Denominator set to: " << den << std::endl;
 	
 	//Check the numerator and denominator for size errors
-	if(num.size() > 3) {
+	if(num.empty()) {
 		numerator = RS_INVALID;
 		denominator = RS_INVALID;
 		
-		throw SPXINIParseException("GRAPH", "ratio_style", "Incorrect ratio style: Numerator can only be a combination of: \"data\", \"reference\", and \"convolute\"");
-	}
-	if(num.size() < 1) {
-		numerator = RS_INVALID;
-		denominator = RS_INVALID;
-		
-		throw SPXINIParseException("GRAPH", "ratio_style", "ERROR: Incorrect ratio style: Numerator must be at least ONE of: \"data\", \"reference\", or \"convolute\"");
+		throw SPXINIParseException(plotNumber, ratioStyleNumber, "Incorrect ratio style: Numerator must be EXACTLY one of: \"data\" or \"convolute\"");
 	}
 	if(den.empty()) {
 		numerator = RS_INVALID;
 		denominator = RS_INVALID;
 		
-		throw SPXINIParseException("GRAPH", "ratio_style", "ERROR: Incorrect ratio style: Denominator must be EXACTLY one of: \"data\", \"reference\", or \"convolute\"");
+		throw SPXINIParseException(plotNumber, ratioStyleNumber, "Incorrect ratio style: Denominator must be EXACTLY one of: \"data\", \"reference\", or \"convolute\"");
 	}
 	
 	//Validate the numerator
-	for(int i = 0; i < num.size(); i++) {
-		if(debug) std::cout << cn << mn << "num[" << i << "] = " << num[i] << std::endl;
-		
-		if(!num[i].compare("data")) {
-			if(debug) std::cout << cn << mn << "Found numerator string = \"data\"" << std::endl;
-			numerator |= RS_DATA;
-		}
-		else if(!num[i].compare("reference")) {
-			if(debug) std::cout << cn << mn << "Found numerator string = \"reference\"" << std::endl;
-			numerator |= RS_REFERENCE;
-		}
-		else if(!num[i].compare("convolute")) {
-			if(debug) std::cout << cn << mn << "Found numerator string = \"convolute\"" << std::endl;
-			numerator |= RS_CONVOLUTE;
-		}
-		else {
-			numerator = RS_INVALID;
-			denominator = RS_INVALID;
-			
-			std::ostringstream oss;
-			oss << "Incorrect ratio style: Unrecognized ratio numerator option: \"" << num[i] << "\" is invalid";
-			throw SPXINIParseException("GRAPH", "ratio_style", oss.str());
-		}
+	if(!num.compare("data")) {
+		if(debug) std::cout << cn << mn << "Found numerator string = \"data\"" << std::endl;
+		numerator |= RS_DATA;
 	}
-	
-	if(debug) std::cout << cn << mn << "Numerator = " << numerator << std::endl;
+	else if(!num.compare("reference")) {
+		throw SPXINIParseException(plotNumber, ratioStyleNumber, "Incorrect ratio style: Numerator cannot be \"reference\"");
+		numerator = RS_INVALID;
+	}
+	else if(!num.compare("convolute")) {
+		if(debug) std::cout << cn << mn << "Found numerator string = \"convolute\"" << std::endl;
+		numerator |= RS_CONVOLUTE;
+	}
+	else {
+		numerator = RS_INVALID;
+		denominator = RS_INVALID;
+		
+		std::ostringstream oss;
+		oss << "Incorrect ratio style: Unrecognized ratio numerator option: \"" << num << "\" is invalid";
+		throw SPXINIParseException(plotNumber, ratioStyleNumber, oss.str());
+	}
 	
 	//Validate the denominator
 	if(!den.compare("data")) {
@@ -133,10 +125,28 @@ void SPXRatioStyle::Parse(std::string s) {
 		
 		std::ostringstream oss;
 		oss << "Incorrect ratio style: Unrecognized ratio denominator option: \"" << den << "\" is invalid";
-		throw SPXINIParseException("GRAPH", "ratio_style", oss.str());
+		throw SPXINIParseException(plotNumber, ratioStyleNumber, oss.str());
 	}
 	
-	if(debug) std::cout << cn << mn << "Denominator = " << denominator << std::endl;
+	//Check for invalid combinations
+	if(numerator == RS_DATA) {
+		if(denominator == RS_REFERENCE) {
+			numerator = RS_INVALID;
+			denominator = RS_INVALID;
+			throw SPXINIParseException(plotNumber, ratioStyleNumber, "Invalid ratio combination: data / reference is not supported");
+		}
+	}
+	
+	if(numerator == RS_CONVOLUTE) {
+		if(denominator == RS_CONVOLUTE) {
+			numerator = RS_INVALID;
+			denominator = RS_INVALID;
+			throw SPXINIParseException(plotNumber, ratioStyleNumber, "Invalid ratio combination: convolute / convolute is not supported");
+		}
+	}
+	
+	if(debug) std::cout << cn << mn << plotNumber << " " << ratioStyleNumber << ": Denominator = " << den << "(" << denominator << ")" << std::endl;
+	if(debug) std::cout << cn << mn << plotNumber << " " << ratioStyleNumber << ": Numerator = " << num << "(" << numerator << ")" << std::endl;
 }
 
 //Print displays the output of ToString to the console
@@ -161,19 +171,14 @@ std::string SPXRatioStyle::ToString(void) {
 	}
 	
 	//Build numerator and denominator
-	std::vector<std::string> num;
+	std::string num;
 	std::string den;	
 	
-	num.clear();
-	
-	if(numerator & RS_DATA) {
-		num.push_back("data");
-	}
-	if(numerator & RS_REFERENCE) {
-		num.push_back("reference");
-	}
-	if(numerator & RS_CONVOLUTE) {
-		num.push_back("convolute");
+	if(numerator == RS_DATA) {
+		num = "data";
+	} 
+	else if(numerator == RS_CONVOLUTE) {
+		num = "convolute";
 	}
 	
 	if(denominator == RS_DATA) {
@@ -186,7 +191,7 @@ std::string SPXRatioStyle::ToString(void) {
 		den = "convolute";
 	}
 	
-	return SPXStringUtilities::VectorToCommaSeparatedList(num) + " / " + den;
+	return num + " / " + den;
 }
 
 //Determines whether the ratio style is empty or not
@@ -216,8 +221,8 @@ bool SPXRatioStyle::IsValid(void) {
 		return false;
 	}
 	
-	if(numerator > (RS_DATA | RS_REFERENCE | RS_CONVOLUTE)) {
-		if(debug) std::cout << cn << mn << "Numerator is out of bounds: numerator = " << numerator << std::endl;
+	if((numerator != RS_DATA) && (numerator != RS_CONVOLUTE)) {
+		if(debug) std::cout << cn << mn << "Numerator is invalid: numerator = " << numerator << std::endl;
 		return false;
 	}
 	
