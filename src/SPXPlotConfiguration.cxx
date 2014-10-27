@@ -55,8 +55,10 @@ bool SPXPlotConfigurationInstance::debug;
 //	options["x_log"] --> X Axis logarithmic
 //	options["y_log"] --> Y Axis logarithmic
 
-SPXPlotConfiguration::SPXPlotConfiguration(std::map<std::string, std::vector<std::string> > & options) {
+SPXPlotConfiguration::SPXPlotConfiguration(std::map<std::string, std::vector<std::string> > & options, unsigned int id) {
 	this->SetDefaults();
+
+	this->id = id;
 
 	//Attempt to parse the options instances
 	try {
@@ -217,7 +219,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 	//Parse the plot_type
 	try {
-		plotType = SPXPlotType(options["plot_type"][0]);
+		plotType = SPXPlotType(options["plot_type"].at(0));
 	} catch(const SPXException &e) {
 		std::cerr << e.what() << std::endl;
 
@@ -358,7 +360,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		SPXRatioStyle rs;
 
 		try {
-			rs = SPXRatioStyle(options["ratio_style"].at(i));
+			rs = SPXRatioStyle(options["ratio_style"].at(i), id, i);
 			ratioStyles.push_back(rs);
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
@@ -442,8 +444,8 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 bool SPXPlotConfiguration::IsEmpty(void) {
 	std::string mn = "IsEmpty: ";
 
-	//Return true if all options vector is empty and numberOfConfigurationInstances is 0
-	if((numberOfConfigurationInstances == 0) && (configurationInstances.size() == 0)) {
+	//Return true if configurations instance vector is empty
+	if(configurationInstances.size() == 0) {
 		return true;
 	}
 
@@ -459,14 +461,8 @@ bool SPXPlotConfiguration::IsValid(void) {
 		return true;
 	}
 
-	//Return false if the numberOfConfigurationInstances does not match the size of the configurationInstances vector
-	if(numberOfConfigurationInstances != configurationInstances.size()) {
-		if(debug) std::cout << cn << mn << "Size of Options Instances vector (" << configurationInstances.size() << ") is NOT equal to the number of options instances (" << numberOfConfigurationInstances << ")" << std::endl;
-		return false;
-	}
-
 	//Return false if ANY of the frame options are invalid
-	for(int i = 0; i < numberOfConfigurationInstances; i++) {
+	for(int i = 0; i < configurationInstances.size(); i++) {
 		if(!configurationInstances[i].IsValid()) {
 			if(debug) std::cout << cn << mn << "An invalid options instance was found at index " << i << std::endl;
 			return false;

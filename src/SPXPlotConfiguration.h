@@ -31,8 +31,15 @@
 #include <string>
 #include <sstream>
 
+#include "SPXPlotType.h"
+#include "SPXRatioStyle.h"
+#include "SPXDisplayStyle.h"
+#include "SPXOverlayStyle.h"
+
 #include "SPXDataSteeringFile.h"
 #include "SPXGridSteeringFile.h"
+#include "SPXPDFSteeringFile.h"
+
 #include "SPXException.h"
 
 const int FO_EMPTY_STYLE = -1;
@@ -197,6 +204,10 @@ public:
 		return id;
 	}
 
+	SPXPlotType & GetPlotType(void) {
+		return plotType;
+	}
+
 	std::string & GetDescription(void) {
 		return description;
 	}
@@ -285,7 +296,7 @@ private:
 		description.clear();
 		ratioTitle.clear();
 		ratioStyles.clear();
-		ratioStrings.clear();
+		ratios.clear();
 		configurationInstances.clear();
 	}
 };
