@@ -33,7 +33,7 @@ public:
 	}
 	
 	//Constructor with style string, plot number string, and ratio style number string
-	SPXRatioStyle(std::string &s, std::string &pn, std::string &rsn);
+	SPXRatioStyle(std::string &s, unsigned int pn, unsigned int rsn);
 
 	void Parse(std::string &s);
 	void Print(void);

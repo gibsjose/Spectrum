@@ -28,10 +28,16 @@ bool SPXRatioStyle::debug;
 
 //Constructs an SPXRatioStyle object with a given string (effectively
 //	calls the Parse() method on the input string)
-SPXRatioStyle::SPXRatioStyle(std::string &s, std::string &pn, std::string &rsn) {
+SPXRatioStyle::SPXRatioStyle(std::string &s, unsigned int pn, unsigned int rsn) {
 	this->Clear();
-	this->plotNumber = pn;
-	this->ratioStyleNumber = rsn;
+
+	std::ostringstream pss;
+	std::ostringstream rss;
+	pss << "PLOT_" << pn;
+	rss << "ratio_style_" << rsn;
+
+	this->plotNumber = pss.str();
+	this->ratioStyleNumber = rss.str();
 	this->Parse(s);
 }
 
