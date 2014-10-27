@@ -87,6 +87,18 @@ void SPXRatio::Parse(std::string &s) {
         std::cout << "Conv / Dat" << std::endl;
     }
 
+    if(ratioStyle.IsDataOverConvolute()) {
+        std::cout << "Dat / Conv" << std::endl;
+    }
+
+    if(ratioStyle.IsConvoluteOverRatio()) {
+        std::cout << "Conv / Rat" << std::endl;
+    }
+
+    if(ratioStyle.IsDataOverData()) {
+        std::cout << "Dat / Dat" << std::endl;
+    }
+
     //Check the RatioStyle:
     if(ratioStyle.IsDataOverConvolute()) {
         if(debug) std::cout << cn << mn << "Data over Convolute" << std::endl;
@@ -105,8 +117,8 @@ void SPXRatio::Parse(std::string &s) {
         numeratorDataFile = SPXStringUtilities::RemoveCharacters(numBlob, "()");
 
         //Get the grid/pdf steering files from the denominator
-        SPXStringUtilities::RemoveCharacters(denBlob, "()");
-        SPXStringUtilities::RemoveCharacters(denBlob, "[]");
+        denBlob = SPXStringUtilities::RemoveCharacters(denBlob, "()");
+        denBlob = SPXStringUtilities::RemoveCharacters(denBlob, "[]");
         std::vector<std::string> v_den = SPXStringUtilities::CommaSeparatedListToVector(denBlob);
         if(v_den.size() != 2) {
             throw SPXParseException(cn + mn + "Denominator blob is NOT of the form \"[grid_file, pdf_file]\"");
@@ -138,8 +150,8 @@ void SPXRatio::Parse(std::string &s) {
         }
 
         //Get the grid/pdf steering files from the numerator
-        SPXStringUtilities::RemoveCharacters(numBlob, "()");
-        SPXStringUtilities::RemoveCharacters(numBlob, "[]");
+        numBlob = SPXStringUtilities::RemoveCharacters(numBlob, "()");
+        numBlob = SPXStringUtilities::RemoveCharacters(numBlob, "[]");
         std::vector<std::string> v_num = SPXStringUtilities::CommaSeparatedListToVector(numBlob);
         if(v_num.size() != 2) {
             throw SPXParseException(cn + mn + "Numerator blob is NOT of the form \"[grid_file, pdf_file]\"");
@@ -173,8 +185,8 @@ void SPXRatio::Parse(std::string &s) {
         }
 
         //Get the grid/pdf steering files from the numerator
-        SPXStringUtilities::RemoveCharacters(numBlob, "()");
-        SPXStringUtilities::RemoveCharacters(numBlob, "[]");
+        numBlob = SPXStringUtilities::RemoveCharacters(numBlob, "()");
+        numBlob = SPXStringUtilities::RemoveCharacters(numBlob, "[]");
         std::vector<std::string> v_num = SPXStringUtilities::CommaSeparatedListToVector(numBlob);
         if(v_num.size() != 2) {
             throw SPXParseException(cn + mn + "Numerator blob is NOT of the form \"[grid_file, pdf_file]\"");
