@@ -82,108 +82,137 @@ void SPXRatio::Parse(std::string s) {
  
     //Check the RatioStyle:
     if(ratioStyle.IsDataOverConvolute()) {
-    
+        
+        //Error if numBlob matches a convolute string
+        if(MatchesConvoluteString(numBlob)) {
+            throw SPXParseException(cn + mn + "Numerator blob should have a \"data\" style, but has \"convolute\" style");
+        }
+
+        //Error if denBlob does NOT match a convolute string
+        if(!MatchesConvoluteString(denBlob)) {
+            throw SPXParseException(cn + mn + "Denominator blob should have a \"convolute\" style, but does not");
+        }
+
+        //Get the data steering file from the numerator
+        numeratorDataFile = SPXStringUtilities::RemoveCharacters(numBlob, "()");
+
+        //Get the grid/pdf steering files from the denominator
+        SPXStringUtilities::RemoveCharacters(denBlob, "()");
+        SPXStringUtilities::RemoveCharacters(denBlob, "[]");
+        std::vector<std::string> v_den = SPXStringUtilities::CommaSeparatedListToVector(denBlob);
+        if(v_den.size() != 2) {
+            throw SPXParseException(cn + mn + "Denominator blob is NOT of the form \"[grid_file, pdf_file]\"");
+        }
+        denominatorConvoluteGridFile = v_den.at(0);
+        denominatorConvolutePDFFile = v_den.at(1);
+
+        if(debug) {
+            std::cout << cn << mn << "Successfully parsed data / convolute string: " << std::endl;
+            std::cout << "\t" << numeratorDataFile << " / " << "[" << denominatorConvoluteGridFile << ", " << denominatorConvolutePDFFile << "]" << std::endl;
+        }
     }
     
    	else if(ratioStyle.IsConvoluteOverData()) {
-    
+        
+        //Error if numBlob does NOT match a convolute string
+        if(!MatchesConvoluteString(numBlob)) {
+            throw SPXParseException(cn + mn + "Numerator blob should have a \"convolute\" style, but does not");
+        }
+
+        //Error if denBlob matches a convolute string
+        if(MatchesConvoluteString(denBlob)) {
+            throw SPXParseException(cn + mn + "Denominator blob should have a \"data\" style, but has \"convolute\" style");
+        }
+
+        //Get the grid/pdf steering files from the numerator
+        SPXStringUtilities::RemoveCharacters(numBlob, "()");
+        SPXStringUtilities::RemoveCharacters(numBlob, "[]");
+        std::vector<std::string> v_num = SPXStringUtilities::CommaSeparatedListToVector(numBlob);
+        if(v_num.size() != 2) {
+            throw SPXParseException(cn + mn + "Numerator blob is NOT of the form \"[grid_file, pdf_file]\"");
+        }
+        numeratorConvoluteGridFile = v_num.at(0);
+        numeratorConvolutePDFFile = v_num.at(1);
+
+        //Get the data steering file from the denominator
+        denominatorDataFile = SPXStringUtilities::RemoveCharacters(denBlob, "()");
+
+        if(debug) {
+            std::cout << cn << mn << "Successfully parsed convolute / data string: " << std::endl;
+            std::cout << "\t" << "[" << numeratorConvoluteGridFile << ", " << numeratorConvolutePDFFile << "]" << " / " << denominatorDataFile << std::endl;
+        }
     }
     
     else if(ratioStyle.IsConvoluteOverReference()) {
-    
+
+        //Error if numBlob does NOT match a convolute string
+        if(!MatchesConvoluteString(numBlob)) {
+            throw SPXParseException(cn + mn + "Numerator blob should have a \"convolute\" style, but does not");
+        }
+
+        //Error if denBlob matches a convolute string
+        if(MatchesConvoluteString(denBlob)) {
+            throw SPXParseException(cn + mn + "Denominator blob should have a \"reference\" style, but has \"convolute\" style");
+        }
+
+        //Get the grid/pdf steering files from the numerator
+        SPXStringUtilities::RemoveCharacters(numBlob, "()");
+        SPXStringUtilities::RemoveCharacters(numBlob, "[]");
+        std::vector<std::string> v_num = SPXStringUtilities::CommaSeparatedListToVector(numBlob);
+        if(v_num.size() != 2) {
+            throw SPXParseException(cn + mn + "Numerator blob is NOT of the form \"[grid_file, pdf_file]\"");
+        }
+        numeratorConvoluteGridFile = v_num.at(0);
+        numeratorConvolutePDFFile = v_num.at(1);
+
+        //Get the reference grid steering file from the denominator
+        denominatorReferenceGridFile = SPXStringUtilities::RemoveCharacters(denBlob, "()");
+
+        //Error if reference grid steering file does NOT match the convolute grid file
+        if(numeratorConvoluteGridFile.compare(denominatorReferenceGridFile) != 0) {
+            throw SPXParseException(cn + mn + "Numerator's convolute grid file \"" + numeratorConvoluteGridFile + \
+                "\" MUST match the denominator's refererence grid file: \"" + denominatorReferenceGridFile + "\"");
+        }
+
+        if(debug) {
+            std::cout << cn << mn << "Successfully parsed convolute / reference string: " << std::endl;
+            std::cout << "\t" << "[" << numeratorConvoluteGridFile << ", " << numeratorConvolutePDFFile << "]" << " / " << denominatorReferenceGridFile << std::endl;
+        }
     }
     
     else if(ratioStyle.IsDataOverData()) {
-    
+        
+        //Error if numerator or denominator matches convolute string
+        if(MatchesConvoluteString(numBlob) || MatchesConvoluteString(denBlob)) {
+            throw SPXParseException(cn + mn + "Numerator AND denominator blob should have a \"data\" style, but at least one has \"convolute\" style");
+        }
+
+        //Get the data file from the numerator
+        numeratorDataFile = SPXStringUtilities::RemoveCharacters(numBlob, "()");
+
+        //Get the data file from the denominator
+        denominatorDataFile = SPXStringUtilities::RemoveCharacters(denBlob, "()");
+
+        if(debug) {
+            std::cout << cn << mn << "Successfully parsed data / data string: " << std::endl;
+            std::cout << "\t" << numeratorDataFile << " / " << denominatorDataFile << std::endl;
+        }
     }
+
+    //Get the graphs based on the steering files given
+    GetGraphs();
 }
 
-//Print displays the output of ToString to the console
-void SPXRatio::Print(void) {
-    std::string mn = "Print: ";
-    std::cout << this->ToString() << std::endl;
+void GetGraphs(void) {
+    ;
 }
 
-//ToString does the opposite of Parse: it assembles a string based on
-// the numerator and denominator bitfields
-std::string SPXRatio::ToString(void) {
-    std::string mn = "ToString: ";
+bool SPXRatio::MatchesConvoluteString(std::string s) {
 
-    //Empty style
-    if(this->IsEmpty()) {
-        return "";
-    }
-
-    //Check for validity
-    if(!this->IsValid()) {
-        return "INVALID_RATIO_STYLE";
-    }
-
-    //Build numerator and denominator
-    std::vector<std::string> num;
-    std::string den;
-
-    num.clear();
-
-    if(numerator & RS_DATA) {
-        num.push_back("data");
-    }
-    if(numerator & RS_REFERENCE) {
-        num.push_back("reference");
-    }
-    if(numerator & RS_CONVOLUTE) {
-        num.push_back("convolute");
-    }
-
-    if(denominator == RS_DATA) {
-        den = "data";
-    }
-    else if(denominator == RS_REFERENCE) {
-        den = "reference";
-    }
-    else if(denominator == RS_CONVOLUTE) {
-        den = "convolute";
-    }
-
-    return SPXStringUtilities::VectorToCommaSeparatedList(num) + " / " + den;
-}
-
-//Determines whether the ratio style is empty or not
-bool SPXRatio::IsEmpty(void) {
-    std::string mn = "IsEmpty: ";
-
-    if(!(numerator | denominator)) {
+    //Convolute strings MUST begin with '[', end with ']', and have a ',' somewhere in the middle
+    if((s.at(0) == '[') && (s.at(s.size() - 1) == ']') && (s.contains(","))) {
         return true;
-    }
-
-    return false;
-}
-
-//Determines the validity of the ratio style
-bool SPXRatio::IsValid(void) {
-    std::string mn = "IsValid: ";
-
-    //Empty numerator and denominator: valid, but empty
-    if(this->IsEmpty()){
-        if(debug) std::cout << cn << mn << "Empty numerator and denominator" << std::endl;
-        return true;
-    }
-
-    //Only one of numerator OR denominator empty
-    if((!!numerator) ^ (!!denominator)) {
-        if(debug) std::cout << cn << mn << "Mismatch: numerator = " << numerator << " denominator = " << denominator << std::endl;
+    } else {
         return false;
     }
-
-    if(numerator > (RS_DATA | RS_REFERENCE | RS_CONVOLUTE)) {
-        if(debug) std::cout << cn << mn << "Numerator is out of bounds: numerator = " << numerator << std::endl;
-        return false;
-    }
-
-    if((denominator != RS_DATA) && (denominator != RS_REFERENCE) && (denominator != RS_CONVOLUTE)) {
-        if(debug) std::cout << cn << mn << "Denominator is invalid: denominator = " << denominator << std::endl;
-        return false;
-    }
-
-    return true;
 }

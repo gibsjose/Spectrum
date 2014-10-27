@@ -101,6 +101,9 @@ private:
     TGraphAsymmError *denominatorGraph;
     
     TGraphAsymmError *ratioGraph;
+
+    bool MatchesConvoluteString(std::string s);
+    void GetGraphs(void);
 };
 
 #endif
