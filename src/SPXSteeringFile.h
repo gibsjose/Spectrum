@@ -162,22 +162,6 @@ public:
 		return this->yLegend;
 	}
 
-	const std::string & GetRatioTitle(void) const {
-		return this->ratioTitle;
-	}
-
-	SPXRatioStyle & GetRatioStyle(void) {
-		return this->ratioStyle;
-	}
-
-	SPXOverlayStyle & GetOverlayStyle(void) {
-		return this->overlayStyle;
-	}
-
-	SPXDisplayStyle & GetDisplayStyle(void) {
-		return this->displayStyle;
-	}
-
 	double GetYOverlayMin(void) const {
 		return this->yOverlayMin;
 	}
@@ -192,55 +176,6 @@ public:
 
 	double GetYRatioMax(void) const {
 		return this->yRatioMax;
-	}
-
-	const std::vector<std::string> GetPDFSteeringFilepaths(void) const {
-		std::vector<std::string> tmpVector;
-		for(int i = 0; i < pdfSteeringFiles.size(); i++) {
-			tmpVector.push_back(pdfSteeringFiles.at(i).GetFilename());
-		}
-		return tmpVector;
-	}
-
-	unsigned int GetNumberOfPDFSteeringFiles(void) const {
-		return this->pdfSteeringFiles.size();
-	}
-
-	std::vector<SPXPDFSteeringFile> & GetPDFSteeringFiles(void) {
-		return this->pdfSteeringFiles;
-	}
-
-	SPXPDFSteeringFile & GetPDFSteeringFile(unsigned int index) {
-		if((index + 1) > pdfSteeringFiles.size()) {
-			int top = pdfSteeringFiles.size() - 1;
-			throw SPXOutOfRangeException(top, index, "SPXSteeringFile::GetPDFSteeringFile: Index out of range");
-		}
-
-		return pdfSteeringFiles.at(index);
-	}
-
-	int GetPDFFillStyle(void) const {
-		return this->pdfFillStyle;
-	}
-
-	int GetPDFFillColor(void) const {
-		return this->pdfFillColor;
-	}
-
-	int GetPDFMarkerStyle(void) const {
-		return this->pdfMarkerStyle;
-	}
-
-	const SPXPDFBandType & GetPDFBandType(void) const {
-		return this->pdfBandType;
-	}
-
-	const SPXPDFErrorType & GetPDFErrorType(void) const {
-		return this->pdfErrorType;
-	}
-
-	const SPXPDFErrorSize & GetPDFErrorSize(void) const {
-		return this->pdfErrorSize;
 	}
 
 	unsigned int GetNumberOfPlotConfigurations(void) const {
@@ -275,6 +210,10 @@ public:
 
 	SPXGridSteeringFile & GetGridSteeringFile(unsigned int pci, unsigned int pcii) {
 		return plotConfigurations.at(pci).GetPlotConfigurationInstance(pcii).gridSteeringFile;
+	}
+
+	SPXPDFSteeringFile & GetPDFSteeringFile(unsigned int pci, unsigned int pcii) {
+		return plotConfigurations.at(pci).GetPlotConfigurationInstance(pcii).pdfSteeringFile;
 	}
 
 };
