@@ -595,10 +595,14 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 			ratioStyle = rsss.str();
 			ratio = rss.str();
 
+			if(debug) std::cout << cn << mn << "Getting [" << plotSection << "]: " << ratioStyle << std::endl;
 			tmp = reader->Get(plotSection, ratioStyle, "EMPTY");
+			if(debug) std::cout << "\t Found: " << tmp << std::endl;
 			rsVector.push_back(tmp);
 
+			if(debug) std::cout << cn << mn << "Getting [" << plotSection << "]: " << ratio << std::endl;
 			tmp = reader->Get(plotSection, ratio, "EMPTY");
+			if(debug) std::cout << "\t Found: " << tmp << std::endl;
 			rVector.push_back(tmp);
 		}
 
