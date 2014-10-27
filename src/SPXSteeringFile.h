@@ -22,12 +22,10 @@
 
 #include "INIReader.h"
 
+#include "SPXPlotType.h"
 #include "SPXRatioStyle.h"
 #include "SPXDisplayStyle.h"
 #include "SPXOverlayStyle.h"
-#include "SPXPDFBandType.h"
-#include "SPXPDFErrorType.h"
-#include "SPXPDFErrorSize.h"
 #include "SPXPlotConfiguration.h"
 
 #include "SPXPDFSteeringFile.h"
@@ -77,7 +75,7 @@ private:
 	void SetDefaults(void);
 	unsigned int ParseNumberOfPlots(void);
 	unsigned int ParseNumberOfRatios(unsigned int plotNumber);
-	void ParsePlotConfigurations(unsigned int numPlots);
+	void ParsePlotConfigurations();
 
 public:
 

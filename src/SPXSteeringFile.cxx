@@ -24,9 +24,6 @@ void SPXSteeringFile::SetDefaults(void) {
 
 	if(debug) std::cout << cn << mn << "Setting default Steering File data" << std::endl;
 
-	numberOfPlots = 0;
-	if(debug) std::cout << cn << mn << "numberOfPlots set to default: \"0\"" << std::endl;
-
 	pdfDirectory = ".";
 	if(debug) std::cout << cn << mn << "pdfDirectory set to default: \".\"" << std::endl;
 
@@ -117,9 +114,9 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Y Ratio Min: " << yRatioMin << std::endl;
 	std::cout << "\t\t Y Ratio Max: " << yRatioMax << std::endl << std::endl;
 	std::cout << "\t Plot Configurations" << std::endl;
-	std::cout << "\t\t Number of Plots: " << numberOfPlots << std::endl << std::endl;
+	std::cout << "\t\t Number of Plots: " << GetNumberOfPlotConfigurations() << std::endl << std::endl;
 
-	for(int i = 0; i < numberOfPlots; i++) {
+	for(int i = 0; i < GetNumberOfPlotConfigurations(); i++) {
 		std::cout << "\t\t Plot " << i << " Configuration [PLOT_" << i << "]" << std::endl;
 		std::cout << "\t\t Description: " << plotConfigurations[i].GetDescription() << std::endl;
 		std::cout << "\t\t Plot Type: " << plotConfigurations[i].GetPlotType().ToString() << std::endl;
@@ -127,9 +124,9 @@ void SPXSteeringFile::Print(void) {
 		std::cout << "\t\t Overlay Style: " << plotConfigurations[i].GetOverlayStyle().ToString() << std::endl;
 		std::cout << "\t\t Ratio Title: " << plotConfigurations[i].GetRatioTitle() << std::endl;
 		std::cout << "\t\t Ratios:" << std::endl;
-		for(int j = 0; j < plotConfigurations.GetNumberofRatios(); j++) {
+		for(int j = 0; j < plotConfigurations[i].GetNumberOfRatios(); j++) {
 			std::cout << "\t\t\t Ratio Style " << j << ": " << plotConfigurations[i].GetRatioStyle(j).ToString() << std::endl;
-			std::cout << "\t\t\t Ratio " << j << ": " << plotConfigurations[i].GetRatio(j).ToString() << std::endl;
+			std::cout << "\t\t\t Ratio " << j << ": " << plotConfigurations[i].GetRatio(j) << std::endl;
 		}
 		std::cout << "\t\t X Log: " << (plotConfigurations[i].IsXLog() ? "YES" : "NO") << std::endl;
 		std::cout << "\t\t Y Log: " << (plotConfigurations[i].IsYLog() ? "YES" : "NO") << std::endl << std::endl; 
@@ -570,7 +567,6 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		//Get the ratio_title
 		tmp = reader->Get(plotSection, "ratio_title", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			throw SPXINIParseException(plotSection, "ratio_title", "You MUST specify the ratio_title");
 			if(debug) std::cout << cn << mn << "ratio_title was not specified: Defaulting to \"Ratio\"" << std::endl;
 			tmp = std::string("Ratio");
 		}
@@ -588,7 +584,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		std::string ratioStyle;
 		std::string ratio;
 		std::vector<std::string> rsVector;
-		std::vector<std::string rVector;
+		std::vector<std::string> rVector;
 
 		for(int j = 0; j < numberOfRatios; j++) {
 			
@@ -608,11 +604,11 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 
 		//Insert the ratio and ratio styles vectors into the map
 		configurations.insert(std::pair<std::string, std::vector<std::string> >("ratio_style", rsVector));
-		configurations.insert(std::pair<std::string, std::vectir<std::string> >("ratio", rVector));
+		configurations.insert(std::pair<std::string, std::vector<std::string> >("ratio", rVector));
 
 		//Create a new plotConfigurations object with configurations vector (plotconfigurations constructor will parse it)
 		try {
-			SPXPlotConfiguration pc = SPXPlotConfiguration(configurations);
+			SPXPlotConfiguration pc = SPXPlotConfiguration(configurations, i);
 
 			//Make sure it is valid and non-empty, and add it to plot vector
 			if(!pc.IsEmpty() && pc.IsValid()) {
