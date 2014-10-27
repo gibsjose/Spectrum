@@ -5,8 +5,8 @@ Spectrum
 PDFsets
 
 # Spectrum project
-.sublime-project
-.sublime-workspace
+*.sublime-project
+*.sublime-workspace
 
 # Plots output (PNG) folder
 *.png
