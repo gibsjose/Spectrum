@@ -194,7 +194,7 @@ void SPXPDFSteeringFile::Parse(void) {
 	
 	nameVar = reader->Get("DESC", "name_var", "EMPTY");
 	if(!nameVar.compare("EMPTY")) {
-		throw SPXINIParseException("DESC", "name_var", "You MUST specify the nameVar");
+		if(debug) std::cout << cn << mn << "No name variation specified: defaulting to \" \"" << std::endl;
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read PDF Name Variation: " << nameVar << std::endl;
 	}
