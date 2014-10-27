@@ -26,16 +26,13 @@ class SXPRatio {
 
 public:
 
-    SPXRatioStyle(SPXRatioStyle &rs, std::string s) {
+    SPXRatioStyle(SPXRatioStyle &rs, std::string &s) {
     	ratioStyle = rs;
     	Parse(s);
     }
 
-    void Parse(std::string s);
+    void Parse(std::string &s);
     void Print(void);
-    std::string ToString(void);
-    bool IsEmpty(void);
-    bool IsValid(void);
 
     static bool GetDebug(void) {
         return debug;
@@ -45,12 +42,12 @@ public:
         debug = b;
     }
 
-    std::string & GetNumerator(void) {
-        return numerator;
+    std::string & GetNumeratorBlob(void) {
+        return numeratorBlob;
     }
 
-    std::string & GetDenominator(void) {
-        return denominator;
+    std::string & GetDenominatorBlob(void) {
+        return denominatorBlob;
     }
 
     TGraphAsymmErrors *GetRatioGraph(void) {
@@ -81,6 +78,10 @@ public:
     	return denominatorGraph;
     }
 
+    std::string & ToString(void) {
+        return ratioString;
+    }
+
 private:
     static bool debug;
     
@@ -88,6 +89,8 @@ private:
     
     std::string numeratorBlob;
     std::string denominatorBlob;
+
+    std::string ratioString;
     
     std::string numeratorConvoluteGridFile;			//Grid file if numerator contains convolute
     std::string numeratorConvolutePDFFile;			//PDF file if numerator contains convolute
@@ -102,7 +105,7 @@ private:
     
     TGraphAsymmError *ratioGraph;
 
-    bool MatchesConvoluteString(std::string s);
+    bool MatchesConvoluteString(std::string &s);
     void GetGraphs(void);
 };
 

@@ -43,7 +43,7 @@ bool SPXRatio::debug;
 //		data / data
 //		convolute / reference
 //
-void SPXRatio::Parse(std::string s) {
+void SPXRatio::Parse(std::string &s) {
     std::string mn = "Parse: ";
 	
 	std::string numBlob;
@@ -108,7 +108,11 @@ void SPXRatio::Parse(std::string s) {
 
         if(debug) {
             std::cout << cn << mn << "Successfully parsed data / convolute string: " << std::endl;
-            std::cout << "\t" << numeratorDataFile << " / " << "[" << denominatorConvoluteGridFile << ", " << denominatorConvolutePDFFile << "]" << std::endl;
+
+            std::ostringstream oss;
+            oss << numeratorDataFile << " / " << "[" << denominatorConvoluteGridFile << ", " << denominatorConvolutePDFFile << "]";
+            ratioString = oss.str();
+            std::cout << "\t " << ratioString << std::endl;        
         }
     }
     
@@ -139,7 +143,10 @@ void SPXRatio::Parse(std::string s) {
 
         if(debug) {
             std::cout << cn << mn << "Successfully parsed convolute / data string: " << std::endl;
-            std::cout << "\t" << "[" << numeratorConvoluteGridFile << ", " << numeratorConvolutePDFFile << "]" << " / " << denominatorDataFile << std::endl;
+            std::ostringstream oss;
+            oss << "[" << numeratorConvoluteGridFile << ", " << numeratorConvolutePDFFile << "]" << " / " << denominatorDataFile;
+            ratioString = oss.str();
+            std::cout << "\t " << ratioString << std::endl;  
         }
     }
     
@@ -176,7 +183,10 @@ void SPXRatio::Parse(std::string s) {
 
         if(debug) {
             std::cout << cn << mn << "Successfully parsed convolute / reference string: " << std::endl;
-            std::cout << "\t" << "[" << numeratorConvoluteGridFile << ", " << numeratorConvolutePDFFile << "]" << " / " << denominatorReferenceGridFile << std::endl;
+            std::ostringstream oss;
+            oss << "[" << numeratorConvoluteGridFile << ", " << numeratorConvolutePDFFile << "]" << " / " << denominatorReferenceGridFile;
+            ratioString = oss.str();
+            std::cout << "\t " << ratioString << std::endl;  
         }
     }
     
@@ -195,7 +205,10 @@ void SPXRatio::Parse(std::string s) {
 
         if(debug) {
             std::cout << cn << mn << "Successfully parsed data / data string: " << std::endl;
-            std::cout << "\t" << numeratorDataFile << " / " << denominatorDataFile << std::endl;
+            std::ostringstream oss;
+            oss << numeratorDataFile << " / " << denominatorDataFile;
+            ratioString = oss.str();
+            std::cout << "\t " << ratioString << std::endl;  
         }
     }
 
@@ -207,7 +220,7 @@ void GetGraphs(void) {
     ;
 }
 
-bool SPXRatio::MatchesConvoluteString(std::string s) {
+bool SPXRatio::MatchesConvoluteString(std::string &s) {
 
     //Convolute strings MUST begin with '[', end with ']', and have a ',' somewhere in the middle
     if((s.at(0) == '[') && (s.at(s.size() - 1) == ']') && (s.contains(","))) {
