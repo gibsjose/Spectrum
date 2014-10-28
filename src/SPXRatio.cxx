@@ -118,6 +118,11 @@ void SPXRatio::Parse(std::string &s) {
             ratioString = oss.str();
             std::cout << "\t " << ratioString << std::endl;
         }
+
+        //Prepend directory paths
+        numeratorDataFile = dataDirectory + "/" + numeratorDataFile;
+        denominatorConvoluteGridFile = gridDirectory + "/" + denominatorConvoluteGridFile;
+        denominatorConvolutePDFFile = pdfDirectory + "/" + denominatorConvolutePDFFile;
     }
 
     else if(ratioStyle.IsConvoluteOverData()) {
@@ -153,6 +158,11 @@ void SPXRatio::Parse(std::string &s) {
             ratioString = oss.str();
             std::cout << "\t " << ratioString << std::endl;
         }
+
+        //Prepend directory paths
+        numeratorConvoluteGridFile = gridDirectory + "/" + numeratorConvoluteGridFile;
+        numeratorConvolutePDFFile = pdfDirectory + "/" + numeratorConvolutePDFFile;
+        denominatorDataFile = dataDirectory + "/" + denominatorDataFile;
     }
 
     else if(ratioStyle.IsConvoluteOverReference()) {
@@ -194,6 +204,11 @@ void SPXRatio::Parse(std::string &s) {
             ratioString = oss.str();
             std::cout << "\t " << ratioString << std::endl;
         }
+
+        //Prepend directory paths
+        numeratorConvoluteGridFile = gridDirectory + "/" + numeratorConvoluteGridFile;
+        numeratorConvolutePDFFile = pdfDirectory + "/" + numeratorConvolutePDFFile;
+        denominatorReferenceGridFile = gridDirectory + "/" + denominatorReferenceGridFile;
     }
 
     else if(ratioStyle.IsDataOverData()) {
@@ -217,6 +232,9 @@ void SPXRatio::Parse(std::string &s) {
             ratioString = oss.str();
             std::cout << "\t " << ratioString << std::endl;
         }
+
+        numeratorDataFile = dataDirectory + "/" + numeratorDataFile;
+        denominatorDataFile = dataDirectory + "/" + denominatorDataFile;
     }
 }
 

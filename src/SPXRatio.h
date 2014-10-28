@@ -29,9 +29,9 @@ class SPXRatio {
 
 public:
 
-    SPXRatio(SPXPlotConfiguration &pc) {
+    SPXRatio(SPXPlotConfiguration &pc, SPXRatioStyle &rs) {
         plotConfiguration = pc;
-    	ratioStyle = pc.GetRatioStyle();
+    	ratioStyle = rs;
     }
 
     void Parse(std::string &s);
@@ -59,15 +59,31 @@ public:
 
     void Divide(void) {
         //Grab the plot configuration instance
-        SPXPlotConfigurationInstance *pci = plotConfiguration.GetPlotConfigurationInstance(convoluteKey.second);
+        SPXPlotConfigurationInstance *pci;
+
+        if(ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverRatio()) {
+            pci = plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
+        }
+
+        else if(ratioStyle.IsDataOverConvolute()) {
+            pci = plotConfiguration.GetPlotConfigurationInstance(denominatorConvolutePDFFile);
+        }
+
+        //@TODO What if it's Data/Data???
+        else {
+            if(debug) std::cout << "SPXRatio::Divide: Data/Data: Could not get pci" << std::endl;
+            pci = NULL;
+        }
 
         try {
             //Divide graphs
             ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, AddErrors);
 
             //Style ratio graph
-            ratioGraph->SetFillStyle(pci->pdfSteeringFile.GetPDFFillStyle());
-            ratioGraph->SetFillColor(pci->pdfSteeringFile.GetPDFFillColor());
+            if(pci) {
+                ratioGraph->SetFillStyle(pci->pdfSteeringFile.GetFillStyle());
+                ratioGraph->SetFillColor(pci->pdfSteeringFile.GetFillColor());
+            }
         } catch(const SPXException &e) {
             std::cerr << e.what() << std::endl;
             throw SPXGraphException("SPXRatio::Divide: Unable to divide numerator and denominator to calculate ratio");
@@ -102,11 +118,27 @@ public:
         return ratioString;
     }
 
+    void SetDataDirectory(const std::string &dir) {
+        dataDirectory = dir;
+    }
+
+    void SetGridDirectory(const std::string &dir) {
+        gridDirectory = dir;
+    }
+
+    void SetPDFDirectory(const std::string &dir) {
+        pdfDirectory = dir;
+    }
+
 private:
     static bool debug;
 
     SPXPlotConfiguration plotConfiguration;
     SPXRatioStyle ratioStyle;
+
+    std::string dataDirectory;
+    std::string gridDirectory;
+    std::string pdfDirectory;
 
     std::string numeratorBlob;
     std::string denominatorBlob;
