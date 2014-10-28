@@ -580,6 +580,13 @@ void SPXPlot::InitializeCrossSections(void) {
 			TGraphAsymmErrors *graph = crossSectionInstance.GetPDFBandResults();
 			convoluteFileGraphMap.insert(StringPairGraphPair_T(convolutePair, graph));
 
+			if(convoluteFileGraphMap.count(convolutePair)) {
+				if(debug) {
+					std::cout << cn << mn << "Added convolute pair to map: [" << convolutePair.first << ", " << convolutePair.second << "]" << std::endl;
+				}
+			} else {
+				std::cerr << "---> Warning: Unable to add convolute pair to map: [" << convolutePair.first << ", " << convolutePair.second << "]" << std::endl;
+			}
 		} catch(const SPXException &e) {
 			throw;
 		}
@@ -739,5 +746,13 @@ void SPXPlot::InitializeData(void) {
 
 		//Add to dataFileGraphMap
 		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename(), systGraph));
+
+		if(dataFileGraphMap.count(pci.dataSteeringFile.GetFilename())) {
+			if(debug) {
+				std::cout << cn << mn << "Added data to map: [" << pci.dataSteeringFile.GetFilename() << "]" << std::endl;
+			}
+		} else {
+			std::cerr << "---> Warning: Unable to add data to map: [" << pci.dataSteeringFile.GetFilename() << "]" << std::endl;
+		}
 	}
 }
