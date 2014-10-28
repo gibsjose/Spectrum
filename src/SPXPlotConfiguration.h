@@ -150,10 +150,18 @@ struct SPXPlotConfigurationInstance {
 	const std::string ToString(void) const {
 		std::ostringstream tmp;
 
-		tmp << "\t\t\tData Marker Style: " << dataMarkerStyle << std::endl;
-		tmp << "\t\t\tData Marker Color: " << dataMarkerColor << std::endl;
-
+		tmp << "\t Data Marker Style: " << dataMarkerStyle << std::endl;
+		tmp << "\t Data Marker Color: " << dataMarkerColor << std::endl;
+		tmp << "\t PDF Fill Style: " << pdfFillStyle << std::endl;
+		tmp << "\t PDF Fill Color: " << pdfFillColor << std::endl;
+		tmp << "\t PDF Marker Color: " << pdfMarkerColor << std::endl;
+		tmp << "\t X Scale: " << xScale << std::endl;
+		tmp << "\t Y Scale: " << yScale << std::endl;
 		return tmp.str();
+	}
+
+	void Print(void) const {
+		std::cout << ToString << std::endl;
 	}
 };
 

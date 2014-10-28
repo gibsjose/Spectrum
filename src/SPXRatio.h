@@ -63,6 +63,8 @@ public:
 
         if(ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverReference()) {
             pci = plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
+
+            pci->Print();
         }
 
         else if(ratioStyle.IsDataOverConvolute()) {
