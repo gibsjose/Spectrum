@@ -64,13 +64,23 @@ public:
 		return s;
 	}
 
-	static std::vector<std::string> SplitString(std::string s, std::string delimiter) {
+	static std::vector<std::string> SplitString(std::string s, const std::string &delimiter) {
 		size_t pos = 0;
 		std::vector<std::string> tokens;
+
+		bool debug = true;
+
+		if(debug) std::cout << "s = " << s << ", delimiter = " << delimiter;
+
 		while((pos = s.find(delimiter)) != std::string::npos) {
+			if(debug) std::cout << "Found delimiter at pos = " << pos << std::endl;
 			tokens.push_back(s.substr(0, pos));
+			if(debug) std::cout << "Added token to vector: " << s.substr(0, pos)) << std::endl;
 			s.erase(0, pos + delimiter.length());
+			if(debug) std::cout << "Erased token and delimiter" << std::endl;
 		}
+		
+		if(debug) std::cout << "Adding last token to vector: " << s << std::endl;
 		tokens.push_back(s);
 	}
 
