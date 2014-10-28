@@ -68,7 +68,7 @@ public:
         }
 
         else if(ratioStyle.IsDataOverConvolute()) {
-            pci = plotConfiguration.GetPDFSteeringFile(denominatorConvolutePDFFile);
+            psf = plotConfiguration.GetPDFSteeringFile(denominatorConvolutePDFFile);
         }
 
         //@TODO What if it's Data/Data???

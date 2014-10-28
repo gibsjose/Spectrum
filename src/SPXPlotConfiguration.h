@@ -310,7 +310,7 @@ private:
 
 	std::vector<SPXPlotConfigurationInstance> configurationInstances;
 
-	std::map<std::string, SPXPDFSteeringFile> pdfNameToSteeringFileMap;
+	std::map<std::string, SPXPDFSteeringFile *> pdfNameToSteeringFileMap;
 
 	void SetDefaults(void) {
 		std::string mn = "SetDefaults: ";
