@@ -362,7 +362,7 @@ public:
 	static void Normalize(TGraphAsymmErrors *graph, double yBinWidthScale, bool normalizeToTotalSigma, bool divideByBinWidth) {
 
 		//TEMPORARY DEBUG
-		bool debug = true;
+		bool debug = false;
 
 		//NOTE:
 		//Y Bin Width Scale is the scale needed to convert the Y Bin Width Units to the X Units, i.e. If Y Units are [1/TeV] and X Units
