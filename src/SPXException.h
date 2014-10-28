@@ -64,7 +64,7 @@ public:
 	const char * what() const throw() {
 		std::string tmp;
 
-		tmp = "SPXGeneralException: " + message;
+		tmp = "---> SPXGeneralException: " + message;
 
 		return tmp.c_str();
 	}
@@ -91,7 +91,7 @@ public:
 
 	const char * what() const throw() {
 		std::string tmp;
-		tmp = "SPXINIParseException: Error parsing [" + section + "]:" + name + ": " + message;
+		tmp = "---> SPXINIParseException: Error parsing [" + section + "]:" + name + ": " + message;
 		return tmp.c_str();
 	}
 
@@ -118,9 +118,9 @@ public:
 	const char * what() const throw() {
 		std::string tmp;
 		if(!filename.empty()) {
-			tmp = "SPXFileIOException: Unable to process file: " + filename + ": " + message;
+			tmp = "---> SPXFileIOException: Unable to process file: " + filename + ": " + message;
 		} else {
-			tmp = "SPXFileIOException: " + message;
+			tmp = "---> SPXFileIOException: " + message;
 		}
 
 		return tmp.c_str();
@@ -149,9 +149,9 @@ public:
 		std::string tmp;
 
 		if(filename.empty()) {
-			tmp = "SPXParseException: " + message;
+			tmp = "---> SPXParseException: " + message;
 		} else {
-			tmp = "SPXParseException: File: " + filename + ": " + message;
+			tmp = "---> SPXParseException: File: " + filename + ": " + message;
 		}
 
 		return tmp.c_str();
@@ -183,7 +183,7 @@ public:
 	const char * what() const throw() {
 
 		std::ostringstream s;
-		s << "SPXOutOfRangeException: Value: " << val << " outside of range: " << bottom << " <--> " << top << ": " << message;
+		s << "---> SPXOutOfRangeException: Value: " << val << " outside of range: " << bottom << " <--> " << top << ": " << message;
 
 		return s.str().c_str();
 	}
@@ -206,7 +206,7 @@ public:
 	const char * what() const throw() {
 		std::string tmp;
 
-		tmp = "SPXGraphException: " + message;
+		tmp = "---> SPXGraphException: " + message;
 
 		return tmp.c_str();
 	}
@@ -226,7 +226,7 @@ public:
 	const char * what() const throw() {
 		std::string tmp;
 
-		tmp = "SPXROOTException: " + message;
+		tmp = "---> SPXROOTException: " + message;
 
 		return tmp.c_str();
 	}
