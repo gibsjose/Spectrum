@@ -55,6 +55,25 @@ public:
 		return s;
 	}
 
+	static std::string ReplaceAll(std::string s, const std::string &from, const std::string &to) {
+		size_t start_pos = 0;
+		while((start_pos = s.find(from, start_pos)) != std::string::npos) {
+			std.replace(start_pos, from.length(), to);
+			start_pos += to.length();
+		}
+		return str;
+	}
+
+	static std::vector<std::string> SplitString(std::string s, std::string delimiter) {
+		size_t pos = 0;
+		std::vector<std::string> tokens;
+		while((pos = s.find(delimiter)) != std::string::npos) {
+			tokens.push_back(s.substr(0, pos));
+			s.erase(0, pos + delimiter.length());
+		}
+		tokens.push_back(s);
+	}
+
 	static std::string ToUpper(const std::string & s) {
 		return boost::to_upper_copy(s);
 	}
