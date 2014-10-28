@@ -206,7 +206,7 @@ void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yM
 //Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
 void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax) {
 
-	std::vector<TGraphAsymErrors *> graphs;
+	std::vector<TGraphAsymmErrors *> graphs;
 	{
 		for(int i = 0; i < ratios.size(); i++) {
 			graphs.push_back(ratios[i].GetRatioGraph());
@@ -467,7 +467,7 @@ void SPXPlot::DrawRatio(void) {
 
 	//Draw a line at 1, where ratios are relative to
 	TLine *referenceLine = new TLine(xMinRatio, 1.0, xMaxRatio, 1.0);
-	referenceLine->Draw();
+	referenceLine->Draw("E2");
 
 	for(int i = 0; i < pc.GetNumberOfRatios(); i++) {
 		ratios[i].GetRatioGraph()->Draw();
