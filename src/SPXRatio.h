@@ -58,23 +58,20 @@ public:
     }
 
     void Divide(void) {
-        bool hasPDFStyleInfo = true;
-
         //Grab the plot configuration instance
-        SPXPDFSteeringFile *psf;
+        SPXPlotConfigurationInstance *pci;
 
         if(ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverReference()) {
-            psf = plotConfiguration.GetPDFSteeringFile(numeratorConvolutePDFFile);
+            pci = plotConfiguration.GetPDFSteeringFile(numeratorConvolutePDFFile);
         }
 
         else if(ratioStyle.IsDataOverConvolute()) {
-            psf = plotConfiguration.GetPDFSteeringFile(denominatorConvolutePDFFile);
+            pci = plotConfiguration.GetPDFSteeringFile(denominatorConvolutePDFFile);
         }
 
         //@TODO What if it's Data/Data???
         else {
             if(debug) std::cout << "SPXRatio::Divide: Data/Data: Could not get pci" << std::endl;
-            hasPDFStyleInfo = false;
         }
 
         try {
@@ -82,14 +79,14 @@ public:
             ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, AddErrors);
 
             //Style ratio graph
-            if(hasPDFStyleInfo) {
+            if(pci) {
                 if(debug) std::cout << "SPXRatio::Divide: Obtaining PDF Fill Options..." << std::endl;
-                ratioGraph->SetFillStyle(psf->GetFillStyle());
-                ratioGraph->SetFillColor(psf->GetFillColor());
+                ratioGraph->SetFillStyle(pci->pdfFillStyle);
+                ratioGraph->SetFillColor(pci->pdfFillColor);
 
                 if(debug) std::cout << "SPXRatio::Divide: Set PDF Fill Options:" << std::endl;
-                if(debug) std::cout << "\t Fill Style = " << psf->GetFillStyle() << std::endl;
-                if(debug) std::cout << "\t Fill Color = " << psf->GetFillColor() << std::endl;
+                if(debug) std::cout << "\t Fill Style = " << pci->pdfFillStyle << std::endl;
+                if(debug) std::cout << "\t Fill Color = " << pci->pdfFillColor << std::endl;
             }
         } catch(const SPXException &e) {
             std::cerr << e.what() << std::endl;
