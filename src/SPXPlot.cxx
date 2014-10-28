@@ -465,13 +465,13 @@ void SPXPlot::DrawRatio(void) {
 	//Change to the ratio pad
 	ratioPad->cd();
 
-	//Draw a line at 1, where ratios are relative to
-	TLine *referenceLine = new TLine(xMinRatio, 1.0, xMaxRatio, 1.0);
-	referenceLine->Draw();
-
 	for(int i = 0; i < pc.GetNumberOfRatios(); i++) {
 		ratios[i].GetRatioGraph()->Draw("e2");
 	}
+
+	//Draw a line at 1, where ratios are relative to
+	TLine *referenceLine = new TLine(xMinRatio, 1.0, xMaxRatio, 1.0);
+	referenceLine->Draw();
 }
 
 void SPXPlot::UpdateCanvas(void) {
