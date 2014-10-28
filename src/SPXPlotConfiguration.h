@@ -194,7 +194,7 @@ public:
 		SPXPlotConfigurationInstance * pci = &instance;
 		pdfFileToPlotConfigurationInstanceMap.insert(std::pair<std::string, SPXPlotConfigurationInstance *>(filename, pci));
 		//if(debug) std::cout << "fname = " << filename << " fs = " << pci->pdfFillStyle << " fc = " << pci->pdfFillColor << std::endl;
-		if(debug) std::cout << "@pci = " << (int)pci << std::endl;
+		if(debug) std::cout << "@pci = " << (long long)pci << std::endl;
 		if(debug) std::cout << focn << mn << "Successfully added a configuration instance to the instance vector" << std::endl;
 	}
 

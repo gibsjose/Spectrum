@@ -63,7 +63,7 @@ public:
 
         if(ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverReference()) {
             pci = plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
-            if(debug) std::cout << "@pci = " << (int)pci << std::endl;
+            if(debug) std::cout << "@pci = " << (long long)pci << std::endl;
             pci->Print();
         }
 
