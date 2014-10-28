@@ -184,7 +184,7 @@ public:
 		//Add the configuration instance to the instance/pdf steering file map
 		std::string filename = instance.pdfSteeringFile.GetFilename();
 		SPXPlotConfigurationInstance * pci = &instance;
-		pdfNameToSteeringFileMap.insert(std::pair<std::string, SPXPlotConfigurationInstance *>(filename, pci));
+		pdfFileToPlotConfigurationInstanceMap.insert(std::pair<std::string, SPXPlotConfigurationInstance *>(filename, pci));
 		if(debug) std::cout << "fname = " << filename << " fs = " << pci->pdfFillStyle << " fc = " << pci->pdfFillColor << std::endl;
 		if(debug) std::cout << focn << mn << "Successfully added a configuration instance to the instance vector" << std::endl;
 	}

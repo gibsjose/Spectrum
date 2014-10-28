@@ -62,11 +62,11 @@ public:
         SPXPlotConfigurationInstance *pci;
 
         if(ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverReference()) {
-            pci = plotConfiguration.GetPDFSteeringFile(numeratorConvolutePDFFile);
+            pci = plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
         }
 
         else if(ratioStyle.IsDataOverConvolute()) {
-            pci = plotConfiguration.GetPDFSteeringFile(denominatorConvolutePDFFile);
+            pci = plotConfiguration.GetPlotConfigurationInstance(denominatorConvolutePDFFile);
         }
 
         //@TODO What if it's Data/Data???
