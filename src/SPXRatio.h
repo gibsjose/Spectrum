@@ -20,6 +20,7 @@
 
 #include "SPXROOT.h"
 
+#include "SPXPlotConfiguration.h"
 #include "SPXRatioStyle.h"
 #include "SPXUtilities.h"
 #include "SPXException.h"
@@ -28,9 +29,9 @@ class SPXRatio {
 
 public:
 
-    SPXRatio(SPXRatioStyle &rs, std::string &s) {
-    	ratioStyle = rs;
-    	Parse(s);
+    SPXRatio(SPXPlotConfiguration &pc) {
+        plotConfiguration = pc;
+    	ratioStyle = pc.GetRatioStyle();
     }
 
     void Parse(std::string &s);
@@ -57,14 +58,22 @@ public:
     }
 
     void Divide(void) {
+        //Grab the plot configuration instance
+        SPXPlotConfigurationInstance *pci = plotConfiguration.GetPlotConfigurationInstance(convoluteKey.second);
+
         try {
+            //Divide graphs
             ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, AddErrors);
+
+            //Style ratio graph
+            ratioGraph->SetFillStyle(pci->pdfSteeringFile.GetPDFFillStyle());
+            ratioGraph->SetFillColor(pci->pdfSteeringFile.GetPDFFillColor());
         } catch(const SPXException &e) {
             std::cerr << e.what() << std::endl;
             throw SPXGraphException("SPXRatio::Divide: Unable to divide numerator and denominator to calculate ratio");
         }
     }
-    
+
     TGraphAsymmErrors *GetRatioGraph(void) {
         if(!ratioGraph) {
             throw SPXGraphException("SPXRatio::GetRatioGraph: Ratio graph is empty");
@@ -96,6 +105,7 @@ public:
 private:
     static bool debug;
 
+    SPXPlotConfiguration plotConfiguration;
     SPXRatioStyle ratioStyle;
 
     std::string numeratorBlob;

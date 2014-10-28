@@ -180,6 +180,12 @@ public:
 
 		//Add the instance to the instance vector
 		configurationInstances.push_back(instance);
+
+		//Add the configuration instance to the instance/pdf steering file map
+		std::string filename = instance.pdfSteeringFile.GetFilename();
+		SPXPlotConfigurationInstance *configInstance = &instance;
+		pdfFileConfigurationInstanceMap.insert(std::pair<std::string, SPXPlotConfigurationInstance>(filename, configInstance));
+
 		if(debug) std::cout << focn << mn << "Successfully added a configuration instance to the instance vector" << std::endl;
 	}
 
@@ -263,7 +269,7 @@ public:
 	}
 
 	SPXPlotConfigurationInstance & GetPlotConfigurationInstance(unsigned int index) {
-		std::string mn = "GetFrameOptionsInstance:";
+		std::string mn = "GetPlotConfigurationInstance: ";
 
 		if((index + 1) > configurationInstances.size()) {
 			int top = configurationInstances.size() - 1;
@@ -271,6 +277,16 @@ public:
 		}
 
 		return configurationInstances.at(index);
+	}
+
+	SPXPlotConfigurationInstance * GetPlotConfigurationInstance(std::string pdfFilename) {
+		std::string mn = "GetPlotConfigurationInstance: ";
+
+		if(pdfFileConfigurationInstanceMap.count(pdfFilename) == 0) {
+			throw SPXGraphException(cn + mn + "Invalid key: pdfFileConfigurationInstanceMap[" + pdfFilename + "]");
+		}
+
+		return pdfFileConfigurationInstanceMap[pdfFilename];
 	}
 
 private:
@@ -287,6 +303,8 @@ private:
 	std::vector<std::string> ratios;
 
 	std::vector<SPXPlotConfigurationInstance> configurationInstances;
+
+	std::map<std::string, SPXPlotConfigurationInstance *> pdfFileConfigurationInstanceMap;
 
 	void SetDefaults(void) {
 		std::string mn = "SetDefaults: ";
