@@ -61,7 +61,7 @@ public:
         //Grab the plot configuration instance
         SPXPlotConfigurationInstance *pci;
 
-        if(ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverRatio()) {
+        if(ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverReference()) {
             pci = plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
         }
 
