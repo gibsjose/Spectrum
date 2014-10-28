@@ -273,7 +273,7 @@ public:
 	//Returns how to scale the SLAVE units to match the MASTER units
 	static double GetXUnitsScale(std::string master, std::string slave) {
 
-		bool debug = true;
+		bool debug = false;
 
 		if(debug) std::cout << "=======================================================" << std::endl;
 		if(debug) std::cout << "         GetXUnitsScale                                " << std::endl;
