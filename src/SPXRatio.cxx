@@ -54,6 +54,8 @@ void SPXRatio::Parse(std::string &s) {
     //Parse the string into numerator and denominator (delimit with ' / ')
     std::vector<std::string> v = SPXStringUtilities::SplitString(s, " / ");
 
+    std::cout << "HERE" << std::endl;
+
     //Make sure vector is EXACTLY 2 strings long
     if(v.size() != 2) {
     	throw SPXParseException(cn + mn + "Ratio string: " + s + " is NOT in the form (numerator) / (denominator)");
