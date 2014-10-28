@@ -1,8 +1,8 @@
 ![Spectrum](artwork/SpectrumBanner.png)
 
 ## NOTE
-This version of Spectrum is a **severely** slimmed-down version, as compared with the previous [MyAnalysis](http://www.github.com/gibsjose/MyAnalysis) software. This is due to upgrades being made on the front-end of the software, as well as a re-design of the program structure. Spectrum will grow as more parts of MyAnalysis are re-designed, cleaned up, and ported over.
- 
+This version of Spectrum is a somewhat slimmed-down version, as compared with the previous [MyAnalysis](http://www.github.com/gibsjose/MyAnalysis) software. This is due to upgrades being made on the front-end of the software, as well as a re-design of the program structure. Spectrum will grow as more parts of MyAnalysis are re-designed, cleaned up, and ported over.
+
 ## Authors
 @gibsjose @csembree Dr. Tancredi Carli
 
@@ -20,7 +20,7 @@ Spectrum currently supports the following data formats:
 * Spectrum T2A
 * HERAFitter
 
-## Installation 
+## Installation
 Installation instructions coming soon...
 
 ## How to Run a Spectrum Plot
@@ -36,7 +36,7 @@ An example Steering File:
 ```
 ;==============================================================
 ;
-; Description:		
+; Description:
 ;	Example Steering File
 ;
 ; Authors:
@@ -53,7 +53,7 @@ An example Steering File:
 ;==============================================================
 
 ;--------------------------------------------------------------
-; NOTE: 
+; NOTE:
 ;
 ; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
 ;
@@ -111,7 +111,7 @@ pdf_steering_files = CT10.txt, HERAPDF15NLO.txt					;[REQUIRED] Required ONLY if
 
 ;--------------------------------------------------------------
 ; NOTE:
-;	
+;
 ; The following options will OVERRIDE the corresponding
 ; options in ALL the chosen PDF Steering Files above
 ;--------------------------------------------------------------
@@ -143,21 +143,21 @@ pdf_error_size = one_sigma										;[Optional]	PDF error size override: one_sig
 ;
 ; Each frame is plotted on it's own ROOT canvas
 ;--------------------------------------------------------------
-								
+
 ;==============================================================
 ; Frame 0 Options
 ;==============================================================
 [FRAME_0]
-																
+
 data_steering_files = atlas2012_5fb_top_mtt_ljet.txt			;[REQUIRED] List of all data steering files
 
-												
+
 grid_steering_files = grid--TTbar_mttatlas.txt					;[REQUIRED] List of all grid steering files
 marker_style = 20												;[REQUIRED] Marker style list
 marker_color = 1												;[REQUIRED] Marker color list
 ; ref_line_style =												;[Optional] Reference line style list
 ; ref_line_color = 												;[Optional] Reference line color list
-desc = atlas_mtt_5fb											;[Optional] Description of plot 
+desc = atlas_mtt_5fb											;[Optional] Description of plot
 
 ;==============================================================
 ; Frame 1 Options
@@ -168,7 +168,7 @@ grid_steering_files = grid--TTbar_ptatlas.txt, some_other_grid_file.txt
 marker_style = 20, 21
 marker_color = 1, 2
 ; ref_line_style =
-; ref_line_color = 
+; ref_line_color =
 desc = atlas_ptt_5fb
 
 ;==============================================================
@@ -180,7 +180,7 @@ grid_steering_files = grid--TTbar_ptttatlas5fb.txt
 marker_style = 20
 marker_color = 1
 ; ref_line_style =
-; ref_line_color = 
+; ref_line_color =
 desc = atlas_mtt_5fb
 
 ```
