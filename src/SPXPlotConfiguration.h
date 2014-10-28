@@ -183,8 +183,9 @@ public:
 
 		//Add the configuration instance to the instance/pdf steering file map
 		std::string filename = instance.pdfSteeringFile.GetFilename();
-		pdfFileConfigurationInstanceMap.insert(std::pair<std::string, SPXPlotConfigurationInstance >(filename, instance));
-
+		SPXPDFSteeringFile * psf = &(instance.pdfSteeringFile);
+		pdfNameToSteeringFileMap.insert(std::pair<std::string, SPXPDFSteeringFile *>(filename, psf));
+		if(debug) std::cout << "fname = " << filename << " fs = " << psf->GetFillStyle() << " fc = " << psf->GetFillColor() << std::endl;
 		if(debug) std::cout << focn << mn << "Successfully added a configuration instance to the instance vector" << std::endl;
 	}
 
@@ -278,14 +279,20 @@ public:
 		return configurationInstances.at(index);
 	}
 
-	SPXPlotConfigurationInstance & GetPlotConfigurationInstance(std::string pdfFilename) {
-		std::string mn = "GetPlotConfigurationInstance: ";
+	SPXPDFSteeringFile * GetPDFSteeringFile(std::string pdfFilename) {
+		std::string mn = "GetPDFSteeringFile: ";
 
-		if(pdfFileConfigurationInstanceMap.count(pdfFilename) == 0) {
+		SPXPDFSteeringFile *psf;
+
+		if(pdfNameToSteeringFileMap.count(pdfFilename) == 0) {
 			throw SPXGraphException(focn + mn + "Invalid key: pdfFileConfigurationInstanceMap[" + pdfFilename + "]");
 		}
 
-		return pdfFileConfigurationInstanceMap[pdfFilename];
+		psf = pdfNameToSteeringFileMap[pdfFilename];
+
+		if(debug) std::cout << "psf filename = " << psf->GetFilename() << " fill color = " << psf->GetFillColor() << std::endl;
+
+		return psf;
 	}
 
 private:
@@ -303,7 +310,7 @@ private:
 
 	std::vector<SPXPlotConfigurationInstance> configurationInstances;
 
-	std::map<std::string, SPXPlotConfigurationInstance> pdfFileConfigurationInstanceMap;
+	std::map<std::string, SPXPDFSteeringFile> pdfNameToSteeringFileMap;
 
 	void SetDefaults(void) {
 		std::string mn = "SetDefaults: ";

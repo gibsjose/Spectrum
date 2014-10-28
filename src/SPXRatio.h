@@ -61,14 +61,14 @@ public:
         bool hasPDFStyleInfo = true;
 
         //Grab the plot configuration instance
-        SPXPlotConfigurationInstance pci;
+        SPXPDFSteeringFile *psf;
 
         if(ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverReference()) {
-            pci = plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
+            psf = plotConfiguration.GetPDFSteeringFile(numeratorConvolutePDFFile);
         }
 
         else if(ratioStyle.IsDataOverConvolute()) {
-            pci = plotConfiguration.GetPlotConfigurationInstance(denominatorConvolutePDFFile);
+            pci = plotConfiguration.GetPDFSteeringFile(denominatorConvolutePDFFile);
         }
 
         //@TODO What if it's Data/Data???
@@ -84,12 +84,12 @@ public:
             //Style ratio graph
             if(hasPDFStyleInfo) {
                 if(debug) std::cout << "SPXRatio::Divide: Obtaining PDF Fill Options..." << std::endl;
-                ratioGraph->SetFillStyle(pci.pdfSteeringFile.GetFillStyle());
-                ratioGraph->SetFillColor(pci.pdfSteeringFile.GetFillColor());
+                ratioGraph->SetFillStyle(psf->GetFillStyle());
+                ratioGraph->SetFillColor(psf->GetFillColor());
 
                 if(debug) std::cout << "SPXRatio::Divide: Set PDF Fill Options:" << std::endl;
-                if(debug) std::cout << "\t Fill Style = " << pci.pdfSteeringFile.GetFillStyle() << std::endl;
-                if(debug) std::cout << "\t Fill Color = " << pci.pdfSteeringFile.GetFillColor() << std::endl;
+                if(debug) std::cout << "\t Fill Style = " << psf->GetFillStyle() << std::endl;
+                if(debug) std::cout << "\t Fill Color = " << psf->GetFillColor() << std::endl;
             }
         } catch(const SPXException &e) {
             std::cerr << e.what() << std::endl;
