@@ -68,7 +68,7 @@ public:
 		size_t pos = 0;
 		std::vector<std::string> tokens;
 
-		bool debug = true;
+		bool debug = false;
 
 		if(debug) std::cout << "s = " << s << ", delimiter = " << delimiter;
 

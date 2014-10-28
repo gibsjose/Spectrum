@@ -206,19 +206,10 @@ void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yM
 //Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
 void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax) {
 
-	//@TODO Implement determining ratio frame bounds
-	/*
-	std::vector<TGraphAsymmErrors *> graphs;
+	std::vector<TGraphAsymErrors *> graphs;
 	{
-		//Data graphs
-		for(int i = 0; i < data.size(); i++) {
-			graphs.push_back(data[i].GetStatisticalErrorGraph());
-			graphs.push_back(data[i].GetSystematicErrorGraph());
-		}
-
-		//Cross sections
-		for(int i = 0; i < crossSections.size(); i++) {
-			graphs.push_back(crossSections[i].GetPDFBandResults());
+		for(int i = 0; i < ratios.size(); i++) {
+			graphs.push_back(ratios[i].GetRatioGraph());
 		}
 
 		xMin = SPXGraphUtilities::GetXMin(graphs);
@@ -235,12 +226,6 @@ void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin
 			throw SPXGraphException("yMin calculated to be larger than yMax");
 		}
 	}
-	*/
-
-	xMin = 0;
-	xMax = 0;
-	yMin = 0;
-	yMax = 0;
 }
 
 void SPXPlot::DivideCanvasIntoPads(void) {
@@ -407,8 +392,8 @@ void SPXPlot::DrawRatioPadFrame(void) {
 	DetermineRatioFrameBounds(xMinRatio, xMaxRatio, yMinRatio, yMaxRatio);
 
 	//@TODO DEBUG! Set properly...
-	yMinRatio = 0.9;
-	yMaxRatio = 1.1;
+	//yMinRatio = 0.9;
+	//yMaxRatio = 1.1;
 
 	//Force Ratio X Min/Max to match Overlay (should alread match anyway...)
 	xMinRatio = xMinOverlay;
@@ -552,6 +537,7 @@ void SPXPlot::InitializeRatios(void) {
 			ratioInstance.AddReferenceFileGraphMap(referenceFileGraphMap);
 			ratioInstance.AddConvoluteFileGraphMap(convoluteFileGraphMap);
 			ratioInstance.GetGraphs();
+			ratioInstance.Divide();
 
 			ratios.push_back(ratioInstance);
 

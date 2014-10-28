@@ -56,16 +56,21 @@ public:
         return denominatorBlob;
     }
 
+    void Divide(void) {
+        try {
+            ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, AddErrors);
+        } catch(const SPXException &e) {
+            std::cerr << e.what() << std::endl;
+            throw SPXGraphException("SPXRatio::Divide: Unable to divide numerator and denominator to calculate ratio");
+        }
+    }
+    
     TGraphAsymmErrors *GetRatioGraph(void) {
+        if(!ratioGraph) {
+            throw SPXGraphException("SPXRatio::GetRatioGraph: Ratio graph is empty");
+        }
 
-    	try {
-    		ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, AddErrors);
-    		return ratioGraph;
-    	} catch(const SPXException &e) {
-    		std::cerr << e.what() << std::endl;
-
-    		throw SPXGraphException("SPXRatio::GetRatioGraph: Unable to divide numerator and denominator to calculate ratio");
-    	}
+        return ratioGraph;
     }
 
     TGraphAsymmErrors *GetNumeratorGraph(void) {

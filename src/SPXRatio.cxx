@@ -56,9 +56,7 @@ void SPXRatio::Parse(std::string &s) {
 
     //Make sure vector is EXACTLY 2 strings long
     if(v.size() != 2) {
-        std::cout << "v.size() = " << v.size() << std::endl;
-        std::cout << "s = " << s << std::endl;
-    	//throw SPXParseException(cn + mn + "Ratio string: " + s + " is NOT in the form (numerator) / (denominator)");
+    	throw SPXParseException(cn + mn + "Ratio string: " + s + " is NOT in the form (numerator) / (denominator)");
     }
 
     //Obtain the numerator and denominator blobs from parsed list
