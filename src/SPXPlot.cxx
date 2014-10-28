@@ -467,10 +467,10 @@ void SPXPlot::DrawRatio(void) {
 
 	//Draw a line at 1, where ratios are relative to
 	TLine *referenceLine = new TLine(xMinRatio, 1.0, xMaxRatio, 1.0);
-	referenceLine->Draw("E2");
+	referenceLine->Draw();
 
 	for(int i = 0; i < pc.GetNumberOfRatios(); i++) {
-		ratios[i].GetRatioGraph()->Draw();
+		ratios[i].GetRatioGraph()->Draw("e2");
 	}
 }
 
