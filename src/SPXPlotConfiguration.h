@@ -282,9 +282,13 @@ public:
 	SPXPlotConfigurationInstance * GetPlotConfigurationInstance(std::string pdfFilename) {
 		std::string mn = "GetPDFSteeringFile: ";
 
+		if(debug) std::cout << focn << mn << "PDF Filename Key: [" << pdfFilename << "]" << std::endl;
+
 		if(pdfFileToPlotConfigurationInstanceMap.count(pdfFilename) == 0) {
 			throw SPXGraphException(focn + mn + "Invalid key: pdfFileConfigurationInstanceMap[" + pdfFilename + "]");
 		}
+
+		if(debug) std::cout << focn << mn << "Key Valid: Value found: pdfFillStyle = " << pdfFileToPlotConfigurationInstanceMap[pdfFilename]->pdfFillStyle << std::endl;
 
 		return pdfFileToPlotConfigurationInstanceMap[pdfFilename];
 	}
