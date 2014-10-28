@@ -51,8 +51,8 @@ void SPXRatio::Parse(std::string &s) {
 
     if(debug) std::cout << cn << mn << "Parsing ratio string: " << s << std::endl;
 
-    //Parse the string into numerator and denominator (delimit with '/')
-    std::vector<std::string> v = SPXStringUtilities::ParseString(s, '/');
+    //Parse the string into numerator and denominator (delimit with ' / ')
+    std::vector<std::string> v = SPXStringUtilities::SplitString(s, " / ");
 
     //Make sure vector is EXACTLY 2 strings long
     if(v.size() != 2) {
