@@ -532,10 +532,13 @@ void SPXPlot::InitializeRatios(void) {
 		std::string ratioString = pc.GetRatio(i);
 
 		try {
-			SPXRatio ratioInstance = SPXRatio(pc);
+			SPXRatio ratioInstance = SPXRatio(pc, ratioStyle);
 			ratioInstance.AddDataFileGraphMap(dataFileGraphMap);
 			ratioInstance.AddReferenceFileGraphMap(referenceFileGraphMap);
 			ratioInstance.AddConvoluteFileGraphMap(convoluteFileGraphMap);
+			ratioInstance.SetDataDirectory(steeringFile->GetDataDirectory());
+			ratioInstance.SetGridDirectory(steeringFile->GetGridDirectory());
+			ratioInstance.SetPDFDirectory(steeringFile->GetPDFDirectory());
 			ratioInstance.Parse(ratioString);
 			ratioInstance.GetGraphs();
 			ratioInstance.Divide();
