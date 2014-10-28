@@ -80,7 +80,7 @@ public:
             ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, AddErrors);
 
             //Style ratio graph
-            if(pci) {
+            if(true) {
                 if(debug) std::cout << "SPXRatio::Divide: Obtaining PDF Fill Options..." << std::endl;
                 ratioGraph->SetFillStyle(pci.pdfFillStyle);
                 ratioGraph->SetFillColor(pci.pdfFillColor);
