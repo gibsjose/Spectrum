@@ -283,7 +283,7 @@ public:
 		std::string mn = "GetPlotConfigurationInstance: ";
 
 		if(pdfFileConfigurationInstanceMap.count(pdfFilename) == 0) {
-			throw SPXGraphException(cn + mn + "Invalid key: pdfFileConfigurationInstanceMap[" + pdfFilename + "]");
+			throw SPXGraphException(focn + mn + "Invalid key: pdfFileConfigurationInstanceMap[" + pdfFilename + "]");
 		}
 
 		return pdfFileConfigurationInstanceMap[pdfFilename];
