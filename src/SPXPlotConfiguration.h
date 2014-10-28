@@ -167,7 +167,7 @@ public:
 	SPXPlotConfiguration(std::map<std::string, std::vector<std::string> > & options, unsigned int id);
 
 	//Add an configuration instance to the configurationInstances vector
-	void AddConfigurationInstance(const SPXPlotConfigurationInstance & instance) {
+	void AddConfigurationInstance(SPXPlotConfigurationInstance & instance) {
 		std::string mn = "AddConfigurationInstance: ";
 
 		if(instance.IsEmpty()) {
@@ -184,7 +184,7 @@ public:
 		//Add the configuration instance to the instance/pdf steering file map
 		std::string filename = instance.pdfSteeringFile.GetFilename();
 		SPXPlotConfigurationInstance *configInstance = &instance;
-		pdfFileConfigurationInstanceMap.insert(std::pair<std::string, SPXPlotConfigurationInstance>(filename, configInstance));
+		pdfFileConfigurationInstanceMap.insert(std::pair<std::string, SPXPlotConfigurationInstance *>(filename, configInstance));
 
 		if(debug) std::cout << focn << mn << "Successfully added a configuration instance to the instance vector" << std::endl;
 	}
