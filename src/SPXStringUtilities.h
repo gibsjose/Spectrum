@@ -82,6 +82,8 @@ public:
 
 		if(debug) std::cout << "Adding last token to vector: " << s << std::endl;
 		tokens.push_back(s);
+
+		return tokens;
 	}
 
 	static std::string ToUpper(const std::string & s) {
