@@ -81,8 +81,13 @@ public:
 
             //Style ratio graph
             if(pci) {
+                if(debug) std::cout << "SPXRatio::Divide: Obtaining PDF Fill Options..." << std::endl;
                 ratioGraph->SetFillStyle(pci->pdfSteeringFile.GetFillStyle());
                 ratioGraph->SetFillColor(pci->pdfSteeringFile.GetFillColor());
+
+                if(debug) std::cout << "SPXRatio::Divide: Set PDF Fill Options:" << std::endl;
+                if(debug) std::cout << "\t Fill Style = " << pci->pdfSteeringFile.GetFillStyle() << std::endl;
+                if(debug) std::cout << "\t Fill Color = " << pci->pdfSteeringFile.GetFillColor() << std::endl;
             }
         } catch(const SPXException &e) {
             std::cerr << e.what() << std::endl;
