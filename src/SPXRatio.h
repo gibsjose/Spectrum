@@ -28,9 +28,8 @@ class SPXRatio {
 
 public:
 
-    SPXRatio(SPXRatioStyle &rs, std::string &s, std::map<std::string, TGraphAsymmErrors *> &fileToGraphMap) {
+    SPXRatio(SPXRatioStyle &rs, std::string &s, std::map<std::string) {
     	ratioStyle = rs;
-        this->fileToGraphMap = fileToGraphMap;
     	Parse(s);
     }
 

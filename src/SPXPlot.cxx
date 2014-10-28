@@ -576,9 +576,9 @@ void SPXPlot::InitializeCrossSections(void) {
 			crossSections.push_back(crossSectionInstance);
 
 			//Update the Convolute File Map
-			StringPair_T convolutePair = StringPair_T(pci.gridFile.GetFilename(), pci.pdfFile.GetFilename());
+			StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
 			TGraphAsymmErrors *graph = crossSectionInstance.GetPDFBandResults();
-			convoluteFileMap.insert(StringPairGraphPair_T(convolutePair, graph));
+			convoluteFileGraphMap.insert(StringPairGraphPair_T(convolutePair, graph));
 
 		} catch(const SPXException &e) {
 			throw;

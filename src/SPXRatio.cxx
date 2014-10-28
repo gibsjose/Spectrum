@@ -242,7 +242,7 @@ void SPXRatio::GetGraphs(void) {
 
         if(debug) {
             std::cout << cn << mn << "Data Key = [" << dataKey << "]" << std::endl;
-            std::cout << cn << mn << "Convolute Key = [" << convoluteKey.first() << ", " << convoluteKey.second() << "]" << std::endl;
+            std::cout << cn << mn << "Convolute Key = [" << convoluteKey.first << ", " << convoluteKey.second << "]" << std::endl;
         }
 
         //Check for existence of data key
@@ -255,7 +255,7 @@ void SPXRatio::GetGraphs(void) {
         //Check for existence of convolute key
         if(convoluteFileGraphMap->count(convoluteKey) == 0) {
             std::ostringstream oss;
-            oss << "convoluteFileGraphMap[" << convoluteKey.first() << ", " << convoluteKey.second() << "] was not found: Invalid key";
+            oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
             throw SPXGraphException(cn + mn + oss.str());
         }
 
@@ -272,7 +272,7 @@ void SPXRatio::GetGraphs(void) {
 
         if(!denominatorGraph) {
             std::ostringstream oss;
-            oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first() << ", " << convoluteKey.second() << "] is NULL";
+            oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
             throw SPXGraphException(cn + mn + oss.str());
         }
     }
@@ -283,14 +283,14 @@ void SPXRatio::GetGraphs(void) {
         std::string dataKey = denominatorDataFile;
 
         if(debug) {
-            std::cout << cn << mn << "Convolute Key = [" << convoluteKey.first() << ", " << convoluteKey.second() << "]" << std::endl;
+            std::cout << cn << mn << "Convolute Key = [" << convoluteKey.first << ", " << convoluteKey.second << "]" << std::endl;
             std::cout << cn << mn << "Data Key = [" << dataKey << "]" << std::endl;
         }
 
         //Check for existence of convolute key
         if(convoluteFileGraphMap->count(convoluteKey) == 0) {
             std::ostringstream oss;
-            oss << "convoluteFileGraphMap[" << convoluteKey.first() << ", " << convoluteKey.second() << "] was not found: Invalid key";
+            oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
             throw SPXGraphException(cn + mn + oss.str());
         }
 
@@ -308,7 +308,7 @@ void SPXRatio::GetGraphs(void) {
         //Make sure graphs are valid
         if(!numeratorGraph) {
             std::ostringstream oss;
-            oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first() << ", " << convoluteKey.second() << "] is NULL";
+            oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
             throw SPXGraphException(cn + mn + oss.str());
         }
 
@@ -325,14 +325,14 @@ void SPXRatio::GetGraphs(void) {
         std::string referenceKey = denominatorReferenceGridFile;
 
         if(debug) {
-            std::cout << cn << mn << "Convolute Key = [" << convoluteKey.first() << ", " << convoluteKey.second() << "]" << std::endl;
+            std::cout << cn << mn << "Convolute Key = [" << convoluteKey.first << ", " << convoluteKey.second << "]" << std::endl;
             std::cout << cn << mn << "Reference Key = [" << referenceKey << "]" << std::endl;
         }
 
         //Check for existence of convolute key
         if(convoluteFileGraphMap->count(convoluteKey) == 0) {
             std::ostringstream oss;
-            oss << "convoluteFileGraphMap[" << convoluteKey.first() << ", " << convoluteKey.second() << "] was not found: Invalid key";
+            oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
             throw SPXGraphException(cn + mn + oss.str());
         }
 
@@ -350,7 +350,7 @@ void SPXRatio::GetGraphs(void) {
         //Make sure graphs are valid
         if(!numeratorGraph) {
             std::ostringstream oss;
-            oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first() << ", " << convoluteKey.second() << "] is NULL";
+            oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
             throw SPXGraphException(cn + mn + oss.str());
         }
 
