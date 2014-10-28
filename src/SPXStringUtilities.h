@@ -58,10 +58,10 @@ public:
 	static std::string ReplaceAll(std::string s, const std::string &from, const std::string &to) {
 		size_t start_pos = 0;
 		while((start_pos = s.find(from, start_pos)) != std::string::npos) {
-			std.replace(start_pos, from.length(), to);
+			s.replace(start_pos, from.length(), to);
 			start_pos += to.length();
 		}
-		return str;
+		return s;
 	}
 
 	static std::vector<std::string> SplitString(std::string s, std::string delimiter) {
