@@ -191,7 +191,7 @@ public:
 
 		//Add the configuration instance to the instance/pdf steering file map
 		std::string filename = instance.pdfSteeringFile.GetFilename();
-		SPXPlotConfigurationInstance * pci = &instance;
+		SPXPlotConfigurationInstance * pci = &configurationInstances[configurationInstances.size() - 1];
 		pdfFileToPlotConfigurationInstanceMap.insert(std::pair<std::string, SPXPlotConfigurationInstance *>(filename, pci));
 		//if(debug) std::cout << "fname = " << filename << " fs = " << pci->pdfFillStyle << " fc = " << pci->pdfFillColor << std::endl;
 		if(debug) std::cout << "@pci = " << (long long)pci << std::endl;
