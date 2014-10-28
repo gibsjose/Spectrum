@@ -78,9 +78,16 @@ private:
 	std::vector<SPXCrossSection> crossSections;		//Vector of cross sections
 	std::vector<SPXRatio> ratios;					//Vector of ratios
 
-	//@TODO: Upon initialization of each Data/Cross Section object, use the steering file as a key
-	// 		and get the corresponding TGraph from it. What to do for CrossSections? Convolutions?
-	std::map<std::string, TGraphAsymmErrors *> fileToGraphMap;		//Steering File to TGraph Map
+	//File-to-Graph Maps: Used to facilitate ratio drawing via the SPXRatio class
+	//Each ratio object will maintain a reference to these three maps, allowing it to obtain
+	//the TGraphAsymmErrors * associated with a Data Steering File (data), Grid Steering File (reference),
+	//or Grid/PDF Steering File Pair (convolute)
+	//
+	//NOTE: typedefs are in SPXGraphUtilities.h
+	//
+	StringGraphMap_T dataFileGraphMap;
+	StringGraphMap_T referenceFileGraphMap;
+	StringPairGraphMap_T convoluteFileGraphMap;
 
 	//ROOT Components
 	TCanvas *canvas;

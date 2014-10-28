@@ -547,7 +547,12 @@ void SPXPlot::InitializeRatios(void) {
 		std::string ratioString = pc.GetRatio(i);
 
 		try {
-			SPXRatio ratioInstance = SPXRatio(ratioStyle, ratioString, fileToGraphMap);
+			SPXRatio ratioInstance = SPXRatio(ratioStyle, ratioString);
+			ratioInstance.AddDataFileGraphMap(dataFileGraphMap);
+			ratioInstance.AddReferenceFileGraphMap(referenceFileGraphMap);
+			ratioInstance.AddConvoluteFileGraphMap(convoluteFileGraphMap);
+			ratioInstance.GetGraphs();
+
 			ratios.push_back(ratioInstance);
 
 		} catch(const SPXException &e) {
@@ -569,6 +574,12 @@ void SPXPlot::InitializeCrossSections(void) {
 		try {
 			crossSectionInstance.Create();
 			crossSections.push_back(crossSectionInstance);
+
+			//Update the Convolute File Map
+			StringPair_T convolutePair = StringPair_T(pci.gridFile.GetFilename(), pci.pdfFile.GetFilename());
+			TGraphAsymmErrors *graph = crossSectionInstance.GetPDFBandResults();
+			convoluteFileMap.insert(StringPairGraphPair_T(convolutePair, graph));
+
 		} catch(const SPXException &e) {
 			throw;
 		}
@@ -659,12 +670,6 @@ void SPXPlot::NormalizeCrossSections(void) {
 			SPXGraphUtilities::Normalize(crossSections[i].GetPDFBandResults(), yBinWidthScale, normalizeToTotalSigma, divideByBinWidth);
 
 			if(debug) std::cout << cn << mn << "Sucessfully normalized Cross Section " << i << std::endl;
-
-			//Add pdf to fileToGraphMap for convolute
-			fileToGraphMap.insert(std::pair<std::string, TGraphAsymmErrors *>(pci->pdfSteeringFile.GetFilename(), \
-				crossSections[i].GetPDFBandResults()));
-
-			//@TODO Add grid to fileToGraphMap for reference...
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
 			throw SPXGraphException("SPXPlot::NormalizeCrossSections: Unable to obtain X/Y Scale based on Data/Grid Units");
@@ -732,7 +737,7 @@ void SPXPlot::InitializeData(void) {
 		statGraph->SetLineWidth(1);
 		systGraph->SetLineWidth(1);
 
-		//Add to fileToGraphMap
-		fileToGraphMap.insert(std::pair<std::string, TGraphAsymmErrors *>(pci.dataSteeringFile.GetFilename(), systGraph));
+		//Add to dataFileGraphMap
+		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename(), systGraph));
 	}
 }
