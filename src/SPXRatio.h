@@ -59,12 +59,11 @@ public:
 
     void Divide(void) {
         //Grab the plot configuration instance
-        SPXPlotConfigurationInstance *pci;
+        SPXPlotConfigurationInstance pci;
 
         if(ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverReference()) {
             pci = plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
-            if(debug) std::cout << "@pci = " << (long long)pci << std::endl;
-            pci->Print();
+            pci.Print();
         }
 
         else if(ratioStyle.IsDataOverConvolute()) {
@@ -83,12 +82,12 @@ public:
             //Style ratio graph
             if(pci) {
                 if(debug) std::cout << "SPXRatio::Divide: Obtaining PDF Fill Options..." << std::endl;
-                ratioGraph->SetFillStyle(pci->pdfFillStyle);
-                ratioGraph->SetFillColor(pci->pdfFillColor);
+                ratioGraph->SetFillStyle(pci.pdfFillStyle);
+                ratioGraph->SetFillColor(pci.pdfFillColor);
 
                 if(debug) std::cout << "SPXRatio::Divide: Set PDF Fill Options:" << std::endl;
-                if(debug) std::cout << "\t Fill Style = " << pci->pdfFillStyle << std::endl;
-                if(debug) std::cout << "\t Fill Color = " << pci->pdfFillColor << std::endl;
+                if(debug) std::cout << "\t Fill Style = " << pci.pdfFillStyle << std::endl;
+                if(debug) std::cout << "\t Fill Color = " << pci.pdfFillColor << std::endl;
             }
         } catch(const SPXException &e) {
             std::cerr << e.what() << std::endl;

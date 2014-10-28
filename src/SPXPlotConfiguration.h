@@ -191,10 +191,8 @@ public:
 
 		//Add the configuration instance to the instance/pdf steering file map
 		std::string filename = instance.pdfSteeringFile.GetFilename();
-		SPXPlotConfigurationInstance * pci = &configurationInstances[configurationInstances.size() - 1];
-		pdfFileToPlotConfigurationInstanceMap.insert(std::pair<std::string, SPXPlotConfigurationInstance *>(filename, pci));
-		//if(debug) std::cout << "fname = " << filename << " fs = " << pci->pdfFillStyle << " fc = " << pci->pdfFillColor << std::endl;
-		if(debug) std::cout << "@pci = " << (long long)pci << std::endl;
+		SPXPlotConfigurationInstance pci = &configurationInstances[configurationInstances.size() - 1];
+		pdfFileToPlotConfigurationInstanceMap.insert(std::pair<std::string, SPXPlotConfigurationInstance>(filename, pci));
 		if(debug) std::cout << focn << mn << "Successfully added a configuration instance to the instance vector" << std::endl;
 	}
 
@@ -288,7 +286,7 @@ public:
 		return configurationInstances.at(index);
 	}
 
-	SPXPlotConfigurationInstance * GetPlotConfigurationInstance(std::string pdfFilename) {
+	SPXPlotConfigurationInstance & GetPlotConfigurationInstance(std::string pdfFilename) {
 		std::string mn = "GetPDFSteeringFile: ";
 
 		if(debug) std::cout << focn << mn << "PDF Filename Key: [" << pdfFilename << "]" << std::endl;
@@ -296,8 +294,6 @@ public:
 		if(pdfFileToPlotConfigurationInstanceMap.count(pdfFilename) == 0) {
 			throw SPXGraphException(focn + mn + "Invalid key: pdfFileConfigurationInstanceMap[" + pdfFilename + "]");
 		}
-
-		if(debug) std::cout << focn << mn << "Key Valid: Value found: pdfFillStyle = " << pdfFileToPlotConfigurationInstanceMap[pdfFilename]->pdfFillStyle << std::endl;
 
 		return pdfFileToPlotConfigurationInstanceMap[pdfFilename];
 	}
@@ -317,7 +313,7 @@ private:
 
 	std::vector<SPXPlotConfigurationInstance> configurationInstances;
 
-	std::map<std::string, SPXPlotConfigurationInstance *> pdfFileToPlotConfigurationInstanceMap;
+	std::map<std::string, SPXPlotConfigurationInstance> pdfFileToPlotConfigurationInstanceMap;
 
 	void SetDefaults(void) {
 		std::string mn = "SetDefaults: ";
