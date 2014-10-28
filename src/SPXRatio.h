@@ -35,6 +35,10 @@ public:
     }
 
     void Parse(std::string &s);
+    void AddDataFileGraphMap(StringGraphMap_T &);
+    void AddReferenceFileGraphMap(StringGraphMap_T &);
+    void AddConvoluteFileGraphMap(StringPairGraphMap_T &);
+    void GetGraphs(void);
     void Print(void);
 
     static bool GetDebug(void) {
@@ -103,15 +107,15 @@ private:
     std::string denominatorReferenceGridFile;		//Grid file if denominator contains reference
     std::string denominatorDataFile;				//Data file if denominator contains data
 
-    TGraphAsymmErrors *numeratorGraph;
-    TGraphAsymmErrors *denominatorGraph;
+    TGraphAsymmErrors *numeratorGraph;              //TGraph of the numerator
+    TGraphAsymmErrors *denominatorGraph;            //TGraph of the denominator
+    TGraphAsymmErrors *ratioGraph;                  //TGraph: numeratorGraph / denominatorGraph
 
-    TGraphAsymmErrors *ratioGraph;
-
-    std::map<std::string, TGraphAsymmErrors *> fileToGraphMap;
+    StringGraphMap_T * dataFileGraphMap;            //Map of data files to their data TGraph
+    StringGraphMap_T * referenceFileGraphMap;       //Map of grid files to their reference TGraph
+    StringPairGraphMap_T * convoluteFileGraphMap;   //Map of grid/pdf file pairs to their convolute TGraph
 
     bool MatchesConvoluteString(std::string &s);
-    void GetGraphs(void);
 };
 
 #endif

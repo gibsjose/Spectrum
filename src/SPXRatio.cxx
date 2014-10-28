@@ -218,24 +218,191 @@ void SPXRatio::Parse(std::string &s) {
             std::cout << "\t " << ratioString << std::endl;
         }
     }
+}
 
-    //Get the graphs based on the steering files given
-    GetGraphs();
+void SPXRatio::AddDataFileGraphMap(StringGraphMap_T &dataFileGraphMap) {
+    this->dataFileGraphMap = &dataFileGraphMap;
+}
+
+void SPXRatio::AddReferenceFileGraphMap(StringGraphMap_T &referenceFileGraphMap) {
+    this->referenceFileGraphMap = &referenceFileGraphMap;
+}
+
+void SPXRatio::AddConvoluteFileGraphMap(StringPairGraphMap_T &convoluteFileGraphMap) {
+    this->convoluteFileGraphMap = &convoluteFileGraphMap;
 }
 
 void SPXRatio::GetGraphs(void) {
-    if(ratioStyle.IsConvoluteOverData()) {
-        numeratorGraph = fileToGraphMap[numeratorConvolutePDFFile];
-        denominatorGraph = fileToGraphMap[denominatorDataFile];
-    }
+    std::string mn = "GetGraphs: ";
 
     if(ratioStyle.IsDataOverConvolute()) {
-        numeratorGraph = fileToGraphMap[numeratorDataFile];
-        denominatorGraph = fileToGraphMap[denominatorConvolutePDFFile];
+        //Create keys
+        std::string dataKey = numeratorDataFile;
+        StringPair_T convoluteKey = StringPair_T(denominatorConvoluteGridFile, denominatorConvolutePDFFile);
+
+        if(debug) {
+            std::cout << cn << mn << "Data Key = [" << dataKey << "]" << std::endl;
+            std::cout << cn << mn << "Convolute Key = [" << convoluteKey.first() << ", " << convoluteKey.second() << "]" << std::endl;
+        }
+
+        //Check for existence of data key
+        if(dataFileGraphMap->count(dataKey) == 0) {
+            std::ostringstream oss;
+            oss << "dataFileGraphMap[" << dataKey << "] was not found: Invalid key";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        //Check for existence of convolute key
+        if(convoluteFileGraphMap->count(convoluteKey) == 0) {
+            std::ostringstream oss;
+            oss << "convoluteFileGraphMap[" << convoluteKey.first() << ", " << convoluteKey.second() << "] was not found: Invalid key";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        //Keys exist, grab graphs
+        numeratorGraph = (*dataFileGraphMap)[dataKey];
+        denominatorGraph = (*convoluteFileGraphMap)[convoluteKey];
+
+        //Make sure graphs are valid
+        if(!numeratorGraph) {
+            std::ostringstream oss;
+            oss << "TGraph pointer at dataFileGraphMap[" << dataKey << "] is NULL";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        if(!denominatorGraph) {
+            std::ostringstream oss;
+            oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first() << ", " << convoluteKey.second() << "] is NULL";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
     }
 
-    //@TODO Others...
-    
+    else if(ratioStyle.IsConvoluteOverData()) {
+        //Create keys
+        StringPair_T convoluteKey = StringPair_T(numeratorConvoluteGridFile, numeratorConvolutePDFFile);
+        std::string dataKey = denominatorDataFile;
+
+        if(debug) {
+            std::cout << cn << mn << "Convolute Key = [" << convoluteKey.first() << ", " << convoluteKey.second() << "]" << std::endl;
+            std::cout << cn << mn << "Data Key = [" << dataKey << "]" << std::endl;
+        }
+
+        //Check for existence of convolute key
+        if(convoluteFileGraphMap->count(convoluteKey) == 0) {
+            std::ostringstream oss;
+            oss << "convoluteFileGraphMap[" << convoluteKey.first() << ", " << convoluteKey.second() << "] was not found: Invalid key";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        //Check for existence of data key
+        if(dataFileGraphMap->count(dataKey) == 0) {
+            std::ostringstream oss;
+            oss << "dataFileGraphMap[" << dataKey << "] was not found: Invalid key";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        //Keys exist, grab graphs
+        numeratorGraph = (*convoluteFileGraphMap)[convoluteKey];
+        denominatorGraph = (*dataFileGraphMap)[dataKey];
+
+        //Make sure graphs are valid
+        if(!numeratorGraph) {
+            std::ostringstream oss;
+            oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first() << ", " << convoluteKey.second() << "] is NULL";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        if(!denominatorGraph) {
+            std::ostringstream oss;
+            oss << "TGraph pointer at dataFileGraphMap[" << dataKey << "] is NULL";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+    }
+
+    else if(ratioStyle.IsConvoluteOverReference()) {
+        //Create keys
+        StringPair_T convoluteKey = StringPair_T(numeratorConvoluteGridFile, numeratorConvolutePDFFile);
+        std::string referenceKey = denominatorReferenceGridFile;
+
+        if(debug) {
+            std::cout << cn << mn << "Convolute Key = [" << convoluteKey.first() << ", " << convoluteKey.second() << "]" << std::endl;
+            std::cout << cn << mn << "Reference Key = [" << referenceKey << "]" << std::endl;
+        }
+
+        //Check for existence of convolute key
+        if(convoluteFileGraphMap->count(convoluteKey) == 0) {
+            std::ostringstream oss;
+            oss << "convoluteFileGraphMap[" << convoluteKey.first() << ", " << convoluteKey.second() << "] was not found: Invalid key";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        //Check for existence of reference key
+        if(referenceFileGraphMap->count(referenceKey) == 0) {
+            std::ostringstream oss;
+            oss << "referenceFileGraphMap[" << referenceKey << "] was not found: Invalid key";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        //Keys exist, grab graphs
+        numeratorGraph = (*convoluteFileGraphMap)[convoluteKey];
+        denominatorGraph = (*referenceFileGraphMap)[referenceKey];
+
+        //Make sure graphs are valid
+        if(!numeratorGraph) {
+            std::ostringstream oss;
+            oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first() << ", " << convoluteKey.second() << "] is NULL";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        if(!denominatorGraph) {
+            std::ostringstream oss;
+            oss << "TGraph pointer at referenceFileGraphMap[" << referenceKey << "] is NULL";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+    }
+
+    else if(ratioStyle.IsDataOverData()) {
+        //Create keys
+        std::string numDataKey = numeratorDataFile;
+        std::string denDataKey = denominatorDataFile;
+
+        if(debug) {
+            std::cout << cn << mn << "Numerator Data Key = [" << numDataKey << "]" << std::endl;
+            std::cout << cn << mn << "Denominator Data Key = [" << denDataKey << "]" << std::endl;
+        }
+
+        //Check for existence of numerator data key
+        if(dataFileGraphMap->count(numDataKey) == 0) {
+            std::ostringstream oss;
+            oss << "dataFileGraphMap[" << numDataKey << "] was not found: Invalid key";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        //Check for existence of denominator data key
+        if(dataFileGraphMap->count(denDataKey) == 0) {
+            std::ostringstream oss;
+            oss << "dataFileGraphMap[" << denDataKey << "] was not found: Invalid key";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        //Keys exist, grab graphs
+        numeratorGraph = (*dataFileGraphMap)[numDataKey];
+        denominatorGraph = (*dataFileGraphMap)[denDataKey];
+
+        //Make sure graphs are valid
+        if(!numeratorGraph) {
+            std::ostringstream oss;
+            oss << "TGraph pointer at dataFileGraphMap[" << numDataKey << "] is NULL";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        if(!denominatorGraph) {
+            std::ostringstream oss;
+            oss << "TGraph pointer at dataFileGraphMap[" << denDataKey << "] is NULL";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+    }
+
     return;
 }
 
