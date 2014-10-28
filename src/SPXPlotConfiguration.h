@@ -303,7 +303,7 @@ private:
 
 	std::vector<SPXPlotConfigurationInstance> configurationInstances;
 
-	std::map<std::string, SPXPlotConfigurationInstance *> pdfFileConfigurationInstanceMap;
+	std::map<std::string, SPXPlotConfigurationInstance> pdfFileConfigurationInstanceMap;
 
 	void SetDefaults(void) {
 		std::string mn = "SetDefaults: ";
