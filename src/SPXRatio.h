@@ -28,7 +28,7 @@ class SPXRatio {
 
 public:
 
-    SPXRatio(SPXRatioStyle &rs, std::string &s, std::map<std::string) {
+    SPXRatio(SPXRatioStyle &rs, std::string &s) {
     	ratioStyle = rs;
     	Parse(s);
     }
