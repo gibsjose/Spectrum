@@ -75,6 +75,6 @@ display_style = overlay, ratio
 overlay_style = data, convolute
 ; ratio_title =
 ratio_style_0 = convolute / data
-ratio_0 = ([grid_good_test.txt, pdf_good_test.txt]) / (data_good_test.txt)
+ratio_0 = ([grid_good_test.txt, pdf_good_test.txt])/(data_good_test.txt)
 ; ratio_style_0 = data / convolute
 ; ratio_0 = (data_good_test.txt) / ([grid_good_test.txt, pdf_good_test.txt])
