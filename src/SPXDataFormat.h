@@ -81,6 +81,10 @@ public:
 			if(format == DF_SPECTRUM_T2S) {
 				return true;
 			}
+
+			if(format == DF_SPECTRUM_T3S) {
+				return true;
+			}
 		}
 
 		return false;
@@ -93,6 +97,15 @@ public:
 			}
 
 			if(format == DF_SPECTRUM_T2A) {
+				return true;
+			}
+
+			if(format == DF_SPECTRUM_T3A) {
+				return true;
+			}
+
+			//@TODO Is all HERAFitter data asymmetric?
+			if(format == DF_HERAFITTER) {
 				return true;
 			}
 		}
