@@ -869,6 +869,10 @@ void SPXData::Print(void) {
 		PrintSpectrumT2S();
 	} else if(dataFormat.IsSpectrumT2A()) {
 		PrintSpectrumT2A();
+	} else if(dataFormat.IsSpectrumT3S()) {
+		PrintSpectrumT3S();
+	} else if(dataFormat.IsSpectrumT3A()) {
+		PrintSpectrumT3A();
 	} else if(dataFormat.IsHERAFitter()) {
 		PrintHERAFitter();
 	}
