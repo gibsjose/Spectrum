@@ -26,7 +26,7 @@ bool SPXData::debug;
 //Public helper method to parse the data file based on the type
 void SPXData::Parse(void) {
 	std::string mn = "Parse: ";
-	
+
 	if(debug) std::cout << cn << mn << "Parsing data file: " << pci.dataSteeringFile.GetDataFile() << std::endl;
 
 	try {
@@ -73,6 +73,24 @@ void SPXData::Parse(void) {
 			std::cerr << e.what() << std::endl;
 			throw SPXParseException(pci.dataSteeringFile.GetDataFile(), "Error parsing data file");
 		}
+	} else if(dataFormat.IsSpectrumT3S()) {
+		if(debug) std::cout << cn << mn << "Data format is " << dataFormat.ToString() << std::endl;
+
+		try {
+			ParseSpectrumT3S();
+		} catch(const SPXException &e) {
+			std::cerr << e.what() << std::endl;
+			throw SPXParseException(pci.dataSteeringFile.GetDataFile(), "Error parsing data file");
+		}
+	} else if(dataFormat.IsSpectrumT3A()) {
+		if(debug) std::cout << cn << mn << "Data format is " << dataFormat.ToString() << std::endl;
+
+		try {
+			ParseSpectrumT3A();
+		} catch(const SPXException &e) {
+			std::cerr << e.what() << std::endl;
+			throw SPXParseException(pci.dataSteeringFile.GetDataFile(), "Error parsing data file");
+		}
 	} else if(dataFormat.IsHERAFitter()) {
 		if(debug) std::cout << cn << mn << "Data format is " << dataFormat.ToString() << std::endl;
 
@@ -107,7 +125,7 @@ void SPXData::ParseSpectrumT1S(void) {
 
 	while(dataFile->good()) {
 		std::getline(*dataFile, line);
-		
+
 		//String stream to parse the individual lines
 		std::istringstream iss(line);
 
@@ -196,7 +214,7 @@ void SPXData::ParseSpectrumT1A(void) {
 
 	while(dataFile->good()) {
 		std::getline(*dataFile, line);
-		
+
 		//String stream to parse the individual lines
 		std::istringstream iss(line);
 
@@ -284,12 +302,12 @@ void SPXData::ParseSpectrumT2S(void) {
 	std::vector<double> stat;			//Statistical error
 	std::vector<double> syst;			//Total systematic error
 
-	//Vector containing 
+	//Vector containing
 	std::vector<std::vector<double> > individualSystematicErrors;
 
 	while(dataFile->good()) {
 		std::getline(*dataFile, line);
-		
+
 		//String stream to parse the individual lines
 		std::istringstream iss(line);
 
@@ -328,7 +346,7 @@ void SPXData::ParseSpectrumT2S(void) {
 
 				//Add the data to the temporary list of individual systematic errors
 				individualSystematicErrors.push_back(tmp_syst);
-			} 
+			}
 
 			//Not a systematic error
 			else {
@@ -414,12 +432,12 @@ void SPXData::ParseSpectrumT2A(void) {
 	std::vector<double> syst_p;			//Total systematic error (+)
 	std::vector<double> syst_n;			//Total systematic error (-)
 
-	//Vector containing 
+	//Vector containing
 	std::vector<std::vector<double> > individualSystematicErrors;
 
 	while(dataFile->good()) {
 		std::getline(*dataFile, line);
-		
+
 		//String stream to parse the individual lines
 		std::istringstream iss(line);
 
@@ -437,7 +455,7 @@ void SPXData::ParseSpectrumT2A(void) {
 
 			//Check for systematic errors
 			if(line.find(" syst_") == 1) {
-				
+
 				std::string sign;
 				std::string name;
 
@@ -537,6 +555,301 @@ void SPXData::ParseSpectrumT2A(void) {
 	// }
 }
 
+void SPXData::ParseSpectrumT3S(void) {
+	std::string mn = "ParseSpectrumT3S: ";
+
+	if(debug) std::cout << cn << mn << "Beginning to parse data file: " << pci.dataSteeringFile.GetDataFile() << std::endl;
+
+	if(!(*dataFile)) {
+		throw SPXFileIOException("Something went awry with the dataFile ifstream...");
+	}
+
+	std::string line;
+	double xm_t, xlow_t, xhigh_t, sigma_t, stat_t, syst_t;
+	std::vector<double> xm;				//Mean x
+	std::vector<double> xlow;			//X min
+	std::vector<double> xhigh;			//X max
+	std::vector<double> sigma;			//Sigma (cross-section)
+	std::vector<double> stat;			//Statistical error
+	std::vector<double> syst;			//Total systematic error
+
+	//Vector containing
+	std::vector<std::vector<double> > individualSystematicErrors;
+
+	while(dataFile->good()) {
+		std::getline(*dataFile, line);
+
+		//String stream to parse the individual lines
+		std::istringstream iss(line);
+
+		if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
+
+		//Skip empty lines
+		if(line.empty()) {
+			continue;
+		}
+
+		//Skip comments
+		if(!line.empty() && (line[0] == ';')) {
+			continue;
+		} else if(!line.empty()) {
+
+			//Check for systematic errors
+			if(line.find("+ syst_") == 0) {
+
+				std::string name;
+				iss >> name; //Get rid of the '+'
+				iss >> name; //Actual name
+
+				//if(debug) std::cout << cn << mn << "Found new individual systematic error: " << name << std::endl;
+
+				double val = 0;
+				std::vector<double> tmp_syst;
+
+				//Keep reading in values (one for each bin)
+				while(iss >> val) {
+					//if(debug) std::cout << cn << mn << "Val = " << val << std::endl;
+					tmp_syst.push_back(val);
+				}
+
+				//Add the name to the object's list of individual systematic error names
+				individualSystematicErrorNames.push_back(name);
+
+				//Add the data to the temporary list of individual systematic errors
+				individualSystematicErrors.push_back(tmp_syst);
+			}
+
+			//Not a systematic error
+			else {
+				//Parse each line into temp variables
+				iss >> xm_t >> xlow_t >> xhigh_t >> sigma_t >> stat_t;
+
+				//Fill vectors with temp variables
+				xm.push_back(xm_t);
+				xlow.push_back(xlow_t);
+				xhigh.push_back(xhigh_t);
+				sigma.push_back(sigma_t);
+				stat.push_back(stat_t);
+			}
+		}
+	}
+
+	//Check vector sizes: all vectors should be the same size
+	int masterSize = xm.size();
+	if(debug) std::cout << cn << mn << "Master size set to size of \"xm\" vector: " << masterSize << std::endl;
+
+	//Compute total systematics for each bin using the individual systematic errors
+	for(int i = 0; i < masterSize; i++) {
+		std::vector<double> errors;
+		errors.clear();
+		for(int j = 0; j < individualSystematicErrors.size(); j++) {
+			errors.push_back(individualSystematicErrors[j][i]);
+		}
+		syst_t = SPXMathUtilities::AddErrorsInQuadrature(errors);
+		syst.push_back(syst_t);
+	}
+
+	if(debug) std::cout << cn << mn << "Checking sizes of all other vectors.." << std::endl;
+
+	try {
+		CheckVectorSize(xlow, "xlow", masterSize);
+		CheckVectorSize(xhigh, "xhigh", masterSize);
+		CheckVectorSize(sigma, "sigma", masterSize);
+		CheckVectorSize(stat, "stat", masterSize);
+		CheckVectorSize(syst, "syst", masterSize);
+
+		//Check size of all individual systematic errors
+		for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
+			CheckVectorSize(individualSystematicErrors.at(i), individualSystematicErrorNames.at(i), masterSize);
+		}
+
+	} catch(const SPXException &e) {
+		throw;
+	}
+
+	//All vectors passed size check
+	if(debug) std::cout << cn << mn << "Success: All vector sizes match master size" << std::endl;
+
+	//Set numberOfBins based on master size
+	if(debug) std::cout << cn << mn << "Setting numberOfBins to match master size" << std::endl;
+	numberOfBins = masterSize;
+	if(debug) std::cout << cn << mn << "numberOfBins = " << numberOfBins << std::endl;
+
+	//Add to data map
+	data.insert(std::pair<std::string, std::vector<double> >("xm", xm));
+	data.insert(std::pair<std::string, std::vector<double> >("xlow", xlow));
+	data.insert(std::pair<std::string, std::vector<double> >("xhigh", xhigh));
+	data.insert(std::pair<std::string, std::vector<double> >("sigma", sigma));
+	data.insert(std::pair<std::string, std::vector<double> >("stat", stat));
+	data.insert(std::pair<std::string, std::vector<double> >("syst", syst));
+
+	//Add individual systematic errors to map
+	for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
+		data.insert(std::pair<std::string, std::vector<double> >(individualSystematicErrorNames.at(i), individualSystematicErrors.at(i)));
+	}
+
+	//Print formatted table
+	// if(debug) {
+	// 	PrintSpectrumT3S();
+	// }
+}
+
+void SPXData::ParseSpectrumT2A(void) {
+	std::string mn = "ParseSpectrumT2A: ";
+
+	if(debug) std::cout << cn << mn << "Beginning to parse data file: " << pci.dataSteeringFile.GetDataFile() << std::endl;
+
+	if(!(*dataFile)) {
+		throw SPXFileIOException("Something went awry with the dataFile ifstream...");
+	}
+
+	std::string line;
+	double xm_t, xlow_t, xhigh_t, sigma_t, stat_t, syst_p_t, syst_n_t;
+	std::vector<double> xm;				//Mean x
+	std::vector<double> xlow;			//X min
+	std::vector<double> xhigh;			//X max
+	std::vector<double> sigma;			//Sigma (cross-section)
+	std::vector<double> stat;			//Statistical error
+	std::vector<double> syst_p;			//Total systematic error (+)
+	std::vector<double> syst_n;			//Total systematic error (-)
+
+	//Vector containing
+	std::vector<std::vector<double> > individualSystematicErrors;
+
+	while(dataFile->good()) {
+		std::getline(*dataFile, line);
+
+		//String stream to parse the individual lines
+		std::istringstream iss(line);
+
+		if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
+
+		//Skip empty lines
+		if(line.empty()) {
+			continue;
+		}
+
+		//Skip comments
+		if(!line.empty() && (line[0] == ';')) {
+			continue;
+		} else if(!line.empty()) {
+
+			//Check for systematic errors
+			if(line.find(" syst_") == 1) {
+
+				std::string sign;
+				std::string name;
+
+				iss >> sign; //Sign
+				iss >> name; //Actual name
+
+				//Append '_p' or '_n' depending on sign
+				if(!sign.compare("+")) {
+					name += "_p";
+				} else if(!sign.compare("-")) {
+					name += "_n";
+				}
+
+				//if(debug) std::cout << cn << mn << "Found new individual systematic error: " << name << std::endl;
+
+				double val = 0;
+				std::vector<double> tmp_syst;
+
+				//Keep reading in values (one for each bin)
+				while(iss >> val) {
+					//if(debug) std::cout << cn << mn << "Val = " << val << std::endl;
+					tmp_syst.push_back(val);
+				}
+
+				//Add the name to the object's list of individual systematic error names
+				individualSystematicErrorNames.push_back(name);
+
+				//Add the data to the temporary list of individual systematic errors
+				individualSystematicErrors.push_back(tmp_syst);
+			}
+
+			//Not a systematic error
+			else {
+				//Parse each line into temp variables
+				iss >> xm_t >> xlow_t >> xhigh_t >> sigma_t >> stat_t;
+
+				//Fill vectors with temp variables
+				xm.push_back(xm_t);
+				xlow.push_back(xlow_t);
+				xhigh.push_back(xhigh_t);
+				sigma.push_back(sigma_t);
+				stat.push_back(stat_t);
+			}
+		}
+	}
+
+	//Check vector sizes: all vectors should be the same size
+	int masterSize = xm.size();
+	if(debug) std::cout << cn << mn << "Master size set to size of \"xm\" vector: " << masterSize << std::endl;
+
+	//Compute total positive/negative systematics for each bin using the individual systematic errors
+	for(int i = 0; i < masterSize; i++) {
+		std::vector<double> p_errors;
+		std::vector<double> n_errors;
+		p_errors.clear();
+		n_errors.clear();
+		for(int j = 0; j < individualSystematicErrors.size(); j+=2) {
+			p_errors.push_back(individualSystematicErrors.at(j).at(i));
+			n_errors.push_back(individualSystematicErrors.at(j + 1).at(i));
+		}
+		syst_p_t = SPXMathUtilities::AddErrorsInQuadrature(p_errors);
+		syst_n_t = SPXMathUtilities::AddErrorsInQuadrature(n_errors);
+		syst_p.push_back(syst_p_t);
+		syst_n.push_back(syst_n_t);
+	}
+
+	if(debug) std::cout << cn << mn << "Checking sizes of all other vectors.." << std::endl;
+
+	try {
+		CheckVectorSize(xlow, "xlow", masterSize);
+		CheckVectorSize(xhigh, "xhigh", masterSize);
+		CheckVectorSize(sigma, "sigma", masterSize);
+		CheckVectorSize(stat, "stat", masterSize);
+		CheckVectorSize(syst_p, "syst_p", masterSize);
+		CheckVectorSize(syst_n, "syst_n", masterSize);
+
+		//Check size of all individual systematic errors
+		for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
+			CheckVectorSize(individualSystematicErrors.at(i), individualSystematicErrorNames.at(i), masterSize);
+		}
+
+	} catch(const SPXException &e) {
+		throw;
+	}
+
+	//All vectors passed size check
+	if(debug) std::cout << cn << mn << "Success: All vector sizes match master size" << std::endl;
+
+	//Set numberOfBins based on master size
+	if(debug) std::cout << cn << mn << "Setting numberOfBins to match master size" << std::endl;
+	numberOfBins = masterSize;
+	if(debug) std::cout << cn << mn << "numberOfBins = " << numberOfBins << std::endl;
+
+	//Add to data map
+	data.insert(std::pair<std::string, std::vector<double> >("xm", xm));
+	data.insert(std::pair<std::string, std::vector<double> >("xlow", xlow));
+	data.insert(std::pair<std::string, std::vector<double> >("xhigh", xhigh));
+	data.insert(std::pair<std::string, std::vector<double> >("sigma", sigma));
+	data.insert(std::pair<std::string, std::vector<double> >("stat", stat));
+	data.insert(std::pair<std::string, std::vector<double> >("syst_p", syst_p));
+	data.insert(std::pair<std::string, std::vector<double> >("syst_n", syst_n));
+
+	//Add individual systematic errors to map
+	for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
+		data.insert(std::pair<std::string, std::vector<double> >(individualSystematicErrorNames.at(i), individualSystematicErrors.at(i)));
+	}
+
+	//Print formatted table
+	// if(debug) {
+	// 	PrintSpectrumT3A();
+	// }
+}
+
 void SPXData::ParseHERAFitter(void) {
 	std::string mn = "ParseHERAFitter: ";
 }
@@ -573,7 +886,7 @@ void SPXData::PrintSpectrumT1S(void) {
 		std::cout.precision(4);
 
 		std::cout << "| ";
-		std::cout.width(10); 
+		std::cout.width(10);
 		std::cout << data["xm"][i];
 		std::cout << " | ";
 		std::cout.width(10); std::cout << data["xlow"][i];
@@ -584,7 +897,7 @@ void SPXData::PrintSpectrumT1S(void) {
 		std::cout << " | ";
 		std::cout.width(10); std::cout << data["stat"][i];
 		std::cout << " | ";
-		std::cout.width(10); std::cout << data["syst"][i]; 
+		std::cout.width(10); std::cout << data["syst"][i];
 		std::cout << " |" << std::endl;
 	}
 
@@ -608,7 +921,7 @@ void SPXData::PrintSpectrumT1A(void) {
 		std::cout.precision(4);
 
 		std::cout << "| ";
-		std::cout.width(10); 
+		std::cout.width(10);
 		std::cout << data["xm"][i];
 		std::cout << " | ";
 		std::cout.width(10); std::cout << data["xlow"][i];
@@ -621,7 +934,7 @@ void SPXData::PrintSpectrumT1A(void) {
 		std::cout << " | ";
 		std::cout.width(10); std::cout << data["syst_p"][i];
 		std::cout << " | ";
-		std::cout.width(10); std::cout << data["syst_n"][i]; 
+		std::cout.width(10); std::cout << data["syst_n"][i];
 		std::cout << " |" << std::endl;
 	}
 
@@ -645,7 +958,7 @@ void SPXData::PrintSpectrumT2S(void) {
 		std::cout.precision(4);
 
 		std::cout << "| ";
-		std::cout.width(10); 
+		std::cout.width(10);
 		std::cout << data["xm"][i];
 		std::cout << " | ";
 		std::cout.width(10); std::cout << data["xlow"][i];
@@ -656,7 +969,7 @@ void SPXData::PrintSpectrumT2S(void) {
 		std::cout << " | ";
 		std::cout.width(10); std::cout << data["stat"][i];
 		std::cout << " | ";
-		std::cout.width(10); std::cout << data["syst"][i]; 
+		std::cout.width(10); std::cout << data["syst"][i];
 		std::cout << " |" << std::endl;
 	}
 
@@ -668,7 +981,7 @@ void SPXData::PrintSpectrumT2S(void) {
 	for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
 
 		std::cout << std::left << std::setw(24) << individualSystematicErrorNames.at(i) << "  ";
-		
+
 		std::cout << std::fixed;
 		std::cout.precision(4);
 
@@ -700,7 +1013,7 @@ void SPXData::PrintSpectrumT2A(void) {
 		std::cout.precision(4);
 
 		std::cout << "| ";
-		std::cout.width(10); 
+		std::cout.width(10);
 		std::cout << data["xm"][i];
 		std::cout << " | ";
 		std::cout.width(10); std::cout << data["xlow"][i];
@@ -713,7 +1026,7 @@ void SPXData::PrintSpectrumT2A(void) {
 		std::cout << " | ";
 		std::cout.width(10); std::cout << data["syst_p"][i];
 		std::cout << " | ";
-		std::cout.width(10); std::cout << data["syst_n"][i]; 
+		std::cout.width(10); std::cout << data["syst_n"][i];
 		std::cout << " |" << std::endl;
 	}
 
@@ -725,7 +1038,119 @@ void SPXData::PrintSpectrumT2A(void) {
 	for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
 
 		std::cout << std::left << std::setw(24) << individualSystematicErrorNames.at(i) << "  ";
-		
+
+		std::cout << std::fixed;
+		std::cout.precision(4);
+
+		for(int j = 0; j < numberOfBins; j++) {
+			std::cout.width(10);
+			std::cout << data[individualSystematicErrorNames.at(i)][j] << " ";
+		}
+
+		std::cout << "" << std::endl;
+	}
+
+	std::cout << "" << std::endl << std::endl;
+}
+
+void SPXData::PrintSpectrumT3S(void) {
+
+	std::cout << std::endl << "Spectrum T3S Data File: " << pci.dataSteeringFile.GetDataFile() << std::endl << std::endl;
+
+	std::cout << "===============================================================================" << std::endl;
+	std::cout << "|         xm |       xlow |      xhigh |      sigma |       stat |       syst |" << std::endl;
+	std::cout << "-------------------------------------------------------------------------------" << std::endl;
+
+	//Iterate over map
+	for(int i = 0; i < numberOfBins; i++) {
+		//std::pair<std::string, std::vector<double> > p;
+
+		//Show 4 decimal places
+		std::cout << std::fixed;
+		std::cout.precision(4);
+
+		std::cout << "| ";
+		std::cout.width(10);
+		std::cout << data["xm"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["xlow"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["xhigh"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["sigma"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["stat"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["syst"][i];
+		std::cout << " |" << std::endl;
+	}
+
+	std::cout << "===============================================================================" << std::endl << std::endl;
+
+	std::cout << "This data has " << individualSystematicErrorNames.size() << " Individual Systematic Errors:" << std::endl << std::endl;
+
+	//Iterate over individual systematic errors
+	for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
+
+		std::cout << std::left << std::setw(24) << individualSystematicErrorNames.at(i) << "  ";
+
+		std::cout << std::fixed;
+		std::cout.precision(4);
+
+		for(int j = 0; j < numberOfBins; j++) {
+			std::cout.width(10);
+			std::cout << data[individualSystematicErrorNames.at(i)][j] << " ";
+		}
+
+		std::cout << "" << std::endl;
+	}
+
+	std::cout << "" << std::endl << std::endl;
+}
+
+void SPXData::PrintSpectrumT3A(void) {
+
+	std::cout << std::endl << "Spectrum T3A Data File: " << pci.dataSteeringFile.GetDataFile() << std::endl << std::endl;
+
+	std::cout << "============================================================================================" << std::endl;
+	std::cout << "|         xm |       xlow |      xhigh |      sigma |       stat |     syst + |     syst - |" << std::endl;
+	std::cout << "--------------------------------------------------------------------------------------------" << std::endl;
+
+	//Iterate over map
+	for(int i = 0; i < numberOfBins; i++) {
+		//std::pair<std::string, std::vector<double> > p;
+
+		//Show 4 decimal places
+		std::cout << std::fixed;
+		std::cout.precision(4);
+
+		std::cout << "| ";
+		std::cout.width(10);
+		std::cout << data["xm"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["xlow"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["xhigh"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["sigma"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["stat"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["syst_p"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["syst_n"][i];
+		std::cout << " |" << std::endl;
+	}
+
+	std::cout << "============================================================================================" << std::endl;
+
+	std::cout << "This data has " << (individualSystematicErrorNames.size() / 2) << " Individual Systematic Errors (+/-):" << std::endl << std::endl;
+
+	//Iterate over individual systematic errors
+	for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
+
+		std::cout << std::left << std::setw(24) << individualSystematicErrorNames.at(i) << "  ";
+
 		std::cout << std::fixed;
 		std::cout.precision(4);
 
@@ -757,7 +1182,7 @@ void SPXData::CreateGraphs(void) {
 		name = TString(pci.dataSteeringFile.GetName());
 		statName = name + "_stat";
 		systName = name + "_syst";
-	} 
+	}
 
 	//Data steering file has no [DESC]:name
 	//Default to filename
@@ -793,7 +1218,7 @@ void SPXData::CreateGraphs(void) {
 	//Errors for statistical are always symmetrical
 	double *eyl_stat = &data["stat"][0];
 	double *eyh_stat = &data["stat"][0];
-	
+
 	//Must initialize beforehand
 	double *eyl_syst;
 	double *eyh_syst;
@@ -802,7 +1227,7 @@ void SPXData::CreateGraphs(void) {
 	if(dataFormat.IsSymmetric()) {
 		eyl_syst = &data["syst"][0];
 		eyh_syst = &data["syst"][0];
-	} 
+	}
 	//Asymmetric
 	else if(dataFormat.IsAsymmetric()) {
 		eyl_syst = &data["syst_n"][0];
@@ -874,4 +1299,3 @@ void SPXData::Draw(void) {
 	canvas->Update();
 }
 */
-

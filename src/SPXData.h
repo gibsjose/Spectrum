@@ -36,22 +36,22 @@ public:
 		this->pci = pci;
 		this->dataFormat = pci.dataSteeringFile.GetDataFormat();
 	}
-	
+
 	void Parse(void);
 	void Print(void);
 	void Draw(void);
 
 	//CreateGraphs should always be called BEFORE Get_____Graph() is called
 	void CreateGraphs(void);
-	
+
 	static bool GetDebug(void) {
 		return debug;
 	}
-	
+
 	static void SetDebug(bool b) {
 		debug = b;
 	}
-	
+
 	const SPXDataFormat & GetDataFormat(void) {
 		return pci.dataSteeringFile.GetDataFormat();
 	}
@@ -67,7 +67,7 @@ public:
 	const std::string & GetIndividualSystematicErrorName(unsigned int index) const {
 		if(index > (individualSystematicErrorNames.size() - 1)) {
 			throw SPXOutOfRangeException((individualSystematicErrorNames.size() - 1), index, "SPXData::GetIndividualSystematicErrorName: Index out of range");
-		} 
+		}
 
 		return individualSystematicErrorNames.at(index);
 	}
@@ -171,12 +171,16 @@ private:
 	void ParseSpectrumT1A(void);
 	void ParseSpectrumT2S(void);
 	void ParseSpectrumT2A(void);
+	void ParseSpectrumT3S(void);
+	void ParseSpectrumT3A(void);
 	void ParseHERAFitter(void);
 
 	void PrintSpectrumT1S(void);
 	void PrintSpectrumT1A(void);
 	void PrintSpectrumT2S(void);
 	void PrintSpectrumT2A(void);
+	void PrintSpectrumT3S(void);
+	void PrintSpectrumT3A(void);
 	void PrintHERAFitter(void);
 
 	void OpenDataFile(void) {
