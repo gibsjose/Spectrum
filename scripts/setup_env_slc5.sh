@@ -12,7 +12,7 @@ U=${user:0:1}
 
 #
 #Base directory for installation of APPLgrid, LHAPDF, Hoppet, FastJet, etc.
-export BASEDIR=/afs/cern.ch/work/$U/$USER/public/usr/
+export BASEDIR=/afs/cern.ch/work/$U/$USER/public/usr-slc5/
 
 #
 #
