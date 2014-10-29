@@ -14,9 +14,9 @@
 #define SPXMATHUTILITIES_H
 
 #include <iostream>
-#include <math>
 #include <vector>
 #include <algorithm>
+#include <math.h>
 
 #include "SPXException.h"
 
