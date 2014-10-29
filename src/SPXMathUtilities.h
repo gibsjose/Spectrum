@@ -23,7 +23,7 @@
 class SPXMathUtilities {
 
 public:
-    static double AddErrorsInQuadrature(std::vector<double> errors) {
+    static double AddErrorsInQuadrature(std::vector<double> &errors) {
 
         double sum = 0;
 
