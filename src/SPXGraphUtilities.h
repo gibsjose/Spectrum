@@ -282,8 +282,12 @@ public:
 		if(debug) std::cout << "master = " << master << ", slave = " << slave << std::endl;
 
 		//Possible X units are 'MeV, GeV, TeV'	TeV = 1000x GeV, GeV = 1000x MeV
-		std::vector<std::string> units = {"MEV", "GEV", "TEV"};
-
+		//std::vector<std::string> units = {"MEV", "GEV", "TEV"};
+		std::vector<std::string> units;
+		units.push_back("MEV");
+		units.push_back("GEV");
+		units.push_back("TEV");
+		
 		int masterIndex;
 		int slaveIndex;
 
@@ -316,8 +320,10 @@ public:
 	static double GetYUnitsScale(std::string master, std::string slave) {
 
 		//Possible Y units are 'pb', 'fb'		pb = 1000x fb
-		std::vector<std::string> units = {"FB", "PB"};
-
+		//std::vector<std::string> units = {"FB", "PB"};
+	        std::vector<std::string> units;
+	        units.push_back("FB");
+	        units.push_back("PB");
 		int masterIndex;
 		int slaveIndex;
 
