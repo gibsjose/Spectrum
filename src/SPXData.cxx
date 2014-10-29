@@ -647,6 +647,8 @@ void SPXData::ParseSpectrumT3S(void) {
 		}
 		syst_t = SPXMathUtilities::AddErrorsInQuadrature(errors);
 		syst.push_back(syst_t);
+
+		if(debug) std::cout << cn << mn << "Total systematic error for bin " << i << " calculated as: " << syst_t << std::endl;
 	}
 
 	if(debug) std::cout << cn << mn << "Checking sizes of all other vectors.." << std::endl;
@@ -801,6 +803,9 @@ void SPXData::ParseSpectrumT3A(void) {
 		syst_n_t = SPXMathUtilities::AddErrorsInQuadrature(n_errors);
 		syst_p.push_back(syst_p_t);
 		syst_n.push_back(syst_n_t);
+
+		if(debug) std::cout << cn << mn << "Total positive systematic error for bin " << i << " calculated as: " << syst_p_t << std::endl;
+		if(debug) std::cout << cn << mn << "Total negative systematic error for bin " << i << " calculated as: " << syst_n_t << std::endl;
 	}
 
 	if(debug) std::cout << cn << mn << "Checking sizes of all other vectors.." << std::endl;
