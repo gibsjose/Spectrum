@@ -1239,10 +1239,9 @@ void SPXData::CreateGraphs(void) {
 		eyh_syst = &data["syst_p"][0];
 	}
 
-	//@TODO See lines 628 to 646 of MyData.cxx: What is the datavectortoterr? Is it used only for the correlation matrix? MUST IMPLEMENT CORRELATION MATRIX
+	//@TODO MUST IMPLEMENT CORRELATION MATRIX
 
 	//Convert to raw number if errors are given in percent
-	//@TODO Should this be done here or BEFORE the data is put into the map in the ::Parse methods?
 	if(pci.dataSteeringFile.IsErrorInPercent()) {
 		if(debug) std::cout << cn << mn << "Errors were given in percent: Converting to raw numbers" << std::endl;
 
