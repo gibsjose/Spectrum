@@ -694,8 +694,8 @@ void SPXData::ParseSpectrumT3S(void) {
 	// }
 }
 
-void SPXData::ParseSpectrumT2A(void) {
-	std::string mn = "ParseSpectrumT2A: ";
+void SPXData::ParseSpectrumT3A(void) {
+	std::string mn = "ParseSpectrumT3A: ";
 
 	if(debug) std::cout << cn << mn << "Beginning to parse data file: " << pci.dataSteeringFile.GetDataFile() << std::endl;
 
