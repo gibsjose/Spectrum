@@ -18,7 +18,6 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
-#include <boost/algorithm/string.hpp>
 
 #include "SPXException.h"
 
@@ -87,7 +86,9 @@ public:
 	}
 
 	static std::string ToUpper(const std::string & s) {
-		return boost::to_upper_copy(s);
+		std::string str = s;
+		std::transform(str.begin(), str.end(),str.begin(), ::toupper);
+		return str;
 	}
 
 	static unsigned int GetIndexOfStringInVector(std::vector<std::string> v, std::string s) {
