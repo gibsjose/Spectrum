@@ -14,6 +14,7 @@
 #define SPXMATHUTILITIES_H
 
 #include <iostream>
+#include <math>
 #include <vector>
 #include <algorithm>
 
@@ -22,8 +23,15 @@
 class SPXMathUtilities {
 
 public:
-    static void Template(void) {
-        ;
+    static double AddErrorsInQuadrature(std::vector<double> errors) {
+
+        double sum = 0;
+
+        for(int i = 0; i < errors.size(); i++) {
+            sum += pow(errors[i], 2.0);
+        }
+
+        return sqrt(sum);
     }
 };
 
