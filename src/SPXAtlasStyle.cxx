@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-#include "AtlasStyle.h"
+#include "SPXAtlasStyle.h"
 
 #include "TROOT.h"
 
