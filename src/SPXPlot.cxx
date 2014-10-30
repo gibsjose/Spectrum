@@ -496,7 +496,7 @@ void SPXPlot::DrawOverlay(void) {
 	overlayPad->cd();
 
 	//Stagger overlay convolute points if requested
-	if(steeringFile->GetPlotStaggered()) {
+	if(steeringFile->GetPlotStaggered() && !steeringFile->GetPlotBand()) {
 		StaggerConvoluteOverlay();
 	}
 
@@ -573,7 +573,7 @@ void SPXPlot::DrawRatio(void) {
 	ratioPad->cd();
 
 	//Stagger ratio convolute points if requested
-	if(steeringFile->GetPlotStaggered()) {
+	if(steeringFile->GetPlotStaggered() && !steeringFile->GetPlotBand()) {
 		StaggerConvoluteRatio();
 	}
 
