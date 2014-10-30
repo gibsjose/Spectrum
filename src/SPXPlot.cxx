@@ -517,7 +517,7 @@ void SPXPlot::DrawOverlay(void) {
 		if(steeringFile->GetPlotErrorTicks()) {
 			statOptions = "||";
 		} else {
-			statOptions += "Z";
+			systOptions += "Z";
 			statOptions = "Z";
 		}
 
