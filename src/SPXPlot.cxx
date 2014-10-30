@@ -470,7 +470,7 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 			error = graph->GetErrorX(j);
 			range = error / FRAC_RANGE;
 			dr = range / graph->GetN();
-			newX = x + (pow(-1, (i + 1)) * (dr *  (i + 1)));
+			newX = x + (pow(-1, (i)) * (dr *  (i + 1)));
 
 			graph->SetPoint(j, newX, y);
 		}
