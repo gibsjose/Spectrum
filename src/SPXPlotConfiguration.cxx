@@ -494,9 +494,9 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		pci.id = i;
 
 		//Copy from vectors to pci
-		pci.dataSteeringFile = dsf[i];
-		pci.gridSteeringFile = gsf[i];
-		pci.pdfSteeringFile = psf[i];
+		pci.dataSteeringFile = SPXDataSteeringFile(dsf[i]);
+		pci.gridSteeringFile = SPXGridSteeringFile(gsf[i]);
+		pci.pdfSteeringFile = SPXPDFSteeringFile(psf[i]);
 		pci.dataMarkerStyle = atoi(dms[i].c_str());
 		pci.dataMarkerColor = atoi(dmc[i].c_str());
 
