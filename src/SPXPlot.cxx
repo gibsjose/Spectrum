@@ -703,6 +703,14 @@ void SPXPlot::InitializeCrossSections(void) {
 			TGraphAsymmErrors *graph = crossSectionInstance.GetPDFBandResults();
 			convoluteFileGraphMap.insert(StringPairGraphPair_T(convolutePair, graph));
 
+			//Style convolute graph
+			graph->SetMarkerSize(1.0);
+			graph->SetMarkerStyle(pci.pdfMarkerStyle);
+			graph->SetMarkerColor(pci.pdfFillColor);
+			graph->SetLineColor(pci.pdfFillColor);
+			graph->SetFillStyle(pci.pdfFillStyle);
+			graph->SetFillColor(pci.pdfFillColor);
+
 			if(convoluteFileGraphMap.count(convolutePair)) {
 				if(debug) {
 					std::cout << cn << mn << "Added convolute pair to map: [" << convolutePair.first << ", " << convolutePair.second << "]" << std::endl;
