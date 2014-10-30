@@ -509,7 +509,7 @@ void SPXPlot::DrawOverlay(void) {
 			csOptions = "E2";
 		}
 
-		if(steeringFile->GetPlotMarker()) {
+		if(steeringFile->GetPlotMarker() && !steeringFile->GetPlotBand()) {
 			csOptions = "P";
 		}
 
@@ -584,7 +584,7 @@ void SPXPlot::DrawRatio(void) {
 			ratioOptions = "E2";
 		}
 
-		if(steeringFile->GetPlotMarker()) {
+		if(steeringFile->GetPlotMarker() && !steeringFile->GetPlotBand()) {
 			ratioOptions = "P";
 		}
 
