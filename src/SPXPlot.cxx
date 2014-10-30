@@ -545,6 +545,9 @@ void SPXPlot::DrawOverlay(void) {
 			csOptions += "Z";
 		}
 
+		//Set cross section X errors to 0
+		SPXGraphUtilities::ClearXErrors(crossSections[i].GetPDFBandResults());
+
 		crossSections[i].GetPDFBandResults()->Draw(csOptions.c_str());
 
 		if(debug) std::cout << cn << mn << "Sucessfully drew cross section for Plot " << id << " cross section " << i << \
@@ -589,6 +592,11 @@ void SPXPlot::DrawRatio(void) {
 
 		if(!steeringFile->GetPlotErrorTicks()) {
 			ratioOptions += "Z";
+		}
+
+		//Set x errors to zero if ratio involves convolute
+		if(ratios[i].HasConvolute()) {
+			SPXGraphUtilities::ClearXErorrs(ratios[i].GetRatioGraph());
 		}
 
 		ratios[i].GetRatioGraph()->Draw(ratioOptions.c_str());
@@ -850,11 +858,11 @@ void SPXPlot::InitializeData(void) {
 		statGraph->SetMarkerColor(pci.dataMarkerColor);
 		systGraph->SetMarkerColor(pci.dataMarkerColor);
 
-		statGraph->SetMarkerSize(1.2);
-		systGraph->SetMarkerSize(1.2);
+		statGraph->SetMarkerSize(1.0);
+		systGraph->SetMarkerSize(1.0);
 
-		statGraph->SetLineColor(4);
-		systGraph->SetLineColor(1);
+		statGraph->SetLineColor(pci.dataMarkerColor);
+		systGraph->SetLineColor(pci.dataMarkerColor);
 
 		statGraph->SetLineWidth(1);
 		systGraph->SetLineWidth(1);
