@@ -39,7 +39,7 @@ debug = false
 ;==============================================================
 [DESC]
 name = HERAPDF15NLO_EIG
-name_var = HERAPDF15NLO_EIG_R04
+; name_var = HERAPDF15NLO_EIG_R04
 type = HERAPDF15NLO
 order = NLO
 num_members = 33
