@@ -242,7 +242,7 @@ public:
 	}
 
 	static void ClearXErrors(TGraphAsymmErrors * g) {
-		for(int i = 0; i < g.GetN(); i++) {
+		for(int i = 0; i < g->GetN(); i++) {
 			g->SetPointEXhigh(i, 0.0);
 			g->SetPointEXlow(i, 0.0);
 		}

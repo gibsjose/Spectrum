@@ -57,7 +57,7 @@ public:
         return denominatorBlob;
     }
 
-    bool HasConvolute(void) const {
+    bool HasConvolute(void) {
         if(ratioStyle.IsDataOverData()) {
             return false;
         }
@@ -65,7 +65,7 @@ public:
         return true;
     }
 
-    bool HasData(void) const {
+    bool HasData(void) {
         if(ratioStyle.IsConvoluteOverReference()) {
             return false;
         }
@@ -73,7 +73,7 @@ public:
         return true;
     }
 
-    bool HasReference(void) const {
+    bool HasReference(void) {
         if(ratioStyle.IsConvoluteOverReference()) {
             return true;
         }
