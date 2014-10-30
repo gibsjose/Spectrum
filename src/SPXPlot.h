@@ -59,6 +59,7 @@ public:
 
 	void StaggerConvoluteOverlay(void);
 	void StaggerConvoluteRatio(void);
+	void DrawDataStatErrors(void);
 
 	static bool GetDebug(void) {
 		return debug;
