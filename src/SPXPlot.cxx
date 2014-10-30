@@ -616,8 +616,11 @@ void SPXPlot::DrawRatio(void) {
 }
 
 void SPXPlot::DrawDataStatErrors(void) {
+	std::string mn = "DrawDataStatErrors: ";
 
 	ratioPad->cd();
+
+	std::string options = "E2";
 
 	for(int i = 0; i < data.size(); i++) {
 		TGraphAsymmErrors *num;
@@ -634,7 +637,9 @@ void SPXPlot::DrawDataStatErrors(void) {
 		//Set to solid, grey band, increasing band color darkness with each plot
 		res->SetFillStyle(1001);
 		res->SetFillColor(kGray + i);
-		res->Draw("E2");
+		res->Draw(options.c_str());
+
+		if(debug) std::cout << cn << mn << "Successfully drew data stat error band for data " << i << " with options " << options << std::endl;
 	}
 }
 
