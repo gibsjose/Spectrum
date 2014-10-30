@@ -537,7 +537,7 @@ void SPXPlot::DrawOverlay(void) {
 			csOptions = "P";
 		}
 
-		if(!steeringFile->GetPlotErrorTicks()) {
+		if(!steeringFile->GetPlotErrorTicks() && !steeringFile->GetPlotBand()) {
 			csOptions += "Z";
 		}
 
@@ -586,7 +586,7 @@ void SPXPlot::DrawRatio(void) {
 			ratioOptions = "P";
 		}
 
-		if(!steeringFile->GetPlotErrorTicks()) {
+		if(!steeringFile->GetPlotErrorTicks() && !steeringFile-GetPlotBand()) {
 			ratioOptions += "Z";
 		}
 
