@@ -586,7 +586,7 @@ void SPXPlot::DrawRatio(void) {
 			ratioOptions = "P";
 		}
 
-		if(!steeringFile->GetPlotErrorTicks() && !steeringFile-GetPlotBand()) {
+		if(!steeringFile->GetPlotErrorTicks() && !steeringFile->GetPlotBand()) {
 			ratioOptions += "Z";
 		}
 
