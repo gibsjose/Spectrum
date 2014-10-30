@@ -708,7 +708,7 @@ void SPXPlot::InitializeCrossSections(void) {
 			convoluteFileGraphMap.insert(StringPairGraphPair_T(convolutePair, graph));
 
 			//Style convolute graph
-			graph->SetMarkerSize(1.0);
+			graph->SetMarkerSize(1.2);
 			graph->SetMarkerStyle(pci.pdfMarkerStyle);
 			graph->SetMarkerColor(pci.pdfFillColor);
 			graph->SetLineColor(pci.pdfFillColor);

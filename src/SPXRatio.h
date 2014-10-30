@@ -111,7 +111,7 @@ public:
                 ratioGraph->SetMarkerStyle(pci.pdfMarkerStyle);
                 ratioGraph->SetMarkerColor(pci.pdfFillColor);
                 ratioGraph->SetLineColor(pci.pdfFillColor);
-                ratioGraph->SetMarkerSize(1.0);
+                ratioGraph->SetMarkerSize(1.2);
 
                 if(debug) std::cout << "SPXRatio::Divide: Set PDF Fill Options:" << std::endl;
                 if(debug) std::cout << "\t Fill Style = " << pci.pdfFillStyle << std::endl;
