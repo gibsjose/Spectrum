@@ -506,10 +506,6 @@ void SPXPlot::DrawOverlay(void) {
 		std::string statOptions;
 		std::string systOptions;
 
-		if(steeringFile->GetPlotBand()) {
-			systOptions = "E2";
-		}
-
 		if(steeringFile->GetPlotMarker()) {
 			systOptions = "P";
 		}
