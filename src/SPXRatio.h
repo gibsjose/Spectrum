@@ -57,6 +57,30 @@ public:
         return denominatorBlob;
     }
 
+    bool HasConvolute(void) const {
+        if(ratioStyle.IsDataOverData()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool HasData(void) const {
+        if(ratioStyle.IsConvoluteOverReference()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool HasReference(void) const {
+        if(ratioStyle.IsConvoluteOverReference()) {
+            return true;
+        }
+
+        return false;
+    }
+
     void Divide(void) {
         //Grab the plot configuration instance
         SPXPlotConfigurationInstance pci;
@@ -86,8 +110,7 @@ public:
                 ratioGraph->SetFillColor(pci.pdfFillColor);
                 ratioGraph->SetMarkerStyle(pci.pdfMarkerStyle);
                 ratioGraph->SetMarkerColor(pci.pdfFillColor);
-                //ratioGraph->SetMarkerColor(1);
-                ratioGraph->SetMarkerSize(1.2);
+                ratioGraph->SetMarkerSize(1.0);
 
                 if(debug) std::cout << "SPXRatio::Divide: Set PDF Fill Options:" << std::endl;
                 if(debug) std::cout << "\t Fill Style = " << pci.pdfFillStyle << std::endl;
