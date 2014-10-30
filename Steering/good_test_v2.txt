@@ -58,17 +58,17 @@ y_legend = 0.9
 ; Plot 0 Options
 ;==============================================================
 [PLOT_0]
-plot_type = data, grid, pdf
+plot_type = data, grid, pdf[]
 data_steering_files = data_good_test.txt
 grid_steering_files = grid_good_test.txt
-pdf_steering_files = pdf_good_test.txt
+pdf_steering_files = pdf_good_test.txt, pdf_good_test_2.txt
 x_scale = 1.0
 y_scale = 1.0
 data_marker_style = 20
 data_marker_color = 1
-pdf_fill_style = 3005
-pdf_fill_color = 4
-pdf_marker_style = 23
+pdf_fill_style = 3005, 3006
+pdf_fill_color = 600, 810
+pdf_marker_style = 22, 23
 x_log = true
 y_log = true
 desc = atlas_mtt_5fb
@@ -77,5 +77,7 @@ overlay_style = data, convolute
 ratio_title = NLO QCD / Data
 ratio_style_0 = convolute / data
 ratio_0 = ([grid_good_test.txt, pdf_good_test.txt]) / (data_good_test.txt)
+ratio_style_1 = convolute / data
+ratio_1 = ([grid_good_test.txt, pdf_good_test_2.txt]) / (data_good_test.txt)
 ; ratio_style_0 = data / convolute
 ; ratio_0 = (data_good_test.txt) / ([grid_good_test.txt, pdf_good_test.txt])
