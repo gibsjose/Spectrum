@@ -41,10 +41,10 @@ grid_directory = Grids
 ; Graphing Options
 ;==============================================================
 [GRAPH]
-plot_band = true
+; plot_band = true
 ; plot_error_ticks = true
 plot_marker = true
-; plot_staggered = true
+plot_staggered = true
 plot_data_stat_errors = true;
 label_sqrt_s = true
 x_legend = 0.9
