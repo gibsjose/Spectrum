@@ -248,6 +248,13 @@ public:
 		}
 	}
 
+	static void ClearYErrors(TGraphAsymmErrors * g) {
+		for(int i = 0; i < g->GetN(); i++) {
+			g->SetPointEYhigh(i, 0.0);
+			g->SetPointEYlow(i, 0.0);
+		}
+	}
+
 	static TGraphAsymmErrors * HistogramToGraph(TH1 *h) {
 
 		//Make sure histogram is valid

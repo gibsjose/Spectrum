@@ -633,7 +633,7 @@ void SPXPlot::DrawDataStatErrors(void) {
 
 		//Set to solid, grey band, increasing band color darkness with each plot
 		res->SetFillStyle(1001);
-		res->SetFillType(kGray + i);
+		res->SetFillColor(kGray + i);
 		res->Draw("E2");
 	}
 }
