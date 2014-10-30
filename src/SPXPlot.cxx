@@ -413,6 +413,64 @@ void SPXPlot::DrawRatioPadFrame(void) {
 	}
 }
 
+void SPXPlot::StaggerPoints(void) {
+
+	//Change this to alter the fraction of the error range in which the point is staggered
+	const int FRAC_RANGE = 4;
+
+	//Stagger convolutes in overlay
+	for(int i = 0; i < crossSections.size(); i++) {
+
+		TGraphAsymmErrors *graph = crossSections[i].GetPDFBandResults();
+
+		for(int j = 0; j < graph->GetN(); j++) {
+			//Loop over bins
+			double x = 0;
+			double y = 0;
+			double range = 0;
+			double error = 0;
+			double xh = 0;
+			double xl = 0;
+			double dr = 0;
+			double newX = 0;
+
+			graph->GetPoint(j, x, y);
+			error = graph->GetErrorX(j);
+			range = error / FRAC_RANGE;
+			dr = range / graph->GetN();
+			newX = x + (pow(-1, (i + 1)) * (dr *  (i + 1)));
+
+			graph->SetPoint(j, newX, y);
+		}
+	}
+
+	//Stagger convolutes in ratio
+	for(int i = 0; i < ratios.size(); i++) {
+
+		TGraphAsymmErrors *graph = ratios[i].GetRatioGraph();
+
+		for(int j = 0; j < graph->GetN(); j++) {
+			//Loop over bins
+			double x = 0;
+			double y = 0;
+			double range = 0;
+			double error = 0;
+			double xh = 0;
+			double xl = 0;
+			double dr = 0;
+			double newX = 0;
+
+			graph->GetPoint(j, x, y);
+			error = graph->GetErrorX(j);
+			range = error / FRAC_RANGE;
+			dr = range / graph->GetN();
+			newX = x + (pow(-1, (i)) * (dr *  (i + 1)));
+
+			graph->SetPoint(j, newX, y);
+		}
+	}
+}
+
 void SPXPlot::DrawOverlay(void) {
 	std::string mn = "DrawOverlay: ";
 
@@ -433,14 +491,40 @@ void SPXPlot::DrawOverlay(void) {
 
 	//Draw data graphs on Overlay Pad
 	for(int i = 0; i < data.size(); i++) {
-		data[i].GetSystematicErrorGraph()->Draw("P");
-		data[i].GetStatisticalErrorGraph()->Draw("||");
+
+		std::string statOptions;
+		std::string systOptions;
+
+		if(steeringFile->GetPlotBand()) {
+			systOptions = "E2";
+		}
+
+		if(steeringFile->GetPlotMarkers()) {
+			systOptions = "P";
+		}
+
+		if(steeringFile->GetPlotErrorTicks()) {
+			statOptions = "||";
+		} else {
+			statOptions += "Z";
+			statOptions = "Z";
+		}
+
+		if(steeringFile->GetPlotStaggered()) {
+			StaggerPoints();
+		}
+
+		data[i].GetSystematicErrorGraph()->Draw(systOptions.c_str());
+		data[i].GetStatisticalErrorGraph()->Draw(statOptions.c_str());
 
 		if(debug) std::cout << cn << mn << "Sucessfully drew data for Plot " << id << " data " << i << std::endl;
 	}
 
 	//Draw cross sections on Overlay Pad
 	for(int i = 0; i < crossSections.size(); i++) {
+
+
+
 		crossSections[i].GetPDFBandResults()->Draw("P");
 
 		if(debug) std::cout << cn << mn << "Sucessfully drew cross section for Plot " << id << " cross section " << i << std::endl;

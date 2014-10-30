@@ -60,6 +60,7 @@ struct SPXPlotConfigurationInstance {
 	double xScale;
 	double yScale;
 	unsigned int id;
+
 	static bool debug;
 
 	static void SetDebug(bool b) {

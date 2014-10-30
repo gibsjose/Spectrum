@@ -57,6 +57,8 @@ public:
 	void CanvasToPNG(void);
 	std::string GetPNGFilename(std::string desc);
 
+	void StaggerPoints(void);
+
 	static bool GetDebug(void) {
 		return debug;
 	}
