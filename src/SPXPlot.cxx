@@ -470,7 +470,7 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 			error = graph->GetErrorX(j);
 			range = error / FRAC_RANGE;
 			dr = range / graph->GetN();
-			newX = x + (pow(-1, (i)) * (dr *  (i + 1)));
+			newX = x + (pow(-1, (i + 1)) * (dr *  (i + 1)));
 
 			graph->SetPoint(j, newX, y);
 		}
@@ -541,7 +541,7 @@ void SPXPlot::DrawOverlay(void) {
 			csOptions = "P";
 		}
 
-		if(steeringFile->GetPlotErrorTicks() == 0) {
+		if(!steeringFile->GetPlotErrorTicks()) {
 			csOptions += "Z";
 		}
 
@@ -576,7 +576,22 @@ void SPXPlot::DrawRatio(void) {
 	}
 
 	for(int i = 0; i < pc.GetNumberOfRatios(); i++) {
-		ratios[i].GetRatioGraph()->Draw("e2");
+
+		std::string ratioOptions;
+
+		if(steeringFile->GetPlotBand()) {
+			ratioOptions = "E2";
+		}
+
+		if(steeringFile->GetPlotMarker()) {
+			ratioOptions = "P";
+		}
+
+		if(!steeringFile->GetPlotErrorTicks()) {
+			ratioOptions += "Z";
+		}
+
+		ratios[i].GetRatioGraph()->Draw(ratioOptions.c_str());
 	}
 
 	//Draw a line at 1, where ratios are relative to
@@ -835,8 +850,8 @@ void SPXPlot::InitializeData(void) {
 		statGraph->SetMarkerColor(pci.dataMarkerColor);
 		systGraph->SetMarkerColor(pci.dataMarkerColor);
 
-		statGraph->SetMarkerSize(1.0);
-		systGraph->SetMarkerSize(1.0);
+		statGraph->SetMarkerSize(1.2);
+		systGraph->SetMarkerSize(1.2);
 
 		statGraph->SetLineColor(4);
 		systGraph->SetLineColor(1);
