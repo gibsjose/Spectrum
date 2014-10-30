@@ -22,36 +22,36 @@ const std::string cn = "SPXPDFSteeringFile::";
 
 void SPXPDFSteeringFile::SetDefaults(void) {
 	std::string mn = "SetDefaults: ";
-	
+
 	if(debug) std::cout << cn << mn << "Setting default PDF Steering File data" << std::endl;
-	
+
 	name.clear();
 	if(debug) std::cout << cn << mn << "name set to default: \" \"" << std::endl;
 
 	nameVar.clear();
 	if(debug) std::cout << cn << mn << "nameVar set to default: \" \"" << std::endl;
-	
+
 	type.clear();
 	if(debug) std::cout << cn << mn << "type set to default: \" \"" << std::endl;
-	
+
 	order = std::string("NLO");
 	if(debug) std::cout << cn << mn << "order set to default: \"NLO\"" << std::endl;
-	
+
 	numberOfMembers = NUM_MEMBERS_EMPTY;
 	if(debug) std::cout << cn << mn << "numberOfMembers set to default: \"-1\"" << std::endl;
-	
+
 	pdfSetPath.clear();
 	if(debug) std::cout << cn << mn << "pdfSetPath set to default: \" \"" << std::endl;
 
 	fillStyle = PDF_STYLE_EMPTY;
 	if(debug) std::cout << cn << mn << "fillStyle set to default: \"-1\"" << std::endl;
-	
+
 	fillColor = PDF_COLOR_EMPTY;
 	if(debug) std::cout << cn << mn << "fillColor set to default: \"-1\"" << std::endl;
-	
+
 	markerStyle = PDF_STYLE_EMPTY;
 	if(debug) std::cout << cn << mn << "markerStyle set to default: \"-1\"" << std::endl;
-	
+
 	defaultID = 0;
 	if(debug) std::cout << cn << mn << "markerStyle set to default: \"0\"" << std::endl;
 
@@ -87,28 +87,28 @@ void SPXPDFSteeringFile::SetDefaults(void) {
 
 	bandType = SPXPDFBandType();
 	if(debug) std::cout << cn << mn << "bandType set to default: \" \"" << std::endl;
-	
+
 	errorType = SPXPDFErrorType();
 	if(debug) std::cout << cn << mn << "errorType set to default: \" \"" << std::endl;
-	
+
 	errorSize = SPXPDFErrorSize();
 	if(debug) std::cout << cn << mn << "errorSize set to default: \" \"" << std::endl;
-	
+
 	alphaSErrorNumberUp = ALPHA_S_ERROR_NUM_EMPTY;
 	if(debug) std::cout << cn << mn << "alphaSErrorNumberUp set to default: \"-1\"" << std::endl;
-	
+
 	alphaSErrorNumberDown = ALPHA_S_ERROR_NUM_EMPTY;
 	if(debug) std::cout << cn << mn << "alphaSErrorNumberDown set to default: \"-1\"" << std::endl;
-	
+
 	alphaSPDFNameUp.clear();
 	if(debug) std::cout << cn << mn << "alphaSPDFNameUp set to default: \" \"" << std::endl;
-	
+
 	alphaSPDFNameDown.clear();
 	if(debug) std::cout << cn << mn << "alphaSPDFNameDown set to default: \" \"" << std::endl;
-	
+
 	alphaSPDFHistogramNameUp.clear();
 	if(debug) std::cout << cn << mn << "alphaSPDFHistogramNameUp set to default: \" \"" << std::endl;
-	
+
 	alphaSPDFHistogramNameDown.clear();
 	if(debug) std::cout << cn << mn << "alphaSPDFHistogramNameDown set to default: \" \"" << std::endl;
 }
@@ -154,28 +154,28 @@ void SPXPDFSteeringFile::Print(void) {
 
 void SPXPDFSteeringFile::Parse(void) {
 	std::string mn = "Parse: ";
-	
+
 	if(filename.empty()) {
 		throw SPXFileIOException(filename, "Empty file string \"\" was given");
 	}
-	
+
 	//Initialize reader
 	reader = new INIReader(filename);
-	
+
 	if(reader->ParseError() < 0) {
 		delete reader;
-		
+
     	throw SPXFileIOException(filename, "INIReader::INIReader(): ParseError generated when parsing file");
 	}
-	
+
 	std::string tmp;
-	
+
 	//General Options [GEN]
 	debug = reader->GetBoolean("GEN", "debug", debug);
-	
+
 	//Set Defaults
 	this->SetDefaults();
-	
+
 	//Enable all debug options if debug is on
 	if(debug) {
 		std::cout << cn << mn << "Debug is ON" << std::endl;
@@ -183,7 +183,7 @@ void SPXPDFSteeringFile::Parse(void) {
 		SPXPDFErrorType::SetDebug(true);
 		SPXPDFErrorSize::SetDebug(true);
 	}
-	
+
 	//Description [DESC]
 	name = reader->Get("DESC", "name", "EMPTY");
 	if(!name.compare("EMPTY")) {
@@ -191,10 +191,11 @@ void SPXPDFSteeringFile::Parse(void) {
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read PDF Name: " << name << std::endl;
 	}
-	
+
 	nameVar = reader->Get("DESC", "name_var", "EMPTY");
 	if(!nameVar.compare("EMPTY")) {
 		if(debug) std::cout << cn << mn << "No name variation specified: defaulting to \" \"" << std::endl;
+		nameVar.clear();
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read PDF Name Variation: " << nameVar << std::endl;
 	}
@@ -205,7 +206,7 @@ void SPXPDFSteeringFile::Parse(void) {
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read PDF Type: " << type << std::endl;
 	}
-	
+
 	order = reader->Get("DESC", "order", "EMPTY");
 	if(!order.compare("EMPTY")) {
 		if(debug) std::cout << cn << mn << "No order configuration found: defaulting to \"NLO\"" << std::endl;
@@ -213,7 +214,7 @@ void SPXPDFSteeringFile::Parse(void) {
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read PDF Order: " << order << std::endl;
 	}
-	
+
 	numberOfMembers = reader->GetInteger("DESC", "num_members", NUM_MEMBERS_EMPTY);
 	if(numberOfMembers == NUM_MEMBERS_EMPTY) {
 		throw SPXINIParseException("DESC", "num_members", "You MUST specify the num_members");
@@ -228,7 +229,7 @@ void SPXPDFSteeringFile::Parse(void) {
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read PDF Set Path: " << pdfSetPath << std::endl;
 	}
-	
+
 	//Style Options [STYLE]
 	fillStyle = reader->GetInteger("STYLE", "fill_style", PDF_STYLE_EMPTY);
 	if(fillStyle == PDF_STYLE_EMPTY) {
@@ -236,21 +237,21 @@ void SPXPDFSteeringFile::Parse(void) {
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Fill Style: " << fillStyle << std::endl;
 	}
-	
+
 	fillColor = reader->GetInteger("STYLE", "fill_color", PDF_COLOR_EMPTY);
 	if(fillColor == PDF_COLOR_EMPTY) {
 		throw SPXINIParseException("STYLE", "fill_color", "You MUST specify the fill_color");
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Fill Color: " << fillColor << std::endl;
 	}
-	
+
 	markerStyle = reader->GetInteger("STYLE", "marker_style", PDF_STYLE_EMPTY);
 	if(markerStyle == PDF_STYLE_EMPTY) {
 		throw SPXINIParseException("STYLE", "marker_style", "You MUST specify the marker_style");
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Marker Style: " << markerStyle << std::endl;
 	}
-	
+
 	//PDF Options [PDF]
 	defaultID = reader->GetInteger("PDF", "default_id", -1);
 	if(defaultID == -1) {
@@ -316,94 +317,94 @@ void SPXPDFSteeringFile::Parse(void) {
 	tmp = reader->Get("PDF", "band_type", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
 		throw SPXINIParseException("PDF", "band_type", "You MUST specify the band_type");
-	} else {		
+	} else {
 		//Attempt to parse the band type
 		try {
 			bandType.Parse(tmp);
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
-			
+
 			std::ostringstream s;
 			s << "Invalid Band Type: Type = " << bandType.GetType() << ": Check configuration string: band_type = " << tmp;
 			throw SPXINIParseException("PDF", "band_type", s.str());
 		}
 	}
-	
+
 	//Parse Error Type
 	tmp = reader->Get("PDF", "error_type", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
 		throw SPXINIParseException("PDF", "error_type", "You MUST specify the error_type");
-	} else {		
+	} else {
 		//Attempt to parse the error type
 		try {
 			errorType.Parse(tmp);
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
-			
+
 			std::ostringstream s;
 			s << "Invalid Error Type: Type = " << errorType.GetType() << ": Check configuration string: error_type = " << tmp;
 			throw SPXINIParseException("PDF", "error_type", s.str());
 		}
 	}
-	
+
 	//Parse Error Size
 	tmp = reader->Get("PDF", "error_size", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
 		throw SPXINIParseException("PDF", "error_size", "You MUST specify the error_size");
-	} else {		
+	} else {
 		//Attempt to parse the error size
 		try {
 			errorSize.Parse(tmp);
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
-			
+
 			std::ostringstream s;
 			s << "Invalid Error Size: Type = " << errorSize.GetType() << ": Check configuration string: error_size = " << tmp;
 			throw SPXINIParseException("PDF", "error_size", s.str());
 		}
 	}
-	
+
 	alphaSErrorNumberUp = reader->GetInteger("PDF", "alpha_s_error_number_up", ALPHA_S_ERROR_NUM_EMPTY);
 	if(alphaSErrorNumberUp == ALPHA_S_ERROR_NUM_EMPTY) {
 		throw SPXINIParseException("PDF", "alpha_s_error_number_up", "You MUST specify the alpha_s_error_number_up");
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Alpha S Error Number Up: " << alphaSErrorNumberUp << std::endl;
 	}
-	
+
 	alphaSErrorNumberDown = reader->GetInteger("PDF", "alpha_s_error_number_down", ALPHA_S_ERROR_NUM_EMPTY);
 	if(alphaSErrorNumberDown == ALPHA_S_ERROR_NUM_EMPTY) {
 		throw SPXINIParseException("PDF", "alpha_s_error_number_down", "You MUST specify the alpha_s_error_number_down");
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Alpha S Error Number Down: " << alphaSErrorNumberDown << std::endl;
 	}
-	
+
 	alphaSPDFNameUp = reader->Get("PDF", "alpha_s_pdf_name_up", "EMPTY");
 	if(!alphaSPDFNameUp.compare("EMPTY")) {
 		throw SPXINIParseException("PDF", "alpha_s_pdf_name_up", "You MUST specify the alpha_s_pdf_name_up");
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Alpha S PDF Name Up: " << alphaSPDFNameUp << std::endl;
 	}
-	
+
 	alphaSPDFNameDown = reader->Get("PDF", "alpha_s_pdf_name_down", "EMPTY");
 	if(!alphaSPDFNameDown.compare("EMPTY")) {
 		throw SPXINIParseException("PDF", "alpha_s_pdf_name_down", "You MUST specify the alpha_s_pdf_name_down");
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Alpha S PDF Name Down: " << alphaSPDFNameDown << std::endl;
 	}
-	
+
 	alphaSPDFHistogramNameUp = reader->Get("PDF", "alpha_s_pdf_histogram_name_up", "EMPTY");
 	if(!alphaSPDFHistogramNameUp.compare("EMPTY")) {
 		throw SPXINIParseException("PDF", "alpha_s_pdf_histogram_name_up", "You MUST specify the alpha_s_pdf_histogram_name_up");
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Alpha S PDF Histogram Name Up: " << alphaSPDFHistogramNameUp << std::endl;
 	}
-	
+
 	alphaSPDFHistogramNameDown = reader->Get("PDF", "alpha_s_pdf_histogram_name_down", "EMPTY");
 	if(!alphaSPDFHistogramNameDown.compare("EMPTY")) {
 		throw SPXINIParseException("PDF", "alpha_s_pdf_histogram_name_down", "You MUST specify the alpha_s_pdf_histogram_name_down");
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Alpha S PDF Histogram Name Down: " << alphaSPDFHistogramNameDown << std::endl;
 	}
-	
+
 	delete reader;
 }
