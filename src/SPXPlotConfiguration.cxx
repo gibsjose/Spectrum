@@ -326,18 +326,11 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 				pfs.push_back(options["pdf_fill_style"][0]);		//Just one instance of pdf fill style
 				pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
 				pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
-			} else {
-				pfs.push_back(FO_STYLE_EMPTY);
-				pfc.push_back(FO_COLOR_EMPTY);
-				pms.push_back(FO_STYLE_EMPTY);
 			}
 
 			if(xsSize) {
 				xsc.push_back(options["x_scale"][0]);			//Just one instance of x scale
 				ysc.push_back(options["y_scale"][0]);			//Just one instance of y scale
-			} else {
-				xsc.push_back(1.0);
-				xsc.push_back(1.0);
 			}
 		}
 	}
@@ -372,18 +365,11 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 				pfs.push_back(options["pdf_fill_style"][0]);		//Just one instance of pdf fill style
 				pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
 				pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
-			} else {
-				pfs.push_back(FO_STYLE_EMPTY);
-				pfc.push_back(FO_COLOR_EMPTY);
-				pms.push_back(FO_STYLE_EMPTY);
 			}
 
 			if(xsSize) {
 				xsc.push_back(options["x_scale"][i]);
 				ysc.push_back(options["y_scale"][i]);
-			} else {
-				xsc.push_back(1.0);
-				xsc.push_back(1.0);
 			}
 		}
 	}
@@ -414,18 +400,11 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 				pfs.push_back(options["pdf_fill_style"][i]);
 				pfc.push_back(options["pdf_fill_color"][i]);
 				pms.push_back(options["pdf_marker_style"][i]);
-			} else {
-				pfs.push_back(FO_STYLE_EMPTY);
-				pfc.push_back(FO_COLOR_EMPTY);
-				pms.push_back(FO_STYLE_EMPTY);
 			}
 
 			if(xsSize) {
 				xsc.push_back(options["x_scale"][0]);			//Just one instance of x scale
 				ysc.push_back(options["y_scale"][0]);			//Just one instance of y scale
-			} else {
-				xsc.push_back(1.0);
-				xsc.push_back(1.0);
 			}
 		}
 	}
@@ -456,18 +435,11 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 				pfs.push_back(options["pdf_fill_style"][0]);		//Just one instance of pdf fill style
 				pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
 				pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
-			} else {
-				pfs.push_back(FO_STYLE_EMPTY);
-				pfc.push_back(FO_COLOR_EMPTY);
-				pms.push_back(FO_STYLE_EMPTY);
 			}
 
 			if(xsSize) {
 				xsc.push_back(options["x_scale"][0]);			//Just one instance of x scale
 				ysc.push_back(options["y_scale"][0]);			//Just one instance of y scale
-			} else {
-				xsc.push_back(1.0);
-				xsc.push_back(1.0);
 			}
 		}
 	}
@@ -525,13 +497,26 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		pci.dataSteeringFile = dsf[i];
 		pci.gridSteeringFile = gsf[i];
 		pci.pdfSteeringFile = psf[i];
-		pci.dataMarkerStyle = atoi(dms[i]);
-		pci.dataMarkerColor = atoi(dmc[i]);
-		pci.pdfFillStyle = atoi(pfs[i]);
-		pci.pdfFillColor = atoi(pfc[i]);
-		pci.pdfMarkerStyle = atoi(pms[i]);
-		pci.xScale = atoi(xsc[i]);
-		pci.yScale = atoi(ysc[i]);
+		pci.dataMarkerStyle = atoi(dms[i].c_str());
+		pci.dataMarkerColor = atoi(dmc[i].c_str());
+
+		if(pfsSize) {
+			pci.pdfFillStyle = atoi(pfs[i].c_str());
+			pci.pdfFillColor = atoi(pfc[i].c_str());
+			pci.pdfMarkerStyle = atoi(pms[i].c_str());
+		} else {
+			pci.pdfFillStyle = PC_EMPTY_STYLE;
+			pci.pdfFillColor = PC_EMPTY_COLOR;
+			pci.pdfMarkerStyle = PC_EMPTY_STYLE;
+		}
+
+		if(xsSize) {
+			pci.xScale = atof(xsc[i].c_str());
+			pci.yScale = atof(ysc[i].c_str());
+		} else {
+			pci.xScale = 1.0;
+			pci.yScale = 1.0;
+		}
 
 		//Attempt to add the configuration instance
 		try {

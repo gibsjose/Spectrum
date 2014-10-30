@@ -42,8 +42,8 @@
 
 #include "SPXException.h"
 
-const int FO_EMPTY_STYLE = -1;
-const int FO_EMPTY_COLOR = -1;
+const int PC_EMPTY_STYLE = -1;
+const int PC_EMPTY_COLOR = -1;
 
 const std::string focn = "SPXPlotConfiguration::";
 const std::string foicn = "SPXPlotConfigurationInstance::";
@@ -68,11 +68,11 @@ struct SPXPlotConfigurationInstance {
 	}
 
 	void SetDefaults(void) {
-		dataMarkerStyle = FO_EMPTY_STYLE;
-		dataMarkerColor = FO_EMPTY_COLOR;
-		pdfFillStyle = FO_EMPTY_STYLE;
-		pdfFillColor = FO_EMPTY_COLOR;
-		pdfMarkerStyle = FO_EMPTY_STYLE;
+		dataMarkerStyle = PC_EMPTY_STYLE;
+		dataMarkerColor = PC_EMPTY_COLOR;
+		pdfFillStyle = PC_EMPTY_STYLE;
+		pdfFillColor = PC_EMPTY_COLOR;
+		pdfMarkerStyle = PC_EMPTY_STYLE;
 		xScale = 1.0;
 		yScale = 1.0;
 	}
@@ -95,12 +95,12 @@ struct SPXPlotConfigurationInstance {
 			return false;
 		}
 
-		if(dataMarkerStyle != FO_EMPTY_STYLE) {
+		if(dataMarkerStyle != PC_EMPTY_STYLE) {
 			//std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Marker style = " << dataMarkerStyle << std::endl;
 			return false;
 		}
 
-		if(dataMarkerColor != FO_EMPTY_STYLE) {
+		if(dataMarkerColor != PC_EMPTY_STYLE) {
 			//std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Marker color = " << dataMarkerColor << std::endl;
 			return false;
 		}
@@ -134,12 +134,12 @@ struct SPXPlotConfigurationInstance {
 			return false;
 		}
 
-		if(dataMarkerStyle == FO_EMPTY_STYLE) {
+		if(dataMarkerStyle == PC_EMPTY_STYLE) {
 			if(debug) std::cout << foicn << mn << "Marker Style field missing from FrameOptionsInstance Object" << std::endl;
 			return false;
 		}
 
-		if(dataMarkerColor == FO_EMPTY_COLOR) {
+		if(dataMarkerColor == PC_EMPTY_COLOR) {
 			if(debug) std::cout << foicn << mn << "Marker Color field missing from FrameOptionsInstance Object" << std::endl;
 			return false;
 		}
