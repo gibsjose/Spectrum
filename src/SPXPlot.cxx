@@ -500,6 +500,34 @@ void SPXPlot::DrawOverlay(void) {
 		StaggerConvoluteOverlay();
 	}
 
+	//Draw cross sections on Overlay Pad
+	for(int i = 0; i < crossSections.size(); i++) {
+
+		std::string csOptions;
+
+		if(steeringFile->GetPlotBand()) {
+			csOptions = "E2";
+		}
+
+		if(steeringFile->GetPlotMarker()) {
+			csOptions = "P";
+		}
+
+		if(!steeringFile->GetPlotErrorTicks() && !steeringFile->GetPlotBand()) {
+			csOptions += "Z";
+		}
+
+		//Set cross section X errors to 0 if not plotting band
+		if(!steeringFile->GetPlotBand()) {
+			SPXGraphUtilities::ClearXErrors(crossSections[i].GetPDFBandResults());
+		}
+
+		crossSections[i].GetPDFBandResults()->Draw(csOptions.c_str());
+
+		if(debug) std::cout << cn << mn << "Sucessfully drew cross section for Plot " << id << " cross section " << i << \
+			" with options = " << csOptions << std::endl;
+	}
+
 	//Draw data graphs on Overlay Pad
 	for(int i = 0; i < data.size(); i++) {
 
@@ -522,32 +550,6 @@ void SPXPlot::DrawOverlay(void) {
 
 		if(debug) std::cout << cn << mn << "Sucessfully drew data for Plot " << id << " data " << i << " with Syst options = " \
 			<< systOptions << " Stat options = " << statOptions << std::endl;
-	}
-
-	//Draw cross sections on Overlay Pad
-	for(int i = 0; i < crossSections.size(); i++) {
-
-		std::string csOptions;
-
-		if(steeringFile->GetPlotBand()) {
-			csOptions = "E2";
-		}
-
-		if(steeringFile->GetPlotMarker()) {
-			csOptions = "P";
-		}
-
-		if(!steeringFile->GetPlotErrorTicks() && !steeringFile->GetPlotBand()) {
-			csOptions += "Z";
-		}
-
-		//Set cross section X errors to 0
-		SPXGraphUtilities::ClearXErrors(crossSections[i].GetPDFBandResults());
-
-		crossSections[i].GetPDFBandResults()->Draw(csOptions.c_str());
-
-		if(debug) std::cout << cn << mn << "Sucessfully drew cross section for Plot " << id << " cross section " << i << \
-			" with options = " << csOptions << std::endl;
 	}
 }
 
@@ -590,8 +592,8 @@ void SPXPlot::DrawRatio(void) {
 			ratioOptions += "Z";
 		}
 
-		//Set x errors to zero if ratio involves convolute
-		if(ratios[i].HasConvolute()) {
+		//Set x errors to zero if ratio involves convolute AND is not plot band
+		if(ratios[i].HasConvolute() && !steeringFile->GetPlotBand()) {
 			SPXGraphUtilities::ClearXErrors(ratios[i].GetRatioGraph());
 		}
 
