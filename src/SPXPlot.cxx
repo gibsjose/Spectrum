@@ -413,7 +413,7 @@ void SPXPlot::DrawRatioPadFrame(void) {
 	}
 }
 
-void SPXPlot::StaggerPoints(void) {
+void SPXPlot::StaggerConvoluteOverlay(void) {
 
 	//Change this to alter the fraction of the error range in which the point is staggered
 	const int FRAC_RANGE = 4;
@@ -443,6 +443,12 @@ void SPXPlot::StaggerPoints(void) {
 			graph->SetPoint(j, newX, y);
 		}
 	}
+}
+
+void SPXPlot::StaggerConvoluteRatio(void) {
+
+	//Change this to alter the fraction of the error range in which the point is staggered
+	const int FRAC_RANGE = 4;
 
 	//Stagger convolutes in ratio
 	for(int i = 0; i < ratios.size(); i++) {
@@ -489,6 +495,11 @@ void SPXPlot::DrawOverlay(void) {
 	//Change to the overlay pad
 	overlayPad->cd();
 
+	//Stagger overlay convolute points if requested
+	if(steeringFile->GetPlotStaggered()) {
+		StaggerConvoluteOverlay();
+	}
+
 	//Draw data graphs on Overlay Pad
 	for(int i = 0; i < data.size(); i++) {
 
@@ -499,7 +510,7 @@ void SPXPlot::DrawOverlay(void) {
 			systOptions = "E2";
 		}
 
-		if(steeringFile->GetPlotMarkers()) {
+		if(steeringFile->GetPlotMarker()) {
 			systOptions = "P";
 		}
 
@@ -510,24 +521,34 @@ void SPXPlot::DrawOverlay(void) {
 			statOptions = "Z";
 		}
 
-		if(steeringFile->GetPlotStaggered()) {
-			StaggerPoints();
-		}
-
 		data[i].GetSystematicErrorGraph()->Draw(systOptions.c_str());
 		data[i].GetStatisticalErrorGraph()->Draw(statOptions.c_str());
 
-		if(debug) std::cout << cn << mn << "Sucessfully drew data for Plot " << id << " data " << i << std::endl;
+		if(debug) std::cout << cn << mn << "Sucessfully drew data for Plot " << id << " data " << i << " with Syst options = " \
+			<< systOptions << " Stat options = " << statOptions << std::endl;
 	}
 
 	//Draw cross sections on Overlay Pad
 	for(int i = 0; i < crossSections.size(); i++) {
 
+		std::string csOptions;
 
+		if(steeringFile->GetPlotBand()) {
+			csOptions = "E2";
+		}
 
-		crossSections[i].GetPDFBandResults()->Draw("P");
+		if(steeringFile->GetPlotMarker()) {
+			csOptions = "P";
+		}
 
-		if(debug) std::cout << cn << mn << "Sucessfully drew cross section for Plot " << id << " cross section " << i << std::endl;
+		if(steeringFile->GetPlotErrorTicks() == 0) {
+			csOptions += "Z";
+		}
+
+		crossSections[i].GetPDFBandResults()->Draw(csOptions.c_str());
+
+		if(debug) std::cout << cn << mn << "Sucessfully drew cross section for Plot " << id << " cross section " << i << \
+			" with options = " << csOptions << std::endl;
 	}
 }
 
@@ -548,6 +569,11 @@ void SPXPlot::DrawRatio(void) {
 
 	//Change to the ratio pad
 	ratioPad->cd();
+
+	//Stagger ratio convolute points if requested
+	if(steeringFile->GetPlotStaggered()) {
+		StaggerConvoluteRatio();
+	}
 
 	for(int i = 0; i < pc.GetNumberOfRatios(); i++) {
 		ratios[i].GetRatioGraph()->Draw("e2");

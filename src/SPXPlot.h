@@ -57,7 +57,8 @@ public:
 	void CanvasToPNG(void);
 	std::string GetPNGFilename(std::string desc);
 
-	void StaggerPoints(void);
+	void StaggerConvoluteOverlay(void);
+	void StaggerConvoluteRatio(void);
 
 	static bool GetDebug(void) {
 		return debug;
