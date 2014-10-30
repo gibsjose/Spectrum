@@ -84,10 +84,12 @@ public:
                 if(debug) std::cout << "SPXRatio::Divide: Obtaining PDF Fill Options..." << std::endl;
                 ratioGraph->SetFillStyle(pci.pdfFillStyle);
                 ratioGraph->SetFillColor(pci.pdfFillColor);
+                ratioGraph->SetMarkerStyle(pci.pdfMarkerStyle);
 
                 if(debug) std::cout << "SPXRatio::Divide: Set PDF Fill Options:" << std::endl;
                 if(debug) std::cout << "\t Fill Style = " << pci.pdfFillStyle << std::endl;
                 if(debug) std::cout << "\t Fill Color = " << pci.pdfFillColor << std::endl;
+                if(debug) std::cout << "\t Marker Style = " << pci.pdfMarkerStyle << std::endl;
             }
         } catch(const SPXException &e) {
             std::cerr << e.what() << std::endl;
