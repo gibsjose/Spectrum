@@ -576,6 +576,11 @@ void SPXPlot::DrawRatio(void) {
 	//Change to the ratio pad
 	ratioPad->cd();
 
+	//Plot the Data Stat Errors in the background if requested
+	if(steeringFile->GetPlotDataStatErrors()) {
+		DrawDataStatErrors();
+	}
+
 	//Stagger ratio convolute points if requested
 	if(steeringFile->GetPlotStaggered() && !steeringFile->GetPlotBand()) {
 		StaggerConvoluteRatio();
@@ -608,6 +613,29 @@ void SPXPlot::DrawRatio(void) {
 	//Draw a line at 1, where ratios are relative to
 	TLine *referenceLine = new TLine(xMinRatio, 1.0, xMaxRatio, 1.0);
 	referenceLine->Draw();
+}
+
+void SPXPlot::DrawDataStatErrors(void) {
+
+	ratioPad->cd();
+
+	for(int i = 0; i < data.size(); i++) {
+		TGraphAsymmErrors *num;
+		TGraphAsymmErrors *den;
+		TGraphAsymmErrors *res;
+
+		num = data[i].GetStatisticalErrorGraph();
+		den = data[i].GetStatisticalErrorGraph();
+
+		SPXGraphUtilities::ClearYErrors(den);
+
+		res = SPXGraphUtilities::Divide(num, den, ZeroGraph2Errors);
+
+		//Set to solid, grey band, increasing band color darkness with each plot
+		res->SetFillStyle(1001);
+		res->SetFillType(kGray + i);
+		res->Draw("E2");
+	}
 }
 
 void SPXPlot::UpdateCanvas(void) {

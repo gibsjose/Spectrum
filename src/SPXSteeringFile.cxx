@@ -39,11 +39,14 @@ void SPXSteeringFile::SetDefaults(void) {
 	plotErrorTicks = false;
 	if(debug) std::cout << cn << mn << "plotErrorTicks set to default: \"false\"" << std::endl;
 
-	plotMarker = false;
-	if(debug) std::cout << cn << mn << "plotMarker set to default: \"false\"" << std::endl;
+	plotMarker = true;
+	if(debug) std::cout << cn << mn << "plotMarker set to default: \"true\"" << std::endl;
 
 	plotStaggered = false;
 	if(debug) std::cout << cn << mn << "plotStaggered set to default: \"false\"" << std::endl;
+
+	plotDataStatErrors = false;
+	if(debug) std::cout << cn << mn << "plotDataStatErrors set to default: \"false\"" << std::endl;
 
 	labelSqrtS = false;
 	if(debug) std::cout << cn << mn << "labelSqrtS set to default: \"false\"" << std::endl;
@@ -106,6 +109,7 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Plot Error Ticks is: " << (plotErrorTicks ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Marker is: " << (plotMarker ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Staggered is: " << (plotStaggered ? "ON" : "OFF") << std::endl;
+	std::cout << "\t\t Plot Data Stat Errors is: " << (plotDataStatErrors ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Label Sqrt(s) on Leggend: " << (labelSqrtS ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t X Legend: " << xLegend << std::endl;
 	std::cout << "\t\t Y Legend: " << yLegend << std::endl;
@@ -122,14 +126,17 @@ void SPXSteeringFile::Print(void) {
 		std::cout << "\t\t Plot Type: " << plotConfigurations[i].GetPlotType().ToString() << std::endl;
 		std::cout << "\t\t Display Style: " << plotConfigurations[i].GetDisplayStyle().ToString() << std::endl;
 		std::cout << "\t\t Overlay Style: " << plotConfigurations[i].GetOverlayStyle().ToString() << std::endl;
+		std::cout << "\t\t X Log: " << (plotConfigurations[i].IsXLog() ? "YES" : "NO") << std::endl;
+		std::cout << "\t\t Y Log: " << (plotConfigurations[i].IsYLog() ? "YES" : "NO") << std::endl;
 		std::cout << "\t\t Ratio Title: " << plotConfigurations[i].GetRatioTitle() << std::endl;
-		std::cout << "\t\t Ratios:" << std::endl;
+		std::cout << "\t\t Number of Ratios:" << plotConfigurations[i].GetNumberOfRatios() << std::endl << std::endl;
 		for(int j = 0; j < plotConfigurations[i].GetNumberOfRatios(); j++) {
 			std::cout << "\t\t\t Ratio Style " << j << ": " << plotConfigurations[i].GetRatioStyle(j).ToString() << std::endl;
 			std::cout << "\t\t\t Ratio " << j << ": " << plotConfigurations[i].GetRatio(j) << std::endl;
 		}
-		std::cout << "\t\t X Log: " << (plotConfigurations[i].IsXLog() ? "YES" : "NO") << std::endl;
-		std::cout << "\t\t Y Log: " << (plotConfigurations[i].IsYLog() ? "YES" : "NO") << std::endl << std::endl;
+
+		std::cout << "\t\t Number of Configuration Instances for Plot " << i << \
+			plotConfigurations[i].GetNumberOfConfigurationInstances() << std::endl << std::endl;
 
 		for(int j = 0; j < plotConfigurations[i].GetNumberOfConfigurationInstances(); j++) {
 			SPXPlotConfigurationInstance tmp;
@@ -680,95 +687,15 @@ void SPXSteeringFile::Parse(void) {
 	plotErrorTicks = reader->GetBoolean("GRAPH", "plot_error_ticks", plotErrorTicks);
 	plotMarker = reader->GetBoolean("GRAPH", "plot_marker", plotMarker);
 	plotStaggered = reader->GetBoolean("GRAPH", "plot_staggered", plotStaggered);
+	plotDataStatErrors = reader->GetBoolean("GRAPH", "plot_data_stat_errors", plotDataStatErrors);
 	labelSqrtS = reader->GetBoolean("GRAPH", "label_sqrt_s", labelSqrtS);
 	xLegend = reader->GetReal("GRAPH", "x_legend", xLegend);
 	yLegend = reader->GetReal("GRAPH", "y_legend", xLegend);
-
-	//Parse Ratio Style
-	/*
-	tmp = reader->Get("GRAPH", "ratio_style", "EMPTY");
-	if(!tmp.compare("EMPTY")) {
-		throw SPXINIParseException("GRAPH", "ratio_style", "You MUST specify the ratio_style");
-	} else {
-		//Attempt to parse ratio style
-		try {
-			ratioStyle.Parse(tmp);
-		} catch(const SPXException &e) {
-			std::cerr << e.what() << std::endl;
-
-			std::ostringstream s;
-			s << "Invalid ratio style: Numerator = " << ratioStyle.GetNumerator() << " Denominator = " << ratioStyle.GetDenominator() << ": Check configuration string: ratio_style = " << tmp;
-			throw SPXINIParseException("GRAPH", "ratio_style", s.str());
-		}
-	}
-
-	//Parse Overlay Style
-	tmp = reader->Get("GRAPH", "overlay_style", "EMPTY");
-	if(!tmp.compare("EMPTY")) {
-		throw SPXINIParseException("GRAPH", "overlay_style", "You MUST specify the overlay_style");
-	} else {
-		//Attempt to parse overlay style
-		try {
-			overlayStyle.Parse(tmp);
-		} catch(const SPXException &e) {
-			std::cerr << e.what() << std::endl;
-
-			std::ostringstream s;
-			s << "Invalid overlay style: Style = " << overlayStyle.GetStyle() << ": Check configuration string: overlay_style = " << tmp;
-			throw SPXINIParseException("GRAPH", "overlay_style", s.str());
-		}
-	}
-
-	//Parse Display Style
-	tmp = reader->Get("GRAPH", "display_style", "EMPTY");
-	if(!tmp.compare("EMPTY")) {
-		if(debug) std::cout << cn << mn << "Display style configuration string empty: Defaulting to \"overlay, ratio\"" << std::endl;
-	} else {
-		//Attempt to parse display style
-		try {
-			displayStyle.Parse(tmp);
-		} catch(const SPXException &e) {
-			std::cerr << e.what() << std::endl;
-
-			std::ostringstream s;
-			s << "Invalid display style: Style = " << displayStyle.GetStyle() << ": Check configuration string: display_style = " << tmp;
-			throw SPXINIParseException("GRAPH", "display_style", s.str());
-		}
-	}
-	*/
 
 	yOverlayMin = reader->GetReal("GRAPH", "y_overlay_min", yOverlayMin);
 	yOverlayMax = reader->GetReal("GRAPH", "y_overlay_max", yOverlayMax);
 	yRatioMin = reader->GetReal("GRAPH", "y_ratio_min", yRatioMin);
 	yRatioMax = reader->GetReal("GRAPH", "y_ratio_max", yRatioMax);
-
-	//Parse PDF Steering Filepaths
-	/*
-	tmp = reader->Get("PDF", "pdf_steering_files", "EMPTY");
-	if(!tmp.compare("EMPTY")){
-		//Required if Overlay -> Convolute is plotted
-		if(displayStyle.ContainsOverlay() && overlayStyle.ContainsConvolute()) {
-			throw SPXINIParseException("PDF", "pdf_steering_files", "You MUST specify at least one PDF Steering File if Overlay -> Convolute is plotted");
-		} else {
-			if(debug) std::cout << cn << mn << "No PDF Steering Files were specified" << std::endl;
-		}
-	} else {
-		std::vector<std::string> tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
-
-		//Prepend PDF directory onto all PDF steering files
-		for(int i = 0; i < tmpVector.size(); i++) {
-			if(debug) std::cout << cn << mn << "Prepending: \"" << pdfDirectory << "\" to \"" << tmpVector[i] << "\"" << std::endl;
-			tmpVector[i] = pdfDirectory + "/" + tmpVector[i];
-			if(debug) std::cout << cn << mn << "Now: " << tmpVector[i] << std::endl;
-
-			//Create a PDF steering file with the full filepath
-			SPXPDFSteeringFile pdfSteeringFile = SPXPDFSteeringFile(tmpVector[i]);
-
-			//Add the PDF steering file to the vector
-			pdfSteeringFiles.push_back(pdfSteeringFile);
-		}
-	}
-	*/
 
 	//Attempt to parse plot configurations
 	try {
