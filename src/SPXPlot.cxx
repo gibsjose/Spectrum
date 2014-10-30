@@ -596,7 +596,7 @@ void SPXPlot::DrawRatio(void) {
 
 		//Set x errors to zero if ratio involves convolute
 		if(ratios[i].HasConvolute()) {
-			SPXGraphUtilities::ClearXErorrs(ratios[i].GetRatioGraph());
+			SPXGraphUtilities::ClearXErrors(ratios[i].GetRatioGraph());
 		}
 
 		ratios[i].GetRatioGraph()->Draw(ratioOptions.c_str());
