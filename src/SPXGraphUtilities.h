@@ -241,6 +241,13 @@ public:
 		return result;
 	}
 
+	static void ClearXErrors(TGraphAsymmErrors * g) {
+		for(int i = 0; i < g.GetN(); i++) {
+			g->SetPointEXhigh(i, 0.0);
+			g->SetPointEXlow(i, 0.0);
+		}
+	}
+
 	static TGraphAsymmErrors * HistogramToGraph(TH1 *h) {
 
 		//Make sure histogram is valid
@@ -287,7 +294,7 @@ public:
 		units.push_back("MEV");
 		units.push_back("GEV");
 		units.push_back("TEV");
-		
+
 		int masterIndex;
 		int slaveIndex;
 
