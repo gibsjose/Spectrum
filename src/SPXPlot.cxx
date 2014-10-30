@@ -333,7 +333,7 @@ void SPXPlot::ConfigurePads(void) {
 	ratioPad->SetLeftMargin(leftMargin);
 	ratioPad->SetRightMargin(rightMargin);
 	ratioPad->SetTickx();
-	ratioPad->SetTicky()
+	ratioPad->SetTicky();
 	ratioPad->Draw();
 
 	if(debug) {
