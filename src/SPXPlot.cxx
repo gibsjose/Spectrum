@@ -310,6 +310,8 @@ void SPXPlot::ConfigurePads(void) {
 	overlayPad->SetLeftMargin(leftMargin);
 	overlayPad->SetRightMargin(rightMargin);
 	overlayPad->SetBottomMargin(bottomMargin);
+	overlayPad->SetTickx();
+	overlayPad->SetTicky();
 	overlayPad->Draw();
 
 	if(debug) {
@@ -330,6 +332,8 @@ void SPXPlot::ConfigurePads(void) {
 	ratioPad->SetFillColor(0);
 	ratioPad->SetLeftMargin(leftMargin);
 	ratioPad->SetRightMargin(rightMargin);
+	ratioPad->SetTickx();
+	ratioPad->SetTicky()
 	ratioPad->Draw();
 
 	if(debug) {
