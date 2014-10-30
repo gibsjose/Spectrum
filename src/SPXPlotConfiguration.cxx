@@ -76,6 +76,18 @@ SPXPlotConfiguration::SPXPlotConfiguration(std::map<std::string, std::vector<std
 void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> > &options) {
 	std::string mn = "Parse: ";
 
+	//Vectors for creating the actual instances
+	std::vector<std::string> dsf;	//Data steering files
+	std::vector<std::string> gsf;	//Grid steering files
+	std::vector<std::string> psf;	//PDF steering files
+	std::vector<std::string> dms;	//Data marker styles
+	std::vector<std::string> dmc;	//Data marker colors
+	std::vector<std::string> pfs;	//PDF fill style
+	std::vector<std::string> pfc;	//PDF fill color
+	std::vector<std::string> pms;	//PDF marker style
+	std::vector<std::string> xsc;	//X-Scale
+	std::vector<std::string> ysc;	//Y-Scale
+
 	//Make sure all required vectors exist
 	{
 		if(options.count("plot_type") == 0) {
@@ -301,6 +313,33 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		}
 
 		numberOfConfigurationInstances = 1;
+
+		//Fill all other vectors as needed
+		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+			dsf.push_back(options["data_steering_files"][0]);	//Just one instance of data steering file
+			gsf.push_back(options["grid_steering_files"][0]);	//Just one instance of grid steering file
+			psf.push_back(options["pdf_steering_files"][0]);	//Just one instance of pdf steering file
+			dms.push_back(options["data_marker_style"][0]);		//Just one instance of data marker style
+			dmc.push_back(options["data_marker_color"][0]);		//Just one instance of data marker color
+
+			if(pfsSize) {
+				pfs.push_back(options["pdf_fill_style"][0]);		//Just one instance of pdf fill style
+				pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
+				pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
+			} else {
+				pfs.push_back(FO_STYLE_EMPTY);
+				pfc.push_back(FO_COLOR_EMPTY);
+				pms.push_back(FO_STYLE_EMPTY);
+			}
+
+			if(xsSize) {
+				xsc.push_back(options["x_scale"][0]);			//Just one instance of x scale
+				ysc.push_back(options["y_scale"][0]);			//Just one instance of y scale
+			} else {
+				xsc.push_back(1.0);
+				xsc.push_back(1.0);
+			}
+		}
 	}
 
 	//data[], grid[], pdf
@@ -320,6 +359,33 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		}
 
 		numberOfConfigurationInstances = dsfSize;
+
+		//Fill all other vectors as needed
+		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+			dsf.push_back(options["data_steering_files"][i]);
+			gsf.push_back(options["grid_steering_files"][i]);
+			psf.push_back(options["pdf_steering_files"][0]);	//Just one instance of pdf steering file
+			dms.push_back(options["data_marker_style"][i]);
+			dmc.push_back(options["data_marker_color"][i]);
+
+			if(pfsSize) {
+				pfs.push_back(options["pdf_fill_style"][0]);		//Just one instance of pdf fill style
+				pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
+				pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
+			} else {
+				pfs.push_back(FO_STYLE_EMPTY);
+				pfc.push_back(FO_COLOR_EMPTY);
+				pms.push_back(FO_STYLE_EMPTY);
+			}
+
+			if(xsSize) {
+				xsc.push_back(options["x_scale"][i]);
+				ysc.push_back(options["y_scale"][i]);
+			} else {
+				xsc.push_back(1.0);
+				xsc.push_back(1.0);
+			}
+		}
 	}
 
 	//data, grid, pdf[]
@@ -335,6 +401,33 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		}
 
 		numberOfConfigurationInstances = psfSize;
+
+		//Fill all other vectors as needed
+		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+			dsf.push_back(options["data_steering_files"][0]);	//Just one instance of data steering file
+			gsf.push_back(options["grid_steering_files"][0]);	//Just one instance of grid steering file
+			psf.push_back(options["pdf_steering_files"][i]);
+			dms.push_back(options["data_marker_style"][0]);		//Just one instance of data marker style
+			dmc.push_back(options["data_marker_color"][0]);		//Just one instance of data marker color
+
+			if(pfsSize) {
+				pfs.push_back(options["pdf_fill_style"][i]);
+				pfc.push_back(options["pdf_fill_color"][i]);
+				pms.push_back(options["pdf_marker_style"][i]);
+			} else {
+				pfs.push_back(FO_STYLE_EMPTY);
+				pfc.push_back(FO_COLOR_EMPTY);
+				pms.push_back(FO_STYLE_EMPTY);
+			}
+
+			if(xsSize) {
+				xsc.push_back(options["x_scale"][0]);			//Just one instance of x scale
+				ysc.push_back(options["y_scale"][0]);			//Just one instance of y scale
+			} else {
+				xsc.push_back(1.0);
+				xsc.push_back(1.0);
+			}
+		}
 	}
 
 	//data, grid[], pdf
@@ -350,6 +443,33 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		}
 
 		numberOfConfigurationInstances = gsfSize;
+
+		//Fill all other vectors as needed
+		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+			dsf.push_back(options["data_steering_files"][0]);	//Just one instance of data steering file
+			gsf.push_back(options["grid_steering_files"][i]);
+			psf.push_back(options["pdf_steering_files"][0]);	//Just one instance of pdf steering file
+			dms.push_back(options["data_marker_style"][0]);		//Just one instance of data marker style
+			dmc.push_back(options["data_marker_color"][0]);		//Just one instance of data marker color
+
+			if(pfsSize) {
+				pfs.push_back(options["pdf_fill_style"][0]);		//Just one instance of pdf fill style
+				pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
+				pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
+			} else {
+				pfs.push_back(FO_STYLE_EMPTY);
+				pfc.push_back(FO_COLOR_EMPTY);
+				pms.push_back(FO_STYLE_EMPTY);
+			}
+
+			if(xsSize) {
+				xsc.push_back(options["x_scale"][0]);			//Just one instance of x scale
+				ysc.push_back(options["y_scale"][0]);			//Just one instance of y scale
+			} else {
+				xsc.push_back(1.0);
+				xsc.push_back(1.0);
+			}
+		}
 	}
 
 	//Set the general plot configuration data
@@ -396,41 +516,22 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	//For each options instance, create an SPXPlotConfigurationInstance object and add it to the vector
 	for(int i = 0; i < numberOfConfigurationInstances; i++) {
 		SPXPlotConfigurationInstance pci;
+
 		pci.SetDefaults();
 
 		pci.id = i;
 
-		//Create objects and set the filename for the Data, Grid, and PDF Steering Files
-		pci.dataSteeringFile = SPXDataSteeringFile(options["data_steering_files"][i]);
-		pci.gridSteeringFile = SPXGridSteeringFile(options["grid_steering_files"][i]);
-		pci.pdfSteeringFile = SPXPDFSteeringFile(options["pdf_steering_files"][i]);
-
-		pci.dataMarkerStyle = atoi(options["data_marker_style"][i].c_str());
-		pci.dataMarkerColor = atoi(options["data_marker_color"][i].c_str());
-
-		if(pfsSize) {
-			pci.pdfFillStyle = atoi(options["pdf_fill_style"][i].c_str());
-		}
-
-		if(pfcSize) {
-			pci.pdfFillColor = atoi(options["pdf_fill_color"][i].c_str());
-		}
-
-		if(pmsSize) {
-			pci.pdfMarkerStyle = atoi(options["pdf_marker_style"][i].c_str());
-		}
-
-		if(xsSize) {
-			pci.xScale = atoi(options["x_scale"][i].c_str());
-		} else {
-			pci.xScale = 1.0;
-		}
-
-		if(ysSize) {
-			pci.yScale = atoi(options["y_scale"][i].c_str());
-		} else {
-			pci.yScale = 1.0;
-		}
+		//Copy from vectors to pci
+		pci.dataSteeringFile = dsf[i];
+		pci.gridSteeringFile = gsf[i];
+		pci.pdfSteeringFile = psf[i];
+		pci.dataMarkerStyle = atoi(dms[i]);
+		pci.dataMarkerColor = atoi(dmc[i]);
+		pci.pdfFillStyle = atoi(pfs[i]);
+		pci.pdfFillColor = atoi(pfc[i]);
+		pci.pdfMarkerStyle = atoi(pms[i]);
+		pci.xScale = atoi(xsc[i]);
+		pci.yScale = atoi(ysc[i]);
 
 		//Attempt to add the configuration instance
 		try {
