@@ -17,7 +17,7 @@ void SetAtlasStyle ()
   gROOT->ForceStyle();
 }
 
-TStyle* AtlasStyle() 
+TStyle* AtlasStyle()
 {
   TStyle *atlasStyle = new TStyle("ATLAS","Atlas style");
 
@@ -59,7 +59,7 @@ TStyle* AtlasStyle()
   atlasStyle->SetLabelFont(font,"z");
   atlasStyle->SetTitleFont(font,"z");
   atlasStyle->SetLegendFont(font);
-  
+
   atlasStyle->SetLabelSize(tsize,"x");
   atlasStyle->SetTitleSize(tsize,"x");
   atlasStyle->SetLabelSize(tsize,"y");
@@ -75,12 +75,12 @@ TStyle* AtlasStyle()
 
   //atlasStyle->SetLineWidth(2.);
 
-  // get rid of X error bars 
+  // get rid of X error bars
   atlasStyle->SetErrorX(0.001);
   //atlasStyle->SetErrorX(1.0);
   //get rid of error bar caps
   atlasStyle->SetEndErrorSize(0.);
-  gStyle->SetEndErrorSize(1); 
+  gStyle->SetEndErrorSize(1);
 
   // do not display any of the standard histogram decorations
   atlasStyle->SetOptTitle(0);
@@ -96,4 +96,3 @@ TStyle* AtlasStyle()
   return atlasStyle;
 
 }
-

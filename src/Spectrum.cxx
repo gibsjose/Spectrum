@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include "SPXROOT.h"
+#include "SPXAtlasStyle.h"
 #include "SPXSteeringFile.h"
 #include "SPXAnalysis.h"
 #include "SPXException.h"
@@ -47,6 +48,9 @@ int main(int argc, char *argv[]) {
 		file = std::string(argv[1]);
 		drawApplication = true;
 	}
+
+	//Set Atlas Style (SPXAtlasStyle.h)
+	SetAtlasStyle();
 
 	TApplication *spectrum;
 
