@@ -523,6 +523,7 @@ void SPXPlot::DrawOverlay(void) {
 		}
 
 		crossSections[i].GetPDFBandResults()->Draw(csOptions.c_str());
+		crossSections[i].GetPDFBandResults()->Draw("X+, Y+, same");
 
 		if(debug) std::cout << cn << mn << "Sucessfully drew cross section for Plot " << id << " cross section " << i << \
 			" with options = " << csOptions << std::endl;
@@ -544,9 +545,6 @@ void SPXPlot::DrawOverlay(void) {
 			systOptions += "Z";
 			statOptions = "Z";
 		}
-
-		//Draw axes on top/right sides too
-		systOptions += "X+Y+";
 
 		data[i].GetSystematicErrorGraph()->Draw(systOptions.c_str());
 		data[i].GetStatisticalErrorGraph()->Draw(statOptions.c_str());
@@ -594,9 +592,6 @@ void SPXPlot::DrawRatio(void) {
 		if(!steeringFile->GetPlotErrorTicks() && !steeringFile->GetPlotBand()) {
 			ratioOptions += "Z";
 		}
-
-		//Draw axes on top/right side too
-		ratioOptions += "X+Y+";
 
 		//Set x errors to zero if ratio involves convolute AND is not plot band
 		if(ratios[i].HasConvolute() && !steeringFile->GetPlotBand()) {
