@@ -518,9 +518,10 @@ void SPXPlot::DrawOverlay(void) {
 			csOptions = "P";
 		}
 
-		if(!steeringFile->GetPlotErrorTicks() && !steeringFile->GetPlotBand()) {
+		//@TODO Never plot error ticks on convolute graph right now... At some point might plot when alphas uncertainties exist
+		//if(!steeringFile->GetPlotErrorTicks() && !steeringFile->GetPlotBand()) {
 			csOptions += "Z";
-		}
+		//}
 
 		//Set cross section X errors to 0 if not plotting band
 		if(!steeringFile->GetPlotBand()) {
@@ -528,7 +529,6 @@ void SPXPlot::DrawOverlay(void) {
 		}
 
 		crossSections[i].GetPDFBandResults()->Draw(csOptions.c_str());
-		crossSections[i].GetPDFBandResults()->Draw("X+, Y+, same");
 
 		if(debug) std::cout << cn << mn << "Sucessfully drew cross section for Plot " << id << " cross section " << i << \
 			" with options = " << csOptions << std::endl;
@@ -538,24 +538,23 @@ void SPXPlot::DrawOverlay(void) {
 	for(int i = 0; i < data.size(); i++) {
 
 		std::string statOptions;
-		std::string systOptions;
+		std::string totOptions;
 
 		if(steeringFile->GetPlotMarker()) {
-			systOptions = "P";
+			totOptions = "PZ";	//Never plot ticks on tot error graph
 		}
 
 		if(steeringFile->GetPlotErrorTicks()) {
 			statOptions = "||";
 		} else {
-			systOptions += "Z";
 			statOptions = "Z";
 		}
 
-		data[i].GetSystematicErrorGraph()->Draw(systOptions.c_str());
+		data[i].GetTotalErrorGraph()->Draw(totOptions.c_str());
 		data[i].GetStatisticalErrorGraph()->Draw(statOptions.c_str());
 
 		if(debug) std::cout << cn << mn << "Sucessfully drew data for Plot " << id << " data " << i << " with Syst options = " \
-			<< systOptions << " Stat options = " << statOptions << std::endl;
+			<< totOptions << " Stat options = " << statOptions << std::endl;
 	}
 }
 
@@ -616,6 +615,7 @@ void SPXPlot::DrawRatio(void) {
 	referenceLine->Draw();
 }
 
+//@TODO Move to SPXRatio: Create DataStatErrors Ratio and DataTotErrors Ratio there
 void SPXPlot::DrawDataStatErrors(void) {
 	std::string mn = "DrawDataStatErrors: ";
 
@@ -880,6 +880,8 @@ void SPXPlot::InitializeData(void) {
 		try {
 			dataInstance.Parse();
 			dataInstance.Print();
+
+			//@TODO Check for duplicates here
 			data.push_back(dataInstance);
 		} catch(const SPXException &e) {
 			throw;
@@ -895,6 +897,7 @@ void SPXPlot::InitializeData(void) {
 		//Obtain the graphs
 		TGraphAsymmErrors *statGraph = data[i].GetStatisticalErrorGraph();
 		TGraphAsymmErrors *systGraph = data[i].GetSystematicErrorGraph();
+		TGraphAsymmErrors *totGraph = data[i].GetTotalErrorGraph();
 
 		//Get settings
 		SPXPlotConfigurationInstance &pci = steeringFile->GetPlotConfigurationInstance(id, i);
@@ -911,25 +914,31 @@ void SPXPlot::InitializeData(void) {
 
 		SPXGraphUtilities::Scale(statGraph, xScale, yScale);
 		SPXGraphUtilities::Scale(systGraph, xScale, yScale);
+		SPXGraphUtilities::Scale(totGraph, xScale, yScale);
 
 		//Modify Data Graph styles
 		statGraph->SetMarkerStyle(pci.dataMarkerStyle);
 		systGraph->SetMarkerStyle(pci.dataMarkerStyle);
+		totGraph->SetMarkerStyle(pci.dataMarkerStyle);
 
 		statGraph->SetMarkerColor(pci.dataMarkerColor);
 		systGraph->SetMarkerColor(pci.dataMarkerColor);
+		totGraph->SetMarkerColor(pci.dataMarkerColor);
 
 		statGraph->SetMarkerSize(1.0);
 		systGraph->SetMarkerSize(1.0);
+		totGraph->SetMarkerSize(1.0);
 
 		statGraph->SetLineColor(pci.dataMarkerColor);
 		systGraph->SetLineColor(pci.dataMarkerColor);
+		totGraph->SetLineColor(pci.dataMarkerColor);
 
 		statGraph->SetLineWidth(1);
 		systGraph->SetLineWidth(1);
+		totGraph->SetLineWidth(1);
 
 		//Add to dataFileGraphMap
-		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename(), systGraph));
+		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename(), totGraph));
 
 		if(dataFileGraphMap.count(pci.dataSteeringFile.GetFilename())) {
 			if(debug) {
