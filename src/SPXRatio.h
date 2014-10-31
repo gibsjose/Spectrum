@@ -111,7 +111,7 @@ public:
             try {
                 ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroGraph2Errors);
                 ratioGraph->SetFillStyle(1001);
-                ratioGraph->SetFillColor(kGray + i);
+                ratioGraph->SetFillColor(kGray); //@TODO How to determine colors???
             } catch(const SPXException &e) {
                 std::cerr << e.what() << std::endl;
                 throw SPXGraphException("SPXRatio::Divide: Unable to divide data stat graphs");

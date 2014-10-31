@@ -948,7 +948,7 @@ void SPXPlot::InitializeData(void) {
 
 		//Add total error graph and stat error graph to dataFileGraphMap
 		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename(), totGraph));
-		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename() + "_stat", statGraph);
+		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename() + "_stat", statGraph));
 
 		if(dataFileGraphMap.count(pci.dataSteeringFile.GetFilename())) {
 			if(debug) {
