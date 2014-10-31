@@ -129,6 +129,8 @@ public:
 		return max;
 	}
 
+	/*
+	//@TODO Modify to add the error from g2 to g1 instead of returning a new graph
 	static TGraphAsymmErrors * AddYErrors(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2) {
 		//Make sure graphs are valid
 		if((!g1) || (!g2)) {
@@ -168,6 +170,7 @@ public:
 
 		return result;
 	}
+	*/
 
 	static TGraphAsymmErrors * Divide(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, DivideErrorType dt) {
 

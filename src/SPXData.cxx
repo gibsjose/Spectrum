@@ -1266,6 +1266,26 @@ void SPXData::CreateGraphs(void) {
 		eyl_syst = &data["syst_n"][0];
 	}
 
+	double eyl_tot = malloc(sizeof(double) * numberOfBins);
+	double eyh_tot = malloc(sizeof(double) * numberOfBins);
+
+	std::vector<double> eyl_tot_v;
+	std::vector<double> eyh_tot_v;
+
+	//Calculate total errors = sqrt(stat^2 + syst^2)
+	for(int i = 0; i < numberOfBins; i++) {
+		double eylt;
+		double eyht;
+
+		eylt = sqrt(pow(eyl_stat[i], 2.0) + pow(eyl_syst[i], 2.0));
+		eyht = sqrt(pow(eyh_stat[i], 2.0) + pow(eyh_syst[i], 2.0));
+		eyl_tot_v.push_back(eylt);
+		eyh_tot_v.push_back(eyht);
+	}
+
+	double *eyl_tot = &eyl_tot_v[0];
+	double *eyh_tot = &eyh_tot_v[0];
+
 	//Create statistical error graph
 	statisticalErrorGraph = new TGraphAsymmErrors(numberOfBins, x, y, exl, exh, stat, stat);
 
@@ -1273,7 +1293,7 @@ void SPXData::CreateGraphs(void) {
 	systematicErrorGraph = new TGraphAsymmErrors(numberOfBins, x, y, exl, exh, eyl_syst, eyh_syst);
 
 	//Create total error graph
-	totalErrorGraph = SPXGraphUtilities::AddYErrors(statisticalErrorGraph, systematicErrorGraph);
+	totalErrorGraph = new TGraphAsymmErrors(numberOfBins, x, y, exl, exh, eyl_tot, eyh_tot);
 
 	//Modify names
 	statisticalErrorGraph->SetName(statName);
