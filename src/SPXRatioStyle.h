@@ -148,7 +148,7 @@ private:
 	unsigned int denominator;
 
 	bool dataStat;	//Special ratio: Plot data/data with statistical errors
-	bool dataTot:;	//Specrial ratio: Plot data/data with total errors
+	bool dataTot;	//Specrial ratio: Plot data/data with total errors
 
 	//Plot number and ratio style number for exception handling
 	std::string plotNumber;
