@@ -13,6 +13,7 @@
 //************************************************************/
 
 #include <iomanip>
+#include <string.h> //malloc
 
 #include "SPXData.h"
 #include "SPXUtilities.h"
@@ -1239,8 +1240,8 @@ void SPXData::CreateGraphs(void) {
 	std::cout << std::endl;
 
 	//Must initialize beforehand
-	double *eyl_syst;
-	double *eyh_syst;
+	double *eyl_syst = malloc(sizeof(double) * numberOfBins);
+	double *eyh_syst = malloc(sizeof(double) * numberOfBins);
 /*
 	//Symmetric
 	if(dataFormat.IsSymmetric()) {
