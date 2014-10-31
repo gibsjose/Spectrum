@@ -651,16 +651,7 @@ void SPXPlot::DrawDataStatErrors(void) {
 		std::cout << cn << mn << "Original Denominator" << std::endl;
 		den->Print();
 
-		SPXGraphUtilities::SetAllYErrors(num, 0.2);
-		SPXGraphUtilities::ClearYErrors(den);
-
-		std::cout << cn << mn << "Numerator, Y errors set to 0.2" << std::endl;
-		num->Print();
-
-		std::cout << cn << mn << "Denominator, Y errors set to 0.0" << std::endl;
-		den->Print();
-
-		res = SPXGraphUtilities::Divide(num, den, AddErrors);
+		res = SPXGraphUtilities::Divide(num, den, ZeroGraph2Errors);
 
 		//Delete num and den
 		delete num;
