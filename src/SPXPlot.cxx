@@ -635,13 +635,21 @@ void SPXPlot::DrawDataStatErrors(void) {
 
 		//Copy the data's stat error graph
 		std::cout << "Copying from stat (" << (long long)stat << ") to num (" << (long long)num << ") with size: " << sizeof(*stat) << std::endl;
-		memcpy(num, stat, sizeof(*stat));
-		memcpy(den, stat, sizeof(*stat));
+		//memcpy(num, stat, sizeof(*stat));
+		//memcpy(den, stat, sizeof(*stat));
+
+		*num = *stat;
+		*den = *stat;
+
+		std::cout << "Stat = " << (long long) stat << std::endl;
+		std::cout << "Num = " << (long long) num << std::endl;
+		std::Cout << "Den = " << (long long) den << std::endl;
 
 		std::cout << cn << mn << "Original Numerator" << std::endl;
 		num->Print();
 
 		std::cout << cn << mn << "Original Denominator" << std::endl;
+		den->Print();
 
 		SPXGraphUtilities::SetAllYErrors(num, 0.2);
 		SPXGraphUtilities::ClearYErrors(den);
