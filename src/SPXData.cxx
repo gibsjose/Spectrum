@@ -1204,15 +1204,8 @@ void SPXData::CreateGraphs(void) {
 		systName = name + "_syst";
 	}
 
-	//double x[numberOfBins]; 		//xm
-	//double y[numberOfBins];		//sigma
 	double exl[numberOfBins];		// = (xm - ((xh + xl) / 2) + ((xh - xl) / 2))
 	double exh[numberOfBins];		// = (((xh + xl) / 2) + ((xh - xl) / 2) - xm)
-	//double eyl[numberOfBins];		//either stat - or syst - (depending on graph)
-	//double eyh[numberOfBins];		//either stat + or syst + (depending on graph)
-
-	double *x = &data["xm"][0];		//x = xm
-	double *y = &data["sigma"][0];	//y = sigma
 
 	//Calculate exl and exh
 	for(int i = 0; i < numberOfBins; i++) {
@@ -1225,35 +1218,12 @@ void SPXData::CreateGraphs(void) {
 		exh[i] = m + n - x[i];
 	}
 
-	//Errors for statistical are always symmetrical
-	double *eyl_stat = &data["stat"][0];
-	double *eyh_stat = &data["stat"][0];
-
-	//memcpy(eyh_stat, &data["stat"][0], data["stat"].size());
-
 	std::cout << "Printing eyh_stat vector directly after initialization" << std::endl;
 
 	for(int i = 0; i < data["stat"].size(); i++) {
-		std::cout << "eyh_stat[" << i << "] = " << eyh_stat[i] << std::endl;
+		std::cout << "data[\"stat\"][" << i << "] = " << data["stat"][i] << std::endl;
 	}
 
-	std::cout << std::endl;
-
-	//Must initialize beforehand
-	double *eyl_syst = (double *) malloc(sizeof(double) * numberOfBins);
-	double *eyh_syst = (double *) malloc(sizeof(double) * numberOfBins);
-/*
-	//Symmetric
-	if(dataFormat.IsSymmetric()) {
-		eyl_syst = &data["syst"][0];
-		eyh_syst = &data["syst"][0];
-	}
-	//Asymmetric
-	else if(dataFormat.IsAsymmetric()) {
-		eyl_syst = &data["syst_n"][0];
-		eyh_syst = &data["syst_p"][0];
-	}
-*/
 	//@TODO MUST IMPLEMENT CORRELATION MATRIX
 
 	//Convert to raw number if errors are given in percent
@@ -1261,21 +1231,46 @@ void SPXData::CreateGraphs(void) {
 		if(debug) std::cout << cn << mn << "Errors were given in percent: Converting to raw numbers" << std::endl;
 
 		for(int i = 0; i < numberOfBins; i++) {
-			//eyl_stat[i] *= y[i] / 100.0;
-			std::cout << "y[" << i << "] = " << y[i] << std::endl;
-			std::cout << "eyh_stat[" << i << "] = " << eyh_stat[i] << std::endl;
-			std::cout << "(eyh_stat[" << i << "]  * y[i] / 100 )= " << eyh_stat[i] * (y[i] / 100) << std::endl << std::endl;
-			eyh_stat[i] *= y[i] / 100.0;
+			std::cout << "data[\"sigma\"][" << i << "] = " << data["sigma"][i] << std::endl;
+			std::cout << "data[\"stat\"][" << i << "] = " << data["stat"][i] << std::endl;
 
+			//Convert stat errors
+			data["stat"][i] *= data["sigma"][i] / 100;
+			std::cout << "New = data[\"stat\"][" << i << "] * (y[" << i << "] / 100) = " << data["stat"][i] << std::endl;
 
-			eyl_syst[i] *= y[i] / 100.0;
-			eyh_syst[i] *= y[i] / 100.0;
-			std::cout << "(eyh_stat[" << i << "]  / sigma )= " << eyh_stat[i] / y[i] << std::endl << std::endl;
+			//Convert syst errors
+			if(dataFormat.IsSymmetric()) {
+				std::cout << "data[\"syst\"][" << i << "] = " << data["syst"][i] << std::endl;
+				data["syst"][i] *= data["sigma"][i] / 100;
+				std::cout << "New = data[\"syst\"][" << i << "] * (y[" << i << "] / 100) = " << data["syst"][i] << std::endl;
+			}
+			else if(dataFormat.IsAsymmetric()) {
+				std::cout << "data[\"syst_p\"][" << i << "] = " << data["syst_p"][i] << std::endl;
+				std::cout << "data[\"syst_n\"][" << i << "] = " << data["syst_n"][i] << std::endl;
+				data["syst_p"][i] *= data["sigma"][i] / 100;
+				data["syst_n"][i] *= data["sigma"][i] / 100;
+				std::cout << "New = data[\"syst_p\"][" << i << "] * (y[" << i << "] / 100) = " << data["syst_p"][i] << std::endl;
+				std::cout << "New = data[\"syst_n\"][" << i << "] * (y[" << i << "] / 100) = " << data["syst_n"][i] << std::endl;
+			}
 		}
 	}
 
+	double *x = &data["xm"][0];
+	double *y = &data["sigma"][0];
+	double *stat = &data["stat"][0];
+	double *eyl_syst;
+	double *eyh_syst;
+
+	if(dataFormat.IsSymmetric()) {
+		eyh_syst = eyl_syst = &data["syst"][0];
+	}
+	else if(dataFormat.IsAsymmetric()) {
+		eyh_syst = &data["syst_p"][0];
+		eyl_syst = &data["syst_n"][0];
+	}
+
 	//Create statistical error graph
-	statisticalErrorGraph = new TGraphAsymmErrors(numberOfBins, x, y, exl, exh, eyl_stat, eyh_stat);
+	statisticalErrorGraph = new TGraphAsymmErrors(numberOfBins, x, y, exl, exh, stat, stat);
 
 	//Create systematic error graph
 	systematicErrorGraph = new TGraphAsymmErrors(numberOfBins, x, y, exl, exh, eyl_syst, eyh_syst);
