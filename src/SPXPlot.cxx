@@ -632,14 +632,23 @@ void SPXPlot::DrawDataStatErrors(void) {
 
 		SPXGraphUtilities::ClearYErrors(den);
 
+		std::cout << cn << mn << "Numerator" << std::endl;
+		num->Print();
+
+		std::cout << cn << mn << "Denominator" << std::endl;
+		den->Print();
+
 		res = SPXGraphUtilities::Divide(num, den, AddErrors);
+
+		std::cout << cn << mn << "Result" << std::endl;
+		res->Print();
 
 		//Set to solid, grey band, increasing band color darkness with each plot
 		res->SetFillStyle(1001);
 		res->SetFillColor(kGray + i);
 		res->Draw(options.c_str());
 
-		res->Print();
+		//res->Print();
 
 		if(debug) std::cout << cn << mn << "Successfully drew data stat error band for data " << i << " with options " << options << std::endl;
 	}
