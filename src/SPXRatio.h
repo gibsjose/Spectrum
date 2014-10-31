@@ -57,6 +57,14 @@ public:
         return denominatorBlob;
     }
 
+    bool IsDataStat(void) {
+        return ratioStyle.IsDataStat();
+    }
+
+    bool IsDataTot(void) {
+        return ratioStyle.IsDataTot();
+    }
+
     bool HasConvolute(void) {
         if(ratioStyle.IsDataOverData()) {
             return false;
@@ -95,8 +103,34 @@ public:
         }
 
         //@TODO What if it's Data/Data???
-        else {
+        else if(ratioStyle.IsDataOverData()) {
             if(debug) std::cout << "SPXRatio::Divide: Data/Data: Could not get pci" << std::endl;
+        }
+
+        else if(ratioStyle.IsDataStat()) {
+            try {
+                ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroGraph2Errors);
+                ratioGraph->SetFillStyle(1001);
+                ratioGraph->SetFillColor(kGray + i);
+            } catch(const SPXException &e) {
+                std::cerr << e.what() << std::endl;
+                throw SPXGraphException("SPXRatio::Divide: Unable to divide data stat graphs");
+            }
+
+            return;
+        }
+
+        else if(ratioStyle.IsDataTot()) {
+            try {
+                ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroGraph2Errors);
+                ratioGraph->SetFillStyle(1001);
+                ratioGraph->SetFillColor(kGray + i);
+            } catch(const SPXException &e) {
+                std::cerr << e.what() << std::endl;
+                throw SPXGraphException("SPXRatio::Divide: Unable to divide data tot graphs");
+            }
+
+            return;
         }
 
         try {

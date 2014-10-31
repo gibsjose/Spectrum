@@ -42,7 +42,7 @@ SPXRatioStyle::SPXRatioStyle(std::string &s, unsigned int pn, unsigned int rsn) 
 }
 
 //Takes a string argument in ONLY the following four forms:
-// 
+//
 //		data / convolute
 //		convolute / data
 //		convolute / reference
@@ -51,45 +51,57 @@ SPXRatioStyle::SPXRatioStyle(std::string &s, unsigned int pn, unsigned int rsn) 
 // Sets the numerator and denominator bitfields based on the input string
 void SPXRatioStyle::Parse(std::string &s) {
 	std::string mn = "Parse: ";
-	
+
 	if(debug) std::cout << cn << mn << "Parsing configuration string: " << s << std::endl;
-	
+
+	//Look for special ratio styles:
+	//	data_stat	<-- Plot data/data statistical errors in ratio section
+	//	data_tot	<-- Plot data/data total errors in ratio section
+
+	if(!s.compare("data_stat")) {
+		dataStat = true;
+	}
+
+	if(!s.compare("data_tot")) {
+		dataTot = true;
+	}
+
 	std::string den;
 	std::string num;
-	
+
 	//Clear the numerator/denominator each time it is parsed
 	this->Clear();
-	
+
 	//Parse the string into numerator and denominator (delimit with '/')
 	std::vector<std::string> v = SPXStringUtilities::ParseString(s, '/');
-	
+
 	if(v.size() != 2) {
-		throw SPXINIParseException(plotNumber, ratioStyleNumber, "Incorrect ratio style: Must be in the form: numerator / denominator");
+		throw SPXINIParseException(plotNumber, ratioStyleNumber, "Incorrect ratio style: Must be in one of the forms: data_stat OR data_tot OR numerator / denominator");
 	}
-	
+
 	//Parse the numerator by commas
 	num = v.at(0);
-	
+
 	//Obtain the denominator
-	den = v.at(1); 
-	
+	den = v.at(1);
+
 	if(debug) std::cout << cn << mn << "Numerator set to: " << num << std::endl;
 	if(debug) std::cout << cn << mn << "Denominator set to: " << den << std::endl;
-	
+
 	//Check the numerator and denominator for size errors
 	if(num.empty()) {
 		numerator = RS_INVALID;
 		denominator = RS_INVALID;
-		
+
 		throw SPXINIParseException(plotNumber, ratioStyleNumber, "Incorrect ratio style: Numerator must be EXACTLY one of: \"data\" or \"convolute\"");
 	}
 	if(den.empty()) {
 		numerator = RS_INVALID;
 		denominator = RS_INVALID;
-		
+
 		throw SPXINIParseException(plotNumber, ratioStyleNumber, "Incorrect ratio style: Denominator must be EXACTLY one of: \"data\", \"reference\", or \"convolute\"");
 	}
-	
+
 	//Validate the numerator
 	if(!num.compare("data")) {
 		if(debug) std::cout << cn << mn << "Found numerator string = \"data\"" << std::endl;
@@ -106,12 +118,12 @@ void SPXRatioStyle::Parse(std::string &s) {
 	else {
 		numerator = RS_INVALID;
 		denominator = RS_INVALID;
-		
+
 		std::ostringstream oss;
 		oss << "Incorrect ratio style: Unrecognized ratio numerator option: \"" << num << "\" is invalid";
 		throw SPXINIParseException(plotNumber, ratioStyleNumber, oss.str());
 	}
-	
+
 	//Validate the denominator
 	if(!den.compare("data")) {
 		if(debug) std::cout << cn << mn << "Found denominator string = \"data\"" << std::endl;
@@ -128,12 +140,12 @@ void SPXRatioStyle::Parse(std::string &s) {
 	else {
 		numerator = RS_INVALID;
 		denominator = RS_INVALID;
-		
+
 		std::ostringstream oss;
 		oss << "Incorrect ratio style: Unrecognized ratio denominator option: \"" << den << "\" is invalid";
 		throw SPXINIParseException(plotNumber, ratioStyleNumber, oss.str());
 	}
-	
+
 	//Check for invalid combinations
 	if(numerator == RS_DATA) {
 		if(denominator == RS_REFERENCE) {
@@ -142,7 +154,7 @@ void SPXRatioStyle::Parse(std::string &s) {
 			throw SPXINIParseException(plotNumber, ratioStyleNumber, "Invalid ratio combination: data / reference is not supported");
 		}
 	}
-	
+
 	if(numerator == RS_CONVOLUTE) {
 		if(denominator == RS_CONVOLUTE) {
 			numerator = RS_INVALID;
@@ -150,7 +162,7 @@ void SPXRatioStyle::Parse(std::string &s) {
 			throw SPXINIParseException(plotNumber, ratioStyleNumber, "Invalid ratio combination: convolute / convolute is not supported");
 		}
 	}
-	
+
 	if(debug) std::cout << cn << mn << plotNumber << " " << ratioStyleNumber << ": Denominator = " << den << "(" << denominator << ")" << std::endl;
 	if(debug) std::cout << cn << mn << plotNumber << " " << ratioStyleNumber << ": Numerator = " << num << "(" << numerator << ")" << std::endl;
 }
@@ -165,28 +177,28 @@ void SPXRatioStyle::Print(void) {
 // the numerator and denominator bitfields
 std::string SPXRatioStyle::ToString(void) {
 	std::string mn = "ToString: ";
-	
+
 	//Empty style
 	if(this->IsEmpty()) {
 		return "";
 	}
-	
+
 	//Check for validity
 	if(!this->IsValid()) {
 		return "INVALID_RATIO_STYLE";
 	}
-	
+
 	//Build numerator and denominator
 	std::string num;
-	std::string den;	
-	
+	std::string den;
+
 	if(numerator == RS_DATA) {
 		num = "data";
-	} 
+	}
 	else if(numerator == RS_CONVOLUTE) {
 		num = "convolute";
 	}
-	
+
 	if(denominator == RS_DATA) {
 		den = "data";
 	}
@@ -196,47 +208,46 @@ std::string SPXRatioStyle::ToString(void) {
 	else if(denominator == RS_CONVOLUTE) {
 		den = "convolute";
 	}
-	
+
 	return num + " / " + den;
 }
 
 //Determines whether the ratio style is empty or not
 bool SPXRatioStyle::IsEmpty(void) {
 	std::string mn = "IsEmpty: ";
-	
+
 	if(!(numerator | denominator)) {
 		return true;
 	}
-	
+
 	return false;
 }
 
 //Determines the validity of the ratio style
 bool SPXRatioStyle::IsValid(void) {
 	std::string mn = "IsValid: ";
-	
+
 	//Empty numerator and denominator: valid, but empty
 	if(this->IsEmpty()){
 		if(debug) std::cout << cn << mn << "Empty numerator and denominator" << std::endl;
 		return true;
 	}
-	
+
 	//Only one of numerator OR denominator empty
 	if((!!numerator) ^ (!!denominator)) {
 		if(debug) std::cout << cn << mn << "Mismatch: numerator = " << numerator << " denominator = " << denominator << std::endl;
 		return false;
 	}
-	
+
 	if((numerator != RS_DATA) && (numerator != RS_CONVOLUTE)) {
 		if(debug) std::cout << cn << mn << "Numerator is invalid: numerator = " << numerator << std::endl;
 		return false;
 	}
-	
+
 	if((denominator != RS_DATA) && (denominator != RS_REFERENCE) && (denominator != RS_CONVOLUTE)) {
 		if(debug) std::cout << cn << mn << "Denominator is invalid: denominator = " << denominator << std::endl;
 		return false;
 	}
-	
+
 	return true;
 }
-

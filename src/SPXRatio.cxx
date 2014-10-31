@@ -51,6 +51,17 @@ void SPXRatio::Parse(std::string &s) {
 
     if(debug) std::cout << cn << mn << "Parsing ratio string: " << s << std::endl;
 
+    //Check for special cases (data stat and data tot)
+    if(ratioStyle.IsDataStat()) {
+        numeratorDataFile = dataDirectory + "/" + s + "_stat";
+        denominatorDataFile = dataDirectory + "/" + s + "_stat";
+    }
+
+    if(ratioStyle.IsDataTot()) {
+        numeratorDataFile = dataDirectory + "/" + s;
+        denominatorDataFile = dataDirectory + "/" + s;
+    }
+
     //Parse the string into numerator and denominator (delimit with ' / ')
     std::vector<std::string> v = SPXStringUtilities::SplitString(s, " / ");
 
@@ -252,6 +263,14 @@ void SPXRatio::AddConvoluteFileGraphMap(StringPairGraphMap_T &convoluteFileGraph
 
 void SPXRatio::GetGraphs(void) {
     std::string mn = "GetGraphs: ";
+
+    if(ratioStyle.IsDataStat()) {
+        std::string key = numeratorDataFile;
+    }
+
+    if(ratioStyle.IsDataTot()) {
+
+    }
 
     if(ratioStyle.IsDataOverConvolute()) {
         //Create keys

@@ -64,6 +64,14 @@ public:
 		return (int)denominator;
 	}
 
+	bool IsDataStat(void) {
+		return dataStat;
+	}
+
+	bool IsDataTot(void) {
+		return dataTot;
+	}
+
 	bool IsConvoluteOverData(void) {
 		if(NumeratorIsConvolute() && DenominatorIsData()) {
 			return true;
@@ -138,6 +146,9 @@ private:
 	static bool debug;
 	unsigned int numerator;
 	unsigned int denominator;
+
+	bool dataStat;	//Special ratio: Plot data/data with statistical errors
+	bool dataTot:	//Specrial ratio: Plot data/data with total errors
 
 	//Plot number and ratio style number for exception handling
 	std::string plotNumber;

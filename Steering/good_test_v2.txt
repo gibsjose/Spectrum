@@ -84,3 +84,6 @@ ratio_1 = ([grid_good_test.txt, pdf_good_test_2.txt]) / (data_good_test.txt)
 ; ratio_N = data_file.txt
 ; ratio_style_M = data_tot
 ; ratio_M = data_file.txt
+
+; @TODO Example of not adding data errors in a ratio:
+; ratio_style_2 = convolute / !data
