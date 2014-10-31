@@ -26,10 +26,13 @@ const int RS_CONVOLUTE = 	(1 << 2);	//0b00000100
 class SPXRatioStyle {
 
 public:
-	SPXRatioStyle () : numerator(0), denominator(0) {}
+	SPXRatioStyle () : numerator(0), denominator(0), dataStat(false), dataTot(false) {}
 	SPXRatioStyle(unsigned int numerator, unsigned int denominator) {
 		this->numerator = numerator;
 		this->denominator = denominator;
+
+		dataStat = false;
+		dataTot = false;
 	}
 
 	//Constructor with style string, plot number string, and ratio style number string
@@ -44,6 +47,9 @@ public:
 	void Clear(void) {
 		numerator = 0;
 		denominator = 0;
+
+		dataStat = false;
+		dataTot = false;
 	}
 
 	static bool GetDebug(void) {
