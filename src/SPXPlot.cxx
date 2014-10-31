@@ -577,9 +577,12 @@ void SPXPlot::DrawRatio(void) {
 	ratioPad->cd();
 
 	//Plot the Data Stat Errors in the background if requested
+	//@TODO Get rid of PlotDataStatErrors in SF...
+	/*
 	if(steeringFile->GetPlotDataStatErrors()) {
 		DrawDataStatErrors();
 	}
+	*/
 
 	//Stagger ratio convolute points if requested
 	if(steeringFile->GetPlotStaggered() && !steeringFile->GetPlotBand()) {
@@ -607,7 +610,11 @@ void SPXPlot::DrawRatio(void) {
 			SPXGraphUtilities::ClearXErrors(ratios[i].GetRatioGraph());
 		}
 
-		ratios[i].GetRatioGraph()->Draw(ratioOptions.c_str());
+		if(ratios[i].IsDataStat() || ratios[i].IsDataTot()) {
+			ratios[i].GetRatioGraph()->Draw("E2");
+		} else {
+			ratios[i].GetRatioGraph()->Draw(ratioOptions.c_str());
+		}
 	}
 
 	//Draw a line at 1, where ratios are relative to
@@ -616,6 +623,7 @@ void SPXPlot::DrawRatio(void) {
 }
 
 //@TODO Move to SPXRatio: Create DataStatErrors Ratio and DataTotErrors Ratio there
+/*
 void SPXPlot::DrawDataStatErrors(void) {
 	std::string mn = "DrawDataStatErrors: ";
 
@@ -659,6 +667,7 @@ void SPXPlot::DrawDataStatErrors(void) {
 		if(debug) std::cout << cn << mn << "Successfully drew data stat error band for data " << i << " with options " << options << std::endl;
 	}
 }
+*/
 
 void SPXPlot::UpdateCanvas(void) {
 	std::string mn = "UpdateCanvas: ";
