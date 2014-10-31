@@ -165,6 +165,8 @@ public:
 			result->SetPointEYhigh(i, eyh_tot);
 			result->SetPointEYlow(i, eyl_tot);
 		}
+
+		return result;
 	}
 
 	static TGraphAsymmErrors * Divide(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, DivideErrorType dt) {
