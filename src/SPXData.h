@@ -143,6 +143,15 @@ public:
 		return this->systematicErrorGraph;
 	}
 
+	TGraphAsymmErrors * GetTotalErrorGraph(void) {
+
+		if(!this->totalErrorGraph) {
+			throw SPXGraphException("Total Error Graph pointer is NULL: You MUST call ::CreateGraphs() before obtaining the graph");
+		}
+
+		return this->totalErrorGraph;
+	}
+
 private:
 	static bool debug;								//Flag indicating debug mode
 	std::ifstream *dataFile;						//Must declare as pointer... ifstream's copy constructor is private
@@ -161,11 +170,14 @@ private:
 	//Actual data map
 	std::map<std::string, std::vector<double> > data;
 
-	//Graph for plotting statistical error bars
+	//Graph for plotting statistical error ticks
 	TGraphAsymmErrors *statisticalErrorGraph;
 
-	//Graph for plotting systematic error and actual point markers
+	//Graph containing systematic errors
 	TGraphAsymmErrors *systematicErrorGraph;
+
+	//Actual data graph containing total errors
+	TGraphAsymmErrors *totalErrorGraph;
 
 	void ParseSpectrumT1S(void);
 	void ParseSpectrumT1A(void);

@@ -1186,12 +1186,14 @@ void SPXData::CreateGraphs(void) {
 	TString name;
 	TString statName;
 	TString systName;
+	TString totName;
 
 	//Check if name exists
 	if(!pci.dataSteeringFile.GetName().empty()) {
 		name = TString(pci.dataSteeringFile.GetName());
 		statName = name + "_stat";
 		systName = name + "_syst";
+		totName = name + "_tot";
 	}
 
 	//Data steering file has no [DESC]:name
@@ -1202,6 +1204,7 @@ void SPXData::CreateGraphs(void) {
 		name.ReplaceAll(TString(".txt"), TString(""));
 		statName = name + "_stat";
 		systName = name + "_syst";
+		totName = name + "_tot";
 	}
 
 	double exl[numberOfBins];		// = (xm - ((xh + xl) / 2) + ((xh - xl) / 2))
@@ -1269,47 +1272,24 @@ void SPXData::CreateGraphs(void) {
 	//Create systematic error graph
 	systematicErrorGraph = new TGraphAsymmErrors(numberOfBins, x, y, exl, exh, eyl_syst, eyh_syst);
 
+	//Create total error graph
+	totalErrorGraph = SPXGraphUtilities::AddYErrors(statisticalErrorGraph, systematicErrorGraph);
+
 	//Modify names
 	statisticalErrorGraph->SetName(statName);
 	systematicErrorGraph->SetName(systName);
+	totalErrorGraph->SetName(totName);
 
 	if(debug) {
 		std::cout << cn << mn << "Statistical Error Graph created with name: " << statName << std::endl;
 		statisticalErrorGraph->Print();
-		std::cout << std::endl;
+		std::cout << std::endl << std::endl;
 		std::cout << cn << mn << "Systematic Error Graph created with name: " << systName << std::endl;
 		systematicErrorGraph->Print();
+		std::cout << std::endl << std::endl;
+		std::cout << cn << mn << "Total Error Graph created with name: " << totName << std::endl;
+		totalErrorGraph->Print();
+
 		std::cout << std::endl;
 	}
 }
-
-/*
-void SPXData::Draw(void) {
-	std::string mn = "Draw: ";
-
-	//Create the graphs
-	//@TODO User should have to call CreateGraphs and then Draw, this way things aren't calculated everytime draw is called
-	CreateGraphs();
-
-	if(!statisticalErrorGraph) {
-		throw SPXGraphException("Invalid statistical error graph");
-	}
-
-	if(!systematicErrorGraph) {
-		throw SPXGraphException("Invalid systematic error graph");
-	}
-
-	TCanvas *canvas = new TCanvas("canvas", "Test Canvas", 200, 10, 700, 500);
-	canvas->SetFillColor(0);
-	canvas->SetGrid();
-
-	//Draw the frame (xmin, ymin, xmax, ymax)
-	canvas->DrawFrame(0, -10, 3000, 10);
-
-	//Draw
-	systematicErrorGraph->Draw("P");
-	statisticalErrorGraph->Draw("||");
-
-	canvas->Update();
-}
-*/
