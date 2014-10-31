@@ -1240,8 +1240,8 @@ void SPXData::CreateGraphs(void) {
 	std::cout << std::endl;
 
 	//Must initialize beforehand
-	double *eyl_syst = malloc(sizeof(double) * numberOfBins);
-	double *eyh_syst = malloc(sizeof(double) * numberOfBins);
+	double *eyl_syst = (double *) malloc(sizeof(double) * numberOfBins);
+	double *eyh_syst = (double *) malloc(sizeof(double) * numberOfBins);
 /*
 	//Symmetric
 	if(dataFormat.IsSymmetric()) {
