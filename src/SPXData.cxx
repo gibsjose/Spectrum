@@ -1274,8 +1274,8 @@ void SPXData::CreateGraphs(void) {
 		double eylt;
 		double eyht;
 
-		eylt = sqrt(pow(eyl_stat[i], 2.0) + pow(eyl_syst[i], 2.0));
-		eyht = sqrt(pow(eyh_stat[i], 2.0) + pow(eyh_syst[i], 2.0));
+		eylt = sqrt(pow(stat[i], 2.0) + pow(eyl_syst[i], 2.0));
+		eyht = sqrt(pow(stat[i], 2.0) + pow(eyh_syst[i], 2.0));
 		eyl_tot_v.push_back(eylt);
 		eyh_tot_v.push_back(eyht);
 	}
