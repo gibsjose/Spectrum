@@ -1218,12 +1218,6 @@ void SPXData::CreateGraphs(void) {
 		exh[i] = m + n - data["xm"][i];
 	}
 
-	std::cout << "Printing eyh_stat vector directly after initialization" << std::endl;
-
-	for(int i = 0; i < data["stat"].size(); i++) {
-		std::cout << "data[\"stat\"][" << i << "] = " << data["stat"][i] << std::endl;
-	}
-
 	//@TODO MUST IMPLEMENT CORRELATION MATRIX
 
 	//Convert to raw number if errors are given in percent
@@ -1231,26 +1225,26 @@ void SPXData::CreateGraphs(void) {
 		if(debug) std::cout << cn << mn << "Errors were given in percent: Converting to raw numbers" << std::endl;
 
 		for(int i = 0; i < numberOfBins; i++) {
-			std::cout << "data[\"sigma\"][" << i << "] = " << data["sigma"][i] << std::endl;
-			std::cout << "data[\"stat\"][" << i << "] = " << data["stat"][i] << std::endl;
+			if(debug) std::cout << "data[\"sigma\"][" << i << "] = " << data["sigma"][i] << std::endl;
+			if(debug) std::cout << "data[\"stat\"][" << i << "] = " << data["stat"][i] << std::endl;
 
 			//Convert stat errors
 			data["stat"][i] *= data["sigma"][i] / 100;
-			std::cout << "New = data[\"stat\"][" << i << "] * (y[" << i << "] / 100) = " << data["stat"][i] << std::endl;
+			if(debug) std::cout << "New = data[\"stat\"][" << i << "] * (y[" << i << "] / 100) = " << data["stat"][i] << std::endl;
 
 			//Convert syst errors
 			if(dataFormat.IsSymmetric()) {
-				std::cout << "data[\"syst\"][" << i << "] = " << data["syst"][i] << std::endl;
+				if(debug) std::cout << "data[\"syst\"][" << i << "] = " << data["syst"][i] << std::endl;
 				data["syst"][i] *= data["sigma"][i] / 100;
-				std::cout << "New = data[\"syst\"][" << i << "] * (y[" << i << "] / 100) = " << data["syst"][i] << std::endl;
+				if(debug) std::cout << "New = data[\"syst\"][" << i << "] * (y[" << i << "] / 100) = " << data["syst"][i] << std::endl;
 			}
 			else if(dataFormat.IsAsymmetric()) {
-				std::cout << "data[\"syst_p\"][" << i << "] = " << data["syst_p"][i] << std::endl;
-				std::cout << "data[\"syst_n\"][" << i << "] = " << data["syst_n"][i] << std::endl;
+				if(debug) std::cout << "data[\"syst_p\"][" << i << "] = " << data["syst_p"][i] << std::endl;
+				if(debug) std::cout << "data[\"syst_n\"][" << i << "] = " << data["syst_n"][i] << std::endl;
 				data["syst_p"][i] *= data["sigma"][i] / 100;
 				data["syst_n"][i] *= data["sigma"][i] / 100;
-				std::cout << "New = data[\"syst_p\"][" << i << "] * (y[" << i << "] / 100) = " << data["syst_p"][i] << std::endl;
-				std::cout << "New = data[\"syst_n\"][" << i << "] * (y[" << i << "] / 100) = " << data["syst_n"][i] << std::endl;
+				if(debug) std::cout << "New = data[\"syst_p\"][" << i << "] * (y[" << i << "] / 100) = " << data["syst_p"][i] << std::endl;
+				if(debug) std::cout << "New = data[\"syst_n\"][" << i << "] * (y[" << i << "] / 100) = " << data["syst_n"][i] << std::endl;
 			}
 		}
 	}

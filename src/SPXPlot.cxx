@@ -633,22 +633,13 @@ void SPXPlot::DrawDataStatErrors(void) {
 		num = new TGraphAsymmErrors();
 		den = new TGraphAsymmErrors();
 
-		//Copy the data's stat error graph
-		std::cout << "Copying from stat (" << (long long)stat << ") to num (" << (long long)num << ") with size: " << sizeof(*stat) << std::endl;
-		//memcpy(num, stat, sizeof(*stat));
-		//memcpy(den, stat, sizeof(*stat));
-
 		*num = *stat;
 		*den = *stat;
 
-		std::cout << "Stat = " << (long long) stat << std::endl;
-		std::cout << "Num = " << (long long) num << std::endl;
-		std::cout << "Den = " << (long long) den << std::endl;
-
-		std::cout << cn << mn << "Original Numerator" << std::endl;
+		if(debug) std::cout << cn << mn << "Original Numerator" << std::endl;
 		num->Print();
 
-		std::cout << cn << mn << "Original Denominator" << std::endl;
+		if(debug) std::cout << cn << mn << "Original Denominator" << std::endl;
 		den->Print();
 
 		res = SPXGraphUtilities::Divide(num, den, ZeroGraph2Errors);
@@ -657,7 +648,7 @@ void SPXPlot::DrawDataStatErrors(void) {
 		delete num;
 		delete den;
 
-		std::cout << cn << mn << "Result (num/den)" << std::endl;
+		if(debug) std::cout << cn << mn << "Result (num/den)" << std::endl;
 		res->Print();
 
 		//Set to solid, grey band, increasing band color darkness with each plot
@@ -844,8 +835,8 @@ void SPXPlot::NormalizeCrossSections(void) {
 			bool dataDividedByBinWidth = pci->dataSteeringFile.IsDividedByBinWidth();
 			bool gridDividedByBinWidth = pci->gridSteeringFile.IsDividedByBinWidth();
 
-			//@TODO Change back to being initialized as false
-			bool divideByBinWidth = true;
+			//@TODO Change back to being initialized as false?
+			bool divideByBinWidth = false;
 
 			if(dataDividedByBinWidth && !gridDividedByBinWidth) {
 				if(debug) std::cout << cn << mn << "Data IS divided by bin width but the grid IS NOT. Will call Normalize "\
