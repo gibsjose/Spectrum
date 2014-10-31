@@ -630,7 +630,11 @@ void SPXPlot::DrawDataStatErrors(void) {
 
 		TGraphAsymmErrors *stat = data[i].GetStatisticalErrorGraph();
 
+		num = new TGraphAsymmErrors();
+		den = new TGraphAsymmErrors();
+
 		//Copy the data's stat error graph
+		std::cout << "Copying from stat (" << (long long)stat << ") to num (" << (long long)num ") with size: " << sizeof(*stat) << std::endl;
 		memcpy(num, stat, sizeof(*stat));
 		memcpy(den, stat, sizeof(*stat));
 
@@ -649,6 +653,10 @@ void SPXPlot::DrawDataStatErrors(void) {
 		den->Print();
 
 		res = SPXGraphUtilities::Divide(num, den, AddErrors);
+
+		//Delete num and den
+		delete num;
+		delete den;
 
 		std::cout << cn << mn << "Result (num/den)" << std::endl;
 		res->Print();
