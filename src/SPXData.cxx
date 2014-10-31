@@ -1250,10 +1250,10 @@ void SPXData::CreateGraphs(void) {
 		if(debug) std::cout << cn << mn << "Errors were given in percent: Converting to raw numbers" << std::endl;
 
 		for(int i = 0; i < numberOfBins; i++) {
-			eyl_stat[i] *= y[i] / 100.0;
-			eyh_stat[i] *= y[i] / 100.0;
-			eyl_syst[i] *= y[i] / 100.0;
-			eyh_syst[i] *= y[i] / 100.0;
+			eyl_stat[i] *= y[i] * 100.0;
+			eyh_stat[i] *= y[i] * 100.0;
+			eyl_syst[i] *= y[i] * 100.0;
+			eyh_syst[i] *= y[i] * 100.0;
 		}
 	}
 
