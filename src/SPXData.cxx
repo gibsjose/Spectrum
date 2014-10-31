@@ -1214,8 +1214,8 @@ void SPXData::CreateGraphs(void) {
 		m = (data["xhigh"][i] + data["xlow"][i]) / 2;
 		n = (data["xhigh"][i] - data["xlow"][i]) / 2;
 
-		exl[i] = x[i] - m + n;
-		exh[i] = m + n - x[i];
+		exl[i] = data["xm"][i] - m + n;
+		exh[i] = m + n - data["xm"][i];
 	}
 
 	std::cout << "Printing eyh_stat vector directly after initialization" << std::endl;
