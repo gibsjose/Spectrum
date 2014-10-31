@@ -634,7 +634,7 @@ void SPXPlot::DrawDataStatErrors(void) {
 		den = new TGraphAsymmErrors();
 
 		//Copy the data's stat error graph
-		std::cout << "Copying from stat (" << (long long)stat << ") to num (" << (long long)num ") with size: " << sizeof(*stat) << std::endl;
+		std::cout << "Copying from stat (" << (long long)stat << ") to num (" << (long long)num << ") with size: " << sizeof(*stat) << std::endl;
 		memcpy(num, stat, sizeof(*stat));
 		memcpy(den, stat, sizeof(*stat));
 
