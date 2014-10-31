@@ -263,7 +263,11 @@ public:
 	}
 
 	static void SetAllYErrors(TGraphAsymmErrors * g, double err) {
+
+		std::cout << "Graph has " << g->GetN() << " bins" << std::endl;
+
 		for(int i = 0; i < g->GetN(); i++) {
+			std::cout << "Setting point " << i << " Y errors to " << err << std::endl;
 			g->SetPointEYhigh(i, err);
 			g->SetPointEYlow(i, err);
 		}
