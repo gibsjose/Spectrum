@@ -129,6 +129,44 @@ public:
 		return max;
 	}
 
+	static TGraphAsymmErrors * AddYErrors(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2) {
+		//Make sure graphs are valid
+		if((!g1) || (!g2)) {
+			throw SPXGraphException("SPXGraphUtilities::AddYErrors: At least one of the operand graphs is invalid");
+		}
+
+		int n1 = g1->GetN();
+		int n2 = g2->GetN();
+
+		//Make sure the two graphs are the same size
+		if(n1 != n2) {
+			std::ostringstream oss;
+			oss << "SPXGraphUtilities::AddYErrors: Graphs do not contain the same number of bins: G1 N= " << n1 << " G2 N = " << n2;
+			throw SPXGraphException(oss.str());
+		}
+
+		//@TODO Pass result as parameter and return that way! Don't call 'new' in a function
+		TGraphAsymmErrors *result = new TGraphAsymmErrors();
+
+		double x, y;
+
+		Double_t* 	EYhigh1 = g1->GetEYhigh();
+		Double_t* 	EYlow1 =  g1->GetEYlow();
+		Double_t* 	EYhigh2 = g2->GetEYhigh();
+		Double_t* 	EYlow2 =  g2->GetEYlow();
+
+		for(int i = 0; i < n1; i++) {
+			double eyh_tot = 0;
+			double eyl_tot = 0;
+
+			eyh_tot = sqrt(pow(EYhigh1[i], 2.0) + pow(EYhigh2[i], 2.0));
+			eyl_tot = sqrt(pow(EYlow1[i], 2.0) + pow(EYlow2[i], 2.0));
+
+			result->SetPointEYhigh(i, eyh_tot);
+			result->SetPointEYlow(i, eyl_tot);
+		}
+	}
+
 	static TGraphAsymmErrors * Divide(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, DivideErrorType dt) {
 
 		//Make sure graphs are valid
