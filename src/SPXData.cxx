@@ -1230,7 +1230,7 @@ void SPXData::CreateGraphs(void) {
 
 	std::cout << "Printing eyh_stat vector directly after initialization" << std::endl;
 
-	for(int i = 0; i < data["stat"][0].size(); i++) {
+	for(int i = 0; i < data["stat"].size(); i++) {
 		std::cout << "eyh_stat[" << i << "] = " << eyh_stat[i] << std::endl;
 	}
 
