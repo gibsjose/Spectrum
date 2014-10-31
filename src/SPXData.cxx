@@ -1266,9 +1266,6 @@ void SPXData::CreateGraphs(void) {
 		eyl_syst = &data["syst_n"][0];
 	}
 
-	double eyl_tot = malloc(sizeof(double) * numberOfBins);
-	double eyh_tot = malloc(sizeof(double) * numberOfBins);
-
 	std::vector<double> eyl_tot_v;
 	std::vector<double> eyh_tot_v;
 
