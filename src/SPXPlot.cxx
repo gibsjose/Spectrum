@@ -13,6 +13,7 @@
 //************************************************************/
 
 #include <sstream>
+#include <string.h> //memcpy
 
 #include "SPXPlot.h"
 #include "SPXUtilities.h"
@@ -627,29 +628,35 @@ void SPXPlot::DrawDataStatErrors(void) {
 		TGraphAsymmErrors *den;
 		TGraphAsymmErrors *res;
 
-		num = data[i].GetStatisticalErrorGraph();
-		den = data[i].GetStatisticalErrorGraph();
+		TGraphAsymmErrors *stat = data[i].GetStatisticalErrorGraph();
+
+		//Copy the data's stat error graph
+		memcpy(num, stat, sizeof(*stat))
+		memcpy(den, stat, sizeof(*stat));
+
+		std::cout << cn << mn << "Original Numerator" << std::endl;
+		num->Print();
+
+		std::cout << cn << mn << "Original Denominator" << std::endl;
 
 		SPXGraphUtilities::SetAllYErrors(num, 0.2);
 		SPXGraphUtilities::ClearYErrors(den);
 
-		std::cout << cn << mn << "Numerator" << std::endl;
+		std::cout << cn << mn << "Numerator, Y errors set to 0.2" << std::endl;
 		num->Print();
 
-		std::cout << cn << mn << "Denominator" << std::endl;
+		std::cout << cn << mn << "Denominator, Y errors set to 0.0" << std::endl;
 		den->Print();
 
 		res = SPXGraphUtilities::Divide(num, den, AddErrors);
 
-		std::cout << cn << mn << "Result" << std::endl;
+		std::cout << cn << mn << "Result (num/den)" << std::endl;
 		res->Print();
 
 		//Set to solid, grey band, increasing band color darkness with each plot
 		res->SetFillStyle(1001);
 		res->SetFillColor(kGray + i);
 		res->Draw(options.c_str());
-
-		//res->Print();
 
 		if(debug) std::cout << cn << mn << "Successfully drew data stat error band for data " << i << " with options " << options << std::endl;
 	}

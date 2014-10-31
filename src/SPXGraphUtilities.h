@@ -271,6 +271,9 @@ public:
 			g->SetPointEYhigh(i, err);
 			g->SetPointEYlow(i, err);
 		}
+
+		std::cout << "Printing graph" << std::endl;
+		g->Print();
 	}
 
 	static TGraphAsymmErrors * HistogramToGraph(TH1 *h) {
