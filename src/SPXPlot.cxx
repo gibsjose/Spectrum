@@ -631,7 +631,7 @@ void SPXPlot::DrawDataStatErrors(void) {
 		TGraphAsymmErrors *stat = data[i].GetStatisticalErrorGraph();
 
 		//Copy the data's stat error graph
-		memcpy(num, stat, sizeof(*stat))
+		memcpy(num, stat, sizeof(*stat));
 		memcpy(den, stat, sizeof(*stat));
 
 		std::cout << cn << mn << "Original Numerator" << std::endl;
