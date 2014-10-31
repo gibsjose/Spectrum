@@ -1228,6 +1228,8 @@ void SPXData::CreateGraphs(void) {
 	double *eyl_stat = &data["stat"][0];
 	double *eyh_stat = &data["stat"][0];
 
+	//memcpy(eyh_stat, &data["stat"][0], data["stat"].size());
+
 	std::cout << "Printing eyh_stat vector directly after initialization" << std::endl;
 
 	for(int i = 0; i < data["stat"].size(); i++) {
@@ -1239,7 +1241,7 @@ void SPXData::CreateGraphs(void) {
 	//Must initialize beforehand
 	double *eyl_syst;
 	double *eyh_syst;
-
+/*
 	//Symmetric
 	if(dataFormat.IsSymmetric()) {
 		eyl_syst = &data["syst"][0];
@@ -1250,7 +1252,7 @@ void SPXData::CreateGraphs(void) {
 		eyl_syst = &data["syst_n"][0];
 		eyh_syst = &data["syst_p"][0];
 	}
-
+*/
 	//@TODO MUST IMPLEMENT CORRELATION MATRIX
 
 	//Convert to raw number if errors are given in percent
@@ -1258,11 +1260,13 @@ void SPXData::CreateGraphs(void) {
 		if(debug) std::cout << cn << mn << "Errors were given in percent: Converting to raw numbers" << std::endl;
 
 		for(int i = 0; i < numberOfBins; i++) {
-			eyl_stat[i] *= y[i] / 100.0;
+			//eyl_stat[i] *= y[i] / 100.0;
 			std::cout << "y[" << i << "] = " << y[i] << std::endl;
 			std::cout << "eyh_stat[" << i << "] = " << eyh_stat[i] << std::endl;
 			std::cout << "(eyh_stat[" << i << "]  * y[i] / 100 )= " << eyh_stat[i] * (y[i] / 100) << std::endl << std::endl;
 			eyh_stat[i] *= y[i] / 100.0;
+
+
 			eyl_syst[i] *= y[i] / 100.0;
 			eyh_syst[i] *= y[i] / 100.0;
 			std::cout << "(eyh_stat[" << i << "]  / sigma )= " << eyh_stat[i] / y[i] << std::endl << std::endl;
