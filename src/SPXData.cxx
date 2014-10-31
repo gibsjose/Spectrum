@@ -1259,12 +1259,13 @@ void SPXData::CreateGraphs(void) {
 
 		for(int i = 0; i < numberOfBins; i++) {
 			eyl_stat[i] *= y[i] / 100.0;
-			eyh_stat[i] *= y[i] / 100.0;
 			std::cout << "y[" << i << "] = " << y[i] << std::endl;
 			std::cout << "eyh_stat[" << i << "] = " << eyh_stat[i] << std::endl;
 			std::cout << "(eyh_stat[" << i << "]  * y[i] / 100 )= " << eyh_stat[i] * (y[i] / 100) << std::endl << std::endl;
+			eyh_stat[i] *= y[i] / 100.0;
 			eyl_syst[i] *= y[i] / 100.0;
 			eyh_syst[i] *= y[i] / 100.0;
+			std::cout << "(eyh_stat[" << i << "]  / sigma )= " << eyh_stat[i] / y[i] << std::endl << std::endl;
 		}
 	}
 
