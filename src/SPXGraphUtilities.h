@@ -255,6 +255,20 @@ public:
 		}
 	}
 
+	static void SetAllXErrors(TGraphAsymmErrors * g, double err) {
+		for(int i = 0; i < g->GetN(); i++) {
+			g->SetPointEXhigh(i, err);
+			g->SetPointEXlow(i, err);
+		}
+	}
+
+	static void SetAllYErrors(TGraphAsymmErrors * g, double err) {
+		for(int i = 0; i < g->GetN(); i++) {
+			g->SetPointEYhigh(i, err);
+			g->SetPointEYlow(i, err);
+		}
+	}
+
 	static TGraphAsymmErrors * HistogramToGraph(TH1 *h) {
 
 		//Make sure histogram is valid

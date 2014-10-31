@@ -630,6 +630,7 @@ void SPXPlot::DrawDataStatErrors(void) {
 		num = data[i].GetStatisticalErrorGraph();
 		den = data[i].GetStatisticalErrorGraph();
 
+		SPXGraphUtilities::SetAllYErrors(num, 0.2);
 		SPXGraphUtilities::ClearYErrors(den);
 
 		std::cout << cn << mn << "Numerator" << std::endl;
