@@ -643,7 +643,7 @@ void SPXPlot::DrawDataStatErrors(void) {
 
 		std::cout << "Stat = " << (long long) stat << std::endl;
 		std::cout << "Num = " << (long long) num << std::endl;
-		std::Cout << "Den = " << (long long) den << std::endl;
+		std::cout << "Den = " << (long long) den << std::endl;
 
 		std::cout << cn << mn << "Original Numerator" << std::endl;
 		num->Print();
