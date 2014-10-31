@@ -1228,6 +1228,14 @@ void SPXData::CreateGraphs(void) {
 	double *eyl_stat = &data["stat"][0];
 	double *eyh_stat = &data["stat"][0];
 
+	std::cout << "Printing eyh_stat vector directly after initialization" << std::endl;
+
+	for(int i = 0; i < data["stat"][0].size(); i++) {
+		std::cout << "eyh_stat[" << i << "] = " << eyh_stat[i] << std::endl;
+	}
+
+	std::cout << std::endl;
+
 	//Must initialize beforehand
 	double *eyl_syst;
 	double *eyh_syst;
@@ -1249,11 +1257,16 @@ void SPXData::CreateGraphs(void) {
 	if(pci.dataSteeringFile.IsErrorInPercent()) {
 		if(debug) std::cout << cn << mn << "Errors were given in percent: Converting to raw numbers" << std::endl;
 
+		std::cout << "y[" << i << "] = " << y[i] << std::endl;
+		std::cout << "eyh_stat[" << i << "] = " << eyh_stat[i] << std::endl;
+		std::cout << "(eyh_stat[" << i << "]  * y[i] / 100 )= " << eyh_stat[i] * (y[i] / 100) << std::endl << std::endl;
+
 		for(int i = 0; i < numberOfBins; i++) {
-			eyl_stat[i] *= y[i] * 100.0;
-			eyh_stat[i] *= y[i] * 100.0;
-			eyl_syst[i] *= y[i] * 100.0;
-			eyh_syst[i] *= y[i] * 100.0;
+			eyl_stat[i] *= y[i] / 100.0;
+			eyh_stat[i] *= y[i] / 100.0;
+
+			eyl_syst[i] *= y[i] / 100.0;
+			eyh_syst[i] *= y[i] / 100.0;
 		}
 	}
 
