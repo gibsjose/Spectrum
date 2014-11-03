@@ -70,19 +70,19 @@ public:
     }
 
     bool HasConvolute(void) {
-        if(ratioStyle.IsDataOverData()) {
-            return false;
+        if(ratioStyle.IsDataOverConvolute() || ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverReference()) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     bool HasData(void) {
-        if(ratioStyle.IsConvoluteOverReference()) {
-            return false;
+        if(ratioStyle.IsDataOverConvolute() || ratioStyle.IsConvoluteOverData() || ratioStyle.IsDataOverData()) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     bool HasReference(void) {
