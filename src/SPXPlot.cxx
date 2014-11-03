@@ -452,7 +452,8 @@ void SPXPlot::StaggerConvoluteOverlay(void) {
 }
 
 void SPXPlot::StaggerConvoluteRatio(void) {
-
+	std::string mn = "StaggerConvoluteRatio: ";
+	
 	//Change this to alter the fraction of the error range in which the point is staggered
 	const int FRAC_RANGE = 4;
 
