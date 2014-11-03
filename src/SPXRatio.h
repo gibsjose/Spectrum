@@ -93,21 +93,7 @@ public:
         //Grab the plot configuration instance
         SPXPlotConfigurationInstance pci;
 
-        if(ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverReference()) {
-            pci = plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
-            pci.Print();
-        }
-
-        else if(ratioStyle.IsDataOverConvolute()) {
-            pci = plotConfiguration.GetPlotConfigurationInstance(denominatorConvolutePDFFile);
-        }
-
-        //@TODO What if it's Data/Data???
-        else if(ratioStyle.IsDataOverData()) {
-            if(debug) std::cout << "SPXRatio::Divide: Data/Data: Could not get pci" << std::endl;
-        }
-
-        else if(ratioStyle.IsDataStat()) {
+        if(ratioStyle.IsDataStat()) {
             try {
                 ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroGraph2Errors);
                 ratioGraph->SetFillStyle(1001);
@@ -131,6 +117,20 @@ public:
             }
 
             return;
+        }
+
+        if(ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverReference()) {
+            pci = plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
+            pci.Print();
+        }
+
+        else if(ratioStyle.IsDataOverConvolute()) {
+            pci = plotConfiguration.GetPlotConfigurationInstance(denominatorConvolutePDFFile);
+        }
+
+        //@TODO What if it's Data/Data???
+        else if(ratioStyle.IsDataOverData()) {
+            if(debug) std::cout << "SPXRatio::Divide: Data/Data: Could not get pci" << std::endl;
         }
 
         try {
