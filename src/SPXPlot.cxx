@@ -456,15 +456,23 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 	//Change this to alter the fraction of the error range in which the point is staggered
 	const int FRAC_RANGE = 4;
 
-	//Stagger convolutes in ratio
-	for(int i = 0; i < ratios.size(); i++) {
+	//Create local ratios array
+	std::vector<SPXRatio> _ratios = this->ratios;
 
-		//Skip if ratio style is DataStat or DataTot
-		if(ratios[i].IsDataStat() || ratios[i].IsDataTot()) {
-			continue;
+	//Remove all non-convolute ratios from array:
+	// This is important to have the staggering match from the overlay, since the
+	// staggering algorithm is dependent on the total number of ratios, and the ratio index
+	for(int i = 0; i < _ratios.size(); i++) {
+		//Remove if ratio style is DataStat or DataTot
+		if(!_ratios[i].HasConvolute()) {
+			_ratios.erase(_ratios.begin() + i);
 		}
+	}
 
-		TGraphAsymmErrors *graph = ratios[i].GetRatioGraph();
+	//Stagger convolutes in ratio
+	for(int i = 0; i < _ratios.size(); i++) {
+
+		TGraphAsymmErrors *graph = _ratios[i].GetRatioGraph();
 
 		for(int j = 0; j < graph->GetN(); j++) {
 			//Loop over bins
