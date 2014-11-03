@@ -30,6 +30,7 @@ export APPLGRID=${BASEDIR}/applgrid/1.4.56
 export PATH=${FASTJET}/bin:${HOPPET}/bin:${APPLGRID}/bin:${SHERPA}/bin:${ROOTSYS}/bin:${LHAPDFPATH}/bin:${PATH}
 export LD_LIBRARY_PATH=${FASTJET}/lib:${HOPPET}/lib:${APPLGRID}/lib:${SHERPA}/lib:${ROOTSYS}/lib:${LHAPDFPATH}/lib:${LD_LIBRARY_PATH}
 
+export CXX_STD="-std=c++0x"
 export ARCH="-m64"
 export CXXFLAGS=$ARCH
 export F90FLAGS=$ARCH
