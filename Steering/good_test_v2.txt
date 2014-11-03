@@ -42,7 +42,7 @@ grid_directory = Grids
 ;==============================================================
 [GRAPH]
 ; plot_band = true
-; plot_error_ticks = true
+plot_error_ticks = true
 plot_marker = true
 plot_staggered = true
 label_sqrt_s = true
