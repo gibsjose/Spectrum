@@ -779,6 +779,7 @@ void SPXPlot::InitializeCrossSections(void) {
 		}
 
 		crossSectionSet.insert(key);
+		if(debug) std::cout << cn << mn << "Added convolute with key = [" << key.first << ", " << key.second << "] to crossSectionsSet" << std::endl;
 
 		try {
 			SPXPDFSteeringFile &psf = pci.pdfSteeringFile;
@@ -917,7 +918,7 @@ void SPXPlot::InitializeData(void) {
 
 		std::string key = pci.dataSteeringFile.GetFilename();
 
-		if(debug) std::cout << cn << mn << "Checking for prior existence of data with key (filename) = " << key << std::endl;
+		if(debug) std::cout << cn << mn << "Checking for prior existence of data with key = [" << key << "]" << std::endl;
 
 		//Check if data with the same steering file has already been added to the data vector (same data...)
 		// Don't add to vector if it already exists
@@ -930,6 +931,8 @@ void SPXPlot::InitializeData(void) {
 
 		//Add data steering file to data set
 		dataSet.insert(key);
+
+		if(debug) std::cout << cn << mn << "Added data with key = [" << key << "] to dataSet" << std::endl; 
 
 		SPXData dataInstance = SPXData(pci);
 
