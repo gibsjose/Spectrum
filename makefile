@@ -5,7 +5,10 @@
 ###############################################################
 
 CXX = g++
-CXXFLAGS += -g -O3 -std=c++0x
+
+STD = $(shell echo $(CXX_STD))
+
+CXXFLAGS += -g -O3 $(STD)
 
 #ROOT
 ROOTINCS = $(shell root-config --cflags)

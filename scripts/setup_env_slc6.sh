@@ -64,6 +64,7 @@ export LD_LIBRARY_PATH=${FASTJET}/lib:${HOPPET}/lib:${APPLGRID}/lib:${SHERPA}/li
 #
 #
 #
+export CXX_STD="-std=c++0x"
 export ARCH="-m64"
 export CXXFLAGS=$ARCH
 export F90FLAGS=$ARCH
