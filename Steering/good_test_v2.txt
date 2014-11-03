@@ -80,8 +80,8 @@ ratio_0 = ([grid_good_test.txt, pdf_good_test.txt]) / (data_good_test.txt)
 ratio_style_1 = convolute / data
 ratio_1 = ([grid_good_test.txt, pdf_good_test_2.txt]) / (data_good_test.txt)
 
-; ratio_style_N = data_stat
-; ratio_N = data_file.txt
+ratio_style_2 = data_stat
+ratio_2 = data_good_test.txt
 ; ratio_style_M = data_tot
 ; ratio_M = data_file.txt
 
