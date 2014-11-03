@@ -51,41 +51,10 @@ plot_staggered = true											;[Optional] Stagger points horizontally to impro
 label_sqrt_s = true												;[Optional] Specify to show the Sqrt(s) on the legend - [default = false]
 x_legend = 0.9													;[Optional] X(Right)-Position of Legend, based on top right side
 y_legend = 0.9													;[Optional]	Y(Top)-Position of legend, based on top right side
-; ratio_title = 												;[Optional] Force Ratio Section Y-Axis Label to a certain value
-ratio_style = convolute/data									;[REQUIRED] What to plot in the ratio section: Format: [numerator list]/[denominator]	@TODO Why is it 'required' if it has a default? Same for overlay_style. Why isn't display_style required (has no default)?
-																;			Where [numerator list] can be one or more of:
-																;			data, reference, or convolute
-																;			And [denominator] can be ONLY ONE of:
-																;			data, reference, or convolution [default = reference/data]
-overlay_style = convolute, data									;[REQUIRED]	What to plot in the overlay section: Must be at least ONE of:
-																;			data, reference, or convolute. [default = data, reference]
-display_style =	overlay, ratio									;[Optional] What to display: can be either overlay, ratio, or both
 ; y_overlay_min = 												;[Optional] Force Y-Axis minimum for overlay section
 ; y_overlay_max = 												;[Optional] Force Y-Axis maximum for overlay section
 ; y_ratio_min =													;[Optional] Force Y-Axis minimum for ratio section
 ; y_ratio_max = 												;[Optional] Force Y-Axis maximum for ratio section
-
-;==============================================================
-; PDF Options
-;==============================================================
-[PDF]
-
-pdf_steering_files = CT10.txt, HERAPDF15NLO.txt					;[REQUIRED] Required ONLY if 'convolute' is plotted. Lists all
-																;			PDF Steering Files to be plotted with data.
-
-;--------------------------------------------------------------
-; NOTE:
-;
-; The following options will OVERRIDE the corresponding
-; options in ALL the chosen PDF Steering Files above
-;--------------------------------------------------------------
-
-pdf_fill_style = 3005											;[Optional] PDF fill style override
-pdf_fill_color = 600											;[Optional] PDF fill color override
-pdf_marker_style = 20											;[Optional] PDF marker style override
-pdf_band_type = use_alpha_s										;[Optional] PDF band type override: use_alpha_s OR use_error_band
-pdf_error_type = pdf_band										;[Optional] PDF error type override: alpha_s OR pdf_band
-pdf_error_size = one_sigma										;[Optional]	PDF error size override: one_sigma OR 90_percent
 
 ;--------------------------------------------------------------
 ; NOTE:
@@ -94,65 +63,100 @@ pdf_error_size = one_sigma										;[Optional]	PDF error size override: one_sig
 ; To define a new plot, create a section with the format:
 ;		[PLOT_n]	where n starts at 0
 ;
-; If a plot has more than one data file, it MUST also have a
-; corresponding grid file, marker style, and marker color
+; Plot Types:
+;
+;		There are four supported plot types:
+;			data, grid, pdf 		<-- One data source, one grid, one PDF
+;			data[], grid[], pdf		<-- Multiple data sources with (1:1) corresponding grids, one PDF
+;			data, grid, pdf[]		<-- One data source, one grid source, with multiple PDFs
+;			data, grid[], pdf		<-- One data source, multiple grids, one PDF
+;
+;		This means, for example, you CAN NOT define multiple data files AND multiple PDFs
 ;
 ; To give a plot more than one data file, etc., just use a comma
 ; separated list:
 ;
 ;		data_steering_files = file1.txt, file2.txt
 ;		...
-;		marker_style = 20, 21
+;		data_marker_style = 20, 21
 ;		...
 ;
-; Each plot is plotted on it's own ROOT canvas
+; In that example, file1.txt would use the marker style '20',
+; while file2.txt would use '21'
+;
+; Each plot is performed on it's own ROOT canvas
 ;--------------------------------------------------------------
 
 ;==============================================================
-; Plot 0 Options
+; Plot 0 Options : A Simple data, grid, pdf plot
 ;==============================================================
 [PLOT_0]
-
+plot_type = data, grid, pdf 									;[REQUIRED] The plot type
+desc = atlas_mtt_5fb											;[REQUIRED] Description of plot (used as the plot title)
 data_steering_files = atlas2012_5fb_top_mtt_ljet.txt			;[REQUIRED] List of all data steering files
 grid_steering_files = grid--TTbar_mttatlas.txt					;[REQUIRED] List of all grid steering files
-marker_style = 20												;[REQUIRED] List of marker styles
-marker_color = 1												;[REQUIRED] List of marker colors
+pdf_steering_files = CT10.txt									;[REQUIRED] List of all PDF steering files
+data_marker_style = 20											;[REQUIRED] List of data marker styles
+data_marker_color = 1											;[REQUIRED] List of data marker colors
+pdf_fill_style = 3005											;[Optional] List of PDF fill style OVERRIDES
+pdf_fill_color = 600											;[Optional] List of PDF fill color OVERRIDES
+pdf_marker_style = 20											;[Optional] List of PDF marker style OVERRIDES
 ; ref_line_style =												;[Optional] List of reference line styles
 ; ref_line_color = 												;[Optional] List of reference line colors
-; x_scale =														;[Optional] List: Artificially scale each data/grid pair's X-Axis
-; y_scale =														;[Optional] List: Artificially scale each data/grid pair's Y-Axis
+; x_scale =														;[Optional] List: Artificially scale each data plot's X-Axis
+; y_scale =														;[Optional] List: Artificially scale each data plot's Y-Axis
 x_log = true													;[Optional] Plot the X Axis logarithmically
 y_log = true													;[Optional] Plot the Y Axis logarithmically
-desc = atlas_mtt_5fb											;[Optional] Description of plot
+display_style =	overlay, ratio									;[REQUIRED] What to display: overlay and/or ratio
+overlay_style = data, convolute									;[REQUIRED]	What to plot in the overlay section:
+																;			data, reference, and/or convolute
+
+;--------------------------------------------------------------
+; NOTE:
+;
+; [REQUIRED]: If ratio is plotted
+;
+; For each plot (in which display_style includes 'ratio'),
+; you can define any number of ratios below with the format:
+;		ratio_n 	where n starts at 0
+;
+; There are either 3 or 4 supported ratio formats, depending on the
+; plot_type:
+;
+;		(data_file) / (data_file) 				<-- Data / Data 			Supported ONLY for: plot_type = data[], grid[], pdf
+;		(data_file) / ([grid_file, pdf_file])	<-- Data / Convolute: 		Supported for all plot_types
+;		([grid_file, pdf_file]) / (data_file)   <-- Convolute / Data: 		Supported for all plot_types
+;		([grid_file, pdf_file]) / (grid_file)	<-- Convolute / Reference: 	Supported for all plot_types:
+;													NOTE: You MUST use the same grid file for conv. and ref.
+;--------------------------------------------------------------
+
+;For example, this defines a convolute / data ratio, and a convolute / reference ratio,
+; which will both be plotted in the ratio section of the same plot
+ratio_title = "Ratio"
+ratio_0 = ([grid--TTbar_mttatlas.txt, CT10.txt]) / (atlas2012_5fb_top_mttljet.txt)
+ratio_1 = ([grid--TTbar_mttatlas.txt, CT10.txt]) / (grid--TTbar_mttatlas.txt)
 
 ;==============================================================
-; Plot 1 Options
+; Plot 1 Options : Plotting multiple data sets with one PDF
 ;==============================================================
 [PLOT_1]
-data_steering_files = atlas2012_5fb_top_ptt_ljet.txt, some_other_data_file.txt
-grid_steering_files = grid--TTbar_ptatlas.txt, some_other_grid_file.txt
-; x_scale =
-; y_scale =
-marker_style = 20, 21
-marker_color = 1, 2
-; ref_line_style =
-; ref_line_color =
-x_log = false
-y_log = false
+plot_type = data[], grid[], pdf
 desc = atlas_ptt_5fb
-
-;==============================================================
-; Plot 2 Options
-;==============================================================
-[PLOT_2]
-data_steering_files = atlas2012_5fb_top_pttt_ljet.txt
-grid_steering_files = grid--TTbar_ptttatlas5fb.txt
+data_steering_files = atlas2012_5fb_top_ptt_ljet.txt, some_cms_data_file.txt
+grid_steering_files = grid--TTbar_pttatlas.txt, some_cms_grid_file.txt
+pdf_steering_files = CT10.txt
+data_marker_style = 20, 21
+data_marker_color = 1, 2
+pdf_fill_style = 3005
+pdf_fill_color = 600
+pdf_marker_style = 20
 ; x_scale =
-; y_scale =
-marker_style = 20
-marker_color = 1
-; ref_line_style =
-; ref_line_color =
+; y_Scale =
 x_log = false
 y_log = false
-desc = atlas_mtt_5fb
+display_style = overlay, ratio
+overlay_style = data, convolute
+; ratio_title =
+ratio_0 = (atlas2012_5fb_top_ptt_ljet.txt) / (some_cms_data.txt)
+ratio_1 = (atlas2012_5fb_top_ptt_ljet.txt) / ([grid--TTbar_pttatlas.txt, CT10.txt])
+ratio_2 = (some_cms_data.txt) / ([grid--TTbar_pttatlas.txt, CT10.txt])

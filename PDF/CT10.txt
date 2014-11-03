@@ -1,7 +1,7 @@
 ;==============================================================
 ;
 ; Description:		
-;	New PDF Steering File for: 'CT10.txt'
+;	Example PDF Steering File
 ;
 ; Authors:
 ;	Jon Doe
@@ -16,15 +16,17 @@
 ;
 ;==============================================================
 
-;==============================================================
-; NOTE: Make sure you COMMENT OUT (;) ALL UNUSED LINES:
+;--------------------------------------------------------------
+; NOTE: 
+;
+; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
 ;
 ;	"  some_thing = "  <--- BAD
 ;	"; some_thing = "  <--- OKAY
 ;
 ; If you forget to do this, some trailing comments could
 ; be included in the option's value
-;==============================================================
+;--------------------------------------------------------------
 
 ;==============================================================
 ; General Options
@@ -37,9 +39,11 @@ debug = false
 ;==============================================================
 [DESC]
 name = CT10
+name_var = CT10_R04
 type = CT10
 order = NLO
 num_members = 53
+; pdf_set_path = 
 
 ;==============================================================
 ; Style Options
@@ -53,7 +57,18 @@ marker_style = 20
 ; PDF Options
 ;==============================================================
 [PDF]
-band_type = use_error_band
+default_id = 0 	
+default_id_var = 0	
+first_eig = 1	
+last_eig = 0		
+first_quad = 1
+last_quad = 25
+first_max = 1
+last_max = 6
+include_eig = true 
+include_quad = true 
+include_max = false 
+band_type =	use_error_band
 error_type = pdf_band
 error_size = one_sigma
 alpha_s_error_number_up = 7
@@ -62,3 +77,4 @@ alpha_s_pdf_name_up = none
 alpha_s_pdf_name_down = CT10as
 alpha_s_pdf_histogram_name_up = CT10as120_prenorm
 alpha_s_pdf_histogram_name_down = CT10as116_prenorm
+

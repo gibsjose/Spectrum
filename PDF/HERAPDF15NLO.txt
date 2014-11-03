@@ -1,7 +1,7 @@
 ;==============================================================
 ;
-; Description:		
-;	New PDF Steering File for "HERAPDF15NLO.txt"
+; Description:
+;	Example PDF Steering File
 ;
 ; Authors:
 ;	Jon Doe
@@ -16,52 +16,64 @@
 ;
 ;==============================================================
 
-;==============================================================
-; NOTE: Make sure you COMMENT OUT (;) ALL UNUSED LINES:
+;--------------------------------------------------------------
+; NOTE:
+;
+; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
 ;
 ;	"  some_thing = "  <--- BAD
 ;	"; some_thing = "  <--- OKAY
 ;
 ; If you forget to do this, some trailing comments could
 ; be included in the option's value
-;==============================================================
+;--------------------------------------------------------------
 
 ;==============================================================
 ; General Options
 ;==============================================================
 [GEN]
-debug = false						;[Optional] Turn on/off debug statements - [default = false]
+debug = false
 
 ;==============================================================
 ; Description
 ;==============================================================
 [DESC]
-name = HERAPDF15NLO_EIG				;[REQUIRED] PDF Name (may or may not differ from PDF Type)
-type = HERAPDF15NLO					;[REQUIRED] PDF Type - Ex: CT10, MSTW2008nlo, NNPDF23nlo, HERAPDF15NLO, etc. 
-order = NLO							;[Optional] Order for convolution: LO, NLO, NNLO [default = NLO]
-num_members = 33					;[REQUIRED] Number of members of PDF: 53, 41, 101, 33, ...		
+name = HERAPDF15NLO_EIG
+; name_var = HERAPDF15NLO_EIG_R04
+type = HERAPDF15NLO
+order = NLO
+num_members = 33
+; pdf_set_path =
 
 ;==============================================================
 ; Style Options
 ;==============================================================
 [STYLE]
-fill_style = 3004					;[REQUIRED] PDF fill style for printing error bands
-									;			See: http://root.cern.ch/root/html/TAttFill.html#F1
-									;			for more information on what the codes mean
-fill_color = 810					;[REQUIRED]	PDF fill color code
-marker_style = 23					;[REQUIRED] PDF marker style code
+fill_style = 3004
+fill_color = 810
+marker_style = 23
 
 ;==============================================================
 ; PDF Options
 ;==============================================================
 [PDF]
-band_type =	use_alpha_s				;[REQUIRED] PDF band type: use_alpha_s OR use_error_band
-error_type = pdf_band				;[REQUIRED] PDF error type: alpha_s OR pdf_band
-error_size = one_sigma				;[REQUIRED] PDF error size: one_sigma OR 90_percent
-alpha_s_error_number_up = 11		;[REQUIRED] Error number UP
-alpha_s_error_number_down = 9		;[REQUIRED] Error number DOWN
-alpha_s_pdf_name_up =  HERAPDF15NLO_ALPHAS			;[REQUIRED] AlphaS PDF name UP
-alpha_s_pdf_name_down = HERAPDF15NLO_ALPHAS			;[REQUIRED] AlphaS PDF name DOWN
-alpha_s_pdf_histogram_name_up = HERAPDF15NLOasxxx_prenorm		;[REQUIRED] Histogram name UP
-alpha_s_pdf_histogram_name_down = HERAPDF15NLOas1156_prenorm	;[REQUIRED] Histogram name DOWN
-
+default_id = 0
+default_id_var = 0
+first_eig = 1
+last_eig = 20
+first_quad = 1
+last_quad = 8
+first_max = 9
+last_max = 12
+include_eig = true
+include_quad = true
+include_max = true
+band_type =	use_error_band
+error_type = pdf_band
+error_size = one_sigma
+alpha_s_error_number_up = 11
+alpha_s_error_number_down = 9
+alpha_s_pdf_name_up = HERAPDF15NLO_ALPHAS
+alpha_s_pdf_name_down = HERAPDF15NLO_ALPHAS
+alpha_s_pdf_histogram_name_up = HERAPDF15NLOas1156_prenorm
+alpha_s_pdf_histogram_name_down = HERAPDF15NLOasxxx_prenorm

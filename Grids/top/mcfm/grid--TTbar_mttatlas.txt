@@ -1,7 +1,7 @@
 ;==============================================================
 ;
 ; Description:		
-;	New Grid Steering File for: 'top/mcfm/grid--TTbar_mttatlas.txt'
+;	Example of a valid Grid Steering File
 ;
 ; Authors:
 ;	Jon Doe
@@ -16,15 +16,17 @@
 ;
 ;==============================================================
 
-;==============================================================
-; NOTE: Make sure you COMMENT OUT (;) ALL UNUSED LINES:
+;--------------------------------------------------------------
+; NOTE: 
+;
+; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
 ;
 ;	"  some_thing = "  <--- BAD
 ;	"; some_thing = "  <--- OKAY
 ;
 ; If you forget to do this, some trailing comments could
 ; be included in the option's value
-;==============================================================
+;--------------------------------------------------------------
 
 ;==============================================================
 ; General Options
@@ -42,15 +44,15 @@ name = ATLAS_epj_atlas_mtt
 ; Graphing Options
 ;==============================================================
 [GRAPH]
-x_units = TeV
-y_units = pb
+x_units = GeV
+y_units = fb
 divided_by_bin_width = true
 
 ;==============================================================
 ; Grid Options
 ;==============================================================
-[GRID]
-grid_path = MyGrids/top/mcfm/grid-TTbar_mttatlas.root
-; generator_id = 
-ntuple_id = MCFM
-; lowest_order = 
+[GRID]								
+grid_file = Grids/top/mcfm/grid--TTbar_mttatlas.root
+; generator_id = 									
+ntuple_id = MCFM	
+lowest_order = "NNLO"
