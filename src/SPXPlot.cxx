@@ -600,7 +600,10 @@ void SPXPlot::DrawRatio(void) {
 
 		//Set x errors to zero if ratio involves convolute AND is not plot band
 		if(ratios[i].HasConvolute() && !steeringFile->GetPlotBand()) {
+
 			SPXGraphUtilities::ClearXErrors(ratios[i].GetRatioGraph());
+
+			if(debug) std::cout << cn << mn << "Set X errors to zero for ratios[" << i << "]" << std::endl;
 		}
 
 		if(ratios[i].IsDataStat() || ratios[i].IsDataTot()) {
