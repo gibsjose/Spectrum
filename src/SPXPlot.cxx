@@ -453,12 +453,18 @@ void SPXPlot::StaggerConvoluteOverlay(void) {
 
 void SPXPlot::StaggerConvoluteRatio(void) {
 	std::string mn = "StaggerConvoluteRatio: ";
-	
+
 	//Change this to alter the fraction of the error range in which the point is staggered
 	const int FRAC_RANGE = 4;
 
 	//Create local ratios array
 	std::vector<SPXRatio> _ratios = this->ratios;
+
+	std::cout << "_ratios.size() = " << _ratios.size() << std::endl;
+
+	for(int i = 0; i < _ratios.size(); i++) {
+		std::cout cn << mn << "_ratios[" << i << "].GetRatioStyle().ToString() = " _ratios[i].GetRatioStyle().ToString() << std::endl;
+	}
 
 	//Remove all non-convolute ratios from array:
 	// This is important to have the staggering match from the overlay, since the
