@@ -120,6 +120,9 @@ void SPXPlot::ScaleAxes(void) {
 	//Scale Ratio Axes
 	xAxisRatio->SetTitleOffset(xTitleOffset);
 
+	//NOTE: Not sure why I have to do -0.2 to begin with... For some reason at 0.0 (total offset = 0.8 when below is false)
+	// there is an additional offset relative to the overlay title. 0.6 (0.8 + (-0.2)) looks nice, however.
+
 	double distScale = -0.2;		//Add an offset to y ratio title offset if only ratio is plotted
 	if(!ds.ContainsOverlay() && ds.ContainsRatio()) {
 		distScale = 0.5;
