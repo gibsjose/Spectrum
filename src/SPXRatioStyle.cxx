@@ -187,6 +187,14 @@ void SPXRatioStyle::Print(void) {
 std::string SPXRatioStyle::ToString(void) {
 	std::string mn = "ToString: ";
 
+	if(dataStat) {
+		return "data_stat";
+	}
+
+	if(dataTot) {
+		return "data_tot";
+	}
+
 	//Empty style
 	if(this->IsEmpty()) {
 		return "";

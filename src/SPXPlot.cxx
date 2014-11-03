@@ -603,11 +603,22 @@ void SPXPlot::DrawRatio(void) {
 			ratioOptions += "Z";
 		}
 
+		//DEBUG
+		if(i == 0) {
+			std::cout << "Testing qualifier methods for SPXRatioStyle when type is DataStat" << std::endl;
+			std::cout << "\t Numerator: " << ratios[0].GetRatioStyle().GetNumerator() << std::endl;
+			std::cout << "\t Denominator: " << ratios[0].GetRatioStyle().GetDenominator() << std::endl;
+			std::cout << "\t ToString: " << ratios[0].GetRatioStyle().ToString() << std::endl;
+			std::cout << "\t SPXRatio::HasConvolute() ? " << (ratios[0].HasConvolute() ? "YES" : "NO") << std::endl;
+			std::cout << "\t SPXRatio::HasData() ? " << (ratios[0].HasData() ? "YES" : "NO") << std::endl;
+			std::cout << "\t SPXRatio::HasReference() ? " << (ratios[0].HasReference() ? "YES" : "NO") << std::endl;
+			std::cout << "\t SPXRatio::IsDataStat() ? " << (ratios[0].IsDataStat() ? "YES" : "NO") << std::endl;
+			std::cout << "\t SPXRatio::IsDataTot() ? " << (ratios[0].IsDataTot() ? "YES" : "NO") << std::endl;
+			std::cout << std::endl;
+		}
+
 		//Set x errors to zero if ratio involves convolute AND is not plot band
 		if(ratios[i].HasConvolute() && !steeringFile->GetPlotBand()) {
-
-			std::cout << "TEST ratios[" << i << "]: " << std::endl;
-			ratios[i].GetRatioStyle().Print();
 
 			//Never clear X errors for DataStat or DataTot
 			if(!ratios[i].IsDataStat() && !ratios[i].IsDataTot()) {
