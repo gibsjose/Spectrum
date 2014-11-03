@@ -5,9 +5,10 @@
 ###############################################################
 
 CXX = g++
-CXXFLAGS += -g -O3 -std=c++0x
 
-M_TEST = $TEST
+STD = $(shell echo $(CXX_STD))
+
+CXXFLAGS += -g -O3 $(STD)
 
 #ROOT
 ROOTINCS = $(shell root-config --cflags)
@@ -51,7 +52,6 @@ all: $(BIN)
 
 $(BIN): $(SRC) $(HDR)
 	mkdir -p $(BIN_DIR)
-	echo "m_Test = $M_TEST"
 	$(CXX) $(CXXFLAGS) -o $(BIN) $(INC) $(SRC) $(LIB_PATH) $(LIB)
 
 test: $(TST_DIR)/TestSPXRatioStyle $(TST_DIR)/TestSPXDisplayStyle $(TST_DIR)/TestSPXOverlayStyle
