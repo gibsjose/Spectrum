@@ -903,13 +903,29 @@ void SPXPlot::InitializeData(void) {
 	for(int i = 0; i < steeringFile->GetNumberOfConfigurationInstances(id); i++) {
 		SPXPlotConfigurationInstance &pci = steeringFile->GetPlotConfigurationInstance(id, i);
 
+		std::string key = pci.dataSteeringFile.GetFilename();
+
+		if(debug) std::cout << cn << mn << "Checking for prior existence of data with key (filename) = " << key << std::endl;
+
 		//Check if data with the same steering file has already been added to the data vector (same data...)
 		// Don't add to vector if it already exists
-		if(dataFileGraphMap.count(pci.dataSteeringFile.GetFilename()) != 0) {
+		if(dataFileGraphMap.count(key) != 0) {
 			if(debug) std::cout << cn << mn << "Data with filename \"" << pci.dataSteeringFile.GetFilename() << \
 				"\" has already been processed: Will not process duplicate" << std::endl;
 
 			continue;
+		}
+
+		//Add total error graph and stat error graph to dataFileGraphMap
+		dataFileGraphMap.insert(StringGraphPair_T(key, totGraph));
+		dataFileGraphMap.insert(StringGraphPair_T(key + "_stat", statGraph));
+
+		if(dataFileGraphMap.count(key)) {
+			if(debug) {
+				std::cout << cn << mn << "Added data to map: [" << key << "]" << std::endl;
+			}
+		} else {
+			std::cerr << "---> Warning: Unable to add data to map: [" << key << "]" << std::endl;
 		}
 
 		SPXData dataInstance = SPXData(pci);
@@ -971,17 +987,5 @@ void SPXPlot::InitializeData(void) {
 		statGraph->SetLineWidth(1);
 		systGraph->SetLineWidth(1);
 		totGraph->SetLineWidth(1);
-
-		//Add total error graph and stat error graph to dataFileGraphMap
-		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename(), totGraph));
-		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename() + "_stat", statGraph));
-
-		if(dataFileGraphMap.count(pci.dataSteeringFile.GetFilename())) {
-			if(debug) {
-				std::cout << cn << mn << "Added data to map: [" << pci.dataSteeringFile.GetFilename() << "]" << std::endl;
-			}
-		} else {
-			std::cerr << "---> Warning: Unable to add data to map: [" << pci.dataSteeringFile.GetFilename() << "]" << std::endl;
-		}
 	}
 }
