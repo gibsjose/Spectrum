@@ -57,6 +57,10 @@ public:
         return denominatorBlob;
     }
 
+    SPXRatioStyle & GetRatioStyle(void) {
+        return ratioStyle;
+    }
+
     bool IsDataStat(void) {
         return ratioStyle.IsDataStat();
     }
