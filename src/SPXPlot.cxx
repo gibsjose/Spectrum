@@ -120,7 +120,7 @@ void SPXPlot::ScaleAxes(void) {
 	//Scale Ratio Axes
 	xAxisRatio->SetTitleOffset(xTitleOffset);
 
-	double distScale = 0.0;		//Add an offset to y ratio title offset if only ratio is plotted
+	double distScale = 1.0;		//Add an offset to y ratio title offset if only ratio is plotted
 	if(!ds.ContainsOverlay() && ds.ContainsRatio()) {
 		distScale = 0.5;
 	}
@@ -932,7 +932,7 @@ void SPXPlot::InitializeData(void) {
 		//Add data steering file to data set
 		dataSet.insert(key);
 
-		if(debug) std::cout << cn << mn << "Added data with key = [" << key << "] to dataSet" << std::endl; 
+		if(debug) std::cout << cn << mn << "Added data with key = [" << key << "] to dataSet" << std::endl;
 
 		SPXData dataInstance = SPXData(pci);
 
