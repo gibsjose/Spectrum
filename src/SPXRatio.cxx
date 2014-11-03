@@ -55,11 +55,15 @@ void SPXRatio::Parse(std::string &s) {
     if(ratioStyle.IsDataStat()) {
         numeratorDataFile = dataDirectory + "/" + s + "_stat";
         denominatorDataFile = dataDirectory + "/" + s + "_stat";
+        if(debug) std::cout << cn << mn << "Successfully parsed data stat ratio with data file: " << numeratorDataFile << std::endl;
+        return;
     }
 
     if(ratioStyle.IsDataTot()) {
         numeratorDataFile = dataDirectory + "/" + s;
         denominatorDataFile = dataDirectory + "/" + s;
+        if(debug) std::cout << cn << mn << "Successfully parsed data tot ratio with data file: " << numeratorDataFile << std::endl;
+        return;
     }
 
     //Parse the string into numerator and denominator (delimit with ' / ')
