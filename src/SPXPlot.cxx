@@ -605,10 +605,20 @@ void SPXPlot::DrawRatio(void) {
 
 		if(ratios[i].IsDataStat() || ratios[i].IsDataTot()) {
 			ratios[i].GetRatioGraph()->Draw("E2");
-			if(debug) std::cout << cn << mn << "Successfully drew ratios[" << i << "] with options: " << "E2" << std::endl;
+			if(debug) {
+				std::cout << cn << mn << "Successfully drew ratios[" << i << "] with options: " << "E2" << std::endl;
+				std::cout << cn << mn << "Printing ratios[" << i << "]" << std::Endl;
+				ratios[i].GetRatioGraph()->Print();
+				std::cout << std::endl;
+			}
 		} else {
 			ratios[i].GetRatioGraph()->Draw(ratioOptions.c_str());
-			if(debug) std::cout << cn << mn << "Successfully drew ratios[" << i << "] with options: " << ratioOptions << std::endl;
+			if(debug) {
+				std::cout << cn << mn << "Successfully drew ratios[" << i << "] with options: " << ratioOptions << std::endl;
+				std::cout << cn << mn << "Printing ratios[" << i << "]" << std::Endl;
+				ratios[i].GetRatioGraph()->Print();
+				std::cout << std::endl;
+			}
 		}
 	}
 
