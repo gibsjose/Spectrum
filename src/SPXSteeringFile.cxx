@@ -79,17 +79,33 @@ void SPXSteeringFile::ParseAll(bool print) {
 	try {
 		this->Parse();
 		if(print) this->Print();
+	} catch(const SPXException &e) {
+		std::cerr << e.what() << std::endl;
+		throw SPXParseException("Error parsing Steering File");
+	}
 
+	try {
 		this->ParsePDFSteeringFiles();
 		if(print) this->PrintPDFSteeringFiles();
+	} catch(const SPXException &e) {
+		std::cerr << e.what() << std::endl;
+		throw SPXParseException("Error parsing PDF Steering Files");
+	}
 
+	try {
 		this->ParseDataSteeringFiles();
 		if(print) this->PrintDataSteeringFiles();
+	} catch(const SPXException &e) {
+		std::cerr << e.what() << std::endl;
+		throw SPXParseException("Error parsing Data Steering Files");
+	}
 
+	try {
 		this->ParseGridSteeringFiles();
 		if(print) this->PrintGridSteeringFiles();
 	} catch(const SPXException &e) {
-		throw;
+		std::cerr << e.what() << std::endl;
+		throw SPXParseException("Error parsing Grid Steering Files");
 	}
 }
 
