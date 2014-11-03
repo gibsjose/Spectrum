@@ -640,8 +640,7 @@ void SPXPlot::DrawRatio(void) {
 
 			//Incrementally darken the data_stat/data_tot graphs based on their order for increased visibility
 			{
-				statTotRatios++;
-				ratios[i].GetRatioGraph()->SetFillColor(ratios[i].GetRatioGraph->GetFillColor() + (statRatios + totRatios));
+				ratios[i].GetRatioGraph()->SetFillColor(ratios[i].GetRatioGraph()->GetFillColor() + (statRatios + totRatios));
 			}
 
 			ratios[i].GetRatioGraph()->Draw("E2");
