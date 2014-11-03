@@ -587,6 +587,11 @@ void SPXPlot::DrawRatio(void) {
 		StaggerConvoluteRatio();
 	}
 
+	//Counters for number of stat/tot ratios: Used for darkening stat/tot ratios and also
+	// for sanity checking (data/stat graphs covering up other ratios)
+	unsigned int statRatios = 0;
+	unsigned int totRatios = 0;
+
 	for(int i = 0; i < pc.GetNumberOfRatios(); i++) {
 
 		std::string ratioOptions;
@@ -613,7 +618,32 @@ void SPXPlot::DrawRatio(void) {
 			}
 		}
 
+		if(ratios[i].IsDataStat()) {
+			statRatios++;
+
+			//Warn if not the first graph AND first graph is not data_tot: Will possibly cover up points
+			if((i != 0) && !ratios[0].IsDataTot()) {
+				std::cerr << cn << mn << "WARNING: Data Stat band could possibly hide other bands/points plotted underneath it: Move data_stat to ratio_0?" << std::endl;
+			}
+		}
+
+		if(ratios[i].IsDataTot()) {
+			totRatios++;
+
+			//Warn if not the first graph: Will possibly cover up points
+			if(i != 0) {
+				std::cerr << cn << mn << "WARNING: Data Tot band could possibly hide other bands/points plotted underneath it: Move data_to to ratio_0?" << std::endl;
+			}
+		}
+
 		if(ratios[i].IsDataStat() || ratios[i].IsDataTot()) {
+
+			//Incrementally darken the data_stat/data_tot graphs based on their order for increased visibility
+			{
+				statTotRatios++;
+				ratios[i].GetRatioGraph()->SetFillColor(ratios[i].GetRatioGraph->GetFillColor() + (statRatios + totRatios));
+			}
+
 			ratios[i].GetRatioGraph()->Draw("E2");
 			if(debug) {
 				std::cout << cn << mn << "Successfully drew ratios[" << i << "] with options: " << "E2" << std::endl;
