@@ -458,22 +458,18 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 	const int FRAC_RANGE = 4;
 
 	//Create local ratios array
-	std::vector<SPXRatio> _ratios = this->ratios;
-
-	std::cout << "_ratios.size() = " << _ratios.size() << std::endl;
-
-	for(int i = 0; i < _ratios.size(); i++) {
-		std::cout << cn << mn << "_ratios[" << i << "].GetRatioStyle().ToString() = " << _ratios[i].GetRatioStyle().ToString() << std::endl;
-	}
+	std::vector<SPXRatio> _ratios;
 
 	//Remove all non-convolute ratios from array:
 	// This is important to have the staggering match from the overlay, since the
 	// staggering algorithm is dependent on the total number of ratios, and the ratio index
-	for(int i = 0; i < _ratios.size(); i++) {
+	for(int i = 0; i < ratios.size(); i++) {
 		//Remove if ratio style is not a convolute ratio
-		if(!_ratios[i].HasConvolute()) {
-			if(debug) std::cout << cn << mn << "Erasing ratio at index " << i << " which has style: " << _ratios[i].ToString() << std::endl;
-			_ratios.erase(_ratios.begin() + i);
+		if(!ratios[i].HasConvolute()) {
+			if(debug) std::cout << cn << mn << "Not staggering ratio at index " << i << ": " << _ratios[i].GetRatioStyle().ToString() << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "Staggering ratio at index " << i << ": " << _ratios[i].GetRatioStyle().ToString() << std::endl;
+			_ratios.push_back(ratios[i]);
 		}
 	}
 
