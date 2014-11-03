@@ -120,11 +120,15 @@ void SPXPlot::ScaleAxes(void) {
 	//Scale Ratio Axes
 	xAxisRatio->SetTitleOffset(xTitleOffset);
 
-	double distScale = 1.0;		//Add an offset to y ratio title offset if only ratio is plotted
+	double distScale = 0.0;		//Add an offset to y ratio title offset if only ratio is plotted
 	if(!ds.ContainsOverlay() && ds.ContainsRatio()) {
 		distScale = 0.5;
 	}
+
 	yAxisRatio->SetTitleOffset(yTitleOffset + distScale);
+
+	if(debug) std::cout << cn << mn << "Set Y Axis Overlay Title Offset to " << yTitleOffset << std::endl;
+	if(debug) std::cout << cn << mn << "Set Y Axis Ratio Title Offset to " << yTitleOffset + distScale << std::endl;
 
 	double rScale = 1.0;
 	if(ds.ContainsOverlay()) {
