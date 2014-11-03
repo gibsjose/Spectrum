@@ -268,12 +268,26 @@ void SPXRatio::AddConvoluteFileGraphMap(StringPairGraphMap_T &convoluteFileGraph
 void SPXRatio::GetGraphs(void) {
     std::string mn = "GetGraphs: ";
 
-    if(ratioStyle.IsDataStat()) {
+    if(ratioStyle.IsDataStat() || ratioStyle.IsDataTot()) {
         std::string key = numeratorDataFile;
-    }
+        if(debug) std::cout << cn << mn << "Key = [" << key << "]" << std::endl;
 
-    if(ratioStyle.IsDataTot()) {
+        //Check for existence of data key
+        if(dataFileGraphMap->count(key) == 0) {
+            std::ostringstream oss;
+            oss << "dataFileGraphMap[" << key << "] was not found: Invalid key";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
 
+        numeratorGraph = (*dataFileGraphMap)[key];
+        denominatorGraph = (*dataFileGraphMap)[key];
+
+        //Make sure graphs are valid
+        if(!numeratorGraph || !denominatorGraph) {
+            std::ostringstream oss;
+            oss << "TGraph pointer at dataFileGraphMap[" << key << "] is NULL";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
     }
 
     if(ratioStyle.IsDataOverConvolute()) {
