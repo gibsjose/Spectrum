@@ -466,9 +466,9 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 	for(int i = 0; i < ratios.size(); i++) {
 		//Remove if ratio style is not a convolute ratio
 		if(!ratios[i].HasConvolute()) {
-			if(debug) std::cout << cn << mn << "Not staggering ratio at index " << i << ": " << _ratios[i].GetRatioStyle().ToString() << std::endl;
+			if(debug) std::cout << cn << mn << "Not staggering ratio at index " << i << ": " << ratios[i].GetRatioStyle().ToString() << std::endl;
 		} else {
-			if(debug) std::cout << cn << mn << "Staggering ratio at index " << i << ": " << _ratios[i].GetRatioStyle().ToString() << std::endl;
+			if(debug) std::cout << cn << mn << "Staggering ratio at index " << i << ": " << ratios[i].GetRatioStyle().ToString() << std::endl;
 			_ratios.push_back(ratios[i]);
 		}
 	}
