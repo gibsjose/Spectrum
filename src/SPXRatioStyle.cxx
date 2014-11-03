@@ -60,10 +60,14 @@ void SPXRatioStyle::Parse(std::string &s) {
 
 	if(!s.compare("data_stat")) {
 		dataStat = true;
+		if(debug) std::cout << cn << mn << "Ratio Style set to \"data_stat\"" << std::endl;
+		return;
 	}
 
 	if(!s.compare("data_tot")) {
 		dataTot = true;
+		if(debug) std::cout << cn << mn << "Ratio Style set to \"data_tot\"" << std::endl;
+		return;
 	}
 
 	std::string den;
