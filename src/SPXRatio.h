@@ -98,6 +98,9 @@ public:
                 ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroGraph2Errors);
                 ratioGraph->SetFillStyle(1001);
                 ratioGraph->SetFillColor(kGray); //@TODO How to determine colors???
+                if(debug) std::cout << "SPXRatio::Divide: Successfully divided data stat graph with options: " << std::endl;
+                if(debug) std::cout << "\t Fill Style = " << 1001 << std::endl;
+                if(debug) std::cout << "\t Fill Color = " << kGray << std::endl;
             } catch(const SPXException &e) {
                 std::cerr << e.what() << std::endl;
                 throw SPXGraphException("SPXRatio::Divide: Unable to divide data stat graphs");
@@ -111,6 +114,9 @@ public:
                 ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroGraph2Errors);
                 ratioGraph->SetFillStyle(1001);
                 ratioGraph->SetFillColor(kGray); //@TODO How to determine colors???
+                if(debug) std::cout << "SPXRatio::Divide: Successfully divided data tot graph with options: " << std::endl;
+                if(debug) std::cout << "\t Fill Style = " << 1001 << std::endl;
+                if(debug) std::cout << "\t Fill Color = " << kGray << std::endl;
             } catch(const SPXException &e) {
                 std::cerr << e.what() << std::endl;
                 throw SPXGraphException("SPXRatio::Divide: Unable to divide data tot graphs");
