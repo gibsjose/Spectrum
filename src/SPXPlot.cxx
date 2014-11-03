@@ -459,6 +459,11 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 	//Stagger convolutes in ratio
 	for(int i = 0; i < ratios.size(); i++) {
 
+		//Skip if ratio style is DataStat or DataTot
+		if(ratios[i].IsDataStat() || ratios[i].IsDataTot()) {
+			continue;
+		}
+
 		TGraphAsymmErrors *graph = ratios[i].GetRatioGraph();
 
 		for(int j = 0; j < graph->GetN(); j++) {
