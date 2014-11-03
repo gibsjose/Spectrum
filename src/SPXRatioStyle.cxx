@@ -52,6 +52,9 @@ SPXRatioStyle::SPXRatioStyle(std::string &s, unsigned int pn, unsigned int rsn) 
 void SPXRatioStyle::Parse(std::string &s) {
 	std::string mn = "Parse: ";
 
+	//Clear the numerator/denominator and dataStat/Tot flags each time it is parsed
+	this->Clear();
+
 	if(debug) std::cout << cn << mn << "Parsing configuration string: " << s << std::endl;
 
 	//Look for special ratio styles:
@@ -77,9 +80,6 @@ void SPXRatioStyle::Parse(std::string &s) {
 
 	std::string den;
 	std::string num;
-
-	//Clear the numerator/denominator each time it is parsed
-	this->Clear();
 
 	//Parse the string into numerator and denominator (delimit with '/')
 	std::vector<std::string> v = SPXStringUtilities::ParseString(s, '/');
