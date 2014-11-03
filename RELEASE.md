@@ -10,7 +10,8 @@
 * Implemented 'data_stat' and 'data_tot' ratio styles
 * Fixed ratio Y axis title offset
 
-## In Progress
+## In Progress (v1.1)
 * Legends (overlay/ratio)
 * Implement zeroing ratio num/den errors with '!' option in ratio_style_n
 * Create Steering File Generator program
+* Clarify/fix optional vs. required steering file options
