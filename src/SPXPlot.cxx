@@ -463,8 +463,9 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 	// This is important to have the staggering match from the overlay, since the
 	// staggering algorithm is dependent on the total number of ratios, and the ratio index
 	for(int i = 0; i < _ratios.size(); i++) {
-		//Remove if ratio style is DataStat or DataTot
+		//Remove if ratio style is not a convolute ratio
 		if(!_ratios[i].HasConvolute()) {
+			if(debug) std::cout << cn << mn << "Erasing ratio at index " << i << " which has style: " << _ratios[i].ToString() << std::endl;
 			_ratios.erase(_ratios.begin() + i);
 		}
 	}
