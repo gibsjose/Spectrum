@@ -577,14 +577,6 @@ void SPXPlot::DrawRatio(void) {
 	//Change to the ratio pad
 	ratioPad->cd();
 
-	//Plot the Data Stat Errors in the background if requested
-	//@TODO Get rid of PlotDataStatErrors in SF...
-	/*
-	if(steeringFile->GetPlotDataStatErrors()) {
-		DrawDataStatErrors();
-	}
-	*/
-
 	//Stagger ratio convolute points if requested
 	if(steeringFile->GetPlotStaggered() && !steeringFile->GetPlotBand()) {
 		StaggerConvoluteRatio();
@@ -613,8 +605,10 @@ void SPXPlot::DrawRatio(void) {
 
 		if(ratios[i].IsDataStat() || ratios[i].IsDataTot()) {
 			ratios[i].GetRatioGraph()->Draw("E2");
+			if(debug) std::cout << cn << mn << "Successfully drew ratios[" << i << "] with options: " << "E2" << std::endl;
 		} else {
 			ratios[i].GetRatioGraph()->Draw(ratioOptions.c_str());
+			if(debug) std::cout << cn << mn << "Successfully drew ratios[" << i << "] with options: " << ratioOptions << std::endl;
 		}
 	}
 
