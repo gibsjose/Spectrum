@@ -463,7 +463,7 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 	std::cout << "_ratios.size() = " << _ratios.size() << std::endl;
 
 	for(int i = 0; i < _ratios.size(); i++) {
-		std::cout cn << mn << "_ratios[" << i << "].GetRatioStyle().ToString() = " _ratios[i].GetRatioStyle().ToString() << std::endl;
+		std::cout << cn << mn << "_ratios[" << i << "].GetRatioStyle().ToString() = " _ratios[i].GetRatioStyle().ToString() << std::endl;
 	}
 
 	//Remove all non-convolute ratios from array:
