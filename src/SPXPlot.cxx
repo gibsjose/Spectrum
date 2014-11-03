@@ -13,7 +13,7 @@
 //************************************************************/
 
 
-#include <sstream>
+#include <sstrea m>
 #include <string.h> //memcpy
 
 #include "SPXPlot.h"
