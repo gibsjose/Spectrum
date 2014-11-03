@@ -99,7 +99,7 @@ private:
 	// different plot configuration instances could share a data/cross section, and we
 	// don't need to plot the same one multiple times
 	std::set<std::string> dataSet;
-	std::set<std::string> crossSectionSet;
+	std::set<StringPair_T> crossSectionSet;
 
 	//ROOT Components
 	TCanvas *canvas;
