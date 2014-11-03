@@ -61,7 +61,6 @@ private:
 	bool plotErrorTicks;			//Flag to indicate that tick marks should be used at the end of error bars
 	bool plotMarker;				//Flag to indicate that data point markers should be plotted
 	bool plotStaggered;				//Flag to indicate that points should be staggered horizontally for readability
-	bool plotDataStatErrors;		//Flag to indicate the the data's statistical errors should be plotted about y = 1 in the ratio section
 	bool labelSqrtS;				//Flag to indicate that the Sqrt(s) value should be shown in the legend
 	double xLegend;					//X Position of the legend, based on top-right corner
 	double yLegend;					//Y Position of the legend, based on top-right corner
@@ -138,10 +137,6 @@ public:
 
 	bool GetPlotStaggered(void) const {
 		return this->plotStaggered;
-	}
-
-	bool GetPlotDataStatErrors(void) const {
-		return this->plotDataStatErrors;
 	}
 
 	bool GetLabelSqrtS(void) const {

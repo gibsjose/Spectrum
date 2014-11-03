@@ -638,53 +638,6 @@ void SPXPlot::DrawRatio(void) {
 	referenceLine->Draw();
 }
 
-//@TODO Move to SPXRatio: Create DataStatErrors Ratio and DataTotErrors Ratio there
-/*
-void SPXPlot::DrawDataStatErrors(void) {
-	std::string mn = "DrawDataStatErrors: ";
-
-	ratioPad->cd();
-
-	std::string options = "E2";
-
-	for(int i = 0; i < data.size(); i++) {
-		TGraphAsymmErrors *num;
-		TGraphAsymmErrors *den;
-		TGraphAsymmErrors *res;
-
-		TGraphAsymmErrors *stat = data[i].GetStatisticalErrorGraph();
-
-		num = new TGraphAsymmErrors();
-		den = new TGraphAsymmErrors();
-
-		*num = *stat;
-		*den = *stat;
-
-		if(debug) std::cout << cn << mn << "Original Numerator" << std::endl;
-		num->Print();
-
-		if(debug) std::cout << cn << mn << "Original Denominator" << std::endl;
-		den->Print();
-
-		res = SPXGraphUtilities::Divide(num, den, ZeroGraph2Errors);
-
-		//Delete num and den
-		delete num;
-		delete den;
-
-		if(debug) std::cout << cn << mn << "Result (num/den)" << std::endl;
-		res->Print();
-
-		//Set to solid, grey band, increasing band color darkness with each plot
-		res->SetFillStyle(1001);
-		res->SetFillColor(kGray + i);
-		res->Draw(options.c_str());
-
-		if(debug) std::cout << cn << mn << "Successfully drew data stat error band for data " << i << " with options " << options << std::endl;
-	}
-}
-*/
-
 void SPXPlot::UpdateCanvas(void) {
 	std::string mn = "UpdateCanvas: ";
 

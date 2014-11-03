@@ -45,9 +45,6 @@ void SPXSteeringFile::SetDefaults(void) {
 	plotStaggered = false;
 	if(debug) std::cout << cn << mn << "plotStaggered set to default: \"false\"" << std::endl;
 
-	plotDataStatErrors = false;
-	if(debug) std::cout << cn << mn << "plotDataStatErrors set to default: \"false\"" << std::endl;
-
 	labelSqrtS = false;
 	if(debug) std::cout << cn << mn << "labelSqrtS set to default: \"false\"" << std::endl;
 
@@ -109,7 +106,6 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Plot Error Ticks is: " << (plotErrorTicks ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Marker is: " << (plotMarker ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Staggered is: " << (plotStaggered ? "ON" : "OFF") << std::endl;
-	std::cout << "\t\t Plot Data Stat Errors is: " << (plotDataStatErrors ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Label Sqrt(s) on Leggend: " << (labelSqrtS ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t X Legend: " << xLegend << std::endl;
 	std::cout << "\t\t Y Legend: " << yLegend << std::endl;
@@ -687,7 +683,6 @@ void SPXSteeringFile::Parse(void) {
 	plotErrorTicks = reader->GetBoolean("GRAPH", "plot_error_ticks", plotErrorTicks);
 	plotMarker = reader->GetBoolean("GRAPH", "plot_marker", plotMarker);
 	plotStaggered = reader->GetBoolean("GRAPH", "plot_staggered", plotStaggered);
-	plotDataStatErrors = reader->GetBoolean("GRAPH", "plot_data_stat_errors", plotDataStatErrors);
 	labelSqrtS = reader->GetBoolean("GRAPH", "label_sqrt_s", labelSqrtS);
 	xLegend = reader->GetReal("GRAPH", "x_legend", xLegend);
 	yLegend = reader->GetReal("GRAPH", "y_legend", xLegend);
