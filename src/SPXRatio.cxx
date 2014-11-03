@@ -288,6 +288,16 @@ void SPXRatio::GetGraphs(void) {
             oss << "TGraph pointer at dataFileGraphMap[" << key << "] is NULL";
             throw SPXGraphException(cn + mn + oss.str());
         }
+
+        if(debug) {
+            std::cout << cn << mn << "Printing graphs: " << std::endl;
+            std::cout << "\t Numerator: " << std::endl;
+            numeratorGraph->Print();
+            std::cout << std::endl;
+            std::cout << "\t Denominator: " << std::endl;
+            denominatorGraph->Print();
+            std::cout << std::endl;
+        }
     }
 
     if(ratioStyle.IsDataOverConvolute()) {
