@@ -758,12 +758,11 @@ void SPXPlot::InitializeRatios(void) {
 void SPXPlot::InitializeCrossSections(void) {
 	std::string mn = "InitializeCrossSections: ";
 
+	std::vector<SPXPlotConfigurationInstance> pcis;
+
 	//Create cross sections for each configuration instance
 	for(int i = 0; i < steeringFile->GetNumberOfConfigurationInstances(id); i++) {
 		SPXPlotConfigurationInstance &pci = steeringFile->GetPlotConfigurationInstance(id, i);
-		SPXPDFSteeringFile &psf = pci.pdfSteeringFile;
-
-		SPXCrossSection crossSectionInstance = SPXCrossSection(&psf, &pci);
 
 		//Don't add the cross section to the cross section vector if there is already a cross section with
 		// the same exact grid and pdf file...
@@ -782,6 +781,9 @@ void SPXPlot::InitializeCrossSections(void) {
 		crossSectionSet.insert(key);
 
 		try {
+			SPXPDFSteeringFile &psf = pci.pdfSteeringFile;
+			SPXCrossSection crossSectionInstance = SPXCrossSection(&psf, &pci);
+			pcis.push_back(pci);
 			crossSectionInstance.Create();
 			crossSections.push_back(crossSectionInstance);
 		} catch(const SPXException &e) {
@@ -790,7 +792,10 @@ void SPXPlot::InitializeCrossSections(void) {
 	}
 
 	for(int i = 0; i < crossSections.size(); i++) {
+		SPXPlotConfigurationInstance &pci = pcis[i];
+
 		//Update the Convolute File Map
+		StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
 		TGraphAsymmErrors *graph = crossSections[i].GetPDFBandResults();
 		convoluteFileGraphMap.insert(StringPairGraphPair_T(convolutePair, graph));
 
@@ -990,7 +995,7 @@ void SPXPlot::InitializeData(void) {
 		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename(), totGraph));
 		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename() + "_stat", statGraph));
 
-		if(dataFileGraphMap.count(key)) {
+		if(dataFileGraphMap.count(pci.dataSteeringFile.GetFilename())) {
 			if(debug) {
 				std::cout << cn << mn << "Added data to map: [" << pci.dataSteeringFile.GetFilename() << "]" << std::endl;
 			}
