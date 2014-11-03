@@ -767,40 +767,47 @@ void SPXPlot::InitializeCrossSections(void) {
 
 		//Don't add the cross section to the cross section vector if there is already a cross section with
 		// the same exact grid and pdf file...
-		StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
+		StringPair_T key = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
 
-		if(convoluteFileGraphMap.count(convolutePair) != 0) {
-			if(debug) std::cout << cn << mn << "Convolute with grid filename \"" << convolutePair.first << "\" and pdf filename \"" \
-				<< convolutePair.second << "\" has already been processed: Will not process duplicate" << std::endl;
+		if(debug) std::cout << cn << mn << "Checking for prior existence of convolute with key = [" << key.first << \
+			", " << key.second << "]" << std::endl;
+
+		if(crossSectionSet.count(key) != 0) {
+			if(debug) std::cout << cn << mn << "Convolute with grid filename \"" << key.first << "\" and pdf filename \"" \
+				<< key.second << "\" has already been processed: Will not process duplicate" << std::endl;
 
 			continue;
 		}
 
+		crossSectionSet.insert(key);
+
 		try {
 			crossSectionInstance.Create();
 			crossSections.push_back(crossSectionInstance);
-
-			//Update the Convolute File Map
-			TGraphAsymmErrors *graph = crossSectionInstance.GetPDFBandResults();
-			convoluteFileGraphMap.insert(StringPairGraphPair_T(convolutePair, graph));
-
-			//Style convolute graph
-			graph->SetMarkerSize(1.2);
-			graph->SetMarkerStyle(pci.pdfMarkerStyle);
-			graph->SetMarkerColor(pci.pdfFillColor);
-			graph->SetLineColor(pci.pdfFillColor);
-			graph->SetFillStyle(pci.pdfFillStyle);
-			graph->SetFillColor(pci.pdfFillColor);
-
-			if(convoluteFileGraphMap.count(convolutePair)) {
-				if(debug) {
-					std::cout << cn << mn << "Added convolute pair to map: [" << convolutePair.first << ", " << convolutePair.second << "]" << std::endl;
-				}
-			} else {
-				std::cerr << "---> Warning: Unable to add convolute pair to map: [" << convolutePair.first << ", " << convolutePair.second << "]" << std::endl;
-			}
 		} catch(const SPXException &e) {
 			throw;
+		}
+	}
+
+	for(int i = 0; i < crossSections.size(); i++) {
+		//Update the Convolute File Map
+		TGraphAsymmErrors *graph = crossSections[i].GetPDFBandResults();
+		convoluteFileGraphMap.insert(StringPairGraphPair_T(convolutePair, graph));
+
+		//Style convolute graph
+		graph->SetMarkerSize(1.2);
+		graph->SetMarkerStyle(pci.pdfMarkerStyle);
+		graph->SetMarkerColor(pci.pdfFillColor);
+		graph->SetLineColor(pci.pdfFillColor);
+		graph->SetFillStyle(pci.pdfFillStyle);
+		graph->SetFillColor(pci.pdfFillColor);
+
+		if(convoluteFileGraphMap.count(convolutePair)) {
+			if(debug) {
+				std::cout << cn << mn << "Added convolute pair to map: [" << convolutePair.first << ", " << convolutePair.second << "]" << std::endl;
+			}
+		} else {
+			std::cerr << "---> Warning: Unable to add convolute pair to map: [" << convolutePair.first << ", " << convolutePair.second << "]" << std::endl;
 		}
 	}
 }
@@ -909,24 +916,15 @@ void SPXPlot::InitializeData(void) {
 
 		//Check if data with the same steering file has already been added to the data vector (same data...)
 		// Don't add to vector if it already exists
-		if(dataFileGraphMap.count(key) != 0) {
+		if(dataSet.count(key) != 0) {
 			if(debug) std::cout << cn << mn << "Data with filename \"" << pci.dataSteeringFile.GetFilename() << \
 				"\" has already been processed: Will not process duplicate" << std::endl;
 
 			continue;
 		}
 
-		//Add total error graph and stat error graph to dataFileGraphMap
-		dataFileGraphMap.insert(StringGraphPair_T(key, totGraph));
-		dataFileGraphMap.insert(StringGraphPair_T(key + "_stat", statGraph));
-
-		if(dataFileGraphMap.count(key)) {
-			if(debug) {
-				std::cout << cn << mn << "Added data to map: [" << key << "]" << std::endl;
-			}
-		} else {
-			std::cerr << "---> Warning: Unable to add data to map: [" << key << "]" << std::endl;
-		}
+		//Add data steering file to data set
+		dataSet.insert(key);
 
 		SPXData dataInstance = SPXData(pci);
 
@@ -987,5 +985,17 @@ void SPXPlot::InitializeData(void) {
 		statGraph->SetLineWidth(1);
 		systGraph->SetLineWidth(1);
 		totGraph->SetLineWidth(1);
+
+		//Add total error graph and stat error graph to dataFileGraphMap
+		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename(), totGraph));
+		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename() + "_stat", statGraph));
+
+		if(dataFileGraphMap.count(key)) {
+			if(debug) {
+				std::cout << cn << mn << "Added data to map: [" << pci.dataSteeringFile.GetFilename() << "]" << std::endl;
+			}
+		} else {
+			std::cerr << "---> Warning: Unable to add data to map: [" << pci.dataSteeringFile.GetFilename() << "]" << std::endl;
+		}
 	}
 }

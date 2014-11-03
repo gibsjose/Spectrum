@@ -16,6 +16,8 @@
 #define SPXPLOT_H
 
 #include <vector>
+#include <set>
+#include <map>
 
 #include "SPXSteeringFile.h"
 
@@ -92,6 +94,12 @@ private:
 	StringGraphMap_T dataFileGraphMap;
 	StringGraphMap_T referenceFileGraphMap;
 	StringPairGraphMap_T convoluteFileGraphMap;
+
+	//Sets used for eliminating duplicate data/cross section plots, since
+	// different plot configuration instances could share a data/cross section, and we
+	// don't need to plot the same one multiple times
+	std::set<std::string> dataSet;
+	std::set<std::string> crossSectionSet;
 
 	//ROOT Components
 	TCanvas *canvas;
