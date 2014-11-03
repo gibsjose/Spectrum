@@ -765,12 +765,22 @@ void SPXPlot::InitializeCrossSections(void) {
 
 		SPXCrossSection crossSectionInstance = SPXCrossSection(&psf, &pci);
 
+		//Don't add the cross section to the cross section vector if there is already a cross section with
+		// the same exact grid and pdf file...
+		StringPair_t convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
+
+		if(convoluteFileGraphMap.count(convolutePair) != 0) {
+			if(debug) std::cout << cn << mn << "Convolute with grid filename \"" << convolutePair.first << "\" and pdf filename \"" \
+				<< convolutePair.second << "\" has already been processed: Will not process duplicate" << std::endl;
+
+			continue;
+		}
+
 		try {
 			crossSectionInstance.Create();
 			crossSections.push_back(crossSectionInstance);
 
 			//Update the Convolute File Map
-			StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
 			TGraphAsymmErrors *graph = crossSectionInstance.GetPDFBandResults();
 			convoluteFileGraphMap.insert(StringPairGraphPair_T(convolutePair, graph));
 
@@ -893,13 +903,20 @@ void SPXPlot::InitializeData(void) {
 	for(int i = 0; i < steeringFile->GetNumberOfConfigurationInstances(id); i++) {
 		SPXPlotConfigurationInstance &pci = steeringFile->GetPlotConfigurationInstance(id, i);
 
+		//Check if data with the same steering file has already been added to the data vector (same data...)
+		// Don't add to vector if it already exists
+		if(dataFileGraphMap.count(pci.dataSteeringFile.GetFilename()) != 0) {
+			if(debug) std::cout << cn << mn << "Data with filename \"" << pci.dataSteeringFile.GetFilename() << \
+				"\" has already been processed: Will not process duplicate" << std::endl;
+
+			continue;
+		}
+
 		SPXData dataInstance = SPXData(pci);
 
 		try {
 			dataInstance.Parse();
 			dataInstance.Print();
-
-			//@TODO Check for duplicates here
 			data.push_back(dataInstance);
 		} catch(const SPXException &e) {
 			throw;
