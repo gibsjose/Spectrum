@@ -767,7 +767,7 @@ void SPXPlot::InitializeCrossSections(void) {
 
 		//Don't add the cross section to the cross section vector if there is already a cross section with
 		// the same exact grid and pdf file...
-		StringPair_t convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
+		StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
 
 		if(convoluteFileGraphMap.count(convolutePair) != 0) {
 			if(debug) std::cout << cn << mn << "Convolute with grid filename \"" << convolutePair.first << "\" and pdf filename \"" \
