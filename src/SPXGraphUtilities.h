@@ -28,12 +28,12 @@
 const double DELTA_MIN_MAX = 0.10;	//Extra space on the graph for min/max: 0.10 = 10%
 #endif
 
-typedef enum DivideErrorType {
-	//@TODO Fill in options here...
-	ZeroAllErrors = 0,				//Set all errors to zero
-	AddErrors = 1,					//Add errors quadratically
-	ZeroGraph2Errors = 2 			//Set Graph 2 errors to zero
-} DivideErrorType;
+typedef enum DivideErrorType_t {
+	AddErrors = 0,					//Add Y Errors quadratically
+	ZeroAllErrors = 1,				//Set all Y Errors to zero
+	ZeroNumGraphErrors = 2,			//Set Numerator Graph Y Errors to zero
+	ZeroDenGraphErrors = 3 			//Set Denominator Graph Y Errors to zero
+} DivideErrorType_t;
 
 //Typedefs for SPXPlot and SPXRatio Maps
 typedef std::map<std::string, TGraphAsymmErrors *> StringGraphMap_T;
@@ -172,7 +172,7 @@ public:
 	}
 	*/
 
-	static TGraphAsymmErrors * Divide(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, DivideErrorType dt) {
+	static TGraphAsymmErrors * Divide(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, DivideErrorType_t dt) {
 
 		//Make sure graphs are valid
 		if((!g1) || (!g2)) {
@@ -256,7 +256,12 @@ public:
 					Double_t el = 0.0;
 					Double_t eh = 0.0;
 
-					if(dt == ZeroGraph2Errors) {
+					if(dt == ZeroNumGraphErrors) {
+						dy1l = 0.0;
+						dy1h = 0.0;
+					}
+
+					if(dt == ZeroDenGraphErrors) {
 						dy2l = 0.0;
 						dy2h = 0.0;
 					}
