@@ -148,13 +148,13 @@ public:
             DivideErrorType_t divideType;
 
             if(ratioStyle.GetZeroNumeratorErrors() && ratioStyle.GetZeroDenominatorErrors()) {
-                dt = ZeroAllErrors;
+                divideType = ZeroAllErrors;
             } else if(ratioStyle.GetZeroNumeratorErrors()) {
-                dt = ZeroNumGraphErrors;
+                divideType = ZeroNumGraphErrors;
             } else if(ratioStyle.GetZeroDenominatorErrors()) {
-                dt = ZeroDenGraphErrors;
+                divideType = ZeroDenGraphErrors;
             } else {
-                dt = AddErrors;
+                divideType = AddErrors;
             }
 
             //Divide graphs
