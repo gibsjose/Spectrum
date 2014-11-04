@@ -78,6 +78,9 @@ void SPXRatioStyle::Parse(std::string &s) {
 	dataStat = false;
 	dataTot = false;
 
+	zeroNumeratorErrors = false;
+	zeroDenominatorErrors = false;
+
 	std::string den;
 	std::string num;
 
@@ -109,6 +112,19 @@ void SPXRatioStyle::Parse(std::string &s) {
 		denominator = RS_INVALID;
 
 		throw SPXINIParseException(plotNumber, ratioStyleNumber, "Incorrect ratio style: Denominator must be EXACTLY one of: \"data\", \"reference\", or \"convolute\"");
+	}
+
+	//Check for existence of '!' in either numerator or denominator, signaling to zero it's errors when dividing
+	if(num.find("!") != std::string::npos) {
+		zeroNumeratorErrors = true;
+		num = SPXStringUtilities::RemoveCharacters(num, "!");
+		if(debug) std::cout << cn << mn << "Found and removed '!' from numerator: " << num << ". Zeroing numerator errors" << std::endl;
+	}
+
+	if(den.find("!") != std::string::npos) {
+		zeroDenominatorErrors = true;
+		den = SPXStringUtilities::RemoveCharacters(den, "!");
+		if(debug) std::cout << cn << mn << "Found and removed '!' from denominator: " << den << ". Zeroing denominator errors" << std::endl;
 	}
 
 	//Validate the numerator
@@ -224,6 +240,14 @@ std::string SPXRatioStyle::ToString(void) {
 	}
 	else if(denominator == RS_CONVOLUTE) {
 		den = "convolute";
+	}
+
+	if(zeroNumeratorErrors) {
+		num += "(!)";
+	}
+
+	if(zeroDenominatorErrors) {
+		den += "(!)";
 	}
 
 	return num + " / " + den;
