@@ -50,6 +50,9 @@ public:
 
 		dataStat = false;
 		dataTot = false;
+
+		zeroNumeratorErrors = false;
+		zeroDenominatorErrors = false;
 	}
 
 	static bool GetDebug(void) {
@@ -76,6 +79,14 @@ public:
 
 	bool IsDataTot(void) {
 		return dataTot;
+	}
+
+	bool GetZeroNumeratorErrors(void) {
+		return zeroNumeratorErrors;
+	}
+
+	bool GetZeroDenominatorErrors(void) {
+		return zeroDenominatorErrors;
 	}
 
 	bool IsConvoluteOverData(void) {
@@ -155,6 +166,9 @@ private:
 
 	bool dataStat;	//Special ratio: Plot data/data with statistical errors
 	bool dataTot;	//Specrial ratio: Plot data/data with total errors
+
+	bool zeroNumeratorErrors;		//Flags for whether or not to zero num/den errors. Set with '!' in steering file
+	bool zeroDenominatorErrors;
 
 	//Plot number and ratio style number for exception handling
 	std::string plotNumber;

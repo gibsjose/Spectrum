@@ -99,7 +99,7 @@ public:
 
         if(ratioStyle.IsDataStat()) {
             try {
-                ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroGraph2Errors);
+                ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroDenGraphErrors);
                 ratioGraph->SetFillStyle(1001);
                 ratioGraph->SetFillColor(kGray); //@TODO How to determine colors???
                 if(debug) std::cout << "SPXRatio::Divide: Successfully divided data stat graph with options: " << std::endl;
@@ -115,7 +115,7 @@ public:
 
         else if(ratioStyle.IsDataTot()) {
             try {
-                ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroGraph2Errors);
+                ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroDenGraphErrors);
                 ratioGraph->SetFillStyle(1001);
                 ratioGraph->SetFillColor(kGray); //@TODO How to determine colors???
                 if(debug) std::cout << "SPXRatio::Divide: Successfully divided data tot graph with options: " << std::endl;
@@ -144,8 +144,21 @@ public:
         }
 
         try {
+            //Determine how to divide based on ratioStyle: zeroNumErrors/zeroDenErrors set with '!'
+            DivideErrorType_t divideType;
+
+            if(ratioStyle.GetZeroNumeratorErrors() && ratioStyle.GetZeroDenominatorErrors()) {
+                dt = ZeroAllErrors;
+            } else if(ratioStyle.GetZeroNumeratorErrors()) {
+                dt = ZeroNumGraphErrors;
+            } else if(ratioStyle.GetZeroDenominatorErrors()) {
+                dt = ZeroDenGraphErrors;
+            } else {
+                dt = AddErrors;
+            }
+
             //Divide graphs
-            ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, AddErrors);
+            ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, divideType);
 
             //Style ratio graph
             if(true) {
