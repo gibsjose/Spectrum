@@ -1,17 +1,19 @@
-# Spectrum v1.0
-### 03 November, 2014
+# Spectrum v0.2
+### 04 November, 2014
 
 ## Authors
 @gibsjose @csembree Dr. Tancredi Carli
 
 ## Change Log
-* Allow plotting of data statistical/total error bands
-* Fixed duplicate data/cross sections being plotted
-* Implemented 'data_stat' and 'data_tot' ratio styles
-* Fixed ratio Y axis title offset
+* Implemented using the `!` flag in ratio_style_x to signal zeroing of numerator/denominator ratio graph Y errors:
+    * `ratio_style_0 = convolute / data` will add all the Y errors in quadrature (`DivideErrorType_t: AddErrors`)
+    * `ratio_style_0 = convolute / !data` will zero the denominator (data) Y errors when dividing (`DivideErrorType_t: ZeroNumGraphErrors`)
+    * `ratio_style_0 = !convolute / data` will zero the numerator (convolute) Y errors when dividing (`DivideErrorType_t: ZeroDenGraphErrors`)
+    * `ratio_style_0 = !convolute / !data` will zero BOTH the numerator and denominator Y errors when dividing (`DivideErrorType_t: ZeroAllErrors`)
 
 ## In Progress (v1.1)
 * Legends (overlay/ratio)
-* Implement zeroing ratio num/den errors with '!' option in ratio_style_n
-* Create Steering File Generator program
+* Steering File Generator program
 * Clarify/fix optional vs. required steering file options
+* HERAPDF data format in SPXDataFormat
+* Data only plot type in SPXPlotType
