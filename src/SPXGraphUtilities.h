@@ -31,7 +31,7 @@ const double DELTA_MIN_MAX = 0.10;	//Extra space on the graph for min/max: 0.10 
 typedef enum DivideErrorType_t {
 	AddErrors = 0,					//Add Y Errors quadratically
 	ZeroAllErrors = 1,				//Set all Y Errors to zero
-	ZeroNumGraphErrors = 2			//Set Numerator Graph Y Errors to zero
+	ZeroNumGraphErrors = 2,			//Set Numerator Graph Y Errors to zero
 	ZeroDenGraphErrors = 3 			//Set Denominator Graph Y Errors to zero
 } DivideErrorType_t;
 
