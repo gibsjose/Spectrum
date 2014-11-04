@@ -9,7 +9,7 @@ PDFsets
 *.sublime-workspace
 
 # Plots output (PNG) folder
-*.png
+plots
 
 # Temporary Emacs files
 *~
