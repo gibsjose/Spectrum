@@ -1,4 +1,4 @@
-# Spectrum v1.0
+# Spectrum v0.1
 ### 03 November, 2014
 
 ## Authors
