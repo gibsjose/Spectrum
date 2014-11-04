@@ -78,9 +78,9 @@ ratio_style_0 = data_tot
 ratio_0 = atlas2012_top.txt
 ratio_style_1 = data_stat
 ratio_1 = atlas2012_top.txt
-ratio_style_2 = convolute / data
+ratio_style_2 = convolute / !data
 ratio_2 = ([grid--TTbar_mttatlas.txt, CT10.txt]) / (atlas2012_top.txt)
-ratio_style_3 = convolute / data
+ratio_style_3 = convolute / !data
 ratio_3 = ([grid--TTbar_mttatlas.txt, HERAPDF15NLO.txt]) / (atlas2012_top.txt)
 
 ; @TODO Example of not adding data errors in a ratio:
