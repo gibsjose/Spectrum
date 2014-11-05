@@ -415,11 +415,12 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		//Get the pdf_fill_style
 		tmp = reader->Get(plotSection, "pdf_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
+			tmp.clear();
+			tmpVector.clear();
+
 			if(plotBand) {
-				throw SPXINIParseException(plotSection, "pdf_fill_style", "You MUST specify the pdf_fill_style");
+				std::cerr << cn << mn << "WARNING: No plot option for pdf_fill_style found, but plot_band = true. Defaulting to pdf steering file settings" << std::endl;
 			} else {
-				tmp.clear();
-				tmpVector.clear();
 				if(debug) std::cout << cn << mn << "No plot option for pdf_fill_style found" << std::endl;
 			}
 		} else {
@@ -440,11 +441,12 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		//Get the pdf_fill_color
 		tmp = reader->Get(plotSection, "pdf_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
+			tmp.clear();
+			tmpVector.clear();
+
 			if(plotBand) {
-				throw SPXINIParseException(plotSection, "pdf_fill_color", "You MUST specify the pdf_fill_color");
+				std::cerr << cn << mn << "WARNING: No plot option for pdf_fill_color found, but plot_band = true. Defaulting to pdf steering file settings" << std::endl;
 			} else {
-				tmp.clear();
-				tmpVector.clear();
 				if(debug) std::cout << cn << mn << "No plot options for pdf_fill_color found" << std::endl;
 			}
 		} else {
@@ -465,11 +467,12 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		//Get the pdf_marker_style
 		tmp = reader->Get(plotSection, "pdf_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
+			tmp.clear();
+			tmpVector.clear();
+			
 			if(plotMarker) {
-				throw SPXINIParseException(plotSection, "pdf_marker_style", "You MUST specify the pdf_marker_style");
+				std::cerr << cn << mn << "WARNING: No plot option for pdf_marker_style found, but plot_marker = true. Defaulting to pdf steering file settings" << std::endl;
 			} else {
-				tmp.clear();
-				tmpVector.clear();
 				if(debug) std::cout << cn << mn << "No plot option for pdf_marker_style found" << std::endl;
 			}
 		} else {
