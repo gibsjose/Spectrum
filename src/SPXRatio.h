@@ -131,11 +131,16 @@ public:
 
         if(ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverReference()) {
             pci = plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
-            pci.Print();
+            if(debug) {
+                pci.Print();
+            }
         }
 
         else if(ratioStyle.IsDataOverConvolute()) {
             pci = plotConfiguration.GetPlotConfigurationInstance(denominatorConvolutePDFFile);
+            if(debug) {
+                pci.Print();
+            }
         }
 
         //@TODO What if it's Data/Data???

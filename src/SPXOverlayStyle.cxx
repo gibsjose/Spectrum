@@ -42,34 +42,34 @@ SPXOverlayStyle::SPXOverlayStyle(std::string s) {
 // Sets the style based on the input string
 void SPXOverlayStyle::Parse(std::string s) {
 	std::string mn = "Parse: ";
-	
+
 	if(debug) std::cout << cn << mn << "Parsing configuration string: " << s << std::endl;
-	
+
 	//Clear the style each time it is parsed
 	this->Clear();
-	
+
 	//Parse the string into style options
 	std::vector<std::string> v = SPXStringUtilities::CommaSeparatedListToVector(s);
-	
+
 	if(debug) {
 		std::cout << cn << mn << "Configuration string: " << s << " was parsed into:" << std::endl;
 		for(int i = 0; i < v.size(); i++) {
 			std::cout << "\t" << v[i] << std::endl;
-		}	
+		}
 		std::cout << std::endl;
 	}
-	
+
 	//Check the parsed style options vector for size errors
 	if(v.size() > 3) {
 		style = OS_INVALID;
-		throw SPXINIParseException("GRAPH", "overlay_style", "Incorrect overlay style: Configuration string can only be a combination of: \"data\", \"reference\", and \"convolute\"");
-		
+		throw SPXINIParseException("PLOT_x", "overlay_style", "Incorrect overlay style: Configuration string can only be a combination of: \"data\", \"reference\", and \"convolute\"");
+
 	}
 	if(v.size() < 1) {
 		style = OS_INVALID;
-		throw SPXINIParseException("GRAPH", "overlay_style", "Incorrect overlay style: Configuration string must be at least ONE of: \"data\", \"reference\", or \"convolute\"");
+		throw SPXINIParseException("PLOT_x", "overlay_style", "Incorrect overlay style: Configuration string must be at least ONE of: \"data\", \"reference\", or \"convolute\"");
 	}
-	
+
 	//Create the style based on the configuration string(s)
 	for(int i = 0; i < v.size(); i++) {
 		if(debug) std::cout << cn << mn << "Checking style string: " << v[i] << std::endl;
@@ -90,10 +90,10 @@ void SPXOverlayStyle::Parse(std::string s) {
 		}
 		else {
 			style = OS_INVALID;
-			
+
 			std::ostringstream oss;
 			oss << "Incorrect overlay style: Unrecognized style option: \"" << v[i] << "\" is invalid";
-			throw SPXINIParseException("GRAPH", "overlay_style", oss.str());
+			throw SPXINIParseException("PLOT_x", "overlay_style", oss.str());
 		}
 	}
 }
@@ -108,20 +108,20 @@ void SPXOverlayStyle::Print(void) {
 // the object's style data
 std::string SPXOverlayStyle::ToString(void) {
 	std::string mn = "ToString: ";
-	
+
 	//Empty style
 	if(this->IsEmpty()) {
 		return "";
 	}
-	
+
 	//Check for validity
 	if(!this->IsValid()) {
 		return "INVALID_OVERLAY_STYLE";
 	}
-	
+
 	//Build syle option vector
 	std::vector<std::string> v;
-	
+
 	if(style & OS_DATA) {
 		v.push_back("data");
 	}
@@ -131,37 +131,36 @@ std::string SPXOverlayStyle::ToString(void) {
 	if(style & OS_CONVOLUTE) {
 		v.push_back("convolute");
 	}
-	
+
 	return SPXStringUtilities::VectorToCommaSeparatedList(v);
 }
 
 //Determines whether the overlay style is empty or not
 bool SPXOverlayStyle::IsEmpty(void) {
 	std::string mn = "IsEmpty: ";
-	
+
 	return !(bool)style;
 }
 
 //Determines the validity of the overlay style
 bool SPXOverlayStyle::IsValid(void) {
 	std::string mn = "IsValid: ";
-	
+
 	//Empty style: valid, but empty
 	if(this->IsEmpty()){
 		if(debug) std::cout << cn << mn << "Overlay style is empty" << std::endl;
 		return true;
 	}
-	
+
 	if(style == OS_INVALID) {
 		if(debug) std::cout << cn << mn << "Overlay style is invalid: Set to OS_INVALID (-1)" << std::endl;
 		return false;
 	}
-	
+
 	if(style > (OS_DATA | OS_REFERENCE | OS_CONVOLUTE)) {
 		if(debug) std::cout << cn << mn << "Overlay style is invalid: Style is set to unknown value: " << style << std::endl;
 		return false;
 	}
-	
+
 	return true;
 }
-

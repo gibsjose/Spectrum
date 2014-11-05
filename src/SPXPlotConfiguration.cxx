@@ -503,10 +503,14 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		if(pfsSize) {
 			pci.pdfFillStyle = atoi(pfs[i].c_str());
 			pci.pdfFillColor = atoi(pfc[i].c_str());
-			pci.pdfMarkerStyle = atoi(pms[i].c_str());
 		} else {
 			pci.pdfFillStyle = PC_EMPTY_STYLE;
 			pci.pdfFillColor = PC_EMPTY_COLOR;
+		}
+
+		if(pmsSize) {
+			pci.pdfMarkerStyle = atoi(pms[i].c_str());
+		} else {
 			pci.pdfMarkerStyle = PC_EMPTY_STYLE;
 		}
 
