@@ -288,7 +288,7 @@ public:
 	}
 
 	SPXPlotConfigurationInstance & GetPlotConfigurationInstance(std::string pdfFilename) {
-		std::string mn = "GetPDFSteeringFile: ";
+		std::string mn = "GetPlotConfigurationInstance: ";
 
 		if(debug) std::cout << focn << mn << "PDF Filename Key: [" << pdfFilename << "]" << std::endl;
 
