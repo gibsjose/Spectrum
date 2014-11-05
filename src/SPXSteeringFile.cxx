@@ -846,6 +846,13 @@ void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 						" PDF Marker Style was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetMarkerStyle() << std::endl;
 					pci.pdfMarkerStyle = pdfSteeringFile.GetMarkerStyle();
 				}
+
+				//Update PCI in PDF Filemap with new data
+				SPXPlotConfigurationInstance &pcim = plotConfigurations.at(i).GetPlotConfigurationInstance(pdfSteeringFile.GetFilename());
+				pcim.pdfFillStyle = pci.pdfFillStyle;
+				pcim.pdfFillColor = pci.pdfFillColor;
+				pcim.pdfMarkerStyle = pci.pdfMarkerStyle;
+
 			} catch(const SPXException &e) {
 				std::cerr << e.what() << std::endl;
 
