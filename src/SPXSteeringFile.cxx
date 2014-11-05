@@ -314,7 +314,8 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 			//Add to configurations map
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("data_steering_files", tmpVector));
 
-			if(debug) std::cout << cn << mn << "configurations[data_steering_files] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["data_steering_files"]) << std::endl;
+			if(debug) std::cout << cn << mn << "configurations[data_steering_files] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["data_steering_files"]) << std::endl;
 		}
 
 		//Get the grid_steering_files
@@ -340,7 +341,8 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 
 			//Add to configurations map
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("grid_steering_files", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[grid_steering_files] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["grid_steering_files"]) << std::endl;
+			if(debug) std::cout << cn << mn << "configurations[grid_steering_files] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["grid_steering_files"]) << std::endl;
 		}
 
 		//Get the pdf_steering_files
@@ -366,7 +368,8 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 
 			//Add to configurations map
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("pdf_steering_files", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[pdf_steering_files] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_steering_files"]) << std::endl;
+			if(debug) std::cout << cn << mn << "configurations[pdf_steering_files] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_steering_files"]) << std::endl;
 		}
 
 		//Get the data_marker_style
@@ -385,7 +388,8 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 
 			//Add to configurations map
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("data_marker_style", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[data_marker_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["data_marker_style"]) << std::endl;
+			if(debug) std::cout << cn << mn << "configurations[data_marker_style] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["data_marker_style"]) << std::endl;
 		}
 
 		//Get the data_marker_color
@@ -404,13 +408,20 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 
 			//Add to configurations map
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("data_marker_color", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[data_marker_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["data_marker_color"]) << std::endl;
+			if(debug) std::cout << cn << mn << "configurations[data_marker_color] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["data_marker_color"]) << std::endl;
 		}
 
 		//Get the pdf_fill_style
 		tmp = reader->Get(plotSection, "pdf_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			throw SPXINIParseException(plotSection, "pdf_fill_style", "You MUST specify the pdf_fill_style");
+			if(plotBand) {
+				throw SPXINIParseException(plotSection, "pdf_fill_style", "You MUST specify the pdf_fill_style");
+			} else {
+				tmp.clear();
+				tmpVector.clear();
+				if(debug) std::cout << cn << mn << "No plot option for pdf_fill_style found" << std::endl;
+			}
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -420,16 +431,22 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
 				}
 			}
-
-			//Add to configurations map
-			configurations.insert(std::pair<std::string, std::vector<std::string> >("pdf_fill_style", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[pdf_fill_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_fill_style"]) << std::endl;
 		}
+		//Add to configurations map
+		configurations.insert(std::pair<std::string, std::vector<std::string> >("pdf_fill_style", tmpVector));
+		if(debug) std::cout << cn << mn << "configurations[pdf_fill_style] = " << \
+			SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_fill_style"]) << std::endl;
 
 		//Get the pdf_fill_color
 		tmp = reader->Get(plotSection, "pdf_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			throw SPXINIParseException(plotSection, "pdf_fill_color", "You MUST specify the pdf_fill_color");
+			if(plotBand) {
+				throw SPXINIParseException(plotSection, "pdf_fill_color", "You MUST specify the pdf_fill_color");
+			} else {
+				tmp.clear();
+				tmpVector.clear();
+				if(debug) std::cout << cn << mn << "No plot options for pdf_fill_color found" << std::endl;
+			}
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -439,16 +456,22 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
 				}
 			}
-
-			//Add to configurations map
-			configurations.insert(std::pair<std::string, std::vector<std::string> >("pdf_fill_color", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[pdf_fill_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_fill_color"]) << std::endl;
 		}
+		//Add to configurations map
+		configurations.insert(std::pair<std::string, std::vector<std::string> >("pdf_fill_color", tmpVector));
+		if(debug) std::cout << cn << mn << "configurations[pdf_fill_color] = " << \
+			SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_fill_color"]) << std::endl;
 
 		//Get the pdf_marker_style
 		tmp = reader->Get(plotSection, "pdf_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			throw SPXINIParseException(plotSection, "pdf_marker_style", "You MUST specify the pdf_marker_style");
+			if(plotMarker) {
+				throw SPXINIParseException(plotSection, "pdf_marker_style", "You MUST specify the pdf_marker_style");
+			} else {
+				tmp.clear();
+				tmpVector.clear();
+				if(debug) std::cout << cn << mn << "No plot option for pdf_marker_style found" << std::endl;
+			}
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -458,11 +481,11 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
 				}
 			}
-
-			//Add to configurations map
-			configurations.insert(std::pair<std::string, std::vector<std::string> >("pdf_marker_style", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[pdf_marker_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_marker_style"]) << std::endl;
 		}
+		//Add to configurations map
+		configurations.insert(std::pair<std::string, std::vector<std::string> >("pdf_marker_style", tmpVector));
+		if(debug) std::cout << cn << mn << "configurations[pdf_marker_style] = " << \
+			SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_marker_style"]) << std::endl;
 
 		//Get the x_scale
 		tmp = reader->Get(plotSection, "x_scale", "EMPTY");
@@ -480,7 +503,8 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 
 			//Add to configurations map
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("x_scale", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[x_scale] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["x_scale"]) << std::endl;
+			if(debug) std::cout << cn << mn << "configurations[x_scale] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["x_scale"]) << std::endl;
 		}
 
 		//Get the y_scale
@@ -499,7 +523,8 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 
 			//Add to configurations map
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("y_scale", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[y_scale] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["y_scale"]) << std::endl;
+			if(debug) std::cout << cn << mn << "configurations[y_scale] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["y_scale"]) << std::endl;
 		}
 
 		//Get the x_log
