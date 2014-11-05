@@ -139,7 +139,7 @@ public:
         else if(ratioStyle.IsDataOverConvolute()) {
             pci = plotConfiguration.GetPlotConfigurationInstance(denominatorConvolutePDFFile);
             if(debug) {
-                pc.Print()
+                pci.Print();
             }
         }
 
