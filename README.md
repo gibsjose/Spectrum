@@ -6,7 +6,7 @@
 ## Description
 Spectrum plots cross-sections, theory results, and experimental data for proton-proton collisions. It is a collaboration between Dr. Tancredi Carli (CERN) and a few research assistants. Spectrum works with multiple grids, as well as data from multiple experiments, including CMS, ATLAS, and HERA.
 
-## NOTE
+### NOTE
 Spectrum is a re-design of the previous [MyAnalysis](http://www.github.com/gibsjose/MyAnalysis) software. Upgrades have been made on the front-end of the software, as well as a re-design of the program structure. While most of Spectrum has been completely re-written, some of the most complex classes (like [SPXPDF](src/SPXPDF.cxx)) and some graphing/math utilities were taken directly from the previous software, which was written entirely by Cameron Embree and Dr. Carli.
 
 ## UML
@@ -25,7 +25,7 @@ Spectrum currently supports the following data formats:
 More information on the supported data formats can be found in [data_formats.txt](Data/data_formats.txt)
 
 ## Installation
-Installation instructions coming soon...
+Installation instructions can be found [here](INSTALL.md)
 
 ## How to Run a Spectrum Plot
 Simply edit your Steering file according to your plot specifications, and run Spectrum on it:
@@ -77,3 +77,6 @@ The grid steering file contains information specific to each grid, such as the g
 The PDF steering file contains information specific to each PDF, such as the name, type, PDFset path, graphing options like fill style and color, as well as a number of other PDF-specific options.
 
 [Example](PDF/example.txt) PDF Steering File
+
+## Credits
+Credits to all contributors and any external code I have used, whether modified or not can be found [here](CREDITS.md)
