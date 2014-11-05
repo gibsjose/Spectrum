@@ -821,11 +821,31 @@ void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 	for(int i = 0; i < plotConfigurations.size(); i++) {
 		for(int j = 0; j < plotConfigurations.at(i).GetNumberOfConfigurationInstances(); j++) {
 
-			SPXPDFSteeringFile &pdfSteeringFile = plotConfigurations.at(i).GetPlotConfigurationInstance(j).pdfSteeringFile;
+			SPXPlotConfigurationInstance &pci = plotConfigurations.at(i).GetPlotConfigurationInstance(j);
+			SPXPDFSteeringFile &pdfSteeringFile = pci.pdfSteeringFile;
 
 			//Attempt to parse the PDF Steering File
 			try {
 				pdfSteeringFile.Parse();
+
+				//Use default pdfFillStyle, pdfFillColor, and pdfMarkerStyle if currently empty
+				if(pci.pdfFillStyle == PC_EMPTY_STYLE) {
+					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
+						" PDF Fill Style was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetFillStyle() << std::endl;
+					pci.pdfFillStyle = pdfSteeringFile.GetFillStyle();
+				}
+
+				if(pci.pdfFillColor == PC_EMPTY_COLOR) {
+					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
+						" PDF Fill Color was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetFillColor() << std::endl;
+					pci.pdfFillColor = pdfSteeringFile.GetFillColor();
+				}
+
+				if(pci.pdfMarkerStyle == PC_EMPTY_STYLE) {
+					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
+						" PDF Marker Style was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetMarkerStyle() << std::endl;
+					pci.pdfMarkerStyle = pdfSteeringFile.GetMarkerStyle();
+				}
 			} catch(const SPXException &e) {
 				std::cerr << e.what() << std::endl;
 
