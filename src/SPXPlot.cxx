@@ -517,6 +517,7 @@ void SPXPlot::DrawOverlay(void) {
 	//Do nothing if not drawing overlay
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
+	SPXOverlayStyle &os = pc.GetOverlayStyle();
 
 	if(!ds.ContainsOverlay()) {
 		return;
@@ -525,61 +526,70 @@ void SPXPlot::DrawOverlay(void) {
 	//Change to the overlay pad
 	overlayPad->cd();
 
-	//Stagger overlay convolute points if requested
-	if(steeringFile->GetPlotStaggered() && !steeringFile->GetPlotBand()) {
-		StaggerConvoluteOverlay();
+	//@TODO Reference Overlay
+
+	//Check if convolute is to be plotted in the overlay section
+	if(os.ContainsConvolute()) {
+
+		//Stagger overlay convolute points if requested
+		if(steeringFile->GetPlotStaggered() && !steeringFile->GetPlotBand()) {
+			StaggerConvoluteOverlay();
+		}
+
+		//Draw cross sections on Overlay Pad
+		for(int i = 0; i < crossSections.size(); i++) {
+
+			std::string csOptions;
+
+			if(steeringFile->GetPlotBand()) {
+				csOptions = "E2";
+			}
+
+			if(steeringFile->GetPlotMarker() && !steeringFile->GetPlotBand()) {
+				csOptions = "P";
+			}
+
+			//@TODO Never plot error ticks on convolute graph right now... At some point might plot when alphas uncertainties exist
+			//if(!steeringFile->GetPlotErrorTicks() && !steeringFile->GetPlotBand()) {
+				csOptions += "Z";
+			//}
+
+			//Set cross section X errors to 0 if not plotting band
+			if(!steeringFile->GetPlotBand()) {
+				SPXGraphUtilities::ClearXErrors(crossSections[i].GetPDFBandResults());
+			}
+
+			crossSections[i].GetPDFBandResults()->Draw(csOptions.c_str());
+
+			if(debug) std::cout << cn << mn << "Sucessfully drew cross section for Plot " << id << " cross section " << i << \
+				" with options = " << csOptions << std::endl;
+		}
 	}
 
-	//Draw cross sections on Overlay Pad
-	for(int i = 0; i < crossSections.size(); i++) {
+	//Check if data is to be plotted in the overlay
+	if(os.ContainsData()) {
+		//Draw data graphs on Overlay Pad
+		for(int i = 0; i < data.size(); i++) {
 
-		std::string csOptions;
+			std::string statOptions;
+			std::string totOptions;
 
-		if(steeringFile->GetPlotBand()) {
-			csOptions = "E2";
+			if(steeringFile->GetPlotMarker()) {
+				totOptions = "PZ";	//Never plot ticks on tot error graph
+			}
+
+			if(steeringFile->GetPlotErrorTicks()) {
+				statOptions = "||";
+			} else {
+				statOptions = "Z";
+			}
+
+			data[i].GetTotalErrorGraph()->Draw(totOptions.c_str());
+			data[i].GetStatisticalErrorGraph()->Draw(statOptions.c_str());
+
+			if(debug) std::cout << cn << mn << "Sucessfully drew data for Plot " << id << " data " << i << " with Syst options = " \
+				<< totOptions << " Stat options = " << statOptions << std::endl;
 		}
-
-		if(steeringFile->GetPlotMarker() && !steeringFile->GetPlotBand()) {
-			csOptions = "P";
-		}
-
-		//@TODO Never plot error ticks on convolute graph right now... At some point might plot when alphas uncertainties exist
-		//if(!steeringFile->GetPlotErrorTicks() && !steeringFile->GetPlotBand()) {
-			csOptions += "Z";
-		//}
-
-		//Set cross section X errors to 0 if not plotting band
-		if(!steeringFile->GetPlotBand()) {
-			SPXGraphUtilities::ClearXErrors(crossSections[i].GetPDFBandResults());
-		}
-
-		crossSections[i].GetPDFBandResults()->Draw(csOptions.c_str());
-
-		if(debug) std::cout << cn << mn << "Sucessfully drew cross section for Plot " << id << " cross section " << i << \
-			" with options = " << csOptions << std::endl;
-	}
-
-	//Draw data graphs on Overlay Pad
-	for(int i = 0; i < data.size(); i++) {
-
-		std::string statOptions;
-		std::string totOptions;
-
-		if(steeringFile->GetPlotMarker()) {
-			totOptions = "PZ";	//Never plot ticks on tot error graph
-		}
-
-		if(steeringFile->GetPlotErrorTicks()) {
-			statOptions = "||";
-		} else {
-			statOptions = "Z";
-		}
-
-		data[i].GetTotalErrorGraph()->Draw(totOptions.c_str());
-		data[i].GetStatisticalErrorGraph()->Draw(statOptions.c_str());
-
-		if(debug) std::cout << cn << mn << "Sucessfully drew data for Plot " << id << " data " << i << " with Syst options = " \
-			<< totOptions << " Stat options = " << statOptions << std::endl;
 	}
 }
 
