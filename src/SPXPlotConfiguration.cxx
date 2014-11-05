@@ -500,6 +500,16 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		pci.dataMarkerStyle = atoi(dms[i].c_str());
 		pci.dataMarkerColor = atoi(dmc[i].c_str());
 
+		if(debug) std::cout << cn << mn << "PDF Steering File: " << pci.pdfSteeringFile.GetFilename() << std::endl;
+		if(debug) std::cout << "\t Fill Style = " << pci.pdfSteeringFile.GetFillStyle() << std::endl;
+		if(debug) std::cout << "\t Fill Color = " << pci.pdfSteeringFile.GetFillColor() << std::endl;
+		if(debug) std::cout << "\t Marker Style = " << pci.pdfSteeringFile.GetMarkerStyle() << std::endl;
+
+		if(debug) std::cout << cn << mn << "Sizes: " << std::endl;
+		if(debug) std::cout << "\t pdfFillStyle size = " << pfsSize << std::endl;
+		if(debug) std::cout << "\t pdfFillColor size = " << pfcSize << std::endl;
+		if(debug) std::cout << "\t pdfMarkerStyle size = " << pmsSize << std::endl;
+
 		if(pfsSize) {
 			pci.pdfFillStyle = atoi(pfs[i].c_str());
 			pci.pdfFillColor = atoi(pfc[i].c_str());

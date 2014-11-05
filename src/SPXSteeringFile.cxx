@@ -141,13 +141,14 @@ void SPXSteeringFile::Print(void) {
 		std::cout << "\t\t X Log: " << (plotConfigurations[i].IsXLog() ? "YES" : "NO") << std::endl;
 		std::cout << "\t\t Y Log: " << (plotConfigurations[i].IsYLog() ? "YES" : "NO") << std::endl;
 		std::cout << "\t\t Ratio Title: " << plotConfigurations[i].GetRatioTitle() << std::endl;
-		std::cout << "\t\t Number of Ratios:" << plotConfigurations[i].GetNumberOfRatios() << std::endl << std::endl;
+		std::cout << "\t\t Number of Ratios: " << plotConfigurations[i].GetNumberOfRatios() << std::endl;
 		for(int j = 0; j < plotConfigurations[i].GetNumberOfRatios(); j++) {
 			std::cout << "\t\t\t Ratio Style " << j << ": " << plotConfigurations[i].GetRatioStyle(j).ToString() << std::endl;
 			std::cout << "\t\t\t Ratio " << j << ": " << plotConfigurations[i].GetRatio(j) << std::endl;
 		}
+		std::cout << std::endl;
 
-		std::cout << "\t\t Number of Configuration Instances for Plot " << i << \
+		std::cout << "\t\t Number of Configuration Instances for Plot " << i << ": " << \
 			plotConfigurations[i].GetNumberOfConfigurationInstances() << std::endl << std::endl;
 
 		for(int j = 0; j < plotConfigurations[i].GetNumberOfConfigurationInstances(); j++) {
@@ -415,9 +416,6 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		//Get the pdf_fill_style
 		tmp = reader->Get(plotSection, "pdf_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			tmp.clear();
-			tmpVector.clear();
-
 			if(plotBand) {
 				std::cerr << cn << mn << "WARNING: No plot option for pdf_fill_style found, but plot_band = true. Defaulting to pdf steering file settings" << std::endl;
 			} else {
@@ -432,18 +430,16 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
 				}
 			}
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("pdf_fill_style", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[pdf_fill_style] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_fill_style"]) << std::endl;
 		}
-		//Add to configurations map
-		configurations.insert(std::pair<std::string, std::vector<std::string> >("pdf_fill_style", tmpVector));
-		if(debug) std::cout << cn << mn << "configurations[pdf_fill_style] = " << \
-			SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_fill_style"]) << std::endl;
 
 		//Get the pdf_fill_color
 		tmp = reader->Get(plotSection, "pdf_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			tmp.clear();
-			tmpVector.clear();
-
 			if(plotBand) {
 				std::cerr << cn << mn << "WARNING: No plot option for pdf_fill_color found, but plot_band = true. Defaulting to pdf steering file settings" << std::endl;
 			} else {
@@ -458,18 +454,16 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
 				}
 			}
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("pdf_fill_color", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[pdf_fill_color] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_fill_color"]) << std::endl;
 		}
-		//Add to configurations map
-		configurations.insert(std::pair<std::string, std::vector<std::string> >("pdf_fill_color", tmpVector));
-		if(debug) std::cout << cn << mn << "configurations[pdf_fill_color] = " << \
-			SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_fill_color"]) << std::endl;
 
 		//Get the pdf_marker_style
 		tmp = reader->Get(plotSection, "pdf_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			tmp.clear();
-			tmpVector.clear();
-			
 			if(plotMarker) {
 				std::cerr << cn << mn << "WARNING: No plot option for pdf_marker_style found, but plot_marker = true. Defaulting to pdf steering file settings" << std::endl;
 			} else {
@@ -484,11 +478,12 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
 				}
 			}
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("pdf_marker_style", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[pdf_marker_style] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_marker_style"]) << std::endl;
 		}
-		//Add to configurations map
-		configurations.insert(std::pair<std::string, std::vector<std::string> >("pdf_marker_style", tmpVector));
-		if(debug) std::cout << cn << mn << "configurations[pdf_marker_style] = " << \
-			SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_marker_style"]) << std::endl;
 
 		//Get the x_scale
 		tmp = reader->Get(plotSection, "x_scale", "EMPTY");
