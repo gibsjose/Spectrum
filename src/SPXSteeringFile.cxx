@@ -669,7 +669,9 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 			}
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
-			throw SPXINIParseException(plotSection, "Unable to create/parse new plot configurations object");
+			std::ostringstream oss;
+			oss << "[PLOT_" << i << "]";
+			throw SPXParseException("Unable to parse plot configuration: " + oss.str());
 		}
 	}
 
