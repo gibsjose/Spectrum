@@ -2,7 +2,9 @@ Spectrum T1S
 Spectrum T1A
 Spectrum T2S
 Spectrum T2A
-HERAPDF
+Spectrum T3S
+Spectrum T3A
+HERAFitter
 
 ==============
  Spectrum T1S
@@ -13,7 +15,7 @@ Spectrum T1S = Spectrum Type 1, Symmetric Errors
 
 [xm] [xlow] [xhigh] [sigma] [stat sigma] [syst sigma]
 
-Example: /afs/cern.ch/user/j/jgibson/public/MyAnalysis/MyData/
+Example: spectrum_t1s_data.txt
 
 ==============
  Spectrum T1A
@@ -24,7 +26,7 @@ Spectrum T1A = Spectrum Type 1, Asymmetric Errors
 
 [xm] [xlow] [xhigh] [sigma] [stat sigma] [syst sigma +] [syst sigma -]
 
-Example: /afs/cern.ch/user/j/jgibson/public/MyAnalysis/MyData/
+Example: spectrum_t1a_data.txt
 
 ==============
  Spectrum T2S
@@ -32,8 +34,8 @@ Example: /afs/cern.ch/user/j/jgibson/public/MyAnalysis/MyData/
 'Type 2' specifies that BOTH the TOTAL systematic error AND any number of partial systematic errors will be given as formatted below
 'Symmetric' specifies that the systematic errors will be given symmetrically (only one column)
 
-[syst sub 1] e_p1 e_p2 ...
-[syst sub 2] ...
++ syst_sub_1 e_p1 e_p2 ...
++ syst_sub_2 ...
 ...
 
 [xm] [xlow] [xhigh] [sigma] [stat sigma] [syst sigma]
@@ -41,7 +43,7 @@ p1
 p2
 ...
 
-Example: /afs/cern.ch/user/j/jgibson/public/MyAnalysis/MyData/
+Example: spectrum_t2s_data.txt
 
 ==============
  Spectrum T2A
@@ -49,10 +51,10 @@ Example: /afs/cern.ch/user/j/jgibson/public/MyAnalysis/MyData/
 'Type 2' specifies that BOTH the TOTAL systematic error AND any number of partial systematic errors will be given as formatted below
 'Asymmetric' specifies that the systematic errors will be given asymmetrically (as + and - in separate columns)
 
-[syst sub 1 +] e_p1 e_p2 ...
-[syst sub 1 -] ...
-[syst sub 2 +] ...
-[syst sub 2 -] ...
++ syst_sub_1 e_p1 e_p2 ...
+- syst_sub_2 e_n1 e_n2 ...
++ syst_sub_2 ...
+- syst_sub_2 ...
 ...
 
 [xm] [xlow] [xhigh] [sigma] [stat sigma] [syst sigma +] [syst sigma -]
@@ -60,7 +62,45 @@ p1
 p2
 ...
 
-Example: /afs/cern.ch/user/j/jgibson/public/MyAnalysis/MyData/
+Example: spectrum_t2a_data.txt
+
+==============
+ Spectrum T3S
+==============
+'Type 3' specifies that ONLY the individual systematic errors will be given as formatted below. Total systematic error will
+calculated from the individuals by adding them in quadrature.
+'Symmetric' specifies that the systematic errors will be given symmetrically (only one column)
+
++ syst_sub_1 e_p1 e_p2 ...
++ syst_sub_2 ...
+...
+
+[xm] [xlow] [xhigh] [sigma] [stat sigma]
+p1
+p2
+...
+
+Example: spectrum_t3a_data.txt
+
+==============
+ Spectrum T3A
+==============
+'Type 3' specifies that ONLY the individual systematic errors will be given as formatted below. Total systematic error will
+calculated from the individuals by adding them in quadrature.
+'Asymmetric' specifies that the systematic errors will be given asymmetrically (as + and - in separate columns)
+
++ syst_sub_1 e_p1 e_p2 ...
+- syst_sub_2 e_n1 e_n2 ...
++ syst_sub_2 ...
+- syst_sub_2 ...
+...
+
+[xm] [xlow] [xhigh] [sigma] [stat sigma]
+p1
+p2
+...
+
+Example: spectrum_t3a_data.txt
 
 ================
    HERAFitter
