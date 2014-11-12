@@ -4,6 +4,9 @@ Spectrum
 # PDFSets folder
 PDFsets
 
+# Ctags folder
+tags
+
 # Spectrum project
 *.sublime-project
 *.sublime-workspace
