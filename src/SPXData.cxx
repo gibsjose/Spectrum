@@ -975,7 +975,7 @@ void SPXData::ParseHERAFitter(void) {
 				xm_t = sqrt(pow(xlow_t, 2.0) + pow(xhigh_t, 2.0));	//@TODO How to calculate Xm for HERAFitter? Geometric mean?
 				sigma_t = dataVector[SIGMA_COL];
 				double stat_p = dataVector[STAT_P_COL];
-				double data_n = dataVector[STAT_N_COL];
+				double stat_n = dataVector[STAT_N_COL];
 				stat_t = sqrt(pow(stat_p, 2.0) + pow(stat_n, 2.0));	//@TODO How to calculate Stat for HERAFitter? Geometric mean?
 
 				//Read in systematics: Must use names vector instead of map keys to ensure correct order
