@@ -901,7 +901,7 @@ void SPXData::ParseHERAFitter(void) {
 			std::vector<std::string> names;
 
 			//Compile the list of all individual systematic error names
-			if(line.find("ColumnName") == 1) {
+			if(line.find("ColumnName") != std::string::npos) {
 
 				tmp = line;
 
