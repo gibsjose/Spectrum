@@ -881,7 +881,7 @@ void SPXData::ParseHERAFitter(void) {
 				iss >> tmp;	//NDATA
 				iss >> tmp;	//=
 				iss >> tmp;
-				numberOfBins = atoi(tmp);
+				numberOfBins = atoi(tmp.c_str());
 				if(debug) std::cout << cn << mn << "Number of Bins set to " << numberOfBins << std::endl;
 			}
 
@@ -890,7 +890,7 @@ void SPXData::ParseHERAFitter(void) {
 				iss >> tmp;
 				iss >> tmp;
 				iss >> tmp;
-				numberOfColumns = atoi(tmp);
+				numberOfColumns = atoi(tmp.c_str());
 				if(debug) std::cout << cn << mn << "Number of Columns set to "  << numberOfColumns << std::endl;
 
 				//Determine number of individual systematics
@@ -898,15 +898,15 @@ void SPXData::ParseHERAFitter(void) {
 				if(debug) std::cout << cn << mn << "Number of Systematics set to " << numberOfSystematics << std::endl;
 			}
 
+			std::vector<std::string> names;
+
 			//Compile the list of all individual systematic error names
 			if(line.find("ColumnName") == 1) {
-
-				std::vector<std::string> names;
 
 				tmp = line;
 
 				//Get rid of 'ColumnName = '
-				tmp = SPXStringUtilities::ReplaceFirstSubstring(tmp, "ColumnName = ");
+				tmp = SPXStringUtilities::RemoveFirstSubstring(tmp, "ColumnName = ");
 
 				//Remove all single quotes and delimit with "," returning a vector of tokens
 				tmp = SPXStringUtilities::RemoveCharacters(tmp, "\'");
@@ -946,17 +946,18 @@ void SPXData::ParseHERAFitter(void) {
 
 				//Initialize a data vector for each name found
 				for(int i = 0; i < numberOfSystematics; i++) {
-					std::vector<double> tmp_v;
-					individualSystematics[names[i]].push_back(tmp_v);
+					individualSystematics[names[i]] = std::vector<double>();
 				}
 			}
 
 			//Data begins with numeric character at position 0 (and # bins and # columns have already been read correctly)
-			if(isdigit((int)line.at(0)) && (numberOfBins) && (numberOfDataColumns)) {
+			if(isdigit((int)line.at(0)) && (numberOfBins) && (numberOfColumns)) {
 
 				//Parse line into vector of doubles
+				std::vector<double> dataVector;
+
 				try {
-					std::vector<double> dataVector = SPXStringUtilities::ParseStringToDoubleVector(line, ' ');
+					dataVector = SPXStringUtilities::ParseStringToDoubleVector(line, ' ');
 				} catch(const SPXException &e) {
 					std::cerr << e.what() << std::endl;
 					throw SPXParseException(cn + mn + "Could not parse HERAFitter data file " + pci.dataSteeringFile.GetDataFile());
