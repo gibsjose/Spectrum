@@ -977,18 +977,12 @@ void SPXData::ParseHERAFitter(void) {
 				double stat_n = dataVector[STAT_N_COL];
 				stat_t = sqrt(pow(stat_p, 2.0) + pow(stat_n, 2.0));	//@TODO How to calculate Stat for HERAFitter? Geometric mean?
 
-				std::cout << "========== names.size(): " << names.size() << std::endl;
-
-				for(int i = 0; i < names.size(); i++) {
-					std::cout << "\t " << names.at(i);
-				}
-
 				//Read in systematics: Must use names vector instead of map keys to ensure correct order
 				for(int i = SYST_BEGIN_COL; i < numberOfColumns; i++) {
-					if(debug) std::cout << " --> Adding data for " << names.at(i) << std::endl;
+					if(debug) std::cout << "[" << i << "]" << " --> Adding error for " << names.at(i) << ": " << dataVector.at(i) << std::endl;
 
 					if(individualSystematics.count(names.at(i)) == 0) {
-						std::cerr << "=============ERROR============" << std::endl;
+						throw SPXParseException(cn + mn + "Name \"" + names.at(i) + "\" not found in systematics map");
 					} else {
 						auto &v = individualSystematics[names.at(i)];
 						v.push_back(dataVector.at(i));
