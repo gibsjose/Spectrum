@@ -746,11 +746,33 @@ void SPXData::ParseSpectrumT3A(void) {
 		p_errors.clear();
 		n_errors.clear();
 
-		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it < individualSystematics.end(); it+=2) {
+		StringDoubleVectorMap_T::iterator p_it = individualSystematics.begin();
+		StringDoubleVectorMap_T::iterator n_it = individualSystematics.begin();
+
+		while((p_it != individualSystematics.end()) && (n_it != individualSystematics.end())) {
+
+			//Increment the Negative iterator first to offset it from the positive by 1
+			if(++n_it == individualSystematics.end()) {
+				break;
+			}
+
 			std::vector<double> &p_syst = it->second;
 			std::vector<double> &n_syst = (it + 1)->second;
 			p_errors.push_back(p_syst.at(i));
 			n_errors.push_back(n_syst.at(i));
+
+			//Increment Positive iterator by 2
+			if( ++p_it == individualSystematics.end()) {
+				break;
+			}
+			if( ++p_it == individualSystematics.end()) {
+				break;
+			}
+
+			//Increment the Negative iterator by 1, making a total increment of 2
+			if( ++n_sit == individualSystematics.end()) {
+				break;
+			}
 		}
 
 		syst_p_t = SPXMathUtilities::AddErrorsInQuadrature(p_errors);
