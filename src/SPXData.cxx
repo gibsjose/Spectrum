@@ -364,7 +364,7 @@ void SPXData::ParseSpectrumT2S(void) {
 
 		//Check size of all individual systematic errors
 		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
-			std::string &syst_name = it->first;
+			const std::string &syst_name = it->first;
 			std::vector<double> &systematic = it->second;
 			CheckVectorSize(systematic, name, masterSize);
 		}
@@ -492,7 +492,7 @@ void SPXData::ParseSpectrumT2A(void) {
 
 		//Check size of all individual systematic errors
 		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
-			std::string &syst_name = it->first;
+			const std::string &syst_name = it->first;
 			std::vector<double> &systematic = it->second;
 			CheckVectorSize(systematic, name, masterSize);
 		}
@@ -625,7 +625,7 @@ void SPXData::ParseSpectrumT3S(void) {
 
 		//Check size of all individual systematic errors
 		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
-			std::string &syst_name = it->first;
+			const std::string &syst_name = it->first;
 			std::vector<double> &systematic = it->second;
 			CheckVectorSize(systematic, name, masterSize);
 		}
@@ -774,7 +774,7 @@ void SPXData::ParseSpectrumT3A(void) {
 
 		//Check size of all individual systematic errors
 		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
-			std::string &syst_name = it->first;
+			const std::string &syst_name = it->first;
 			std::vector<double> &systematic = it->second;
 			CheckVectorSize(systematic, name, masterSize);
 		}
@@ -1008,9 +1008,9 @@ void SPXData::ParseHERAFitter(void) {
 
 		//Check size of all individual systematic errors
 		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
-			std::string &syst_name = it->first;
+			const std::string &syst_name = it->first;
 			std::vector<double> &systematic = it->second;
-			CheckVectorSize(systematic, name, masterSize);
+			CheckVectorSize(systematic, syst_name, masterSize);
 		}
 
 	} catch(const SPXException &e) {
@@ -1164,7 +1164,7 @@ void SPXData::PrintSpectrumT2S(void) {
 
 	//Iterate over individual systematic errors
 	for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
-		std::string &syst_name = it->first;
+		const std::string &syst_name = it->first;
 		std::vector<double> &systematic = it->second;
 
 		std::cout << std::left << std::setw(24) << syst_name << "  ";
@@ -1220,7 +1220,7 @@ void SPXData::PrintSpectrumT2A(void) {
 
 	//Iterate over individual systematic errors
 	for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
-		std::string &syst_name = it->first;
+		const std::string &syst_name = it->first;
 		std::vector<double> &systematic = it->second;
 
 		std::cout << std::left << std::setw(24) << syst_name << "  ";
@@ -1274,7 +1274,7 @@ void SPXData::PrintSpectrumT3S(void) {
 
 	//Iterate over individual systematic errors
 	for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
-		std::string &syst_name = it->first;
+		const std::string &syst_name = it->first;
 		std::vector<double> &systematic = it->second;
 
 		std::cout << std::left << std::setw(24) << syst_name << "  ";
@@ -1330,7 +1330,7 @@ void SPXData::PrintSpectrumT3A(void) {
 
 	//Iterate over individual systematic errors
 	for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
-		std::string &syst_name = it->first;
+		const std::string &syst_name = it->first;
 		std::vector<double> &systematic = it->second;
 
 		std::cout << std::left << std::setw(24) << syst_name << "  ";
@@ -1386,7 +1386,7 @@ void SPXData::PrintHERAFitter(void) {
 
 	//Iterate over individual systematic errors
 	for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
-		std::string &syst_name = it->first;
+		const std::string &syst_name = it->first;
 		std::vector<double> &systematic = it->second;
 
 		std::cout << std::left << std::setw(24) << syst_name << "  ";
