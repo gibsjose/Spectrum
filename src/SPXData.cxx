@@ -366,7 +366,7 @@ void SPXData::ParseSpectrumT2S(void) {
 		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
 			const std::string &syst_name = it->first;
 			std::vector<double> &systematic = it->second;
-			CheckVectorSize(systematic, name, masterSize);
+			CheckVectorSize(systematic, syst_name, masterSize);
 		}
 
 	} catch(const SPXException &e) {
@@ -494,7 +494,7 @@ void SPXData::ParseSpectrumT2A(void) {
 		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
 			const std::string &syst_name = it->first;
 			std::vector<double> &systematic = it->second;
-			CheckVectorSize(systematic, name, masterSize);
+			CheckVectorSize(systematic, syst_name, masterSize);
 		}
 
 	} catch(const SPXException &e) {
@@ -627,7 +627,7 @@ void SPXData::ParseSpectrumT3S(void) {
 		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
 			const std::string &syst_name = it->first;
 			std::vector<double> &systematic = it->second;
-			CheckVectorSize(systematic, name, masterSize);
+			CheckVectorSize(systematic, syst_name, masterSize);
 		}
 
 	} catch(const SPXException &e) {
@@ -798,7 +798,7 @@ void SPXData::ParseSpectrumT3A(void) {
 		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
 			const std::string &syst_name = it->first;
 			std::vector<double> &systematic = it->second;
-			CheckVectorSize(systematic, name, masterSize);
+			CheckVectorSize(systematic, syst_name, masterSize);
 		}
 
 	} catch(const SPXException &e) {
@@ -878,8 +878,8 @@ void SPXData::ParseHERAFitter(void) {
 
 			//Get the number of bins
 			if(line.find("NDATA") != std::string::npos) {
-				iss >> NULL;	//NDATA
-				iss >> NULL;	//=
+				iss >> tmp;	//NDATA
+				iss >> tmp;	//=
 				iss >> tmp;
 				numberOfBins = atoi(tmp);
 				if(debug) std::cout << cn << mn << "Number of Bins set to " << numberOfBins << std::endl;
@@ -887,8 +887,8 @@ void SPXData::ParseHERAFitter(void) {
 
 			//Get number of columns and initialize individual vector
 			if(line.find("NColumn") != std::string::npos) {
-				iss >> NULL;
-				iss >> NULL;
+				iss >> tmp;
+				iss >> tmp;
 				iss >> tmp;
 				numberOfColumns = atoi(tmp);
 				if(debug) std::cout << cn << mn << "Number of Columns set to "  << numberOfColumns << std::endl;
@@ -912,15 +912,8 @@ void SPXData::ParseHERAFitter(void) {
 				tmp = SPXStringUtilities::RemoveCharacters(tmp, "\'");
 				names = SPXStringUtilities::SplitString(tmp, ",");
 
-				//Append '_p' or '_n' depending on sign
-				if(!sign.compare("+")) {
-					name += "_p";
-				} else if(!sign.compare("-")) {
-					name += "_n";
-				}
-
 				//Remove the non-systematic error names
-				std::vector<names::value_type>(name.begin() + SYST_BEGIN_COL, names.end()).swap(names);
+				std::vector<names::value_type>(names.begin() + SYST_BEGIN_COL, names.end()).swap(names);
 
 				//DEBUG: Print all names
 				if(debug) {
@@ -939,6 +932,14 @@ void SPXData::ParseHERAFitter(void) {
 					throw SPXParseException(oss.str());
 				}
 
+				//@TODO For each SYMMETRIC name, make _p and _n with same value AND INCREMENT numberOfSystematics
+				// //Append '_p' or '_n' depending on sign
+				// if(!sign.compare("+")) {
+				// 	name += "_p";
+				// } else if(!sign.compare("-")) {
+				// 	name += "_n";
+				// }
+
 	/////////////DEBUG//////////////
 				while(1);
 	////////////////////////////////
@@ -946,7 +947,7 @@ void SPXData::ParseHERAFitter(void) {
 				//Initialize a data vector for each name found
 				for(int i = 0; i < numberOfSystematics; i++) {
 					std::vector<double> tmp_v;
-					individualSystematics.push_back(tmp_v);
+					individualSystematics[names[i]].push_back(tmp_v);
 				}
 			}
 
