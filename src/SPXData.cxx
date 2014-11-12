@@ -735,6 +735,10 @@ void SPXData::ParseSpectrumT3A(void) {
 		}
 	}
 
+	//Set master size
+	int masterSize = xm.size();
+	if(debug) std::cout << cn << mn << "Master size set to size of \"xm\" vector: " << masterSize << std::endl;
+
 	//Compute total positive/negative systematics for each bin using the individual systematic errors
 	for(int i = 0; i < masterSize; i++) {
 		std::vector<double> p_errors;
@@ -774,9 +778,6 @@ void SPXData::ParseSpectrumT3A(void) {
 	}
 
 	//Check vector sizes: all vectors should be the same size
-	int masterSize = xm.size();
-	if(debug) std::cout << cn << mn << "Master size set to size of \"xm\" vector: " << masterSize << std::endl;
-
 	if(debug) std::cout << cn << mn << "Checking sizes of all other vectors.." << std::endl;
 
 	try {
@@ -990,6 +991,10 @@ void SPXData::ParseHERAFitter(void) {
 		}
 	}
 
+	//Set master size
+	int masterSize = numberOfBins;
+	if(debug) std::cout << cn << mn << "Master size set to size of \"NDATA\" " << masterSize << std::endl;
+
 	//Compute total positive/negative systematics for each bin using the individual systematic errors
 	for(int i = 0; i < masterSize; i++) {
 		std::vector<double> p_errors;
@@ -1029,9 +1034,6 @@ void SPXData::ParseHERAFitter(void) {
 	}
 
 	//Check vector sizes: all vectors should be the same size
-	int masterSize = numberOfBins;
-	if(debug) std::cout << cn << mn << "Master size set to size of \"NDATA\" " << masterSize << std::endl;
-
 	if(debug) std::cout << cn << mn << "Checking sizes of all vectors.." << std::endl;
 
 	try {
