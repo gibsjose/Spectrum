@@ -978,7 +978,7 @@ void SPXData::ParseHERAFitter(void) {
 
 				//Read in systematics: Must use names vector instead of map keys to ensure correct order
 				for(int i = SYST_BEGIN_COL; i < numberOfColumns; i++) {
-					if(debug) std::cout << names[i];
+					if(debug) std::cout << " --> Adding data for " << names[i] << std::endl;
 
 					if(individualSystematics.count(names[i]) == 0) {
 						std::cerr << "=============ERROR============" << std::endl;
