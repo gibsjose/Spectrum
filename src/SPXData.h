@@ -66,15 +66,7 @@ public:
 	}
 
 	unsigned int GetNumberOfIndividualSystematicErrors(void) const {
-		return individualSystematicErrorNames.size();
-	}
-
-	const std::string & GetIndividualSystematicErrorName(unsigned int index) const {
-		if(index > (individualSystematicErrorNames.size() - 1)) {
-			throw SPXOutOfRangeException((individualSystematicErrorNames.size() - 1), index, "SPXData::GetIndividualSystematicErrorName: Index out of range");
-		}
-
-		return individualSystematicErrorNames.at(index);
+		return individualSystematics.size();
 	}
 
 	std::vector<double> GetDataColumn(const std::string &column) {
