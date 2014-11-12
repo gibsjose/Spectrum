@@ -70,7 +70,7 @@ jet_algorithm_number = 4										;[Optional] Jet Algorithm Number
 ;		spectrum_t1a
 ;		spectrum_t2s
 ;		spectrum_t2a
-;		herapdf
+;		herafitter
 ;
 ; See the file 'data_formats.txt' for a more comprehensive
 ; explanation of the different formats
