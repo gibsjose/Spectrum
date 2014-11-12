@@ -735,10 +735,6 @@ void SPXData::ParseSpectrumT3A(void) {
 		}
 	}
 
-	//Check vector sizes: all vectors should be the same size
-	int masterSize = xm.size();
-	if(debug) std::cout << cn << mn << "Master size set to size of \"xm\" vector: " << masterSize << std::endl;
-
 	//Compute total positive/negative systematics for each bin using the individual systematic errors
 	for(int i = 0; i < masterSize; i++) {
 		std::vector<double> p_errors;
@@ -746,32 +742,25 @@ void SPXData::ParseSpectrumT3A(void) {
 		p_errors.clear();
 		n_errors.clear();
 
-		StringDoubleVectorMap_T::iterator p_it = individualSystematics.begin();
-		StringDoubleVectorMap_T::iterator n_it = individualSystematics.begin();
+		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); ++it) {
 
-		while((p_it != individualSystematics.end()) && (n_it != individualSystematics.end())) {
+			const std::string &name = it->first;
+			std::vector<double> &syst = it->second;
 
-			//Increment the Negative iterator first to offset it from the positive by 1
-			if(++n_it == individualSystematics.end()) {
-				break;
+			//Positive systematic
+			if(name.find("_p") != std::string::npos) {
+				p_errors.push_back(syst.at(i));
 			}
 
-			std::vector<double> &p_syst = p_it->second;
-			std::vector<double> &n_syst = n_it->second;
-			p_errors.push_back(p_syst.at(i));
-			n_errors.push_back(n_syst.at(i));
-
-			//Increment Positive iterator by 2
-			if( ++p_it == individualSystematics.end()) {
-				break;
-			}
-			if( ++p_it == individualSystematics.end()) {
-				break;
+			//Negative systematic
+			else if(name.contains("_n") != std::string::npos) {
+				n_errors.push_back(syst.at(i));
 			}
 
-			//Increment the Negative iterator by 1, making a total increment of 2
-			if( ++n_it == individualSystematics.end()) {
-				break;
+			//Symmetric systematic: +/- are the same
+			else {
+				p_errors.push_back(syst.at(i));
+				n_errors.push_back(syst.at(i));
 			}
 		}
 
@@ -783,6 +772,10 @@ void SPXData::ParseSpectrumT3A(void) {
 		if(debug) std::cout << cn << mn << "Total positive systematic error for bin " << i << " calculated as: " << syst_p_t << std::endl;
 		if(debug) std::cout << cn << mn << "Total negative systematic error for bin " << i << " calculated as: " << syst_n_t << std::endl;
 	}
+
+	//Check vector sizes: all vectors should be the same size
+	int masterSize = xm.size();
+	if(debug) std::cout << cn << mn << "Master size set to size of \"xm\" vector: " << masterSize << std::endl;
 
 	if(debug) std::cout << cn << mn << "Checking sizes of all other vectors.." << std::endl;
 
@@ -918,10 +911,26 @@ void SPXData::ParseHERAFitter(void) {
 				//DEBUG: Print all names
 				if(debug) {
 					std::cout << cn << mn << "names.size() = " << names.size() << std::endl;
-					std::cout << cn << mn << "Names: " << std::endl;
-					for(int i = 0; i < names.size(); i++) {
-						std::cout << "\t " << names.at(i) << std::endl;
+					std::cout << cn << mn << "Individual Systematic Error Names: " << std::endl;
+				}
+
+				unsigned int pos_count = 0;
+				unsigned int neg_count = 0;
+
+				//Make sure there are the same number of +/- errors, if not issue a warning
+				for(int i = 0; i < names.size(); i++) {
+					if(debug) std::cout << "\t " << names.at(i) << std::endl;
+
+					if(names.at(i).find("+") != std::string::npos) {
+						pos_count++;
 					}
+					else if(name.at(i).find("-") != std::string::npos) {
+						neg_count++;
+					}
+				}
+
+				if(pos_count != neg_count) {
+					std::cerr << cn << mn << "WARNING: Different number of positive/negative systematic errors: Data errors could be skewed" << std::endl;
 				}
 
 				//Check size against calculated number of columns
@@ -932,23 +941,10 @@ void SPXData::ParseHERAFitter(void) {
 					throw SPXParseException(oss.str());
 				}
 
-				//@TODO For each SYMMETRIC name, make _p and _n with same value AND INCREMENT numberOfSystematics
-				// //Append '_p' or '_n' depending on sign
-				// if(!sign.compare("+")) {
-				// 	name += "_p";
-				// } else if(!sign.compare("-")) {
-				// 	name += "_n";
-				// }
-
 				//Initialize a data vector for each name found
 				for(int i = 0; i < numberOfSystematics; i++) {
 					individualSystematics[names[i]] = std::vector<double>();
 				}
-
-/////////////DEBUG//////////////
-			while(1);
-////////////////////////////////
-
 			}
 
 			//Data begins with numeric character at position 0 (and # bins and # columns have already been read correctly)
@@ -994,10 +990,6 @@ void SPXData::ParseHERAFitter(void) {
 		}
 	}
 
-	//Check vector sizes: all vectors should be the same size
-	int masterSize = xm.size();
-	if(debug) std::cout << cn << mn << "Master size set to size of \"xm\" vector: " << masterSize << std::endl;
-
 	//Compute total positive/negative systematics for each bin using the individual systematic errors
 	for(int i = 0; i < masterSize; i++) {
 		std::vector<double> p_errors;
@@ -1005,32 +997,25 @@ void SPXData::ParseHERAFitter(void) {
 		p_errors.clear();
 		n_errors.clear();
 
-		StringDoubleVectorMap_T::iterator p_it = individualSystematics.begin();
-		StringDoubleVectorMap_T::iterator n_it = individualSystematics.begin();
+		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); ++it) {
 
-		while((p_it != individualSystematics.end()) && (n_it != individualSystematics.end())) {
+			const std::string &name = it->first;
+			std::vector<double> &syst = it->second;
 
-			//Increment the Negative iterator first to offset it from the positive by 1
-			if(++n_it == individualSystematics.end()) {
-				break;
+			//Positive systematic
+			if(name.find("+") != std::string::npos) {
+				p_errors.push_back(syst.at(i));
 			}
 
-			std::vector<double> &p_syst = p_it->second;
-			std::vector<double> &n_syst = n_it->second;
-			p_errors.push_back(p_syst.at(i));
-			n_errors.push_back(n_syst.at(i));
-
-			//Increment Positive iterator by 2
-			if( ++p_it == individualSystematics.end()) {
-				break;
-			}
-			if( ++p_it == individualSystematics.end()) {
-				break;
+			//Negative systematic
+			else if(name.contains("-") != std::string::npos) {
+				n_errors.push_back(syst.at(i));
 			}
 
-			//Increment the Negative iterator by 1, making a total increment of 2
-			if( ++n_it == individualSystematics.end()) {
-				break;
+			//Symmetric systematic: +/- are the same
+			else {
+				p_errors.push_back(syst.at(i));
+				n_errors.push_back(syst.at(i));
 			}
 		}
 
@@ -1043,9 +1028,14 @@ void SPXData::ParseHERAFitter(void) {
 		if(debug) std::cout << cn << mn << "Total negative systematic error for bin " << i << " calculated as: " << syst_n_t << std::endl;
 	}
 
-	if(debug) std::cout << cn << mn << "Checking sizes of all other vectors.." << std::endl;
+	//Check vector sizes: all vectors should be the same size
+	int masterSize = numberOfBins;
+	if(debug) std::cout << cn << mn << "Master size set to size of \"NDATA\" " << masterSize << std::endl;
+
+	if(debug) std::cout << cn << mn << "Checking sizes of all vectors.." << std::endl;
 
 	try {
+		CheckVectorSize(xm, "xm", masterSize);
 		CheckVectorSize(xlow, "xlow", masterSize);
 		CheckVectorSize(xhigh, "xhigh", masterSize);
 		CheckVectorSize(sigma, "sigma", masterSize);
@@ -1069,8 +1059,8 @@ void SPXData::ParseHERAFitter(void) {
 
 	//Set numberOfBins based on master size
 	if(debug) std::cout << cn << mn << "Setting numberOfBins to match master size" << std::endl;
-	numberOfBins = masterSize;
-	if(debug) std::cout << cn << mn << "numberOfBins = " << numberOfBins << std::endl;
+	this->numberOfBins = masterSize;
+	if(debug) std::cout << cn << mn << "numberOfBins = " << this->numberOfBins << std::endl;
 
 	//Add to data map
 	data.insert(StringDoubleVectorPair_T("xm", xm));
