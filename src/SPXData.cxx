@@ -180,17 +180,12 @@ void SPXData::ParseSpectrumT1S(void) {
 	if(debug) std::cout << cn << mn << "numberOfBins = " << numberOfBins << std::endl;
 
 	//Add to data map
-	data.insert(std::pair<std::string, std::vector<double> >("xm", xm));
-	data.insert(std::pair<std::string, std::vector<double> >("xlow", xlow));
-	data.insert(std::pair<std::string, std::vector<double> >("xhigh", xhigh));
-	data.insert(std::pair<std::string, std::vector<double> >("sigma", sigma));
-	data.insert(std::pair<std::string, std::vector<double> >("stat", stat));
-	data.insert(std::pair<std::string, std::vector<double> >("syst", syst));
-
-	//Print formatted table
-	// if(debug) {
-	// 	PrintSpectrumT1S();
-	// }
+	data.insert(StringDoubleVectorPair_T("xm", xm));
+	data.insert(StringDoubleVectorPair_T("xlow", xlow));
+	data.insert(StringDoubleVectorPair_T("xhigh", xhigh));
+	data.insert(StringDoubleVectorPair_T("sigma", sigma));
+	data.insert(StringDoubleVectorPair_T("stat", stat));
+	data.insert(StringDoubleVectorPair_T("syst", syst));
 }
 
 void SPXData::ParseSpectrumT1A(void) {
@@ -271,18 +266,13 @@ void SPXData::ParseSpectrumT1A(void) {
 	if(debug) std::cout << cn << mn << "numberOfBins = " << numberOfBins << std::endl;
 
 	//Add to data map
-	data.insert(std::pair<std::string, std::vector<double> >("xm", xm));
-	data.insert(std::pair<std::string, std::vector<double> >("xlow", xlow));
-	data.insert(std::pair<std::string, std::vector<double> >("xhigh", xhigh));
-	data.insert(std::pair<std::string, std::vector<double> >("sigma", sigma));
-	data.insert(std::pair<std::string, std::vector<double> >("stat", stat));
-	data.insert(std::pair<std::string, std::vector<double> >("syst_p", syst_p));
-	data.insert(std::pair<std::string, std::vector<double> >("syst_n", syst_n));
-
-	//Print formatted table
-	// if(debug) {
-	// 	PrintSpectrumT1A();
-	// }
+	data.insert(StringDoubleVectorPair_T("xm", xm));
+	data.insert(StringDoubleVectorPair_T("xlow", xlow));
+	data.insert(StringDoubleVectorPair_T("xhigh", xhigh));
+	data.insert(StringDoubleVectorPair_T("sigma", sigma));
+	data.insert(StringDoubleVectorPair_T("stat", stat));
+	data.insert(StringDoubleVectorPair_T("syst_p", syst_p));
+	data.insert(StringDoubleVectorPair_T("syst_n", syst_n));
 }
 
 void SPXData::ParseSpectrumT2S(void) {
@@ -302,9 +292,6 @@ void SPXData::ParseSpectrumT2S(void) {
 	std::vector<double> sigma;			//Sigma (cross-section)
 	std::vector<double> stat;			//Statistical error
 	std::vector<double> syst;			//Total systematic error
-
-	//Vector containing
-	std::vector<std::vector<double> > individualSystematicErrors;
 
 	while(dataFile->good()) {
 		std::getline(*dataFile, line);
@@ -328,10 +315,9 @@ void SPXData::ParseSpectrumT2S(void) {
 			if(line.find("+ syst_") == 0) {
 
 				std::string name;
-				iss >> name; //Get rid of the '+'
+				std::string sign;
+				iss >> sign; //Get rid of the '+'
 				iss >> name; //Actual name
-
-				//if(debug) std::cout << cn << mn << "Found new individual systematic error: " << name << std::endl;
 
 				double val = 0;
 				std::vector<double> tmp_syst;
@@ -342,11 +328,9 @@ void SPXData::ParseSpectrumT2S(void) {
 					tmp_syst.push_back(val);
 				}
 
-				//Add the name to the object's list of individual systematic error names
-				individualSystematicErrorNames.push_back(name);
-
-				//Add the data to the temporary list of individual systematic errors
-				individualSystematicErrors.push_back(tmp_syst);
+				//Add it to the map
+				StringDoubleVectorPair_T pair(name, tmp_syst);
+				individualSystematics.insert(pair);
 			}
 
 			//Not a systematic error
@@ -379,8 +363,10 @@ void SPXData::ParseSpectrumT2S(void) {
 		CheckVectorSize(syst, "syst", masterSize);
 
 		//Check size of all individual systematic errors
-		for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
-			CheckVectorSize(individualSystematicErrors.at(i), individualSystematicErrorNames.at(i), masterSize);
+		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
+			std::vector<double> &syst_name = it->first;
+			std::vector<double> &systematic = it->second;
+			CheckVectorSize(systematic, name, masterSize);
 		}
 
 	} catch(const SPXException &e) {
@@ -396,22 +382,12 @@ void SPXData::ParseSpectrumT2S(void) {
 	if(debug) std::cout << cn << mn << "numberOfBins = " << numberOfBins << std::endl;
 
 	//Add to data map
-	data.insert(std::pair<std::string, std::vector<double> >("xm", xm));
-	data.insert(std::pair<std::string, std::vector<double> >("xlow", xlow));
-	data.insert(std::pair<std::string, std::vector<double> >("xhigh", xhigh));
-	data.insert(std::pair<std::string, std::vector<double> >("sigma", sigma));
-	data.insert(std::pair<std::string, std::vector<double> >("stat", stat));
-	data.insert(std::pair<std::string, std::vector<double> >("syst", syst));
-
-	//Add individual systematic errors to map
-	for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
-		data.insert(std::pair<std::string, std::vector<double> >(individualSystematicErrorNames.at(i), individualSystematicErrors.at(i)));
-	}
-
-	//Print formatted table
-	// if(debug) {
-	// 	PrintSpectrumT2S();
-	// }
+	data.insert(StringDoubleVectorPair_T("xm", xm));
+	data.insert(StringDoubleVectorPair_T("xlow", xlow));
+	data.insert(StringDoubleVectorPair_T("xhigh", xhigh));
+	data.insert(StringDoubleVectorPair_T("sigma", sigma));
+	data.insert(StringDoubleVectorPair_T("stat", stat));
+	data.insert(StringDoubleVectorPair_T("syst", syst));
 }
 
 void SPXData::ParseSpectrumT2A(void) {
@@ -432,9 +408,6 @@ void SPXData::ParseSpectrumT2A(void) {
 	std::vector<double> stat;			//Statistical error
 	std::vector<double> syst_p;			//Total systematic error (+)
 	std::vector<double> syst_n;			//Total systematic error (-)
-
-	//Vector containing
-	std::vector<std::vector<double> > individualSystematicErrors;
 
 	while(dataFile->good()) {
 		std::getline(*dataFile, line);
@@ -481,11 +454,9 @@ void SPXData::ParseSpectrumT2A(void) {
 					tmp_syst.push_back(val);
 				}
 
-				//Add the name to the object's list of individual systematic error names
-				individualSystematicErrorNames.push_back(name);
-
-				//Add the data to the temporary list of individual systematic errors
-				individualSystematicErrors.push_back(tmp_syst);
+				//Add it to the map
+				StringDoubleVectorPair_T pair(name, tmp_syst);
+				individualSystematics.insert(pair);
 			}
 
 			//Not a systematic error
@@ -520,8 +491,10 @@ void SPXData::ParseSpectrumT2A(void) {
 		CheckVectorSize(syst_n, "syst_n", masterSize);
 
 		//Check size of all individual systematic errors
-		for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
-			CheckVectorSize(individualSystematicErrors.at(i), individualSystematicErrorNames.at(i), masterSize);
+		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
+			std::vector<double> &syst_name = it->first;
+			std::vector<double> &systematic = it->second;
+			CheckVectorSize(systematic, name, masterSize);
 		}
 
 	} catch(const SPXException &e) {
@@ -537,23 +510,13 @@ void SPXData::ParseSpectrumT2A(void) {
 	if(debug) std::cout << cn << mn << "numberOfBins = " << numberOfBins << std::endl;
 
 	//Add to data map
-	data.insert(std::pair<std::string, std::vector<double> >("xm", xm));
-	data.insert(std::pair<std::string, std::vector<double> >("xlow", xlow));
-	data.insert(std::pair<std::string, std::vector<double> >("xhigh", xhigh));
-	data.insert(std::pair<std::string, std::vector<double> >("sigma", sigma));
-	data.insert(std::pair<std::string, std::vector<double> >("stat", stat));
-	data.insert(std::pair<std::string, std::vector<double> >("syst_p", syst_p));
-	data.insert(std::pair<std::string, std::vector<double> >("syst_n", syst_n));
-
-	//Add individual systematic errors to map
-	for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
-		data.insert(std::pair<std::string, std::vector<double> >(individualSystematicErrorNames.at(i), individualSystematicErrors.at(i)));
-	}
-
-	//Print formatted table
-	// if(debug) {
-	// 	PrintSpectrumT2A();
-	// }
+	data.insert(StringDoubleVectorPair_T("xm", xm));
+	data.insert(StringDoubleVectorPair_T("xlow", xlow));
+	data.insert(StringDoubleVectorPair_T("xhigh", xhigh));
+	data.insert(StringDoubleVectorPair_T("sigma", sigma));
+	data.insert(StringDoubleVectorPair_T("stat", stat));
+	data.insert(StringDoubleVectorPair_T("syst_p", syst_p));
+	data.insert(StringDoubleVectorPair_T("syst_n", syst_n));
 }
 
 void SPXData::ParseSpectrumT3S(void) {
@@ -573,9 +536,6 @@ void SPXData::ParseSpectrumT3S(void) {
 	std::vector<double> sigma;			//Sigma (cross-section)
 	std::vector<double> stat;			//Statistical error
 	std::vector<double> syst;			//Total systematic error
-
-	//Vector containing
-	std::vector<std::vector<double> > individualSystematicErrors;
 
 	while(dataFile->good()) {
 		std::getline(*dataFile, line);
@@ -598,8 +558,9 @@ void SPXData::ParseSpectrumT3S(void) {
 			//Check for systematic errors
 			if(line.find("+ syst_") == 0) {
 
+				std::string sign;
 				std::string name;
-				iss >> name; //Get rid of the '+'
+				iss >> sign; //Get rid of the '+'
 				iss >> name; //Actual name
 
 				//if(debug) std::cout << cn << mn << "Found new individual systematic error: " << name << std::endl;
@@ -613,11 +574,9 @@ void SPXData::ParseSpectrumT3S(void) {
 					tmp_syst.push_back(val);
 				}
 
-				//Add the name to the object's list of individual systematic error names
-				individualSystematicErrorNames.push_back(name);
-
-				//Add the data to the temporary list of individual systematic errors
-				individualSystematicErrors.push_back(tmp_syst);
+				//Add it to the map
+				StringDoubleVectorPair_T pair(name, tmp_syst);
+				individualSystematics.insert(pair);
 			}
 
 			//Not a systematic error
@@ -643,9 +602,12 @@ void SPXData::ParseSpectrumT3S(void) {
 	for(int i = 0; i < masterSize; i++) {
 		std::vector<double> errors;
 		errors.clear();
-		for(int j = 0; j < individualSystematicErrors.size(); j++) {
-			errors.push_back(individualSystematicErrors[j][i]);
+
+		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
+			std::vector<double> &systematic = it->second;
+			errors.push_back(systematic.at(i));
 		}
+
 		syst_t = SPXMathUtilities::AddErrorsInQuadrature(errors);
 		syst.push_back(syst_t);
 
@@ -662,8 +624,10 @@ void SPXData::ParseSpectrumT3S(void) {
 		CheckVectorSize(syst, "syst", masterSize);
 
 		//Check size of all individual systematic errors
-		for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
-			CheckVectorSize(individualSystematicErrors.at(i), individualSystematicErrorNames.at(i), masterSize);
+		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
+			std::vector<double> &syst_name = it->first;
+			std::vector<double> &systematic = it->second;
+			CheckVectorSize(systematic, name, masterSize);
 		}
 
 	} catch(const SPXException &e) {
@@ -679,22 +643,12 @@ void SPXData::ParseSpectrumT3S(void) {
 	if(debug) std::cout << cn << mn << "numberOfBins = " << numberOfBins << std::endl;
 
 	//Add to data map
-	data.insert(std::pair<std::string, std::vector<double> >("xm", xm));
-	data.insert(std::pair<std::string, std::vector<double> >("xlow", xlow));
-	data.insert(std::pair<std::string, std::vector<double> >("xhigh", xhigh));
-	data.insert(std::pair<std::string, std::vector<double> >("sigma", sigma));
-	data.insert(std::pair<std::string, std::vector<double> >("stat", stat));
-	data.insert(std::pair<std::string, std::vector<double> >("syst", syst));
-
-	//Add individual systematic errors to map
-	for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
-		data.insert(std::pair<std::string, std::vector<double> >(individualSystematicErrorNames.at(i), individualSystematicErrors.at(i)));
-	}
-
-	//Print formatted table
-	// if(debug) {
-	// 	PrintSpectrumT3S();
-	// }
+	data.insert(StringDoubleVectorPair_T("xm", xm));
+	data.insert(StringDoubleVectorPair_T("xlow", xlow));
+	data.insert(StringDoubleVectorPair_T("xhigh", xhigh));
+	data.insert(StringDoubleVectorPair_T("sigma", sigma));
+	data.insert(StringDoubleVectorPair_T("stat", stat));
+	data.insert(StringDoubleVectorPair_T("syst", syst));
 }
 
 void SPXData::ParseSpectrumT3A(void) {
@@ -715,9 +669,6 @@ void SPXData::ParseSpectrumT3A(void) {
 	std::vector<double> stat;			//Statistical error
 	std::vector<double> syst_p;			//Total systematic error (+)
 	std::vector<double> syst_n;			//Total systematic error (-)
-
-	//Vector containing
-	std::vector<std::vector<double> > individualSystematicErrors;
 
 	while(dataFile->good()) {
 		std::getline(*dataFile, line);
@@ -764,11 +715,9 @@ void SPXData::ParseSpectrumT3A(void) {
 					tmp_syst.push_back(val);
 				}
 
-				//Add the name to the object's list of individual systematic error names
-				individualSystematicErrorNames.push_back(name);
-
-				//Add the data to the temporary list of individual systematic errors
-				individualSystematicErrors.push_back(tmp_syst);
+				//Add it to the map
+				StringDoubleVectorPair_T pair(name, tmp_syst);
+				individualSystematics.insert(pair);
 			}
 
 			//Not a systematic error
@@ -796,10 +745,14 @@ void SPXData::ParseSpectrumT3A(void) {
 		std::vector<double> n_errors;
 		p_errors.clear();
 		n_errors.clear();
-		for(int j = 0; j < individualSystematicErrors.size(); j+=2) {
-			p_errors.push_back(individualSystematicErrors.at(j).at(i));
-			n_errors.push_back(individualSystematicErrors.at(j + 1).at(i));
+
+		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it < individualSystematics.end(); it+=2) {
+			std::vector<double> &p_syst = it->second;
+			std::vector<double> &n_syst = (it + 1)->second;
+			p_errors.push_back(p_syst.at(i));
+			n_errors.push_back(n_syst.at(i));
 		}
+
 		syst_p_t = SPXMathUtilities::AddErrorsInQuadrature(p_errors);
 		syst_n_t = SPXMathUtilities::AddErrorsInQuadrature(n_errors);
 		syst_p.push_back(syst_p_t);
@@ -820,8 +773,10 @@ void SPXData::ParseSpectrumT3A(void) {
 		CheckVectorSize(syst_n, "syst_n", masterSize);
 
 		//Check size of all individual systematic errors
-		for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
-			CheckVectorSize(individualSystematicErrors.at(i), individualSystematicErrorNames.at(i), masterSize);
+		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
+			std::vector<double> &syst_name = it->first;
+			std::vector<double> &systematic = it->second;
+			CheckVectorSize(systematic, name, masterSize);
 		}
 
 	} catch(const SPXException &e) {
@@ -837,23 +792,13 @@ void SPXData::ParseSpectrumT3A(void) {
 	if(debug) std::cout << cn << mn << "numberOfBins = " << numberOfBins << std::endl;
 
 	//Add to data map
-	data.insert(std::pair<std::string, std::vector<double> >("xm", xm));
-	data.insert(std::pair<std::string, std::vector<double> >("xlow", xlow));
-	data.insert(std::pair<std::string, std::vector<double> >("xhigh", xhigh));
-	data.insert(std::pair<std::string, std::vector<double> >("sigma", sigma));
-	data.insert(std::pair<std::string, std::vector<double> >("stat", stat));
-	data.insert(std::pair<std::string, std::vector<double> >("syst_p", syst_p));
-	data.insert(std::pair<std::string, std::vector<double> >("syst_n", syst_n));
-
-	//Add individual systematic errors to map
-	for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
-		data.insert(std::pair<std::string, std::vector<double> >(individualSystematicErrorNames.at(i), individualSystematicErrors.at(i)));
-	}
-
-	//Print formatted table
-	// if(debug) {
-	// 	PrintSpectrumT3A();
-	// }
+	data.insert(StringDoubleVectorPair_T("xm", xm));
+	data.insert(StringDoubleVectorPair_T("xlow", xlow));
+	data.insert(StringDoubleVectorPair_T("xhigh", xhigh));
+	data.insert(StringDoubleVectorPair_T("sigma", sigma));
+	data.insert(StringDoubleVectorPair_T("stat", stat));
+	data.insert(StringDoubleVectorPair_T("syst_p", syst_p));
+	data.insert(StringDoubleVectorPair_T("syst_n", syst_n));
 }
 
 void SPXData::ParseHERAFitter(void) {
@@ -886,9 +831,6 @@ void SPXData::ParseHERAFitter(void) {
 	std::vector<double> stat;			//Statistical error
 	std::vector<double> syst_p;			//Total systematic error (+)
 	std::vector<double> syst_n;			//Total systematic error (-)
-
-	//Vector containing
-	std::vector<std::vector<double> > individualSystematicErrors;
 
 	while(dataFile->good()) {
 		std::getline(*dataFile, line);
@@ -977,23 +919,13 @@ void SPXData::ParseHERAFitter(void) {
 
 	/////////////DEBUG//////////////
 				while(1);
+	////////////////////////////////
 
 				//Initialize a data vector for each name found
 				for(int i = 0; i < numberOfSystematics; i++) {
 					std::vector<double> tmp_v;
 					individualSystematics.push_back(tmp_v);
 				}
-
-				//Add each name to the names array
-				//@TODO
-				// Need to figure out how to handle some data being given symmetrically while most of it is given asymmetrically...
-				// Could look for sign and do normal _p/_n business, and then if it doesn't have a sign, push it to both the _p/_n,
-				// and keep a count of how many times I've done that...
-				//
-				// NOTE: Maybe I should re-think the individualSystematicErrors/Names structures and use a MAP instead...
-				// 		 Tqhat would make more sense...
-
-				//if(debug) std::cout << cn << mn << "Found new individual systematic error: " << name << std::endl;
 			}
 
 			//Data begins with numeric character at position 0 (and # bins and # columns have already been read correctly)
@@ -1022,7 +954,7 @@ void SPXData::ParseHERAFitter(void) {
 				double data_n = dataVector[STAT_N_COL];
 				stat_t = sqrt(pow(stat_p, 2.0) + pow(stat_n, 2.0));	//@TODO How to calculate Stat for HERAFitter? Geometric mean?
 
-				//Read in systematics
+				//Read in systematics: Must use names vector instead of map keys to ensure correct order
 				for(int i = SYST_BEGIN_COL; i < numberOfColumns; i++) {
 					individualSystematics[names[i]].push_back(dataVector.at(i));
 				}
@@ -1047,10 +979,14 @@ void SPXData::ParseHERAFitter(void) {
 		std::vector<double> n_errors;
 		p_errors.clear();
 		n_errors.clear();
-		for(int j = 0; j < individualSystematicErrors.size(); j+=2) {
-			p_errors.push_back(individualSystematicErrors.at(j).at(i));
-			n_errors.push_back(individualSystematicErrors.at(j + 1).at(i));
+
+		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it < individualSystematics.end(); it+=2) {
+			std::vector<double> &p_syst = it->second;
+			std::vector<double> &n_syst = (it + 1)->second;
+			p_errors.push_back(p_syst.at(i));
+			n_errors.push_back(n_syst.at(i));
 		}
+
 		syst_p_t = SPXMathUtilities::AddErrorsInQuadrature(p_errors);
 		syst_n_t = SPXMathUtilities::AddErrorsInQuadrature(n_errors);
 		syst_p.push_back(syst_p_t);
@@ -1071,8 +1007,10 @@ void SPXData::ParseHERAFitter(void) {
 		CheckVectorSize(syst_n, "syst_n", masterSize);
 
 		//Check size of all individual systematic errors
-		for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
-			CheckVectorSize(individualSystematicErrors.at(i), individualSystematicErrorNames.at(i), masterSize);
+		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
+			std::vector<double> &syst_name = it->first;
+			std::vector<double> &systematic = it->second;
+			CheckVectorSize(systematic, name, masterSize);
 		}
 
 	} catch(const SPXException &e) {
@@ -1088,23 +1026,13 @@ void SPXData::ParseHERAFitter(void) {
 	if(debug) std::cout << cn << mn << "numberOfBins = " << numberOfBins << std::endl;
 
 	//Add to data map
-	data.insert(std::pair<std::string, std::vector<double> >("xm", xm));
-	data.insert(std::pair<std::string, std::vector<double> >("xlow", xlow));
-	data.insert(std::pair<std::string, std::vector<double> >("xhigh", xhigh));
-	data.insert(std::pair<std::string, std::vector<double> >("sigma", sigma));
-	data.insert(std::pair<std::string, std::vector<double> >("stat", stat));
-	data.insert(std::pair<std::string, std::vector<double> >("syst_p", syst_p));
-	data.insert(std::pair<std::string, std::vector<double> >("syst_n", syst_n));
-
-	//Add individual systematic errors to map
-	for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
-		data.insert(std::pair<std::string, std::vector<double> >(individualSystematicErrorNames.at(i), individualSystematicErrors.at(i)));
-	}
-
-	//Print formatted table
-	// if(debug) {
-	// 	PrintHERAFitter();
-	// }
+	data.insert(StringDoubleVectorPair_T("xm", xm));
+	data.insert(StringDoubleVectorPair_T("xlow", xlow));
+	data.insert(StringDoubleVectorPair_T("xhigh", xhigh));
+	data.insert(StringDoubleVectorPair_T("sigma", sigma));
+	data.insert(StringDoubleVectorPair_T("stat", stat));
+	data.insert(StringDoubleVectorPair_T("syst_p", syst_p));
+	data.insert(StringDoubleVectorPair_T("syst_n", syst_n));
 }
 
 //Helper method to choose correct print method based on data format
@@ -1136,7 +1064,7 @@ void SPXData::PrintSpectrumT1S(void) {
 
 	//Iterate over map
 	for(int i = 0; i < numberOfBins; i++) {
-		//std::pair<std::string, std::vector<double> > p;
+		//StringDoubleVectorPair_T p;
 
 		//Show 4 decimal places
 		std::cout << std::fixed;
@@ -1171,7 +1099,7 @@ void SPXData::PrintSpectrumT1A(void) {
 
 	//Iterate over map
 	for(int i = 0; i < numberOfBins; i++) {
-		//std::pair<std::string, std::vector<double> > p;
+		//StringDoubleVectorPair_T p;
 
 		//Show 4 decimal places
 		std::cout << std::fixed;
@@ -1208,7 +1136,7 @@ void SPXData::PrintSpectrumT2S(void) {
 
 	//Iterate over map
 	for(int i = 0; i < numberOfBins; i++) {
-		//std::pair<std::string, std::vector<double> > p;
+		//StringDoubleVectorPair_T p;
 
 		//Show 4 decimal places
 		std::cout << std::fixed;
@@ -1232,21 +1160,20 @@ void SPXData::PrintSpectrumT2S(void) {
 
 	std::cout << "===============================================================================" << std::endl << std::endl;
 
-	std::cout << "This data has " << individualSystematicErrorNames.size() << " Individual Systematic Errors:" << std::endl << std::endl;
+	std::cout << "This data has " << individualSystematics.size() << " Individual Systematic Errors:" << std::endl << std::endl;
 
 	//Iterate over individual systematic errors
-	for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
+	for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
+		std::vector<double> &syst_name = it->first;
+		std::vector<double> &systematic = it->second;
 
-		std::cout << std::left << std::setw(24) << individualSystematicErrorNames.at(i) << "  ";
-
+		std::cout << std::left << std::setw(24) << syst_name << "  ";
 		std::cout << std::fixed;
 		std::cout.precision(4);
-
-		for(int j = 0; j < numberOfBins; j++) {
+		for(int j = 0; j < systematic.size(); j++) {
 			std::cout.width(10);
-			std::cout << data[individualSystematicErrorNames.at(i)][j] << " ";
+			std::cout << systematic.at(j) << " ";
 		}
-
 		std::cout << "" << std::endl;
 	}
 
@@ -1263,7 +1190,7 @@ void SPXData::PrintSpectrumT2A(void) {
 
 	//Iterate over map
 	for(int i = 0; i < numberOfBins; i++) {
-		//std::pair<std::string, std::vector<double> > p;
+		//StringDoubleVectorPair_T p;
 
 		//Show 4 decimal places
 		std::cout << std::fixed;
@@ -1289,21 +1216,20 @@ void SPXData::PrintSpectrumT2A(void) {
 
 	std::cout << "============================================================================================" << std::endl;
 
-	std::cout << "This data has " << (individualSystematicErrorNames.size() / 2) << " Individual Systematic Errors (+/-):" << std::endl << std::endl;
+	std::cout << "This data has " << individualSystematics.size() / 2 << " Individual Systematic Errors:" << std::endl << std::endl;
 
 	//Iterate over individual systematic errors
-	for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
+	for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
+		std::vector<double> &syst_name = it->first;
+		std::vector<double> &systematic = it->second;
 
-		std::cout << std::left << std::setw(24) << individualSystematicErrorNames.at(i) << "  ";
-
+		std::cout << std::left << std::setw(24) << syst_name << "  ";
 		std::cout << std::fixed;
 		std::cout.precision(4);
-
-		for(int j = 0; j < numberOfBins; j++) {
+		for(int j = 0; j < systematic.size(); j++) {
 			std::cout.width(10);
-			std::cout << data[individualSystematicErrorNames.at(i)][j] << " ";
+			std::cout << systematic.at(j) << " ";
 		}
-
 		std::cout << "" << std::endl;
 	}
 
@@ -1320,7 +1246,7 @@ void SPXData::PrintSpectrumT3S(void) {
 
 	//Iterate over map
 	for(int i = 0; i < numberOfBins; i++) {
-		//std::pair<std::string, std::vector<double> > p;
+		//StringDoubleVectorPair_T p;
 
 		//Show 4 decimal places
 		std::cout << std::fixed;
@@ -1344,21 +1270,20 @@ void SPXData::PrintSpectrumT3S(void) {
 
 	std::cout << "===============================================================================" << std::endl << std::endl;
 
-	std::cout << "This data has " << individualSystematicErrorNames.size() << " Individual Systematic Errors:" << std::endl << std::endl;
+	std::cout << "This data has " << individualSystematics.size() << " Individual Systematic Errors:" << std::endl << std::endl;
 
 	//Iterate over individual systematic errors
-	for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
+	for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
+		std::vector<double> &syst_name = it->first;
+		std::vector<double> &systematic = it->second;
 
-		std::cout << std::left << std::setw(24) << individualSystematicErrorNames.at(i) << "  ";
-
+		std::cout << std::left << std::setw(24) << syst_name << "  ";
 		std::cout << std::fixed;
 		std::cout.precision(4);
-
-		for(int j = 0; j < numberOfBins; j++) {
+		for(int j = 0; j < systematic.size(); j++) {
 			std::cout.width(10);
-			std::cout << data[individualSystematicErrorNames.at(i)][j] << " ";
+			std::cout << systematic.at(j) << " ";
 		}
-
 		std::cout << "" << std::endl;
 	}
 
@@ -1375,7 +1300,7 @@ void SPXData::PrintSpectrumT3A(void) {
 
 	//Iterate over map
 	for(int i = 0; i < numberOfBins; i++) {
-		//std::pair<std::string, std::vector<double> > p;
+		//StringDoubleVectorPair_T p;
 
 		//Show 4 decimal places
 		std::cout << std::fixed;
@@ -1401,21 +1326,20 @@ void SPXData::PrintSpectrumT3A(void) {
 
 	std::cout << "============================================================================================" << std::endl;
 
-	std::cout << "This data has " << (individualSystematicErrorNames.size() / 2) << " Individual Systematic Errors (+/-):" << std::endl << std::endl;
+	std::cout << "This data has " << individualSystematics.size() / 2<< " Individual Systematic Errors:" << std::endl << std::endl;
 
 	//Iterate over individual systematic errors
-	for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
+	for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
+		std::vector<double> &syst_name = it->first;
+		std::vector<double> &systematic = it->second;
 
-		std::cout << std::left << std::setw(24) << individualSystematicErrorNames.at(i) << "  ";
-
+		std::cout << std::left << std::setw(24) << syst_name << "  ";
 		std::cout << std::fixed;
 		std::cout.precision(4);
-
-		for(int j = 0; j < numberOfBins; j++) {
+		for(int j = 0; j < systematic.size(); j++) {
 			std::cout.width(10);
-			std::cout << data[individualSystematicErrorNames.at(i)][j] << " ";
+			std::cout << systematic.at(j) << " ";
 		}
-
 		std::cout << "" << std::endl;
 	}
 
@@ -1432,7 +1356,7 @@ void SPXData::PrintHERAFitter(void) {
 
 	//Iterate over map
 	for(int i = 0; i < numberOfBins; i++) {
-		//std::pair<std::string, std::vector<double> > p;
+		//StringDoubleVectorPair_T p;
 
 		//Show 4 decimal places
 		std::cout << std::fixed;
@@ -1458,21 +1382,20 @@ void SPXData::PrintHERAFitter(void) {
 
 	std::cout << "============================================================================================" << std::endl;
 
-	std::cout << "This data has " << (individualSystematicErrorNames.size() / 2) << " Individual Systematic Errors (+/-):" << std::endl << std::endl;
+	std::cout << "This data has " << individualSystematics.size() << " Individual Systematic Errors (including asymmetries):" << std::endl << std::endl;
 
 	//Iterate over individual systematic errors
-	for(int i = 0; i < individualSystematicErrorNames.size(); i++) {
+	for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
+		std::vector<double> &syst_name = it->first;
+		std::vector<double> &systematic = it->second;
 
-		std::cout << std::left << std::setw(24) << individualSystematicErrorNames.at(i) << "  ";
-
+		std::cout << std::left << std::setw(24) << syst_name << "  ";
 		std::cout << std::fixed;
 		std::cout.precision(4);
-
-		for(int j = 0; j < numberOfBins; j++) {
+		for(int j = 0; j < systematic.size(); j++) {
 			std::cout.width(10);
-			std::cout << data[individualSystematicErrorNames.at(i)][j] << " ";
+			std::cout << systematic.at(j) << " ";
 		}
-
 		std::cout << "" << std::endl;
 	}
 

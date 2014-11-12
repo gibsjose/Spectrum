@@ -32,6 +32,7 @@
 //Typedefs for Data Map and Individual Systematic Error Map
 typedef std::map<std::string, std::vector<double> > StringDoubleVectorMap_T;
 typedef std::pair<std::string, std::vector<double> > StringDoubleVectorPair_T;
+typedef StringDoubleVectorMap_T::iterator StringDoubleVectorMapIterator_T;
 
 class SPXData {
 
