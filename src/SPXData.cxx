@@ -756,8 +756,8 @@ void SPXData::ParseSpectrumT3A(void) {
 				break;
 			}
 
-			std::vector<double> &p_syst = it->second;
-			std::vector<double> &n_syst = (it + 1)->second;
+			std::vector<double> &p_syst = p_it->second;
+			std::vector<double> &n_syst = n_it->second;
 			p_errors.push_back(p_syst.at(i));
 			n_errors.push_back(n_syst.at(i));
 
@@ -770,7 +770,7 @@ void SPXData::ParseSpectrumT3A(void) {
 			}
 
 			//Increment the Negative iterator by 1, making a total increment of 2
-			if( ++n_sit == individualSystematics.end()) {
+			if( ++n_it == individualSystematics.end()) {
 				break;
 			}
 		}
@@ -996,7 +996,7 @@ void SPXData::ParseHERAFitter(void) {
 	int masterSize = xm.size();
 	if(debug) std::cout << cn << mn << "Master size set to size of \"xm\" vector: " << masterSize << std::endl;
 
-	///Compute total positive/negative systematics for each bin using the individual systematic errors
+	//Compute total positive/negative systematics for each bin using the individual systematic errors
 	for(int i = 0; i < masterSize; i++) {
 		std::vector<double> p_errors;
 		std::vector<double> n_errors;
@@ -1013,8 +1013,8 @@ void SPXData::ParseHERAFitter(void) {
 				break;
 			}
 
-			std::vector<double> &p_syst = it->second;
-			std::vector<double> &n_syst = (it + 1)->second;
+			std::vector<double> &p_syst = p_it->second;
+			std::vector<double> &n_syst = n_it->second;
 			p_errors.push_back(p_syst.at(i));
 			n_errors.push_back(n_syst.at(i));
 
@@ -1027,7 +1027,7 @@ void SPXData::ParseHERAFitter(void) {
 			}
 
 			//Increment the Negative iterator by 1, making a total increment of 2
-			if( ++n_sit == individualSystematics.end()) {
+			if( ++n_it == individualSystematics.end()) {
 				break;
 			}
 		}
