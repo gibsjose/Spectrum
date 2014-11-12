@@ -757,7 +757,7 @@ void SPXData::ParseSpectrumT3A(void) {
 			}
 
 			//Negative systematic
-			else if(name.contains("_n") != std::string::npos) {
+			else if(name.find("_n") != std::string::npos) {
 				n_errors.push_back(syst.at(i));
 			}
 
@@ -925,7 +925,7 @@ void SPXData::ParseHERAFitter(void) {
 					if(names.at(i).find("+") != std::string::npos) {
 						pos_count++;
 					}
-					else if(name.at(i).find("-") != std::string::npos) {
+					else if(names.at(i).find("-") != std::string::npos) {
 						neg_count++;
 					}
 				}
@@ -1013,7 +1013,7 @@ void SPXData::ParseHERAFitter(void) {
 			}
 
 			//Negative systematic
-			else if(name.contains("-") != std::string::npos) {
+			else if(name.find("-") != std::string::npos) {
 				n_errors.push_back(syst.at(i));
 			}
 
