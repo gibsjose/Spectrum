@@ -166,10 +166,10 @@ private:
 	unsigned int numberOfBins;
 
 	//Individual Systematic Errors
-	StringDataVectorMap_T individualSystematics;
+	StringDoubleVectorMap_T individualSystematics;
 
 	//Actual data map
-	StringDataVectorMap_T data;
+	StringDoubleVectorMap_T data;
 
 	//Graph for plotting statistical error ticks
 	TGraphAsymmErrors *statisticalErrorGraph;
