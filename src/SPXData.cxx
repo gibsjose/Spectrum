@@ -913,7 +913,7 @@ void SPXData::ParseHERAFitter(void) {
 				names = SPXStringUtilities::SplitString(tmp, ",");
 
 				//Remove the non-systematic error names
-				std::vector<names::value_type>(names.begin() + SYST_BEGIN_COL, names.end()).swap(names);
+				names.erase(names.begin(), names.begin() + SYST_BEGIN_COL);
 
 				//DEBUG: Print all names
 				if(debug) {
