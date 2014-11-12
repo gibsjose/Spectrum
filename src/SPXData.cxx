@@ -908,8 +908,8 @@ void SPXData::ParseHERAFitter(void) {
 				//Get rid of 'ColumnName = '
 				tmp = SPXStringUtilities::RemoveFirstSubstring(tmp, "ColumnName = ");
 
-				//Remove all single quotes and delimit with "," returning a vector of tokens
-				tmp = SPXStringUtilities::RemoveCharacters(tmp, "\'");
+				//Remove all single quotes and spaces and delimit with "," returning a vector of tokens
+				tmp = SPXStringUtilities::RemoveCharacters(tmp, "\' ");
 				names = SPXStringUtilities::SplitString(tmp, ",");
 
 				//Remove the non-systematic error names
@@ -940,14 +940,15 @@ void SPXData::ParseHERAFitter(void) {
 				// 	name += "_n";
 				// }
 
-	/////////////DEBUG//////////////
-				while(1);
-	////////////////////////////////
-
 				//Initialize a data vector for each name found
 				for(int i = 0; i < numberOfSystematics; i++) {
 					individualSystematics[names[i]] = std::vector<double>();
 				}
+
+/////////////DEBUG//////////////
+			while(1);
+////////////////////////////////
+
 			}
 
 			//Data begins with numeric character at position 0 (and # bins and # columns have already been read correctly)
