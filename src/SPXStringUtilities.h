@@ -47,9 +47,21 @@ private:
 public:
 
 	//Removes any of the characters in the 'remove' string from the string s
-	static std::string RemoveCharacters(std::string s, std::string remove) {
+	static std::string RemoveCharacters(std::string s, const std::string &remove) {
 
 		s.erase(std::remove_if(s.begin(), s.end(), IsChars(remove.c_str())), s.end());
+
+		return s;
+	}
+
+	//Delete's the first occurrance of a substring from a string (if it exists)
+	static std::string RemoveFirstSubstring(std::string s, const std::string &substring) {
+
+		size_t pos = s.find(substring);
+
+		if(pos != std::string::npos) {
+			s.erase(pos, substring.length());
+		}
 
 		return s;
 	}
@@ -63,6 +75,34 @@ public:
 		return s;
 	}
 
+	//First split a string based on a delimiter, and for each token remove the given characters
+	static std::vector<std::string> SplitStringAndRemoveCharacters(std::string s, const std::string &delimiter, const std::string &remove) {
+		size_t pos = 0;
+		std::vector<std::string> tokens;
+		std::string token;
+		bool debug = false;
+
+		if(debug) std::cout << "s = " << s << ", delimiter = " << delimiter;
+
+		while((pos = s.find(delimiter)) != std::string::npos) {
+			if(debug) std::cout << "Found delimiter at pos = " << pos << std::endl;
+			token = s.substr(0, pos);
+			token = RemoveCharacters(token, remove);
+			tokens.push_back(token);
+			if(debug) std::cout << "Added token to vector: " << s.substr(0, pos) << std::endl;
+			s.erase(0, pos + delimiter.length());
+			if(debug) std::cout << "Erased token and delimiter" << std::endl;
+		}
+
+		if(debug) std::cout << "Adding last token to vector: " << s << std::endl;
+		token = s;
+		token = RemoveCharacters(token, remove);
+		tokens.push_back(token);
+
+		return tokens;
+	}
+
+	//Splits a string based on a delimiter string
 	static std::vector<std::string> SplitString(std::string s, const std::string &delimiter) {
 		size_t pos = 0;
 		std::vector<std::string> tokens;
@@ -114,6 +154,24 @@ public:
 	  if(parsedDataVec.size()==0) parsedDataVec.push_back(rawData);
 
 	  return parsedDataVec;
+	}
+
+	static std::vector<double> ParseStringToDoubleVector(std::string rawData, char delimiter) {
+		std::vector<double> dVector;
+		std::stringstream lineStream(rawData);
+		std::string cell;
+
+		dVector.clear();
+
+		while(getline(lineStream, cell, delimiter)) {
+			if(!isdigit(cell.at(0))) {
+				throw SPXParseException("SPXStringUtilities::ParseStringToDoubleVector: Token " + cell + " cannot be converted to double");
+			}
+
+			dVector.push_back((double)atof(cell.c_str()));
+		}
+
+		return dVector;
 	}
 
 	static std::vector<std::string> CommaSeparatedListToVector(const std::string &csl) {

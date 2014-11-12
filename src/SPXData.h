@@ -29,6 +29,10 @@
 #include "SPXPlotConfiguration.h"
 #include "SPXException.h"
 
+//Typedefs for Data Map and Individual Systematic Error Map
+typedef std::map<std::string, std::vector<double> > StringDoubleVectorMap_T;
+typedef std::pair<std::string, std::vector<double> > StringDoubleVectorPair_T;
+
 class SPXData {
 
 public:
@@ -161,14 +165,11 @@ private:
 	//Number of bins in data map
 	unsigned int numberOfBins;
 
-	//Stores a copy of all individual systematic error names
-	// for T2S: There is a single copy of each name
-	// for T2A: There are 2 copies of each name, each appended with '_p' for the positive errors
-	//				and '_n' for the negative errors
-	std::vector<std::string> individualSystematicErrorNames;
+	//Individual Systematic Errors
+	StringDataVectorMap_T individualSystematics;
 
 	//Actual data map
-	std::map<std::string, std::vector<double> > data;
+	StringDataVectorMap_T data;
 
 	//Graph for plotting statistical error ticks
 	TGraphAsymmErrors *statisticalErrorGraph;
