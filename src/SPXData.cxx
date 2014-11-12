@@ -1072,6 +1072,9 @@ void SPXData::ParseHERAFitter(void) {
 	data.insert(StringDoubleVectorPair_T("stat", stat));
 	data.insert(StringDoubleVectorPair_T("syst_p", syst_p));
 	data.insert(StringDoubleVectorPair_T("syst_n", syst_n));
+
+	PrintHERAFitter();
+	while(1);
 }
 
 //Helper method to choose correct print method based on data format
