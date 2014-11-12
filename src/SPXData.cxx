@@ -848,6 +848,9 @@ void SPXData::ParseHERAFitter(void) {
 	std::vector<double> syst_p;			//Total systematic error (+)
 	std::vector<double> syst_n;			//Total systematic error (-)
 
+	//Individual systematic error namess
+	std::vector<std::string> names;
+
 	while(dataFile->good()) {
 		std::getline(*dataFile, line);
 
@@ -891,8 +894,6 @@ void SPXData::ParseHERAFitter(void) {
 				numberOfSystematics = numberOfColumns - SYST_BEGIN_COL;
 				if(debug) std::cout << cn << mn << "Number of Systematics set to " << numberOfSystematics << std::endl;
 			}
-
-			std::vector<std::string> names;
 
 			//Compile the list of all individual systematic error names
 			if(line.find("ColumnName") != std::string::npos) {
