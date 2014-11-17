@@ -1,6 +1,6 @@
 ;==============================================================
 ;
-; Description:		
+; Description:
 ;	Example of a valid Grid Steering File
 ;
 ; Authors:
@@ -17,7 +17,7 @@
 ;==============================================================
 
 ;--------------------------------------------------------------
-; NOTE: 
+; NOTE:
 ;
 ; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
 ;
@@ -51,8 +51,8 @@ divided_by_bin_width = true
 ;==============================================================
 ; Grid Options
 ;==============================================================
-[GRID]								
+[GRID]
 grid_file = Grids/top/mcfm/grid--TTbar_mttatlas.root
-; generator_id = 									
-ntuple_id = MCFM	
-lowest_order = "NNLO"
+; generator_id =
+ntuple_id = MCFM
+lowest_order = 2

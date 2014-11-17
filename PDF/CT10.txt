@@ -41,7 +41,7 @@ debug = false
 name = CT10
 name_var = CT10_R04
 type = CT10
-order = NLO
+order = 1
 num_members = 53
 ; pdf_set_path =
 
