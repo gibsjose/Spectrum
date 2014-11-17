@@ -18,6 +18,9 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <functional>
+#include <cctype>
+#include <locale>
 
 #include "SPXException.h"
 
@@ -45,6 +48,23 @@ private:
 	};
 
 public:
+
+	//Trim LEADING whitespace
+	static std::string LeftTrim(std::string s) {
+		s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+		return s;
+	}
+
+	//Trim TRAILING whitespace
+	static std::string RightTrim(std::string s) {
+		s.erase(std::find_if(s.rbegin(), r.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+		return s;
+	}
+
+	//Trim all whitespace
+	static std::string Trim(std::string s) {
+		return LeftTrim(RightTrim(s));
+	}
 
 	//Removes any of the characters in the 'remove' string from the string s
 	static std::string RemoveCharacters(std::string s, const std::string &remove) {
@@ -167,7 +187,7 @@ public:
 			//Skip if cell is empty
 			if(!cell.empty()) {
 				//Remove whitespace
-				cell = RemoveCharacters(cell, "\t ");
+				cell = Trim(cell);
 
 				if(!isdigit(cell.at(0))) {
 					throw SPXParseException("SPXStringUtilities::ParseStringToDoubleVector: Token " + cell + " cannot be converted to double");
