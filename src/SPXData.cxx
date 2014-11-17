@@ -134,6 +134,8 @@ void SPXData::ParseSpectrum(void) {
 	const unsigned int SYST_P_COL =		5;	//For asymmetric total systematics
 	const unsigned int SYST_N_COL = 	6;	//...
 
+	const unsigned int REQ_COLS =		5;	//Required columns (xm - stat)
+
 	std::string line;
 	double xm_t, xlow_t, xhigh_t, sigma_t, stat_t, syst_p_t, syst_n_t;
 	std::vector<double> xm;				//Mean x
@@ -149,7 +151,7 @@ void SPXData::ParseSpectrum(void) {
 
 	//Count the number of positive/negative systematic errors to check balance
 	unsigned int pos_count = 0;
-	unsigned int neg_cout = 0;
+	unsigned int neg_count = 0;
 
 	//Bin count
 	unsigned int bin_count = 0;
@@ -228,7 +230,7 @@ void SPXData::ParseSpectrum(void) {
 			//Not a systematic error: Read as data if it starts with a number
 			else if(isdigit((int)line.at(0))) {
 				//Parse line into data vector
-				std::vector<double> tmp_data = SPXStringUtilities::ParseStringToDoubleVector(line);
+				std::vector<double> tmp_data = SPXStringUtilities::ParseStringToDoubleVector(line, ' ');
 
 				//Make sure there are at least 5 columns
 				if(tmp_data.size() < REQ_COLS) {
@@ -248,7 +250,7 @@ void SPXData::ParseSpectrum(void) {
 					if(tmp_data.size() != numberOfColumns) {
 						std::ostringstream oss;
 						oss << cn << mn << "Number of columns for bin " << bin_count << " (" << tmp_data.size() << \
-							") does NOT match expected (" << numberOfColumns << ")" << std:endl;
+							") does NOT match expected (" << numberOfColumns << ")" << std::endl;
 						throw SPXParseException(oss.str());
 					}
 				}
