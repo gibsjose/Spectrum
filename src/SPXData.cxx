@@ -232,7 +232,7 @@ void SPXData::ParseSpectrum(void) {
 
 				//Parse line into data vector
 				//Convert all tabs to spaces
-				std::string formatted_line = SPXStringUtilities::ReplaceAll("\t", " ");
+				std::string formatted_line = SPXStringUtilities::ReplaceAll(line, "\t", " ");
 				std::vector<double> tmp_data = SPXStringUtilities::ParseStringToDoubleVector(formatted_line, ' ');
 
 				//Make sure there are at least 5 columns
