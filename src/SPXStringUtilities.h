@@ -49,6 +49,17 @@ private:
 
 public:
 
+	template<typename T>
+	T StringToNumber(const std::string& numberAsString) {
+		T valor;
+		std::stringstream stream(numberAsString);
+		stream >> valor;
+		if (stream.fail()) {
+			throw SPXParseException("Could not convert string " + numberAsString + " to a number");
+		}
+		return valor;
+	}
+
 	//Trim LEADING whitespace
 	static std::string LeftTrim(std::string s) {
 		s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
@@ -217,12 +228,13 @@ public:
 
 			//Skip if cell is empty
 			if(!cell.empty()) {
-				if(!isdigit(cell.at(0))) {
-					throw SPXParseException("SPXStringUtilities::ParseStringToDoubleVector: Token " + cell + " cannot be converted to double");
+				try {
+					double val = StringToNumber<double>(cell);
+					dVector.push_back((double)atof(cell.c_str()));
+				} catch(const SPXExcetption &e) {
+					throw;
 				}
-
-				dVector.push_back((double)atof(cell.c_str()));
-			} 
+			}
 		}
 
 		return dVector;
