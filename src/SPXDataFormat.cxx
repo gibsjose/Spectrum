@@ -90,26 +90,7 @@ std::string SPXDataFormat::ToString(void) const {
 
 	if(format == DF_SPECTRUM) {
 		return "Spectrum";
-	}
-	if(format == DF_SPECTRUM_T1S) {
-		return "Spectrum T1S";
-	}
-	if(format == DF_SPECTRUM_T1A) {
-		return "Spectrum T1A";
-	}
-	if(format == DF_SPECTRUM_T2S) {
-		return "Spectrum T2S";
-	}
-	if(format == DF_SPECTRUM_T2A) {
-		return "Spectrum T2A";
-	}
-	if(format == DF_SPECTRUM_T3S) {
-		return "Spectrum T3S";
-	}
-	if(format == DF_SPECTRUM_T3A) {
-		return "Spectrum T3A";
-	}
-	if(format == DF_HERAFITTER) {
+	} else if(format == DF_HERAFITTER) {
 		return "HERAFitter";
 	}
 
@@ -139,18 +120,6 @@ bool SPXDataFormat::IsValid(void) const {
 	}
 
 	if(format == DF_SPECTRUM) {
-		return true;
-	} else if(format == DF_SPECTRUM_T1S) {
-		return true;
-	} else if(format == DF_SPECTRUM_T1A) {
-		return true;
-	} else if(format == DF_SPECTRUM_T2S) {
-		return true;
-	} else if(format == DF_SPECTRUM_T2A) {
-		return true;
-	} else if(format == DF_SPECTRUM_T3S) {
-		return true;
-	} else if(format == DF_SPECTRUM_T3A) {
 		return true;
 	} else if(format == DF_HERAFITTER) {
 		return true;
