@@ -231,7 +231,7 @@ public:
 				try {
 					double val = StringToNumber<double>(cell);
 					dVector.push_back((double)atof(cell.c_str()));
-				} catch(const SPXExcetption &e) {
+				} catch(const SPXException &e) {
 					throw;
 				}
 			}
