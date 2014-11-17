@@ -149,7 +149,7 @@ void SPXGridSteeringFile::Parse(void) {
 		if(debug) std::cout << cn << mn << "Successfully read NTuple ID: " << nTupleID << std::endl;
 	}
 
-	lowestOrder = (unsigned int)reader->GetInteger("GRID", "lowest_order", "EMPTY");
+	lowestOrder = (unsigned int)reader->GetInteger("GRID", "lowest_order", lowestOrder);
 	if(lowestOrder > 2) {
 		std::cerr << "WARNING: Lowest Order number unrecognized: " << lowestOrder << " defaulting to NLO (1)" << std::endl;
 		lowestOrder = 1;

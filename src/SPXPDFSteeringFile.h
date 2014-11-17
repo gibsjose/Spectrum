@@ -123,12 +123,6 @@ public:
 	}
 
 	unsigned int GetOrder(void) const {
-		//Sanity check
-		if(order > 2) {
-			std::cerr << "WARNING: Unrecognized order: " << order << " defaulting to NLO (1)" << std::endl;
-			order = 1;
-		}
-
 		return order;
 	}
 
