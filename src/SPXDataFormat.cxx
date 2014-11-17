@@ -63,8 +63,7 @@ void SPXDataFormat::Parse(std::string s) {
 		format = DF_SPECTRUM;
 		if(debug) std::cout << cn << mn << "Data Format successfully set to \"spectrun\"" << std::endl;
 	}
-
-	if(!s.compare("spectrum_t1s")) {
+	else if(!s.compare("spectrum_t1s")) {
 		if(debug) std::cout << cn << mn << "Successfully matched format string: \"spectrum_t1s\"" << std::endl;
 		format = DF_SPECTRUM_T1S;
 		if(debug) std::cout << cn << mn << "Data Format successfully set to \"spectrum_t1s\"" << std::endl;
