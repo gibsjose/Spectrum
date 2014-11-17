@@ -173,6 +173,7 @@ private:
 	//Actual data graph containing total errors
 	TGraphAsymmErrors *totalErrorGraph;
 
+	void ParseSpectrum(void);
 	void ParseSpectrumT1S(void);
 	void ParseSpectrumT1A(void);
 	void ParseSpectrumT2S(void);
@@ -181,6 +182,7 @@ private:
 	void ParseSpectrumT3A(void);
 	void ParseHERAFitter(void);
 
+	void PrintSpectrum(void);
 	void PrintSpectrumT1S(void);
 	void PrintSpectrumT1A(void);
 	void PrintSpectrumT2S(void);

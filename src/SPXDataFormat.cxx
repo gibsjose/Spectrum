@@ -179,7 +179,7 @@ bool SPXDataFormat::IsValid(void) const {
 		return false;
 	}
 
-	if(foramt == DF_SPECTRUM) {
+	if(format == DF_SPECTRUM) {
 		return true;
 	} else if(format == DF_SPECTRUM_T1S) {
 		return true;
