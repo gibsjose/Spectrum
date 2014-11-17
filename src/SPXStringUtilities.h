@@ -57,7 +57,7 @@ public:
 
 	//Trim TRAILING whitespace
 	static std::string RightTrim(std::string s) {
-		s.erase(std::find_if(s.rbegin(), r.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+		s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
 		return s;
 	}
 
