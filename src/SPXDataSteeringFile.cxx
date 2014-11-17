@@ -68,8 +68,8 @@ void SPXDataSteeringFile::SetDefaults(void) {
 	jetAlgorithmRadius = 0;
 	if(debug) std::cout << cn << mn << "jetAlgorithmRadius set to default: \" \"" << std::endl;
 
-	dataFormat = SPXDataFormat(DF_SPECTRUM_T1S);
-	if(debug) std::cout << cn << mn << "dataFormat set to default: \"Spectrum T1S\"" << std::endl;
+	dataFormat = SPXDataFormat(DF_SPECTRUM);
+	if(debug) std::cout << cn << mn << "dataFormat set to default: \"Spectrum\"" << std::endl;
 
 	dataFilepath.clear();
 	if(debug) std::cout << cn << mn << "dataFilepath set to default: \" \"" << std::endl;
