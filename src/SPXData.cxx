@@ -251,7 +251,7 @@ void SPXData::ParseSpectrum(void) {
 					if(tmp_data.size() != numberOfColumns) {
 						std::cout << "bin_count = " << bin_count + 1 << std::endl;
 						for(int i = 0; i < tmp_data.size(); i++) {
-							std::cout << "Item [" << i << "] =" << tmp_data.at(i) << std::endl;
+							std::cout << "tmp_data[" << i << "] =" << tmp_data.at(i) << std::endl;
 						}
 
 						std::ostringstream oss;
