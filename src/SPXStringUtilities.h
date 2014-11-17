@@ -161,6 +161,8 @@ public:
 		std::stringstream lineStream(rawData);
 		std::string cell;
 
+		std::cout << "==========" << rawData << std::endl;
+
 		dVector.clear();
 
 		while(getline(lineStream, cell, delimiter)) {
