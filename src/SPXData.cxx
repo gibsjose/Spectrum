@@ -162,9 +162,6 @@ void SPXData::ParseSpectrum(void) {
 	while(dataFile->good()) {
 		std::getline(*dataFile, line);
 
-		//String stream to parse the individual lines
-		std::istringstream iss(line);
-
 		//Skip empty lines
 		if(line.empty()) {
 			continue;
@@ -259,6 +256,11 @@ void SPXData::ParseSpectrum(void) {
 				//After the 0th bin, make sure all other bins have the exact same number of columns
 				else {
 					if(tmp_data.size() != numberOfColumns) {
+						std::cout << "bin_count = " << bin_count << std::endl;
+						for(int i = 0; i < tmp_data.size(); i++) {
+							std::cout << "Item [" << i << "] =" << tmp_data.at(i) << std::endl; 
+						}
+
 						std::ostringstream oss;
 						oss << cn << mn << "Number of columns for bin " << bin_count << " (" << tmp_data.size() << \
 							") does NOT match expected (" << numberOfColumns << ")" << std::endl;
