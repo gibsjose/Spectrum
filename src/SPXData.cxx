@@ -185,7 +185,9 @@ void SPXData::ParseSpectrum(void) {
 
 				//Parse
 				iss >> name;
-				tmp_syst = SPXStringUtilities::ParseStringToDoubleVector(SPXStringUtilities::RemoveFirstSubstring(line, name), ' ');
+				std::string formatted_line = SPXStringUtilities::RemoveFirstSubstring(line, name);
+				formatted_line = SPXStringUtilities::ReplaceAll(formatted_line, "\t", " ");
+				tmp_syst = SPXStringUtilities::ParseStringToDoubleVector(formatted_line, ' ');
 
 				//Symmetric Error: Create both + and - and add them to map
 				if((name.find("+") == std::string::npos) && (name.find("-") == std::string::npos)) {
