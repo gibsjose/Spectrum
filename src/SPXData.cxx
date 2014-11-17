@@ -316,15 +316,15 @@ void SPXData::ParseSpectrum(void) {
 				double percentDifference_n = delta_n / average_n;
 
 				if(percentDifference_p > INDIV_VS_TOT_ACCEPTABLE_ERROR) {
-					std::cerr << cn << mn << "WARNING: Bin " << i << ": Sum of positive individual errors (" << syst_p_t << \
+					std::cerr << cn << mn << "WARNING: Bin " << i << ": Sum of POSITIVE individual errors (" << syst_p_t << \
 					 	") does not agree witihin " << (INDIV_VS_TOT_ACCEPTABLE_ERROR * 100) << \
-							"%% with the given positive total systematic error (" << given_total_p << ")" << std::endl;
+							"%% with the given POSITIVE total systematic error (" << given_total_p << ")" << std::endl;
 				}
 
 				if(percentDifference_n > INDIV_VS_TOT_ACCEPTABLE_ERROR) {
-					std::cerr << cn << mn << "WARNING: Bin " << i << ": Sum of negative individual errors (" << syst_n_t << \
+					std::cerr << cn << mn << "WARNING: Bin " << i << ": Sum of NEGATIVE individual errors (" << syst_n_t << \
 						") does not agree witihin " << (INDIV_VS_TOT_ACCEPTABLE_ERROR * 100) << \
-							"%% with the given negative total systematic error (" << given_total_n << ")" << std::endl;
+							"%% with the given NEGATIVE total systematic error (" << given_total_n << ")" << std::endl;
 				}
 			}
 		}
