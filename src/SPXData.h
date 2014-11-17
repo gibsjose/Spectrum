@@ -99,27 +99,15 @@ public:
 
 	//NOTE: Returns only the POSITIVE vector for asymmetric formats
 	std::vector<double> & GetSystematicErrorVector(void) {
-		if(dataFormat.IsSymmetric()) {
-			return data["syst"];
-		} else {
-			return data["sys_p"];
-		}
+		return data["syst_p"];
 	}
 
 	std::vector<double> & GetPositiveSystematicErrorVector(void) {
-		if(dataFormat.IsSymmetric()) {
-			return data["syst"];
-		} else {
-			return data["syst_p"];
-		}
+		return data["syst_p"];
 	}
 
 	std::vector<double> & GetNegativeSystematicErrorVector(void) {
-		if(dataFormat.IsSymmetric()) {
-			return data["syst"];
-		} else {
-			return data["syst_n"];
-		}
+		return data["syst_n"];
 	}
 
 	TGraphAsymmErrors * GetStatisticalErrorGraph(void) {
@@ -174,21 +162,9 @@ private:
 	TGraphAsymmErrors *totalErrorGraph;
 
 	void ParseSpectrum(void);
-	void ParseSpectrumT1S(void);
-	void ParseSpectrumT1A(void);
-	void ParseSpectrumT2S(void);
-	void ParseSpectrumT2A(void);
-	void ParseSpectrumT3S(void);
-	void ParseSpectrumT3A(void);
 	void ParseHERAFitter(void);
 
 	void PrintSpectrum(void);
-	void PrintSpectrumT1S(void);
-	void PrintSpectrumT1A(void);
-	void PrintSpectrumT2S(void);
-	void PrintSpectrumT2A(void);
-	void PrintSpectrumT3S(void);
-	void PrintSpectrumT3A(void);
 	void PrintHERAFitter(void);
 
 	void OpenDataFile(void) {

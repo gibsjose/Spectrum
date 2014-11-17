@@ -6,12 +6,7 @@
 //	formats available for experimental data.
 //	The options are:
 //
-//		spectrum_t1s 	(DF_SPECTRUM_T1S)
-//		spectrum_t1a 	(DF_SPECTRUM_T1A)
-//		spectrum_t2s 	(DF_SPECTRUM_T2S)
-//		spectrum_t2a 	(DF_SPECTRUM_T2A)
-//		spectrum_t3s	(DF_SPECTRUM_T3S)
-//		spectrum_t3a	(DF_SPECTRUM_T3A)
+//		spectrum		(DF_SPECTRUM)
 //		herafitter		(DF_HERAFITTER)
 //
 //	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
@@ -41,12 +36,7 @@ SPXDataFormat::SPXDataFormat(std::string s) {
 
 //Takes a string argument in the form:
 //
-//	spectrum_t1s 	XOR
-//	spectrum_t1a 	XOR
-//	spectrum_t2s 	XOR
-//	spectrum_t2a 	XOR
-//	spectrum_t3s 	XOR
-//	spectrum_t3a 	XOR
+//	spectrum		XOR
 //	herafitter
 //
 // Sets the format based on the input string
@@ -62,36 +52,6 @@ void SPXDataFormat::Parse(std::string s) {
 		if(debug) std::cout << cn << mn << "Successfully matched format string: \"spectrum\"" << std::endl;
 		format = DF_SPECTRUM;
 		if(debug) std::cout << cn << mn << "Data Format successfully set to \"spectrun\"" << std::endl;
-	}
-	else if(!s.compare("spectrum_t1s")) {
-		if(debug) std::cout << cn << mn << "Successfully matched format string: \"spectrum_t1s\"" << std::endl;
-		format = DF_SPECTRUM_T1S;
-		if(debug) std::cout << cn << mn << "Data Format successfully set to \"spectrum_t1s\"" << std::endl;
-	}
-	else if(!s.compare("spectrum_t1a")) {
-		if(debug) std::cout << cn << mn << "Successfully matched format string: \"spectrum_t1a\"" << std::endl;
-		format = DF_SPECTRUM_T1A;
-		if(debug) std::cout << cn << mn << "Data Format successfully set to \"spectrum_t1a\"" << std::endl;
-	}
-	else if(!s.compare("spectrum_t2s")) {
-		if(debug) std::cout << cn << mn << "Successfully matched format string: \"spectrum_t2s\"" << std::endl;
-		format = DF_SPECTRUM_T2S;
-		if(debug) std::cout << cn << mn << "Data Format successfully set to \"spectrum_t2s\"" << std::endl;
-	}
-	else if(!s.compare("spectrum_t2a")) {
-		if(debug) std::cout << cn << mn << "Successfully matched format string: \"spectrum_t2a\"" << std::endl;
-		format = DF_SPECTRUM_T2A;
-		if(debug) std::cout << cn << mn << "Data Format successfully set to \"spectrum_t2a\"" << std::endl;
-	}
-	else if(!s.compare("spectrum_t3s")) {
-		if(debug) std::cout << cn << mn << "Successfully matched format string: \"spectrum_t3s\"" << std::endl;
-		format = DF_SPECTRUM_T3S;
-		if(debug) std::cout << cn << mn << "Data Format successfully set to \"spectrum_t3s\"" << std::endl;
-	}
-	else if(!s.compare("spectrum_t3a")) {
-		if(debug) std::cout << cn << mn << "Successfully matched format string: \"spectrum_t3a\"" << std::endl;
-		format = DF_SPECTRUM_T3A;
-		if(debug) std::cout << cn << mn << "Data Format successfully set to \"spectrum_t3a\"" << std::endl;
 	}
 	else if(!s.compare("herafitter")) {
 		if(debug) std::cout << cn << mn << "Successfully matched format string: \"herafitter\"" << std::endl;
