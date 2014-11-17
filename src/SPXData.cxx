@@ -185,6 +185,7 @@ void SPXData::ParseSpectrum(void) {
 				std::vector<double> tmp_syst;
 
 				iss >> name;
+				std::cout << "iss.str()=" << iss.str() << std::endl;
 				tmp_syst = SPXStringUtilities::ParseStringToDoubleVector(iss.str(), ' ');
 
 				//Symmetric Error: Create both + and - and add them to map
