@@ -167,6 +167,8 @@ void SPXData::ParseSpectrum(void) {
 			continue;
 		}
 
+		std::istringstream iss(line);
+
 		//Skip comments
 		if(!line.empty() && (line[0] == ';')) {
 			continue;
@@ -178,21 +180,24 @@ void SPXData::ParseSpectrum(void) {
 			if(line.find("syst_") != std::string::npos) {
 
 				//Split the line into systematic name and data
-				std::vector<std::string> parsed;
+				//std::vector<std::string> parsed;
 				std::string name;
 				std::vector<double> tmp_syst;
+
+				iss >> name;
+
 
 				//Parse the string, stopping after first delimiter
 				parsed = SPXStringUtilities::SplitString(line, " ", 1);
 
 				//Size should always be 2 (systematic name, string with all error values)
-				if(parsed.size() != 2) {
-					throw SPXParseException(cn + mn + "Incorrect systematic error specification line: " + line);
-				}
-
-				//Grab the name and parse the actual errors into a vector
-				name = parsed.at(0);
-				tmp_syst = SPXStringUtilities::ParseStringToDoubleVector(parsed.at(1), ' ');
+				// if(parsed.size() != 2) {
+				// 	throw SPXParseException(cn + mn + "Incorrect systematic error specification line: " + line);
+				// }
+				//
+				// //Grab the name and parse the actual errors into a vector
+				// name = parsed.at(0);
+				tmp_syst = SPXStringUtilities::ParseStringToDoubleVector(SPXStringUtilities::RemoveAll(line, name), ' ');
 
 				//Symmetric Error: Create both + and - and add them to map
 				if((name.find("+") == std::string::npos) && (name.find("-") == std::string::npos)) {
@@ -256,13 +261,13 @@ void SPXData::ParseSpectrum(void) {
 				//After the 0th bin, make sure all other bins have the exact same number of columns
 				else {
 					if(tmp_data.size() != numberOfColumns) {
-						std::cout << "bin_count = " << bin_count << std::endl;
+						std::cout << "bin_count = " << bin_count + 1 << std::endl;
 						for(int i = 0; i < tmp_data.size(); i++) {
-							std::cout << "Item [" << i << "] =" << tmp_data.at(i) << std::endl; 
+							std::cout << "Item [" << i << "] =" << tmp_data.at(i) << std::endl;
 						}
 
 						std::ostringstream oss;
-						oss << cn << mn << "Number of columns for bin " << bin_count << " (" << tmp_data.size() << \
+						oss << cn << mn << "Number of columns for bin " << bin_count + 1<< " (" << tmp_data.size() << \
 							") does NOT match expected (" << numberOfColumns << ")" << std::endl;
 						throw SPXParseException(oss.str());
 					}
