@@ -181,12 +181,21 @@ void SPXData::ParseSpectrum(void) {
 			if(line.find("syst_") != std::string::npos) {
 
 				//Split the line into systematic name and data
+				std::vector<std::string> parsed;
 				std::string name;
 				std::vector<double> tmp_syst;
 
-				iss >> name;
-				std::cout << "iss.str()=" << iss.str() << std::endl;
-				tmp_syst = SPXStringUtilities::ParseStringToDoubleVector(iss.str(), ' ');
+				//Parse the string, stopping after first delimiter
+				parsed = SPXStringUtilities::ParseString(line, ' ', 1);
+
+				//Size should always be 2 (systematic name, string with all error values)
+				if(parsed.size() != 2) {
+					throw SPXParseException(cn + mn + "Incorrect systematic error specification line: " + line);
+				}
+
+				//Grab the name and parse the actual errors into a vector
+				name = parsed.at(0);
+				tmp_syst = SPXStringUtilities::ParseStringToDoubleVector(parsed.at(1), ' ');
 
 				//Symmetric Error: Create both + and - and add them to map
 				if((name.find("+") == std::string::npos) && (name.find("-") == std::string::npos)) {

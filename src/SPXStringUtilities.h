@@ -145,6 +145,34 @@ public:
 		return tokens;
 	}
 
+	//Splits a string based on a delimiter string, stopping after 'n' splits
+	static std::vector<std::string> SplitString(std::string s, const std::string &delimiter, unsigned int n) {
+		size_t pos = 0;
+		std::vector<std::string> tokens;
+		unsigned int count = 0;
+
+		bool debug = false;
+
+		if(debug) std::cout << "s = " << s << ", delimiter = " << delimiter;
+
+		while((pos = s.find(delimiter)) != std::string::npos) {
+			if(count >= n) {
+				break;
+			}
+			if(debug) std::cout << "Found delimiter at pos = " << pos << std::endl;
+			tokens.push_back(s.substr(0, pos));
+			if(debug) std::cout << "Added token to vector: " << s.substr(0, pos) << std::endl;
+			s.erase(0, pos + delimiter.length());
+			if(debug) std::cout << "Erased token and delimiter" << std::endl;
+			count++;
+		}
+
+		if(debug) std::cout << "Adding last token to vector: " << s << std::endl;
+		tokens.push_back(s);
+
+		return tokens;
+	}
+
 	static std::string ToUpper(const std::string & s) {
 		std::string str = s;
 		std::transform(str.begin(), str.end(),str.begin(), ::toupper);
