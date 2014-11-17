@@ -212,11 +212,11 @@ public:
 		dVector.clear();
 
 		while(getline(lineStream, cell, delimiter)) {
+			//Remove whitespace
+			cell = Trim(cell);
+
 			//Skip if cell is empty
 			if(!cell.empty()) {
-				//Remove whitespace
-				cell = Trim(cell);
-
 				if(!isdigit(cell.at(0))) {
 					throw SPXParseException("SPXStringUtilities::ParseStringToDoubleVector: Token " + cell + " cannot be converted to double");
 				}
