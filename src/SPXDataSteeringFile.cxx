@@ -101,7 +101,7 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t\t Y Units: " << yUnits << std::endl;
 	std::cout << "\t\t Y Bin Width Units: " << yBinWidthUnits << std::endl;
 	std::cout << "\t\t Jet Algorithm Label: " << jetAlgorithmLabel << std::endl;
-	std::cout << "\t\t Jet Algorithm Number: " << jetAlgorithmRadius << std::endl << std::endl;
+	std::cout << "\t\t Jet Algorithm Radius: " << jetAlgorithmRadius << std::endl << std::endl;
 	std::cout << "\t Data Options [DATA]" << std::endl;
 	std::cout << "\t\t Data Format: " << dataFormat.ToString() << std::endl;
 	std::cout << "\t\t Data File: " << dataFilepath << std::endl;
