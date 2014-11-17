@@ -212,23 +212,17 @@ public:
 		dVector.clear();
 
 		while(getline(lineStream, cell, delimiter)) {
-			std::cout << "Before trim:" << cell << std::endl;
 			//Remove whitespace
 			cell = Trim(cell);
-			std::cout << "After trim:" << cell << std::endl;
 
 			//Skip if cell is empty
 			if(!cell.empty()) {
-				std::cout << "Non-empty cell:" << cell << std::endl;
 				if(!isdigit(cell.at(0))) {
 					throw SPXParseException("SPXStringUtilities::ParseStringToDoubleVector: Token " + cell + " cannot be converted to double");
 				}
-				std::cout << "numeric cell:" << std::endl;
 
 				dVector.push_back((double)atof(cell.c_str()));
-			} else {
-				std::cout << "Cell was empty" << std::endl;
-			}
+			} 
 		}
 
 		return dVector;
