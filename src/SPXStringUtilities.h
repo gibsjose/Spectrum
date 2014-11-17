@@ -166,11 +166,14 @@ public:
 		dVector.clear();
 
 		while(getline(lineStream, cell, delimiter)) {
-			if(!isdigit(cell.at(0))) {
-				throw SPXParseException("SPXStringUtilities::ParseStringToDoubleVector: Token " + cell + " cannot be converted to double");
-			}
+			//Skip if cell is empty
+			if(!cell.empty()) {
+				if(!isdigit(cell.at(0))) {
+					throw SPXParseException("SPXStringUtilities::ParseStringToDoubleVector: Token " + cell + " cannot be converted to double");
+				}
 
-			dVector.push_back((double)atof(cell.c_str()));
+				dVector.push_back((double)atof(cell.c_str()));
+			}
 		}
 
 		return dVector;

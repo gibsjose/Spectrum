@@ -229,6 +229,7 @@ void SPXData::ParseSpectrum(void) {
 
 			//Not a systematic error: Read as data if it starts with a number
 			else if(isdigit((int)line.at(0))) {
+
 				//Parse line into data vector
 				std::vector<double> tmp_data = SPXStringUtilities::ParseStringToDoubleVector(line, ' ');
 
