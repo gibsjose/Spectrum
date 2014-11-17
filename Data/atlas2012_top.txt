@@ -81,7 +81,7 @@ jet_algorithm_radius = 4
 ;==============================================================
 [DATA]
 data_format = spectrum
-data_file = Data/spectrum_t1s_data.txt
+data_file = Data/spectrum_t3a_data.txt
 divided_by_bin_width = true
 normalized_to_total_sigma = true
 error_in_percent = true
