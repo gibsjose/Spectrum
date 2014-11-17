@@ -146,7 +146,7 @@ public:
 	}
 
 	//Splits a string based on a delimiter string, stopping after 'n' splits
-	static std::vector<std::string> SplitString(std::string s, const std::string &delimiter, unsigned int n) {
+	static std::vector<std::string> SplitString(std::string s, const std::string &delimiter, int n) {
 		size_t pos = 0;
 		std::vector<std::string> tokens;
 		unsigned int count = 0;

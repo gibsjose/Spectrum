@@ -186,7 +186,7 @@ void SPXData::ParseSpectrum(void) {
 				std::vector<double> tmp_syst;
 
 				//Parse the string, stopping after first delimiter
-				parsed = SPXStringUtilities::SplitString(line, " ", (unsigned int)1);
+				parsed = SPXStringUtilities::SplitString(line, " ", 1);
 
 				//Size should always be 2 (systematic name, string with all error values)
 				if(parsed.size() != 2) {
