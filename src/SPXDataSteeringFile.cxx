@@ -65,8 +65,8 @@ void SPXDataSteeringFile::SetDefaults(void) {
 	jetAlgorithmLabel.clear();
 	if(debug) std::cout << cn << mn << "jetAlgorithmLabel set to default: \" \"" << std::endl;
 
-	jetAlgorithmNumber = 0;
-	if(debug) std::cout << cn << mn << "jetAlgorithmNumber set to default: \" \"" << std::endl;
+	jetAlgorithmRadius = 0;
+	if(debug) std::cout << cn << mn << "jetAlgorithmRadius set to default: \" \"" << std::endl;
 
 	dataFormat = SPXDataFormat(DF_SPECTRUM_T1S);
 	if(debug) std::cout << cn << mn << "dataFormat set to default: \"Spectrum T1S\"" << std::endl;
@@ -101,7 +101,7 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t\t Y Units: " << yUnits << std::endl;
 	std::cout << "\t\t Y Bin Width Units: " << yBinWidthUnits << std::endl;
 	std::cout << "\t\t Jet Algorithm Label: " << jetAlgorithmLabel << std::endl;
-	std::cout << "\t\t Jet Algorithm Number: " << jetAlgorithmNumber << std::endl << std::endl;
+	std::cout << "\t\t Jet Algorithm Number: " << jetAlgorithmRadius << std::endl << std::endl;
 	std::cout << "\t Data Options [DATA]" << std::endl;
 	std::cout << "\t\t Data Format: " << dataFormat.ToString() << std::endl;
 	std::cout << "\t\t Data File: " << dataFilepath << std::endl;
@@ -229,7 +229,7 @@ void SPXDataSteeringFile::Parse(void) {
 		if(debug) std::cout << cn << mn << "Successfully read Jet Algorithm Label: " << jetAlgorithmLabel << std::endl;
 	}
 
-	jetAlgorithmNumber = reader->GetInteger("GRAPH", "jet_algorithm_number", jetAlgorithmNumber);
+	jetAlgorithmRadius = reader->GetInteger("GRAPH", "jet_algorithm_radius", jetAlgorithmRadius);
 
 	//Data Options [DATA]
 	tmp = reader->Get("DATA", "data_format", "EMPTY");
