@@ -50,7 +50,7 @@ private:
 public:
 
 	template<typename T>
-	T StringToNumber(const std::string& numberAsString) {
+	static T StringToNumber(const std::string& numberAsString) {
 		T valor;
 		std::stringstream stream(numberAsString);
 		stream >> valor;
