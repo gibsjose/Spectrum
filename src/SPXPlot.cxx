@@ -775,6 +775,14 @@ void SPXPlot::InitializeRatios(void) {
 void SPXPlot::InitializeCrossSections(void) {
 	std::string mn = "InitializeCrossSections: ";
 
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXOverlayStyle &os = pc.GetOverlayStyle();
+
+	if(!os.ContainsConvolute()) {
+		if(debug) std::cout << cn << mn << "Display style does not contain convolute: Do nothing" << std::endl;
+		return;
+	}
+
 	std::vector<SPXPlotConfigurationInstance> pcis;
 
 	//Create cross sections for each configuration instance
@@ -848,6 +856,14 @@ void SPXPlot::ChangeDefaultPDFHistogramNames(void) {
 
 void SPXPlot::NormalizeCrossSections(void) {
 	std::string mn = "NormalizeCrossSections: ";
+
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXOverlayStyle &os = pc.GetOverlayStyle();
+
+	if(!os.ContainsConvolute()) {
+		if(debug) std::cout << cn << mn << "Display style does not contain convolute: Do nothing" << std::endl;
+		return;
+	}
 
 	for(int i = 0; i < crossSections.size(); i++) {
 		try {
@@ -928,6 +944,14 @@ void SPXPlot::NormalizeCrossSections(void) {
 
 void SPXPlot::InitializeData(void) {
 	std::string mn = "InitializeData: ";
+
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXOverlayStyle &os = pc.GetOverlayStyle();
+
+	if(!os.ContainsData()) {
+		if(debug) std::cout << cn << mn << "Display style does not contain convolute: Do nothing" << std::endl;
+		return;
+	}
 
 	//Create data objects for each configuration instance of this plot and add them to vector
 	for(int i = 0; i < steeringFile->GetNumberOfConfigurationInstances(id); i++) {
