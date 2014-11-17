@@ -526,11 +526,11 @@ void SPXData::ParseHERAFitter(void) {
 
 				xlow_t = dataVector[XLOW_COL];
 				xhigh_t = dataVector[XHIGH_COL];
-				xm_t = sqrt(pow(xlow_t, 2.0) + pow(xhigh_t, 2.0));	//@TODO How to calculate Xm for HERAFitter? Geometric mean?
+				xm_t = (xlow_t + xhigh_t) / 2;
 				sigma_t = dataVector[SIGMA_COL];
 				double stat_p = dataVector[STAT_P_COL];
 				double stat_n = dataVector[STAT_N_COL];
-				stat_t = sqrt(pow(stat_p, 2.0) + pow(stat_n, 2.0));	//@TODO How to calculate Stat for HERAFitter? Geometric mean?
+				stat_t = (stat_p + stat_n) / 2;
 
 				//Read in systematics: Must use names vector instead of map keys to ensure correct order
 				for(int i = SYST_BEGIN_COL; i < numberOfSystematics; i++) {
@@ -539,7 +539,7 @@ void SPXData::ParseHERAFitter(void) {
 					if(individualSystematics.count(names.at(i)) == 0) {
 						throw SPXParseException(cn + mn + "Name \"" + names.at(i) + "\" not found in systematics map");
 					} else {
-						auto &v = individualSystematics[names.at(i)];
+						std::vector<double> &v = individualSystematics[names.at(i)];
 						v.push_back(dataVector.at(i));
 					}
 				}
