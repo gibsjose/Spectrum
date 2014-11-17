@@ -32,6 +32,7 @@ const int DF_SPECTRUM_T2A =		(1 << 3);	//0b00001000
 const int DF_SPECTRUM_T3S = 	(1 << 4);	//0b00010000
 const int DF_SPECTRUM_T3A = 	(1 << 5);	//0b00100000
 const int DF_HERAFITTER =		(1 << 6);	//0b01000000
+const int DF_SPECTRUM =			(1 << 7);	//0b10000000
 
 class SPXDataFormat {
 
@@ -70,6 +71,14 @@ public:
 		} else {
 			return false;
 		}
+	}
+
+	bool IsSpectrum(void) const {
+		if((format == DF_SPECTRUM) && this->IsValid()) {
+			return true;
+		}
+
+		return false;
 	}
 
 	bool IsSymmetric(void) const {

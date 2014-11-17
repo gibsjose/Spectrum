@@ -58,6 +58,12 @@ void SPXDataFormat::Parse(std::string s) {
 	//Clear the format each time it is parsed
 	this->Clear();
 
+	if(!s.compare("spectrum")) {
+		if(debug) std::cout << cn << mn << "Successfully matched format string: \"spectrum\"" << std::endl;
+		format = DF_SPECTRUM;
+		if(debug) std::cout << cn << mn << "Data Format successfully set to \"spectrun\"" << std::endl;
+	}
+
 	if(!s.compare("spectrum_t1s")) {
 		if(debug) std::cout << cn << mn << "Successfully matched format string: \"spectrum_t1s\"" << std::endl;
 		format = DF_SPECTRUM_T1S;
@@ -123,6 +129,9 @@ std::string SPXDataFormat::ToString(void) const {
 		return "INVALID_DATA_FORMAT";
 	}
 
+	if(format == DF_SPECTRUM) {
+		return "Spectrum";
+	}
 	if(format == DF_SPECTRUM_T1S) {
 		return "Spectrum T1S";
 	}
@@ -170,7 +179,9 @@ bool SPXDataFormat::IsValid(void) const {
 		return false;
 	}
 
-	if(format == DF_SPECTRUM_T1S) {
+	if(foramt == DF_SPECTRUM) {
+		return true;
+	} else if(format == DF_SPECTRUM_T1S) {
 		return true;
 	} else if(format == DF_SPECTRUM_T1A) {
 		return true;

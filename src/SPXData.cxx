@@ -38,7 +38,16 @@ void SPXData::Parse(void) {
 		throw SPXFileIOException(cn + mn + "Unable to open data file");
 	}
 
-	if(dataFormat.IsSpectrumT1S()) {
+	if(dataFormat.IsSpectrum()) {
+		if(debug) std::cout << cn << mn << "Data format is " << dataFormat.ToString() << std::endl;
+
+		try {
+			ParseSpectrum();
+		} catch(const SPXException &e) {
+			std::cerr << e.what() << std::endl;
+			throw SPXParseException(pci.dataSteeringFile.GetDataFile(), "Error parsing data file");
+		}
+	} else if(dataFormat.IsSpectrumT1S()) {
 		if(debug) std::cout << cn << mn << "Data format is " << dataFormat.ToString() << std::endl;
 
 		try {
@@ -104,6 +113,310 @@ void SPXData::Parse(void) {
 	} else {
 		throw SPXParseException("DataSteeringFile " + pci.dataSteeringFile.GetFilename() + " has invalid data format");
 	}
+}
+
+void SPXData::ParseSpectrum(void) {
+	std::string mn = "ParseSpectrum: ";
+
+	if(debug) std::cout << cn << mn << "Beginning to parse data file: " << pci.dataSteeringFile.GetDataFile() << std::endl;
+
+	if(!(*dataFile)) {
+		throw SPXFileIOException("Something went awry with the dataFile ifstream...");
+	}
+
+	//Fixed column indices
+	const unsigned int XM_COL = 		0;
+	const unsigned int XLOW_COL = 		1;
+	const unsigned int XHIGH_COL = 		2;
+	const unsigned int SIGMA_COL = 		3;
+	const unsigned int STAT_COL = 		4;
+	const unsigned int SYST_COL = 		5;	//For symmetric total systematics
+	const unsigned int SYST_P_COL =		5;	//For asymmetric total systematics
+	const unsigned int SYST_N_COL = 	6;	//...
+
+	std::string line;
+	double xm_t, xlow_t, xhigh_t, sigma_t, stat_t, syst_p_t, syst_n_t;
+	std::vector<double> xm;				//Mean x
+	std::vector<double> xlow;			//X min
+	std::vector<double> xhigh;			//X max
+	std::vector<double> sigma;			//Sigma (cross-section)
+	std::vector<double> stat;			//Statistical error
+	std::vector<double> syst_p;			//Total systematic error (+)
+	std::vector<double> syst_n;			//Total systematic error (-)
+
+	//Individual systematic error namess
+	std::vector<std::string> names;
+
+	//Count the number of positive/negative systematic errors to check balance
+	unsigned int pos_count = 0;
+	unsigned int neg_cout = 0;
+
+	//Bin count
+	unsigned int bin_count = 0;
+
+	//Number of columns (used to determine symmetric, asymmetric, or no total systematic error)
+	unsigned int numberOfColumns = 0;
+
+	while(dataFile->good()) {
+		std::getline(*dataFile, line);
+
+		//String stream to parse the individual lines
+		std::istringstream iss(line);
+
+		//Skip empty lines
+		if(line.empty()) {
+			continue;
+		}
+
+		//Skip comments
+		if(!line.empty() && (line[0] == ';')) {
+			continue;
+		} else if(!line.empty()) {
+			//Print line (DEBUG)
+			if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
+
+			//Check for systematic errors (line contains 'syst_')
+			if(line.find("syst_") != std::string::npos) {
+
+				//Split the line into systematic name and data
+				std::string name;
+				std::vector<double> tmp_syst;
+
+				iss >> name;
+				tmp_syst = SPXStringUtilities::ParseStringToDoubleVector(iss.str(), ' ');
+
+				//Symmetric Error: Create both + and - and add them to map
+				if((name.find("+") == std::string::npos) && (name.find("-") == std::string::npos)) {
+					//Increment both positive and negative count
+					pos_count++;
+					neg_count++;
+
+					std::string p_name = name + "+";
+					std::string n_name = name + "-";
+
+					if(debug) std::cout << cn << mn << "Found new symmetric systematic error: " << name << std::endl;
+					if(debug) std::cout << cn << mn << "Converted to asymmetric errors: " << p_name << " and " << n_name << std::endl;
+
+					//Add to map
+					StringDoubleVectorPair_T p_pair(p_name, tmp_syst);
+					StringDoubleVectorPair_T n_pair(n_name, tmp_syst);
+					individualSystematics.insert(p_pair);
+					individualSystematics.insert(n_pair);
+				}
+
+				//Asymmetric Error: If '-', make sure there was already a '+', else issue warning
+				else {
+					if(name.find("+") != std::string::npos) {
+						pos_count++;
+
+						if(debug) std::cout << cn << mn << "Found new individual systematic error: " << name << std::endl;
+					}
+					else if(name.find("-") != std::string::npos) {
+						neg_count++;
+
+						if(individualSystematics.count(SPXStringUtilities::ReplaceAll(name, "-", "+")) == 0) {
+							std::cerr << cn << mn << "WARNING: Unbalanced sytematic error: " << SPXStringUtilities::RemoveCharacters(name, "+-") << std::endl;
+						}
+					}
+
+					//Add it to the map
+					StringDoubleVectorPair_T pair(name, tmp_syst);
+					individualSystematics.insert(pair);
+				}
+			}
+
+			//Not a systematic error: Read as data if it starts with a number
+			else if(isdigit((int)line.at(0))) {
+				//Parse line into data vector
+				std::vector<double> tmp_data = SPXStringUtilities::ParseStringToDoubleVector(line);
+
+				//Make sure there are at least 5 columns
+				if(tmp_data.size() < REQ_COLS) {
+					throw SPXParseException(cn + mn + "There must be at least 5 data columns (xm, xlow, xhigh, sigma, stat)");
+				}
+
+				//Set number of columns to the size of the 0th bin
+				if(!bin_count) {
+					//Set number of columns
+					numberOfColumns = tmp_data.size();
+
+					//Warn user that the aforementioned columns will be assumed for the remaining bins
+					std::cout << cn << mn << "WARNING: The remaining bins MUST also have exactly " << numberOfColumns << " columns" << std::endl;
+				}
+				//After the 0th bin, make sure all other bins have the exact same number of columns
+				else {
+					if(tmp_data.size() != numberOfColumns) {
+						std::ostringstream oss;
+						oss << cn << mn << "Number of columns for bin " << bin_count << " (" << tmp_data.size() << \
+							") does NOT match expected (" << numberOfColumns << ")" << std:endl;
+						throw SPXParseException(oss.str());
+					}
+				}
+
+				//Increment bin count
+				bin_count++;
+
+				//Parse out required data
+				xm_t = tmp_data[XM_COL];
+				xlow_t = tmp_data[XLOW_COL];
+				xhigh_t = tmp_data[XHIGH_COL];
+				sigma_t = tmp_data[SIGMA_COL];
+				stat_t = tmp_data[STAT_COL];
+
+				//Check for symmetric, asymmetric, or no total systematic error (set numberOfColumns)
+				if(numberOfColumns == 5) {
+					if(!bin_count && debug) std::cout << cn << mn << "Assuming No Total Systematic Errors: Will sum individuals to calculate total" << std::endl;
+				} else if(numberOfColumns == 6) {
+					if(!bin_count && debug) std::cout << cn << mn << "Assuming Symmetric Systematic Errors: Will sum individuals to compare against total, if they are given" << std::endl;
+					syst_p_t = tmp_data[SYST_COL];
+					syst_n_t = tmp_data[SYST_COL];
+					syst_p.push_back(syst_p_t);
+					syst_n.push_back(syst_n_t);
+				} else if(numberOfColumns == 7) {
+					if(!bin_count && debug) std::cout << cn << mn << "Assuming Asymmetric Systematic Errors: Will sum individuals to compare against total, if they are given" << std::endl;
+					syst_p_t = tmp_data[SYST_P_COL];
+					syst_n_t = tmp_data[SYST_N_COL];
+					syst_p.push_back(syst_p_t);
+					syst_n.push_back(syst_n_t);
+				}
+
+				//Fill required vectors with temp variables
+				xm.push_back(xm_t);
+				xlow.push_back(xlow_t);
+				xhigh.push_back(xhigh_t);
+				sigma.push_back(sigma_t);
+				stat.push_back(stat_t);
+			}
+		}
+	}
+
+	//Check positive/negative individual systematic count
+	if(pos_count != neg_count) {
+		std::cerr << cn << mn << "WARNING: Different number of positive/negative systematic errors: Data errors could be skewed" << std::endl;
+	}
+
+	//Set master size to number of bins
+	int masterSize = bin_count;
+	if(debug) std::cout << cn << mn << "Master size set to size of \"bin_count\": " << masterSize << std::endl;
+
+	//If no total sytematics were given but there are no individual errors given either, bail out
+	if((numberOfColumns == 5) && !pos_count) {
+		throw SPXParseException("No total systematic error provided AND no individuals to sum");
+	}
+
+	//If necessary, compute/compare total positive/negative systematics for each bin using the individual systematic errors
+	if(pos_count) {
+
+		//The acceptable percent difference between given total and summed individuals (0.10 = 10%)
+		const double INDIV_VS_TOT_ACCEPTABLE_ERROR = 0.10;
+
+		for(int i = 0; i < masterSize; i++) {
+			std::vector<double> p_errors;
+			std::vector<double> n_errors;
+			p_errors.clear();
+			n_errors.clear();
+
+			for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); ++it) {
+
+				const std::string &name = it->first;
+				std::vector<double> &syst = it->second;
+
+				//Positive systematic
+				if(name.find("_p") != std::string::npos) {
+					p_errors.push_back(syst.at(i));
+				}
+
+				//Negative systematic
+				else if(name.find("_n") != std::string::npos) {
+					n_errors.push_back(syst.at(i));
+				}
+
+				//Symmetric systematic: +/- are the same
+				else {
+					p_errors.push_back(syst.at(i));
+					n_errors.push_back(syst.at(i));
+				}
+			}
+
+			syst_p_t = SPXMathUtilities::AddErrorsInQuadrature(p_errors);
+			syst_n_t = SPXMathUtilities::AddErrorsInQuadrature(n_errors);
+
+			if(debug) std::cout << cn << mn << "Total positive systematic error for bin " << i << " calculated as: " << syst_p_t << std::endl;
+			if(debug) std::cout << cn << mn << "Total negative systematic error for bin " << i << " calculated as: " << syst_n_t << std::endl;
+
+			//No totals given, just use sum of individuals
+			if(numberOfColumns == 5) {
+				syst_p.push_back(syst_p_t);
+				syst_n.push_back(syst_n_t);
+			}
+
+			//Otherwise, compare the summed individuals against the total within the acceptable percent difference
+			else if((numberOfColumns == 6) || (numberOfColumns == 7)) {
+				double given_total_p = syst_p.at(i);
+				double given_total_n = syst_n.at(i);
+				double delta_p = abs(given_total_p - syst_p_t);
+				double delta_n = abs(given_total_n - syst_n_t);
+				double average_p = (given_total_p + syst_p_t) / 2;
+				double average_n = (given_total_n + syst_n_t) / 2;
+
+				double percentDifference_p = delta_p / average_p;
+				double percentDifference_n = delta_n / average_n;
+
+				if(percentDifference_p > INDIV_VS_TOT_ACCEPTABLE_ERROR) {
+					std::cerr << cn << mn << "WARNING: Bin " << i << ": Sum of positive individual errors (" << syst_p_t << \
+					 	") does not agree witihin " << (INDIV_VS_TOT_ACCEPTABLE_ERROR * 100) << \
+							"%% with the given positive total systematic error (" << given_total_p << ")" << std::endl;
+				}
+
+				if(percentDifference_n > INDIV_VS_TOT_ACCEPTABLE_ERROR) {
+					std::cerr << cn << mn << "WARNING: Bin " << i << ": Sum of negative individual errors (" << syst_n_t << \
+						") does not agree witihin " << (INDIV_VS_TOT_ACCEPTABLE_ERROR * 100) << \
+							"%% with the given negative total systematic error (" << given_total_n << ")" << std::endl;
+				}
+			}
+		}
+	}
+
+	//Check vector sizes: all vectors should be the same size
+	if(debug) std::cout << cn << mn << "Checking sizes of all other vectors..." << std::endl;
+
+	try {
+		CheckVectorSize(xm, "xm", masterSize);
+		CheckVectorSize(xlow, "xlow", masterSize);
+		CheckVectorSize(xhigh, "xhigh", masterSize);
+		CheckVectorSize(sigma, "sigma", masterSize);
+		CheckVectorSize(stat, "stat", masterSize);
+		CheckVectorSize(syst_p, "syst_p", masterSize);
+		CheckVectorSize(syst_n, "syst_n", masterSize);
+
+		//Check size of all individual systematic errors
+		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
+			const std::string &syst_name = it->first;
+			std::vector<double> &systematic = it->second;
+			CheckVectorSize(systematic, syst_name, masterSize);
+		}
+
+	} catch(const SPXException &e) {
+		throw;
+	}
+
+	//All vectors passed size check
+	if(debug) std::cout << cn << mn << "Success: All vector sizes match master size" << std::endl;
+
+	//Set numberOfBins based on master size
+	numberOfBins = masterSize;
+	if(debug) std::cout << cn << mn << "Number of Bins set to match master size: " << numberOfBins << std::endl;
+
+	//Add all data to map
+	data.insert(StringDoubleVectorPair_T("xm", xm));
+	data.insert(StringDoubleVectorPair_T("xlow", xlow));
+	data.insert(StringDoubleVectorPair_T("xhigh", xhigh));
+	data.insert(StringDoubleVectorPair_T("sigma", sigma));
+	data.insert(StringDoubleVectorPair_T("stat", stat));
+	data.insert(StringDoubleVectorPair_T("syst_p", syst_p));
+	data.insert(StringDoubleVectorPair_T("syst_n", syst_n));
+
+	if(debug) std::cout << cn << mn << "Successfully added data to map" << std::endl;
 }
 
 void SPXData::ParseSpectrumT1S(void) {
@@ -1087,7 +1400,10 @@ void SPXData::ParseHERAFitter(void) {
 
 //Helper method to choose correct print method based on data format
 void SPXData::Print(void) {
-	if(dataFormat.IsSpectrumT1S()) {
+
+	if(dataFormat.IsSpectrum()) {
+		PrintSpectrum();
+	} else if(dataFormat.IsSpectrumT1S()) {
 		PrintSpectrumT1S();
 	} else if(dataFormat.IsSpectrumT1A()) {
 		PrintSpectrumT1A();
@@ -1102,6 +1418,60 @@ void SPXData::Print(void) {
 	} else if(dataFormat.IsHERAFitter()) {
 		PrintHERAFitter();
 	}
+}
+
+void SPXData::PrintSpectrum(void) {
+
+	std::cout << std::endl << "Spectrum Data File: " << pci.dataSteeringFile.GetDataFile() << std::endl << std::endl;
+
+	std::cout << "============================================================================================" << std::endl;
+	std::cout << "|         xm |       xlow |      xhigh |      sigma |       stat |     syst + |     syst - |" << std::endl;
+	std::cout << "--------------------------------------------------------------------------------------------" << std::endl;
+
+	//Iterate over map
+	for(int i = 0; i < numberOfBins; i++) {
+		//Show 4 decimal places
+		std::cout << std::fixed;
+		std::cout.precision(4);
+
+		std::cout << "| ";
+		std::cout.width(10);
+		std::cout << data["xm"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["xlow"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["xhigh"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["sigma"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["stat"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["syst_p"][i];
+		std::cout << " | ";
+		std::cout.width(10); std::cout << data["syst_n"][i];
+		std::cout << " |" << std::endl;
+	}
+
+	std::cout << "============================================================================================" << std::endl;
+
+	std::cout << "This data has " << individualSystematics.size() / 2<< " Individual Systematic Errors:" << std::endl << std::endl;
+
+	//Iterate over individual systematic errors
+	for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
+		const std::string &syst_name = it->first;
+		std::vector<double> &systematic = it->second;
+
+		std::cout << std::left << std::setw(24) << syst_name << "  ";
+		std::cout << std::fixed;
+		std::cout.precision(4);
+		for(int j = 0; j < systematic.size(); j++) {
+			std::cout.width(10);
+			std::cout << systematic.at(j) << " ";
+		}
+		std::cout << std::endl;
+	}
+
+	std::cout << std::endl << std::endl;
 }
 
 void SPXData::PrintSpectrumT1S(void) {
@@ -1531,13 +1901,13 @@ void SPXData::CreateGraphs(void) {
 	double *eyl_syst;
 	double *eyh_syst;
 
-	if(dataFormat.IsSymmetric()) {
-		eyh_syst = eyl_syst = &data["syst"][0];
-	}
-	else if(dataFormat.IsAsymmetric()) {
+	// if(dataFormat.IsSymmetric()) {
+	// 	eyh_syst = eyl_syst = &data["syst"][0];
+	// }
+	// else if(dataFormat.IsAsymmetric()) {
 		eyh_syst = &data["syst_p"][0];
 		eyl_syst = &data["syst_n"][0];
-	}
+	// }
 
 	std::vector<double> eyl_tot_v;
 	std::vector<double> eyh_tot_v;
