@@ -161,13 +161,14 @@ public:
 		std::stringstream lineStream(rawData);
 		std::string cell;
 
-		std::cout << "==========" << rawData << std::endl;
-
 		dVector.clear();
 
 		while(getline(lineStream, cell, delimiter)) {
 			//Skip if cell is empty
 			if(!cell.empty()) {
+				//Remove whitespace
+				cell = RemoveAllCharacters(cell, "\t ");
+
 				if(!isdigit(cell.at(0))) {
 					throw SPXParseException("SPXStringUtilities::ParseStringToDoubleVector: Token " + cell + " cannot be converted to double");
 				}
