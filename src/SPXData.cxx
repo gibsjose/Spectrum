@@ -231,7 +231,9 @@ void SPXData::ParseSpectrum(void) {
 			else if(isdigit((int)SPXStringUtilities::LeftTrim(line).at(0))) {
 
 				//Parse line into data vector
-				std::vector<double> tmp_data = SPXStringUtilities::ParseStringToDoubleVector(line, ' ');
+				//Convert all tabs to spaces
+				std::string formatted_line = SPXStringUtilities::ReplaceAll("\t", " ");
+				std::vector<double> tmp_data = SPXStringUtilities::ParseStringToDoubleVector(formatted_line, ' ');
 
 				//Make sure there are at least 5 columns
 				if(tmp_data.size() < REQ_COLS) {
@@ -249,11 +251,6 @@ void SPXData::ParseSpectrum(void) {
 				//After the 0th bin, make sure all other bins have the exact same number of columns
 				else {
 					if(tmp_data.size() != numberOfColumns) {
-						std::cout << "bin_count = " << bin_count + 1 << std::endl;
-						for(int i = 0; i < tmp_data.size(); i++) {
-							std::cout << "tmp_data[" << i << "] =" << tmp_data.at(i) << std::endl;
-						}
-
 						std::ostringstream oss;
 						oss << cn << mn << "Number of columns for bin " << bin_count + 1<< " (" << tmp_data.size() << \
 							") does NOT match expected (" << numberOfColumns << ")" << std::endl;
