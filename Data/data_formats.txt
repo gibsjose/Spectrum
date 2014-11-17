@@ -1,10 +1,22 @@
-Spectrum T1S
-Spectrum T1A
-Spectrum T2S
-Spectrum T2A
-Spectrum T3S
-Spectrum T3A
+=========
+ Formats
+=========
+Spectrum
 HERAFitter
+
+==========
+ Spectrum
+==========
+The 'Spectrum' format can be (idealogically) broken down into 6 sub-formats:
+    T1S
+    T1A
+    T2S
+    T2A
+    T3S
+    T3A
+
+Functionally, these formats are all parsed by the same parser function, but keep in mind that these formats
+are the ONLY acceptable formats. Given this, it is important to follow their respective formats exactly.
 
 ==============
  Spectrum T1S
@@ -28,14 +40,46 @@ Spectrum T1A = Spectrum Type 1, Asymmetric Errors
 
 Example: spectrum_t1a_data.txt
 
+;--------------------------------------------------------------
+; NOTE:
+;
+; The format for specifying individual Systematic errors is
+; as follows:
+;
+; For example, let's define 2 individual systematic errors:
+;	ISFR
+;	MCGen
+;
+; In the list, you MUST prepend 'syst_' to each systematic error
+;
+; For SYMMETRICAL errors, just use the base name
+;
+; For ASYMMETRICAL errors:
+; For positive errors, put a '+' DIRECTLY after the name, and
+; for negative errors, put a '-' DIRECTLY after the name.
+;
+; So for our example errors the list would look like this if we had
+; a dataset with 4 bins and were using ASYMMETRIC errors.
+;
+; syst_ISFR+    0.1 0.2 0.3 0.4
+; syst_ISFR-    0.1 0.2 0.3 0.4
+; syst_MCGen+   0.1 0.2 0.3 0.4
+; syst_MCGen-   0.1 0.2 0.3 0.4
+;
+; And like this if we were using SYMMETRIC errors
+;
+; syst_ISFR     0.1 0.2 0.3 0.4
+; syst_MCGen    0.1 0.2 0.3 0.4
+;--------------------------------------------------------------
+
 ==============
  Spectrum T2S
 ==============
 'Type 2' specifies that BOTH the TOTAL systematic error AND any number of partial systematic errors will be given as formatted below
 'Symmetric' specifies that the systematic errors will be given symmetrically (only one column)
 
-+ syst_sub_1 e_p1 e_p2 ...
-+ syst_sub_2 ...
+syst_sub_1 e_p1 e_p2 ...
+syst_sub_2 ...
 ...
 
 [xm] [xlow] [xhigh] [sigma] [stat sigma] [syst sigma]
@@ -51,10 +95,10 @@ Example: spectrum_t2s_data.txt
 'Type 2' specifies that BOTH the TOTAL systematic error AND any number of partial systematic errors will be given as formatted below
 'Asymmetric' specifies that the systematic errors will be given asymmetrically (as + and - in separate columns)
 
-+ syst_sub_1 e_p1 e_p2 ...
-- syst_sub_2 e_n1 e_n2 ...
-+ syst_sub_2 ...
-- syst_sub_2 ...
+syst_sub_1+ e_p1 e_p2 ...
+syst_sub_1- e_n1 e_n2 ...
+syst_sub_2+ ...
+syst_sub_2- ...
 ...
 
 [xm] [xlow] [xhigh] [sigma] [stat sigma] [syst sigma +] [syst sigma -]
@@ -71,8 +115,8 @@ Example: spectrum_t2a_data.txt
 calculated from the individuals by adding them in quadrature.
 'Symmetric' specifies that the systematic errors will be given symmetrically (only one column)
 
-+ syst_sub_1 e_p1 e_p2 ...
-+ syst_sub_2 ...
+syst_sub_1 e_p1 e_p2 ...
+syst_sub_2 ...
 ...
 
 [xm] [xlow] [xhigh] [sigma] [stat sigma]
@@ -89,10 +133,10 @@ Example: spectrum_t3a_data.txt
 calculated from the individuals by adding them in quadrature.
 'Asymmetric' specifies that the systematic errors will be given asymmetrically (as + and - in separate columns)
 
-+ syst_sub_1 e_p1 e_p2 ...
-- syst_sub_2 e_n1 e_n2 ...
-+ syst_sub_2 ...
-- syst_sub_2 ...
+syst_sub_1+ e_p1 e_p2 ...
+syst_sub_1- e_n1 e_n2 ...
+syst_sub_2+ ...
+syst_sub_2- ...
 ...
 
 [xm] [xlow] [xhigh] [sigma] [stat sigma]
