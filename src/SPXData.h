@@ -29,6 +29,11 @@
 #include "SPXPlotConfiguration.h"
 #include "SPXException.h"
 
+//Typedefs for Data Map and Individual Systematic Error Map
+typedef std::map<std::string, std::vector<double> > StringDoubleVectorMap_T;
+typedef std::pair<std::string, std::vector<double> > StringDoubleVectorPair_T;
+typedef StringDoubleVectorMap_T::iterator StringDoubleVectorMapIterator_T;
+
 class SPXData {
 
 public:
@@ -61,15 +66,7 @@ public:
 	}
 
 	unsigned int GetNumberOfIndividualSystematicErrors(void) const {
-		return individualSystematicErrorNames.size();
-	}
-
-	const std::string & GetIndividualSystematicErrorName(unsigned int index) const {
-		if(index > (individualSystematicErrorNames.size() - 1)) {
-			throw SPXOutOfRangeException((individualSystematicErrorNames.size() - 1), index, "SPXData::GetIndividualSystematicErrorName: Index out of range");
-		}
-
-		return individualSystematicErrorNames.at(index);
+		return individualSystematics.size();
 	}
 
 	std::vector<double> GetDataColumn(const std::string &column) {
@@ -102,27 +99,15 @@ public:
 
 	//NOTE: Returns only the POSITIVE vector for asymmetric formats
 	std::vector<double> & GetSystematicErrorVector(void) {
-		if(dataFormat.IsSymmetric()) {
-			return data["syst"];
-		} else {
-			return data["sys_p"];
-		}
+		return data["syst_p"];
 	}
 
 	std::vector<double> & GetPositiveSystematicErrorVector(void) {
-		if(dataFormat.IsSymmetric()) {
-			return data["syst"];
-		} else {
-			return data["syst_p"];
-		}
+		return data["syst_p"];
 	}
 
 	std::vector<double> & GetNegativeSystematicErrorVector(void) {
-		if(dataFormat.IsSymmetric()) {
-			return data["syst"];
-		} else {
-			return data["syst_n"];
-		}
+		return data["syst_n"];
 	}
 
 	TGraphAsymmErrors * GetStatisticalErrorGraph(void) {
@@ -161,14 +146,11 @@ private:
 	//Number of bins in data map
 	unsigned int numberOfBins;
 
-	//Stores a copy of all individual systematic error names
-	// for T2S: There is a single copy of each name
-	// for T2A: There are 2 copies of each name, each appended with '_p' for the positive errors
-	//				and '_n' for the negative errors
-	std::vector<std::string> individualSystematicErrorNames;
+	//Individual Systematic Errors
+	StringDoubleVectorMap_T individualSystematics;
 
 	//Actual data map
-	std::map<std::string, std::vector<double> > data;
+	StringDoubleVectorMap_T data;
 
 	//Graph for plotting statistical error ticks
 	TGraphAsymmErrors *statisticalErrorGraph;
@@ -179,20 +161,10 @@ private:
 	//Actual data graph containing total errors
 	TGraphAsymmErrors *totalErrorGraph;
 
-	void ParseSpectrumT1S(void);
-	void ParseSpectrumT1A(void);
-	void ParseSpectrumT2S(void);
-	void ParseSpectrumT2A(void);
-	void ParseSpectrumT3S(void);
-	void ParseSpectrumT3A(void);
+	void ParseSpectrum(void);
 	void ParseHERAFitter(void);
 
-	void PrintSpectrumT1S(void);
-	void PrintSpectrumT1A(void);
-	void PrintSpectrumT2S(void);
-	void PrintSpectrumT2A(void);
-	void PrintSpectrumT3S(void);
-	void PrintSpectrumT3A(void);
+	void PrintSpectrum(void);
 	void PrintHERAFitter(void);
 
 	void OpenDataFile(void) {

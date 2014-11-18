@@ -49,7 +49,7 @@ void SPXPlot::Plot(void) {
 	ScaleAxes();
 	DrawOverlay();
 	DrawRatio();
-	//DrawLegend();
+	DrawLegend();
 	UpdateCanvas();
 
 	//Create a PNG of the canvas
@@ -67,26 +67,34 @@ void SPXPlot::SetAxisLabels(void) {
 	std::string yLabelRatio = (!pc.GetRatioTitle().empty() ? pc.GetRatioTitle() : "Ratio");
 
 	//Set Overlay Y-Axis Label
-	overlayFrameHisto->SetYTitle(yLabelOverlay.c_str());
+	if(ds.ContainsOverlay()) {
+		overlayFrameHisto->SetYTitle(yLabelOverlay.c_str());
+	}
 
 	//Set Ratio Y-Axis Label
-	ratioFrameHisto->SetYTitle(yLabelRatio.c_str());
+	if(ds.ContainsRatio()) {
+		ratioFrameHisto->SetYTitle(yLabelRatio.c_str());
+	}
 
 	//Set X-Axis Label
 	if(ds.ContainsOverlay() && !ds.ContainsRatio()) {
 		//Set Overlay X-Axis Label
 		overlayFrameHisto->SetXTitle(xLabel.c_str());
 
-	} else {
+	} else if(ds.ContainsRatio()){
 		//Set Ratio X-Axis Label
 		ratioFrameHisto->SetXTitle(xLabel.c_str());
 	}
 
-	overlayPad->cd();
-	overlayFrameHisto->Draw();
+	if(ds.ContainsOverlay()) {
+		overlayPad->cd();
+		overlayFrameHisto->Draw();
+	}
 
-	ratioPad->cd();
-	ratioFrameHisto->Draw();
+	if(ds.ContainsRatio()) {
+		ratioPad->cd();
+		ratioFrameHisto->Draw();
+	}
 }
 
 void SPXPlot::ScaleAxes(void) {
@@ -108,47 +116,56 @@ void SPXPlot::ScaleAxes(void) {
 	yTitleOffset = 0.8;
 
 	//Scale Overlay Axes
-	xAxisOverlay->SetTitleOffset(xTitleOffset);
-	yAxisOverlay->SetTitleOffset(yTitleOffset);
+	if(ds.ContainsOverlay()) {
+		xAxisOverlay->SetTitleOffset(xTitleOffset);
+		yAxisOverlay->SetTitleOffset(yTitleOffset);
 
-	xAxisOverlay->SetLabelSize(xAxisOverlay->GetLabelSize() / scale);
-	yAxisOverlay->SetLabelSize(yAxisOverlay->GetLabelSize() / scale);
+		xAxisOverlay->SetLabelSize(xAxisOverlay->GetLabelSize() / scale);
+		yAxisOverlay->SetLabelSize(yAxisOverlay->GetLabelSize() / scale);
 
-	xAxisOverlay->SetTitleSize(xAxisOverlay->GetTitleSize() / scale);
-	yAxisOverlay->SetTitleSize(yAxisOverlay->GetTitleSize() / scale);
+		xAxisOverlay->SetTitleSize(xAxisOverlay->GetTitleSize() / scale);
+		yAxisOverlay->SetTitleSize(yAxisOverlay->GetTitleSize() / scale);
+
+		if(debug) std::cout << cn << mn << "Set Y Axis Overlay Title Offset to " << yTitleOffset << std::endl;
+	}
 
 	//Scale Ratio Axes
-	xAxisRatio->SetTitleOffset(xTitleOffset);
+	if(ds.ContainsRatio()) {
+		xAxisRatio->SetTitleOffset(xTitleOffset);
 
-	//NOTE: Not sure why I have to do -0.2 to begin with... For some reason at 0.0 (total offset = 0.8 when below is false)
-	// there is an additional offset relative to the overlay title. 0.6 (0.8 + (-0.2)) looks nice, however.
+		//NOTE: Not sure why I have to do -0.25 to begin with... For some reason at 0.0 (total offset = 0.8 when below is false)
+		// there is an additional offset relative to the overlay title. 0.55 (0.8 + (-0.25)) looks nice, however.
 
-	double distScale = -0.2;		//Add an offset to y ratio title offset if only ratio is plotted
-	if(!ds.ContainsOverlay() && ds.ContainsRatio()) {
-		distScale = 0.5;
+		double distScale = -0.25;		//Add an offset to y ratio title offset if only ratio is plotted
+		if(!ds.ContainsOverlay() && ds.ContainsRatio()) {
+			distScale = 0.5;
+		}
+
+		yAxisRatio->SetTitleOffset(yTitleOffset + distScale);
+
+		if(debug) std::cout << cn << mn << "Set Y Axis Ratio Title Offset to " << yTitleOffset + distScale << std::endl;
+
+		double rScale = 1.0;
+		if(ds.ContainsOverlay()) {
+			rScale = (0.4 - 0.0) / (1.0 - 0.4);
+		}
+
+		xAxisRatio->SetLabelSize(xAxisOverlay->GetLabelSize() / rScale);
+		yAxisRatio->SetLabelSize(yAxisOverlay->GetLabelSize() / rScale);
+
+		xAxisRatio->SetTitleSize(xAxisOverlay->GetTitleSize() / rScale);
+		yAxisRatio->SetTitleSize(yAxisOverlay->GetTitleSize() / rScale);
 	}
 
-	yAxisRatio->SetTitleOffset(yTitleOffset + distScale);
-
-	if(debug) std::cout << cn << mn << "Set Y Axis Overlay Title Offset to " << yTitleOffset << std::endl;
-	if(debug) std::cout << cn << mn << "Set Y Axis Ratio Title Offset to " << yTitleOffset + distScale << std::endl;
-
-	double rScale = 1.0;
 	if(ds.ContainsOverlay()) {
-		rScale = (0.4 - 0.0) / (1.0 - 0.4);
+		overlayPad->cd();
+		overlayFrameHisto->Draw();
 	}
 
-	xAxisRatio->SetLabelSize(xAxisOverlay->GetLabelSize() / rScale);
-	yAxisRatio->SetLabelSize(yAxisOverlay->GetLabelSize() / rScale);
-
-	xAxisRatio->SetTitleSize(xAxisOverlay->GetTitleSize() / rScale);
-	yAxisRatio->SetTitleSize(yAxisOverlay->GetTitleSize() / rScale);
-
-	overlayPad->cd();
-	overlayFrameHisto->Draw();
-
-	ratioPad->cd();
-	ratioFrameHisto->Draw();
+	if(ds.ContainsRatio()) {
+		ratioPad->cd();
+		ratioFrameHisto->Draw();
+	}
 }
 
 void SPXPlot::CreateCanvas(void) {
@@ -183,12 +200,27 @@ void SPXPlot::CreateCanvas(void) {
 //Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
 void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax) {
 
+	//Get the plot configuration and display style from steering file
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXDisplayStyle &ds = pc.GetDisplayStyle();
+
+	//Do nothing if overlay is not plotted
+	if(!ds.ContainsOverlay()) {
+		xMin = xMax = yMin = yMax = 0;
+		return;
+	}
+
 	std::vector<TGraphAsymmErrors *> graphs;
 	{
 		//Data graphs
+		//NOTE: Total should be the largest, but there could be a scenario in which
+		//		one of the other errors is negative, and thus only the stat/syst could be
+		//		slightly larger for some points since the other error is negative and
+		//		would bring the total error down
 		for(int i = 0; i < data.size(); i++) {
 			graphs.push_back(data[i].GetStatisticalErrorGraph());
 			graphs.push_back(data[i].GetSystematicErrorGraph());
+			graphs.push_back(data[i].GetTotalErrorGraph());
 		}
 
 		//Cross sections
@@ -214,6 +246,16 @@ void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yM
 
 //Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
 void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax) {
+
+	//Get the plot configuration and display style from steering file
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXDisplayStyle &ds = pc.GetDisplayStyle();
+
+	//Do nothing if overlay is not plotted
+	if(!ds.ContainsRatio()) {
+		xMin = xMax = yMin = yMax = 0;
+		return;
+	}
 
 	std::vector<TGraphAsymmErrors *> graphs;
 	{
@@ -368,7 +410,7 @@ void SPXPlot::ConfigurePads(void) {
 	if(pc.IsYLog()) {
 		if(debug) std::cout << cn << mn << "Setting Y Axis to Logarithmic Scale for Plot " << id << std::endl;
 		overlayPad->SetLogy();
-		//ratioPad->SetLogy();	//@TODO How to handle this in SF? What to do for negatives?
+		//ratioPad->SetLogy();	//@TODO Should I have separate log flags in steering file for overlay/ratio?
 	}
 }
 
@@ -378,6 +420,10 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 	if(!overlayPad) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::ConfigurePads before drawing the pad frame");
 	}
+
+	//Get the plot configuration and display style from steering file
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXDisplayStyle &ds = pc.GetDisplayStyle();
 
 	DetermineOverlayFrameBounds(xMinOverlay, xMaxOverlay, yMinOverlay, yMaxOverlay);
 
@@ -402,15 +448,17 @@ void SPXPlot::DrawRatioPadFrame(void) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::ConfigurePads before drawing the pad frame");
 	}
 
+	//Get the plot configuration and display style from steering file
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXDisplayStyle &ds = pc.GetDisplayStyle();
+
 	DetermineRatioFrameBounds(xMinRatio, xMaxRatio, yMinRatio, yMaxRatio);
 
-	//@TODO DEBUG! Set properly...
-	//yMinRatio = 0.9;
-	//yMaxRatio = 1.1;
-
-	//Force Ratio X Min/Max to match Overlay (should alread match anyway...)
-	xMinRatio = xMinOverlay;
-	xMaxRatio = xMaxOverlay;
+	//Force Ratio X Min/Max to match Overlay, if plotted (should alread match anyway...)
+	if(ds.ContainsOverlay()) {
+		xMinRatio = xMinOverlay;
+		xMaxRatio = xMaxOverlay;
+	}
 
 	ratioPad->cd();
 	ratioFrameHisto = ratioPad->DrawFrame(xMinRatio, yMinRatio, xMaxRatio, yMaxRatio);
@@ -517,6 +565,7 @@ void SPXPlot::DrawOverlay(void) {
 	//Do nothing if not drawing overlay
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
+	SPXOverlayStyle &os = pc.GetOverlayStyle();
 
 	if(!ds.ContainsOverlay()) {
 		return;
@@ -525,61 +574,70 @@ void SPXPlot::DrawOverlay(void) {
 	//Change to the overlay pad
 	overlayPad->cd();
 
-	//Stagger overlay convolute points if requested
-	if(steeringFile->GetPlotStaggered() && !steeringFile->GetPlotBand()) {
-		StaggerConvoluteOverlay();
+	//@TODO Reference Overlay
+
+	//Check if convolute is to be plotted in the overlay section
+	if(os.ContainsConvolute()) {
+
+		//Stagger overlay convolute points if requested
+		if(steeringFile->GetPlotStaggered() && !steeringFile->GetPlotBand()) {
+			StaggerConvoluteOverlay();
+		}
+
+		//Draw cross sections on Overlay Pad
+		for(int i = 0; i < crossSections.size(); i++) {
+
+			std::string csOptions;
+
+			if(steeringFile->GetPlotBand()) {
+				csOptions = "E2";
+			}
+
+			if(steeringFile->GetPlotMarker() && !steeringFile->GetPlotBand()) {
+				csOptions = "P";
+			}
+
+			//@TODO Never plot error ticks on convolute graph right now... At some point might plot when alphas uncertainties exist
+			//if(!steeringFile->GetPlotErrorTicks() && !steeringFile->GetPlotBand()) {
+				csOptions += "Z";
+			//}
+
+			//Set cross section X errors to 0 if not plotting band
+			if(!steeringFile->GetPlotBand()) {
+				SPXGraphUtilities::ClearXErrors(crossSections[i].GetPDFBandResults());
+			}
+
+			crossSections[i].GetPDFBandResults()->Draw(csOptions.c_str());
+
+			if(debug) std::cout << cn << mn << "Sucessfully drew cross section for Plot " << id << " cross section " << i << \
+				" with options = " << csOptions << std::endl;
+		}
 	}
 
-	//Draw cross sections on Overlay Pad
-	for(int i = 0; i < crossSections.size(); i++) {
+	//Check if data is to be plotted in the overlay
+	if(os.ContainsData()) {
+		//Draw data graphs on Overlay Pad
+		for(int i = 0; i < data.size(); i++) {
 
-		std::string csOptions;
+			std::string statOptions;
+			std::string totOptions;
 
-		if(steeringFile->GetPlotBand()) {
-			csOptions = "E2";
+			if(steeringFile->GetPlotMarker()) {
+				totOptions = "PZ";	//Never plot ticks on tot error graph
+			}
+
+			if(steeringFile->GetPlotErrorTicks()) {
+				statOptions = "||";
+			} else {
+				statOptions = "Z";
+			}
+
+			data[i].GetTotalErrorGraph()->Draw(totOptions.c_str());
+			data[i].GetStatisticalErrorGraph()->Draw(statOptions.c_str());
+
+			if(debug) std::cout << cn << mn << "Sucessfully drew data for Plot " << id << " data " << i << " with Syst options = " \
+				<< totOptions << " Stat options = " << statOptions << std::endl;
 		}
-
-		if(steeringFile->GetPlotMarker() && !steeringFile->GetPlotBand()) {
-			csOptions = "P";
-		}
-
-		//@TODO Never plot error ticks on convolute graph right now... At some point might plot when alphas uncertainties exist
-		//if(!steeringFile->GetPlotErrorTicks() && !steeringFile->GetPlotBand()) {
-			csOptions += "Z";
-		//}
-
-		//Set cross section X errors to 0 if not plotting band
-		if(!steeringFile->GetPlotBand()) {
-			SPXGraphUtilities::ClearXErrors(crossSections[i].GetPDFBandResults());
-		}
-
-		crossSections[i].GetPDFBandResults()->Draw(csOptions.c_str());
-
-		if(debug) std::cout << cn << mn << "Sucessfully drew cross section for Plot " << id << " cross section " << i << \
-			" with options = " << csOptions << std::endl;
-	}
-
-	//Draw data graphs on Overlay Pad
-	for(int i = 0; i < data.size(); i++) {
-
-		std::string statOptions;
-		std::string totOptions;
-
-		if(steeringFile->GetPlotMarker()) {
-			totOptions = "PZ";	//Never plot ticks on tot error graph
-		}
-
-		if(steeringFile->GetPlotErrorTicks()) {
-			statOptions = "||";
-		} else {
-			statOptions = "Z";
-		}
-
-		data[i].GetTotalErrorGraph()->Draw(totOptions.c_str());
-		data[i].GetStatisticalErrorGraph()->Draw(statOptions.c_str());
-
-		if(debug) std::cout << cn << mn << "Sucessfully drew data for Plot " << id << " data " << i << " with Syst options = " \
-			<< totOptions << " Stat options = " << statOptions << std::endl;
 	}
 }
 
@@ -685,6 +743,10 @@ void SPXPlot::DrawRatio(void) {
 	referenceLine->Draw();
 }
 
+void SPXPlot::DrawLegend(void) {
+	return;
+}
+
 void SPXPlot::UpdateCanvas(void) {
 	std::string mn = "UpdateCanvas: ";
 
@@ -765,6 +827,14 @@ void SPXPlot::InitializeRatios(void) {
 void SPXPlot::InitializeCrossSections(void) {
 	std::string mn = "InitializeCrossSections: ";
 
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXOverlayStyle &os = pc.GetOverlayStyle();
+
+	if(!os.ContainsConvolute()) {
+		if(debug) std::cout << cn << mn << "Display style does not contain convolute: Do nothing" << std::endl;
+		return;
+	}
+
 	std::vector<SPXPlotConfigurationInstance> pcis;
 
 	//Create cross sections for each configuration instance
@@ -838,6 +908,14 @@ void SPXPlot::ChangeDefaultPDFHistogramNames(void) {
 
 void SPXPlot::NormalizeCrossSections(void) {
 	std::string mn = "NormalizeCrossSections: ";
+
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXOverlayStyle &os = pc.GetOverlayStyle();
+
+	if(!os.ContainsConvolute()) {
+		if(debug) std::cout << cn << mn << "Display style does not contain convolute: Do nothing" << std::endl;
+		return;
+	}
 
 	for(int i = 0; i < crossSections.size(); i++) {
 		try {
@@ -918,6 +996,14 @@ void SPXPlot::NormalizeCrossSections(void) {
 
 void SPXPlot::InitializeData(void) {
 	std::string mn = "InitializeData: ";
+
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXOverlayStyle &os = pc.GetOverlayStyle();
+
+	if(!os.ContainsData()) {
+		if(debug) std::cout << cn << mn << "Display style does not contain convolute: Do nothing" << std::endl;
+		return;
+	}
 
 	//Create data objects for each configuration instance of this plot and add them to vector
 	for(int i = 0; i < steeringFile->GetNumberOfConfigurationInstances(id); i++) {

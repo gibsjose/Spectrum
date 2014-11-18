@@ -15,11 +15,13 @@
 #ifndef SPXOVERLAYSTYLE_H
 #define SPXOVERLAYSTYLE_H
 
+#include <string>
+
 //Bitfields for determining style type
 const int OS_INVALID =		-1;
 const int OS_DATA = 		(1 << 0);	//0b00000001
 const int OS_REFERENCE = 	(1 << 1);	//0b00000010
-const int OS_CONVOLUTE =	(1 << 2);	//0b00000100	
+const int OS_CONVOLUTE =	(1 << 2);	//0b00000100
 
 class SPXOverlayStyle {
 
@@ -29,29 +31,29 @@ public:
 		this->style = style;
 	}
 	explicit SPXOverlayStyle(std::string s);
-	
+
 	void Parse(std::string s);
 	void Print(void);
 	std::string ToString(void);
 	bool IsEmpty(void);
 	bool IsValid(void);
-	
+
 	void Clear(void) {
 		style = 0;
 	}
-	
+
 	static bool GetDebug(void) {
 		return debug;
 	}
-	
+
 	static void SetDebug(bool b) {
 		debug = b;
 	}
-	
+
 	int GetStyle(void) {
 		return (int)style;
 	}
-	
+
 	bool Contains(int mask) {
 		//Invalid mask... Does not contain data, reference, or convolute
 		if(!(mask & (OS_DATA | OS_REFERENCE | OS_CONVOLUTE))) {
@@ -75,23 +77,23 @@ public:
 		if((style & OS_DATA) && this->IsValid()) {
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	bool ContainsReference(void) {
 		if((style & OS_REFERENCE) && this->IsValid()) {
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	bool ContainsConvolute(void) {
 		if((style & OS_CONVOLUTE) && this->IsValid()) {
 			return true;
 		}
-		
+
 		return false;
 	}
 

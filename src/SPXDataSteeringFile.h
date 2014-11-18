@@ -53,7 +53,7 @@ private:
 									// NOTE: For some data the units of the data is different for the y-axis and the x-axis
 									//			EG: Y-Axis is in [1/TeV], but X-Axis is GeV...
 	std::string jetAlgorithmLabel;	//Jet algorithm label
-	int jetAlgorithmNumber;			//Jet algorithm number
+	int jetAlgorithmRadius;			//Jet algorithm radius
 
 	//[DATA]
 	SPXDataFormat dataFormat;		//The format of the data: Current supported formats are: Spectrum, HERAPDF
@@ -133,8 +133,8 @@ public:
 		return jetAlgorithmLabel;
 	}
 
-	int GetJetAlgorithmNumber(void) const {
-		return jetAlgorithmNumber;
+	int GetJetAlgorithmRadius(void) const {
+		return jetAlgorithmRadius;
 	}
 
 	const SPXDataFormat & GetDataFormat(void) const {

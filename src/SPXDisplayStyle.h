@@ -15,10 +15,12 @@
 #ifndef SPXDISPLAYSTYLE_H
 #define SPXDISPLAYSTYLE_H
 
+#include <string>
+
 //Bitfields for determining style type
 const int DS_INVALID =		-1;
 const int DS_OVERLAY = 		(1 << 0);	//0b00000001
-const int DS_RATIO = 		(1 << 1);	//0b00000010	
+const int DS_RATIO = 		(1 << 1);	//0b00000010
 
 class SPXDisplayStyle {
 
@@ -28,29 +30,29 @@ public:
 		this->style = style;
 	}
 	explicit SPXDisplayStyle(std::string s);
-	
+
 	void Parse(std::string s);
 	void Print(void);
 	std::string ToString(void);
 	bool IsEmpty(void);
 	bool IsValid(void);
-	
+
 	void Clear(void) {
 		style = 0;
 	}
-	
+
 	static bool GetDebug(void) {
 		return debug;
 	}
-	
+
 	static void SetDebug(bool b) {
 		debug = b;
 	}
-	
+
 	int GetStyle(void) {
 		return (int)style;
 	}
-	
+
 	bool Contains(int mask) {
 		//Invalid mask... Does not contain data, reference, or convolute
 		if(!(mask & (DS_OVERLAY | DS_RATIO))) {
@@ -72,15 +74,15 @@ public:
 		if((style & DS_OVERLAY) && this->IsValid()) {
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	bool ContainsRatio(void) {
 		if((style & DS_RATIO) && this->IsValid()) {
 			return true;
 		}
-		
+
 		return false;
 	}
 

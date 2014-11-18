@@ -65,7 +65,8 @@ int main(int argc, char *argv[]) {
 	//   Configuration
 	//=========================================================
     try {
-    	steeringFile.ParseAll(true);
+    	steeringFile.ParseAll(false);
+		steeringFile.PrintAll();
     } catch(const SPXException &e) {
     	std::cerr << e.what() << std::endl;
     	std::cerr << "FATAL: Could not parse the steering file: " << file << std::endl;

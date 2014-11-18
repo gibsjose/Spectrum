@@ -34,8 +34,8 @@ void SPXPDFSteeringFile::SetDefaults(void) {
 	type.clear();
 	if(debug) std::cout << cn << mn << "type set to default: \" \"" << std::endl;
 
-	order = std::string("NLO");
-	if(debug) std::cout << cn << mn << "order set to default: \"NLO\"" << std::endl;
+	order = 1;
+	if(debug) std::cout << cn << mn << "order set to default: \"NLO\" (1)" << std::endl;
 
 	numberOfMembers = NUM_MEMBERS_EMPTY;
 	if(debug) std::cout << cn << mn << "numberOfMembers set to default: \"-1\"" << std::endl;
@@ -207,10 +207,10 @@ void SPXPDFSteeringFile::Parse(void) {
 		if(debug) std::cout << cn << mn << "Successfully read PDF Type: " << type << std::endl;
 	}
 
-	order = reader->Get("DESC", "order", "EMPTY");
-	if(!order.compare("EMPTY")) {
-		if(debug) std::cout << cn << mn << "No order configuration found: defaulting to \"NLO\"" << std::endl;
-		order = std::string("NLO");
+	order = (unsigned int)reader->GetInteger("DESC", "order", order);
+	if(order > 2) {
+		std::cerr << "WARNING: Order number unrecognized: " << order << " defaulting to NLO (1)" << std::endl;
+		order = 1;
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read PDF Order: " << order << std::endl;
 	}
