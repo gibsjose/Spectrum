@@ -61,9 +61,7 @@ public:
 	}
 
 	static bool BeginsWith(std::string &s, std::string &b) {
-		size_t pos = s.find(b);
-
-		if(pos == s.begin()) {
+		if(s.find(b) == 0) {
 			return true;
 		} else {
 			return false;
