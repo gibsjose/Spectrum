@@ -8,7 +8,7 @@ CXX = g++
 
 STD = $(shell echo $(CXX_STD))
 
-CXXFLAGS += -g -O3 $(STD)
+CXXFLAGS += -g -O3 $(STD) -MP -MD
 
 #ROOT
 ROOTINCS = $(shell root-config --cflags)
@@ -45,6 +45,8 @@ LIB_PATH = -L./inih/lib
 LIB = -linih $(ROOTLIBS) $(APPLCLIBS) $(APPLFLIBS) $(LHAPDFLIBS)
 BIN = $(BIN_DIR)/Spectrum
 
+-include $(SRC:.cxx=.d)
+
 .SUFFIXES: .cxx .o .h
 
 .PHONY: all dir clean
@@ -60,7 +62,7 @@ dir:
 	@mkdir -p $(BIN_DIR)
 	@mkdir -p $(TST_DIR)
 
-$(BIN): $(OBJ) $(HDR)
+$(BIN): $(OBJ)
 	@echo
 	@echo "=================================="
 	@echo " Building $(BIN) Executable 		 "
@@ -76,5 +78,6 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cxx
 	@echo -n "Building $<"
 	@$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
 	@echo " ---> Done"
+
 clean:
 	rm -f $(BIN) $(OBJ)

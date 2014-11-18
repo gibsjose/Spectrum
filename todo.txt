@@ -2,9 +2,6 @@
 @TODO Allow todo.py to accommodate multi-line comments (like SPXSteeringFile.h: 75)
 @TODO Perhaps add a way to specify a line number and filename and remove the @TODO statement at that line
 
-@TODO When DEBUG is on in SteeringFile, override DEBUG settings in PDF, Data, Grid files approporiately
-@TODO If SteeringFile defines PDF overrides, process that appropriately
-
 @TODO Figure out what to do with INIH library (can't just provide binary .a...)
 
 @TODO Make sure ALL returns are const/not and reference/not where appropriate
