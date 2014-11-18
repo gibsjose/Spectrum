@@ -52,6 +52,10 @@ BIN = $(BIN_DIR)/Spectrum
 all: dir $(BIN)
 
 dir:
+	@echo "=================================="
+	@echo " Spectrum Makefile"
+	@echo "=================================="
+	@echo
 	@mkdir -p $(SRC_DIR)
 	@mkdir -p $(OBJ_DIR)
 	@mkdir -p $(BIN_DIR)
@@ -59,12 +63,13 @@ dir:
 
 $(BIN): $(OBJ) $(HDR)
 	@echo
-	@echo "============================"
+	@echo "=================================="
 	@echo " Building $(BIN) Executable "
-	@echo "============================"
-	@echo
+	@echo "=================================="
 	@$(CXX) $(CXXFLAGS) -o $(BIN) $(INC) $(OBJ) $(LIB_PATH) $(LIB)
-	@echo "=========  Done  ==========="
+	@echo "=================================="
+	@echo "=============  Done  ============="
+	@echo "=================================="
 	@echo
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cxx
