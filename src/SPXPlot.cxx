@@ -308,8 +308,6 @@ void SPXPlot::ConfigurePads(void) {
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
 
-	std::cout << "TEST" << std::endl;
-
 	//xLow/Up and yLow/Up: The TPad bounds for the Overlay and Ratio TPads
 	double xLowOverlay, xUpOverlay, yLowOverlay, yUpOverlay;
 	double xLowRatio, xUpRatio, yLowRatio, yUpRatio;
