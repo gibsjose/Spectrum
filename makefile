@@ -66,13 +66,15 @@ $(BIN): $(OBJ) $(HDR)
 	@echo "============================"
 	@echo
 	mkdir -p $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) -o $(BIN) $(INC) $(OBJ) $(LIB_PATH) $(LIB)
+	@$(CXX) $(CXXFLAGS) -o $(BIN) $(INC) $(OBJ) $(LIB_PATH) $(LIB)
 	@echo
 	@echo " ---> Done"
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cxx
+	@echo
 	@echo "Building $<"
-	$(CXX) $(CXXFLAGS) $(INC) $< -o $@
+	@$(CXX) $(CXXFLAGS) -o $@ $(INC) $< $(LIB_PATH) $(LIB)
 	@echo " ---> Done"
+	@echo
 clean:
 	rm -f $(BIN)
