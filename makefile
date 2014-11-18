@@ -64,13 +64,13 @@ $(BIN): $(OBJ) $(HDR)
 	@echo "============================"
 	@echo
 	@$(CXX) $(CXXFLAGS) -o $(BIN) $(INC) $(OBJ) $(LIB_PATH) $(LIB)
+	@echo "=========  Done  ==========="
 	@echo
-	@echo " ---> Done"
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cxx
 	@echo
 	@echo -n "Building $<"
-	$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
+	@$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
 	@echo " ---> Done"
 clean:
 	rm -f $(BIN) $(OBJ)
