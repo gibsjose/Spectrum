@@ -68,7 +68,7 @@ $(BIN): $(OBJ) $(HDR)
 	@echo
 	@echo " ---> Done"
 
-$(OBJ_DIR)/%.o: %.cxx
+$(OBJ_DIR)/%.o: $(SRC_DIR)%.cxx
 	@echo
 	@echo "Building $<"
 	@$(CXX) $(CXXFLAGS) -o $@ $(INC) $< $(LIB_PATH) $(LIB)
