@@ -55,6 +55,7 @@ public:
 	void DrawRatioPadFrame(void);
 	void DrawOverlay(void);
 	void DrawRatio(void);
+	void DrawLegend();
 	void UpdateCanvas(void);
 	void CanvasToPNG(void);
 	std::string GetPNGFilename(std::string desc);

@@ -49,7 +49,7 @@ void SPXPlot::Plot(void) {
 	ScaleAxes();
 	DrawOverlay();
 	DrawRatio();
-	//DrawLegend();
+	DrawLegend();
 	UpdateCanvas();
 
 	//Create a PNG of the canvas
@@ -67,26 +67,34 @@ void SPXPlot::SetAxisLabels(void) {
 	std::string yLabelRatio = (!pc.GetRatioTitle().empty() ? pc.GetRatioTitle() : "Ratio");
 
 	//Set Overlay Y-Axis Label
-	overlayFrameHisto->SetYTitle(yLabelOverlay.c_str());
+	if(ds.ContainsOverlay()) {
+		overlayFrameHisto->SetYTitle(yLabelOverlay.c_str());
+	}
 
 	//Set Ratio Y-Axis Label
-	ratioFrameHisto->SetYTitle(yLabelRatio.c_str());
+	if(ds.ContainsRatio()) {
+		ratioFrameHisto->SetYTitle(yLabelRatio.c_str());
+	}
 
 	//Set X-Axis Label
 	if(ds.ContainsOverlay() && !ds.ContainsRatio()) {
 		//Set Overlay X-Axis Label
 		overlayFrameHisto->SetXTitle(xLabel.c_str());
 
-	} else {
+	} else if(ds.ContainsRatio()){
 		//Set Ratio X-Axis Label
 		ratioFrameHisto->SetXTitle(xLabel.c_str());
 	}
 
-	overlayPad->cd();
-	overlayFrameHisto->Draw();
+	if(ds.ContainsOverlay()) {
+		overlayPad->cd();
+		overlayFrameHisto->Draw();
+	}
 
-	ratioPad->cd();
-	ratioFrameHisto->Draw();
+	if(ds.ContainsRatio()) {
+		ratioPad->cd();
+		ratioFrameHisto->Draw();
+	}
 }
 
 void SPXPlot::ScaleAxes(void) {
@@ -108,47 +116,56 @@ void SPXPlot::ScaleAxes(void) {
 	yTitleOffset = 0.8;
 
 	//Scale Overlay Axes
-	xAxisOverlay->SetTitleOffset(xTitleOffset);
-	yAxisOverlay->SetTitleOffset(yTitleOffset);
+	if(ds.ContainsOverlay()) {
+		xAxisOverlay->SetTitleOffset(xTitleOffset);
+		yAxisOverlay->SetTitleOffset(yTitleOffset);
 
-	xAxisOverlay->SetLabelSize(xAxisOverlay->GetLabelSize() / scale);
-	yAxisOverlay->SetLabelSize(yAxisOverlay->GetLabelSize() / scale);
+		xAxisOverlay->SetLabelSize(xAxisOverlay->GetLabelSize() / scale);
+		yAxisOverlay->SetLabelSize(yAxisOverlay->GetLabelSize() / scale);
 
-	xAxisOverlay->SetTitleSize(xAxisOverlay->GetTitleSize() / scale);
-	yAxisOverlay->SetTitleSize(yAxisOverlay->GetTitleSize() / scale);
+		xAxisOverlay->SetTitleSize(xAxisOverlay->GetTitleSize() / scale);
+		yAxisOverlay->SetTitleSize(yAxisOverlay->GetTitleSize() / scale);
+
+		if(debug) std::cout << cn << mn << "Set Y Axis Overlay Title Offset to " << yTitleOffset << std::endl;
+	}
 
 	//Scale Ratio Axes
-	xAxisRatio->SetTitleOffset(xTitleOffset);
+	if(ds.ContainsRatio()) {
+		xAxisRatio->SetTitleOffset(xTitleOffset);
 
-	//NOTE: Not sure why I have to do -0.25 to begin with... For some reason at 0.0 (total offset = 0.8 when below is false)
-	// there is an additional offset relative to the overlay title. 0.55 (0.8 + (-0.25)) looks nice, however.
+		//NOTE: Not sure why I have to do -0.25 to begin with... For some reason at 0.0 (total offset = 0.8 when below is false)
+		// there is an additional offset relative to the overlay title. 0.55 (0.8 + (-0.25)) looks nice, however.
 
-	double distScale = -0.25;		//Add an offset to y ratio title offset if only ratio is plotted
-	if(!ds.ContainsOverlay() && ds.ContainsRatio()) {
-		distScale = 0.5;
+		double distScale = -0.25;		//Add an offset to y ratio title offset if only ratio is plotted
+		if(!ds.ContainsOverlay() && ds.ContainsRatio()) {
+			distScale = 0.5;
+		}
+
+		yAxisRatio->SetTitleOffset(yTitleOffset + distScale);
+
+		if(debug) std::cout << cn << mn << "Set Y Axis Ratio Title Offset to " << yTitleOffset + distScale << std::endl;
+
+		double rScale = 1.0;
+		if(ds.ContainsOverlay()) {
+			rScale = (0.4 - 0.0) / (1.0 - 0.4);
+		}
+
+		xAxisRatio->SetLabelSize(xAxisOverlay->GetLabelSize() / rScale);
+		yAxisRatio->SetLabelSize(yAxisOverlay->GetLabelSize() / rScale);
+
+		xAxisRatio->SetTitleSize(xAxisOverlay->GetTitleSize() / rScale);
+		yAxisRatio->SetTitleSize(yAxisOverlay->GetTitleSize() / rScale);
 	}
 
-	yAxisRatio->SetTitleOffset(yTitleOffset + distScale);
-
-	if(debug) std::cout << cn << mn << "Set Y Axis Overlay Title Offset to " << yTitleOffset << std::endl;
-	if(debug) std::cout << cn << mn << "Set Y Axis Ratio Title Offset to " << yTitleOffset + distScale << std::endl;
-
-	double rScale = 1.0;
 	if(ds.ContainsOverlay()) {
-		rScale = (0.4 - 0.0) / (1.0 - 0.4);
+		overlayPad->cd();
+		overlayFrameHisto->Draw();
 	}
 
-	xAxisRatio->SetLabelSize(xAxisOverlay->GetLabelSize() / rScale);
-	yAxisRatio->SetLabelSize(yAxisOverlay->GetLabelSize() / rScale);
-
-	xAxisRatio->SetTitleSize(xAxisOverlay->GetTitleSize() / rScale);
-	yAxisRatio->SetTitleSize(yAxisOverlay->GetTitleSize() / rScale);
-
-	overlayPad->cd();
-	overlayFrameHisto->Draw();
-
-	ratioPad->cd();
-	ratioFrameHisto->Draw();
+	if(ds.ContainsRatio()) {
+		ratioPad->cd();
+		ratioFrameHisto->Draw();
+	}
 }
 
 void SPXPlot::CreateCanvas(void) {
@@ -189,15 +206,21 @@ void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yM
 
 	//Do nothing if overlay is not plotted
 	if(!ds.ContainsOverlay()) {
+		xMin = xMax = yMin = yMax = 0;
 		return;
 	}
 
 	std::vector<TGraphAsymmErrors *> graphs;
 	{
 		//Data graphs
+		//NOTE: Total should be the largest, but there could be a scenario in which
+		//		one of the other errors is negative, and thus only the stat/syst could be
+		//		slightly larger for some points since the other error is negative and
+		//		would bring the total error down
 		for(int i = 0; i < data.size(); i++) {
 			graphs.push_back(data[i].GetStatisticalErrorGraph());
 			graphs.push_back(data[i].GetSystematicErrorGraph());
+			graphs.push_back(data[i].GetTotalErrorGraph());
 		}
 
 		//Cross sections
@@ -230,6 +253,7 @@ void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin
 
 	//Do nothing if overlay is not plotted
 	if(!ds.ContainsRatio()) {
+		xMin = xMax = yMin = yMax = 0;
 		return;
 	}
 
@@ -386,7 +410,7 @@ void SPXPlot::ConfigurePads(void) {
 	if(pc.IsYLog()) {
 		if(debug) std::cout << cn << mn << "Setting Y Axis to Logarithmic Scale for Plot " << id << std::endl;
 		overlayPad->SetLogy();
-		//ratioPad->SetLogy();	//@TODO How to handle this in SF? What to do for negatives?
+		//ratioPad->SetLogy();	//@TODO Should I have separate log flags in steering file for overlay/ratio?
 	}
 }
 
@@ -725,6 +749,10 @@ void SPXPlot::DrawRatio(void) {
 	//Draw a line at 1, where ratios are relative to
 	TLine *referenceLine = new TLine(xMinRatio, 1.0, xMaxRatio, 1.0);
 	referenceLine->Draw();
+}
+
+void SPXPlot::DrawLegend(void) {
+	return;
 }
 
 void SPXPlot::UpdateCanvas(void) {
