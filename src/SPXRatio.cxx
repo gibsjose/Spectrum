@@ -115,9 +115,6 @@ void SPXRatio::Parse(std::string &s) {
         //Get the data steering file from the numerator
         numeratorDataFile = SPXStringUtilities::RemoveCharacters(numBlob, "()");
 
-        //Check for alias
-        numeratorDataFile = CheckForAlias(numeratorDataFile, "data");
-
         //Get the grid/pdf steering files from the denominator
         denBlob = SPXStringUtilities::RemoveCharacters(denBlob, "()");
         denBlob = SPXStringUtilities::RemoveCharacters(denBlob, "[]");
@@ -127,6 +124,11 @@ void SPXRatio::Parse(std::string &s) {
         }
         denominatorConvoluteGridFile = v_den.at(0);
         denominatorConvolutePDFFile = v_den.at(1);
+
+        //Check for alias
+        numeratorDataFile = CheckForAlias(numeratorDataFile, "data");
+        denominatorConvoluteGridFile = CheckForAlias(denominatorConvoluteGridFile, "grid");
+        denominatorConvolutePDFFile = CheckForAlias(denominatorConvolutePDFFile, "pdf");
 
         if(debug) {
             std::cout << cn << mn << "Successfully parsed data / convolute string: " << std::endl;
@@ -169,6 +171,11 @@ void SPXRatio::Parse(std::string &s) {
         //Get the data steering file from the denominator
         denominatorDataFile = SPXStringUtilities::RemoveCharacters(denBlob, "()");
 
+        //Check for alias
+        numeratorConvoluteGridFile = CheckForAlias(numeratorConvoluteGridFile, "grid");
+        numeratorConvolutePDFFile = CheckForAlias(numeratorConvolutePDFFile, "pdf");
+        denominatorDataFile = CheckForAlias(denominatorDataFile, "data");
+
         if(debug) {
             std::cout << cn << mn << "Successfully parsed convolute / data string: " << std::endl;
             std::ostringstream oss;
@@ -209,6 +216,11 @@ void SPXRatio::Parse(std::string &s) {
         //Get the reference grid steering file from the denominator
         denominatorReferenceGridFile = SPXStringUtilities::RemoveCharacters(denBlob, "()");
 
+        //Check for alias
+        numeratorConvoluteGridFile = CheckForAlias(numeratorConvoluteGridFile, "grid");
+        numeratorConvolutePDFFile = CheckForAlias(numeratorConvolutePDFFile, "pdf");
+        denominatorReferenceGridFile = CheckForAlias(denominatorReferenceGridFile, "grid");
+
         //Error if reference grid steering file does NOT match the convolute grid file
         if(numeratorConvoluteGridFile.compare(denominatorReferenceGridFile) != 0) {
             throw SPXParseException(cn + mn + "Numerator's convolute grid file \"" + numeratorConvoluteGridFile + \
@@ -242,6 +254,10 @@ void SPXRatio::Parse(std::string &s) {
 
         //Get the data file from the denominator
         denominatorDataFile = SPXStringUtilities::RemoveCharacters(denBlob, "()");
+
+        //Check for alias
+        numeratorDataFile = CheckForAlias(numeratorDataFile, "data");
+        denominatorDataFile = CheckForAlias(denominatorDataFile, "data");
 
         if(debug) {
             std::cout << cn << mn << "Successfully parsed data / data string: " << std::endl;
