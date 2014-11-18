@@ -183,6 +183,15 @@ void SPXPlot::CreateCanvas(void) {
 //Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
 void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax) {
 
+	//Get the plot configuration and display style from steering file
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXDisplayStyle &ds = pc.GetDisplayStyle();
+
+	//Do nothing if overlay is not plotted
+	if(!ds.ContainsOverlay()) {
+		return;
+	}
+
 	std::vector<TGraphAsymmErrors *> graphs;
 	{
 		//Data graphs
@@ -214,6 +223,15 @@ void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yM
 
 //Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
 void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax) {
+
+	//Get the plot configuration and display style from steering file
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXDisplayStyle &ds = pc.GetDisplayStyle();
+
+	//Do nothing if overlay is not plotted
+	if(!ds.ContainsRatio()) {
+		return;
+	}
 
 	std::vector<TGraphAsymmErrors *> graphs;
 	{
@@ -379,6 +397,15 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::ConfigurePads before drawing the pad frame");
 	}
 
+	//Get the plot configuration and display style from steering file
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXDisplayStyle &ds = pc.GetDisplayStyle();
+
+	//Do nothing if overlay is not plotted
+	if(!ds.ContainsOverlay()) {
+		return;
+	}
+
 	DetermineOverlayFrameBounds(xMinOverlay, xMaxOverlay, yMinOverlay, yMaxOverlay);
 
 	overlayPad->cd();
@@ -402,11 +429,16 @@ void SPXPlot::DrawRatioPadFrame(void) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::ConfigurePads before drawing the pad frame");
 	}
 
-	DetermineRatioFrameBounds(xMinRatio, xMaxRatio, yMinRatio, yMaxRatio);
+	//Get the plot configuration and display style from steering file
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXDisplayStyle &ds = pc.GetDisplayStyle();
 
-	//@TODO DEBUG! Set properly...
-	//yMinRatio = 0.9;
-	//yMaxRatio = 1.1;
+	//Do nothing if overlay is not plotted
+	if(!ds.ContainsRatio()) {
+		return;
+	}
+
+	DetermineRatioFrameBounds(xMinRatio, xMaxRatio, yMinRatio, yMaxRatio);
 
 	//Force Ratio X Min/Max to match Overlay (should alread match anyway...)
 	xMinRatio = xMinOverlay;
