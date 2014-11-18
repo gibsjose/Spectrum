@@ -268,12 +268,12 @@ void SPXRatio::AddConvoluteFileGraphMap(StringPairGraphMap_T &convoluteFileGraph
 void SPXRatio::GetGraphs(void) {
     std::string mn = "GetGraphs: ";
 
-    SPXDisplayStyle &ds = plotConfiguration.GetDisplayStyle();
+    SPXDisplayStyle &os = plotConfiguration.GetOverlayStyle();
 
     if(ratioStyle.IsDataStat() || ratioStyle.IsDataTot()) {
 
-        if(!ds.ContainsData()) {
-            throw SPXGraphException(cn + mn + "Display Style does NOT contain \"data\", yet a ratio with data is specified: " + ratioStyle.ToString());
+        if(!os.ContainsData()) {
+            throw SPXGraphException(cn + mn + "Overlay Style does NOT contain \"data\", yet a ratio with data is specified: " + ratioStyle.ToString());
         }
 
         std::string key = numeratorDataFile;
@@ -314,12 +314,12 @@ void SPXRatio::GetGraphs(void) {
         std::string dataKey = numeratorDataFile;
         StringPair_T convoluteKey = StringPair_T(denominatorConvoluteGridFile, denominatorConvolutePDFFile);
 
-        if(!ds.ContainsData()) {
-            throw SPXGraphException(cn + mn + "Display Style does NOT contain \"data\", yet a ratio with data is specified: " + ratioStyle.ToString());
+        if(!os.ContainsData()) {
+            throw SPXGraphException(cn + mn + "Overlay Style does NOT contain \"data\", yet a ratio with data is specified: " + ratioStyle.ToString());
         }
 
-        if(!ds.ContainsConvolute()) {
-            throw SPXGraphException(cn + mn + "Display Style does NOT contain \"convolute\", yet a ratio with convolute is specified: " + ratioStyle.ToString());
+        if(!os.ContainsConvolute()) {
+            throw SPXGraphException(cn + mn + "Overlay Style does NOT contain \"convolute\", yet a ratio with convolute is specified: " + ratioStyle.ToString());
         }
 
         if(debug) {
@@ -368,12 +368,12 @@ void SPXRatio::GetGraphs(void) {
         StringPair_T convoluteKey = StringPair_T(numeratorConvoluteGridFile, numeratorConvolutePDFFile);
         std::string dataKey = denominatorDataFile;
 
-        if(!ds.ContainsConvolute()) {
-            throw SPXGraphException(cn + mn + "Display Style does NOT contain \"convolute\", yet a ratio with convolute is specified: " + ratioStyle.ToString());
+        if(!os.ContainsConvolute()) {
+            throw SPXGraphException(cn + mn + "Overlay Style does NOT contain \"convolute\", yet a ratio with convolute is specified: " + ratioStyle.ToString());
         }
 
-        if(!ds.ContainsData()) {
-            throw SPXGraphException(cn + mn + "Display Style does NOT contain \"data\", yet a ratio with data is specified: " + ratioStyle.ToString());
+        if(!os.ContainsData()) {
+            throw SPXGraphException(cn + mn + "Overlay Style does NOT contain \"data\", yet a ratio with data is specified: " + ratioStyle.ToString());
         }
 
         if(debug) {
@@ -422,12 +422,12 @@ void SPXRatio::GetGraphs(void) {
         StringPair_T convoluteKey = StringPair_T(numeratorConvoluteGridFile, numeratorConvolutePDFFile);
         std::string referenceKey = denominatorReferenceGridFile;
 
-        if(!ds.ContainsConvolute()) {
-            throw SPXGraphException(cn + mn + "Display Style does NOT contain \"convolute\", yet a ratio with convolute is specified: " + ratioStyle.ToString());
+        if(!os.ContainsConvolute()) {
+            throw SPXGraphException(cn + mn + "Overlay Style does NOT contain \"convolute\", yet a ratio with convolute is specified: " + ratioStyle.ToString());
         }
 
-        if(!ds.ContainsReference()) {
-            throw SPXGraphException(cn + mn + "Display Style does NOT contain \"reference\", yet a ratio with reference is specified: " + ratioStyle.ToString());
+        if(!os.ContainsReference()) {
+            throw SPXGraphException(cn + mn + "Overlay Style does NOT contain \"reference\", yet a ratio with reference is specified: " + ratioStyle.ToString());
         }
 
         if(debug) {
@@ -476,8 +476,8 @@ void SPXRatio::GetGraphs(void) {
         std::string numDataKey = numeratorDataFile;
         std::string denDataKey = denominatorDataFile;
 
-        if(!ds.ContainsData()) {
-            throw SPXGraphException(cn + mn + "Display Style does NOT contain \"data\", yet a ratio with data is specified: " + ratioStyle.ToString());
+        if(!os.ContainsData()) {
+            throw SPXGraphException(cn + mn + "Overlay Style does NOT contain \"data\", yet a ratio with data is specified: " + ratioStyle.ToString());
         }
 
         if(debug) {
