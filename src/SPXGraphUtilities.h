@@ -21,8 +21,11 @@
 #include "SPXROOT.h"
 #include "SPXException.h"
 
-//Adds extra space for the frame bounds (set to 0 to disable)
-#define PERFORM_DELTA_MIN_MAX 	1
+#define ON 1
+#define OFF 0
+
+//Adds extra space for the frame bounds (set to OFF to disable)
+#define PERFORM_DELTA_MIN_MAX	ON
 
 #if PERFORM_DELTA_MIN_MAX
 const double DELTA_MIN_MAX = 0.20;	//Extra space on the graph for min/max: 0.10 = 10%
@@ -61,7 +64,7 @@ public:
 			}
 		}
 
-#if PERFORM_DELTA_MIN_MAX
+#if PERFORM_DELTA_MIN_MAX == ON
 		std::cout << "min was " << min << std::endl;
 		min -= (min * DELTA_MIN_MAX);
 		std::cout << "min reduced " << (DELTA_MIN_MAX * 100) << "%% to " << min << std::endl;
@@ -84,7 +87,7 @@ public:
 			}
 		}
 
-#if PERFORM_DELTA_MIN_MAX
+#if PERFORM_DELTA_MIN_MAX == ON
 		max += (max * DELTA_MIN_MAX);
 #endif
 
@@ -105,7 +108,7 @@ public:
 			}
 		}
 
-#if PERFORM_DELTA_MIN_MAX
+#if PERFORM_DELTA_MIN_MAX == ON
 		min -= (min * DELTA_MIN_MAX);
 #endif
 		return min;
@@ -125,7 +128,7 @@ public:
 			}
 		}
 
-#if PERFORM_DELTA_MIN_MAX
+#if PERFORM_DELTA_MIN_MAX == ON
 		max += (max * DELTA_MIN_MAX);
 #endif
 		return max;
