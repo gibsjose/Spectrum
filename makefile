@@ -45,11 +45,9 @@ LIB_PATH = -L./inih/lib
 LIB = -linih $(ROOTLIBS) $(APPLCLIBS) $(APPLFLIBS) $(LHAPDFLIBS)
 BIN = $(BIN_DIR)/Spectrum
 
-.SUFFIXES: .cxx .o
+.SUFFIXES: .cxx .o .h
 
 .PHONY: all dir clean
-
-# all: $(BIN) test
 
 all: dir $(BIN)
 
@@ -70,7 +68,7 @@ $(BIN): $(OBJ) $(HDR)
 	@echo
 	@echo " ---> Done"
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cxx
+$(OBJ_DIR)/%.o: %.cxx
 	@echo
 	@echo "Building $<"
 	@$(CXX) $(CXXFLAGS) -o $@ $(INC) $< $(LIB_PATH) $(LIB)
