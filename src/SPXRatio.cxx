@@ -282,6 +282,8 @@ std::string SPXRatio::CheckForAlias(std::string &original, const std::string ali
     int index = -1;
     std::string alias;
 
+    if(debug) std::cout << cn << mn << "Checking \"" << original << "\" for alias with type \"" << alias_type << "\"" << std::endl;
+
     //Make sure the alias type is only: data, reference, or convolute
     if(alias_type.compare("data") && alias_type.compare("grid") && alias_type.compare("pdf")) {
         throw SPXParseException(cn + mn + "Alias Type: " + alias_type + " is not valid: Must be \"data\", \"grid\", or \"pdf\"");
