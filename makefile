@@ -63,7 +63,7 @@ dir:
 $(BIN): $(OBJ) $(HDR)
 	@echo
 	@echo "=================================="
-	@echo " Building $(BIN) Executable "
+	@echo " Building $(BIN) Executable 		 "
 	@echo "=================================="
 	@$(CXX) $(CXXFLAGS) -o $(BIN) $(INC) $(OBJ) $(LIB_PATH) $(LIB)
 	@echo "=================================="
