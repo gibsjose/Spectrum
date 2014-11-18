@@ -100,7 +100,7 @@ public:
         out << "\t Key Format: [Data]" << std::endl;
         out << "\t ============ KNOWN KEYS ============" << std::endl;
         for(StringGraphMap_T::iterator it = dataFileGraphMap->begin(); it != dataFileGraphMap->end(); ++it) {
-            out << "\t[" << it->first << "]" << std::endl;
+            out << "\t [" << it->first << "]" << std::endl;
         }
         out << "\t ====================================" << std::endl << std::endl;
     }
@@ -110,7 +110,7 @@ public:
         out << "\t Key Format: [Grid]" << std::endl;
         out << "\t ============ KNOWN KEYS ============" << std::endl;
         for(StringGraphMap_T::iterator it = referenceFileGraphMap->begin(); it != referenceFileGraphMap->end(); ++it) {
-            out << "\t[" << it->first << "]" << std::endl;
+            out << "\t [" << it->first << "]" << std::endl;
         }
         out << "\t ====================================" << std::endl << std::endl;
     }
@@ -120,7 +120,7 @@ public:
         out << "\t Key Format: [Grid, PDF]" << std::endl;
         out << "\t ============ KNOWN KEYS ============" << std::endl;
         for(StringPairGraphMap_T::iterator it = convoluteFileGraphMap->begin(); it != convoluteFileGraphMap->end(); ++it) {
-            out << "\t[" << it->first.first << ", " << it->first.second << "]" << std::endl;
+            out << "\t [" << it->first.first << ", " << it->first.second << "]" << std::endl;
         }
         out << "\t ====================================" << std::endl << std::endl;
     }
