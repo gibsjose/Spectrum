@@ -54,18 +54,40 @@ void SPXRatio::Parse(std::string &s) {
     //Check for special cases (data stat and data tot)
     if(ratioStyle.IsDataStat()) {
         //Check for alias
-        s = CheckForAlias(s, "data");
-        numeratorDataFile = dataDirectory + "/" + s + "_stat";
-        denominatorDataFile = dataDirectory + "/" + s + "_stat";
+        std::string alias = CheckForAlias(s, "data");
+
+        //If there was no alias, prepend data directory, and append _stat
+        if(!s.compare(alias)) {
+            numeratorDataFile = dataDirectory + "/" + s + "_stat";
+            denominatorDataFile = dataDirectory + "/" + s + "_stat";
+        }
+
+        //If there was an alias, just append _stat (alias already contains directory)
+        else {
+            numeratorDataFile = s + "_stat";
+            denominatorDataFile = s + "_stat";
+        }
+
         if(debug) std::cout << cn << mn << "Successfully parsed data stat ratio with data file: " << numeratorDataFile << std::endl;
         return;
     }
 
     if(ratioStyle.IsDataTot()) {
         //Check for alias
-        s = CheckForAlias(s, "data");
-        numeratorDataFile = dataDirectory + "/" + s;
-        denominatorDataFile = dataDirectory + "/" + s;
+        std::string alias = CheckForAlias(s, "data");
+
+        //If there was no alias, prepend data directory, and append _stat
+        if(!s.compare(alias)) {
+            numeratorDataFile = dataDirectory + "/" + s + "_stat";
+            denominatorDataFile = dataDirectory + "/" + s + "_stat";
+        }
+
+        //If there was an alias, just append _stat (alias already contains directory)
+        else {
+            numeratorDataFile = s + "_stat";
+            denominatorDataFile = s + "_stat";
+        }
+
         if(debug) std::cout << cn << mn << "Successfully parsed data tot ratio with data file: " << numeratorDataFile << std::endl;
         return;
     }
@@ -130,9 +152,26 @@ void SPXRatio::Parse(std::string &s) {
         denominatorConvolutePDFFile = v_den.at(1);
 
         //Check for alias
-        numeratorDataFile = CheckForAlias(numeratorDataFile, "data");
-        denominatorConvoluteGridFile = CheckForAlias(denominatorConvoluteGridFile, "grid");
-        denominatorConvolutePDFFile = CheckForAlias(denominatorConvolutePDFFile, "pdf");
+        std::string numeratorDataAlias = CheckForAlias(numeratorDataFile, "data");
+        std::string denominatorGridAlias = CheckForAlias(denominatorConvoluteGridFile, "grid");
+        std::string denominatorPDFAlias = CheckForAlias(denominatorConvolutePDFFile, "pdf");
+
+        //Use alias, if there is one, otherwise prepend directories
+        if(!numeratorDataFile.compare(numeratorDataAlias)) {
+            numeratorDataFile = dataDirectory + "/" + numeratorDataFile;
+        } else {
+            numeratorDataFile = numeratorDataAlias;
+        }
+        if(!denominatorConvoluteGridFile.compare(denominatorGridAlias)) {
+            denominatorConvoluteGridFile = gridDirectory + "/" + denominatorConvoluteGridFile;
+        } else {
+            denominatorConvoluteGridFile = denominatorGridAlias;
+        }
+        if(!denominatorConvolutePDFFile.compare(denominatorPDFAlias)) {
+            denominatorConvolutePDFFile = pdfDirectory + "/" + denominatorConvolutePDFFile;
+        } else {
+            denominatorConvolutePDFFile = denominatorPDFAlias;
+        }
 
         if(debug) {
             std::cout << cn << mn << "Successfully parsed data / convolute string: " << std::endl;
@@ -142,11 +181,6 @@ void SPXRatio::Parse(std::string &s) {
             ratioString = oss.str();
             std::cout << "\t " << ratioString << std::endl;
         }
-
-        //Prepend directory paths
-        numeratorDataFile = dataDirectory + "/" + numeratorDataFile;
-        denominatorConvoluteGridFile = gridDirectory + "/" + denominatorConvoluteGridFile;
-        denominatorConvolutePDFFile = pdfDirectory + "/" + denominatorConvolutePDFFile;
     }
 
     else if(ratioStyle.IsConvoluteOverData()) {
@@ -176,9 +210,26 @@ void SPXRatio::Parse(std::string &s) {
         denominatorDataFile = SPXStringUtilities::RemoveCharacters(denBlob, "()");
 
         //Check for alias
-        numeratorConvoluteGridFile = CheckForAlias(numeratorConvoluteGridFile, "grid");
-        numeratorConvolutePDFFile = CheckForAlias(numeratorConvolutePDFFile, "pdf");
-        denominatorDataFile = CheckForAlias(denominatorDataFile, "data");
+        std::string numeratorGridAlias = CheckForAlias(numeratorConvoluteGridFile, "grid");
+        std::string numeratorPDFAlias = CheckForAlias(numeratorConvolutePDFFile, "pdf");
+        std::string denominatorDataAlias = CheckForAlias(denominatorDataFile, "data");
+
+        //Use alias, if there is one, otherwise prepend directories
+        if(!numeratorConvoluteGridFile.compare(numeratorGridAlias)) {
+            numeratorConvoluteGridFile = gridDirectory + "/" + numeratorConvoluteGridFile;
+        } else {
+            numeratorConvoluteGridFile = numeratorGridAlias;
+        }
+        if(!numeratorConvolutePDFFile.compare(numeratorPDFAlias)) {
+            numeratorConvolutePDFFile = pdfDirectory + "/" + numeratorConvolutePDFFile;
+        } else {
+            numeratorConvolutePDFFile = numeratorPDFAlias;
+        }
+        if(!denominatorDataFile.compare(denominatorDataAlias)) {
+            denominatorDataFile = dataDirectory + "/" + denominatorDataFile;
+        } else {
+            denominatorDataFile = denominatorDataAlias;
+        }
 
         if(debug) {
             std::cout << cn << mn << "Successfully parsed convolute / data string: " << std::endl;
@@ -187,11 +238,6 @@ void SPXRatio::Parse(std::string &s) {
             ratioString = oss.str();
             std::cout << "\t " << ratioString << std::endl;
         }
-
-        //Prepend directory paths
-        numeratorConvoluteGridFile = gridDirectory + "/" + numeratorConvoluteGridFile;
-        numeratorConvolutePDFFile = pdfDirectory + "/" + numeratorConvolutePDFFile;
-        denominatorDataFile = dataDirectory + "/" + denominatorDataFile;
     }
 
     else if(ratioStyle.IsConvoluteOverReference()) {
@@ -221,14 +267,31 @@ void SPXRatio::Parse(std::string &s) {
         denominatorReferenceGridFile = SPXStringUtilities::RemoveCharacters(denBlob, "()");
 
         //Check for alias
-        numeratorConvoluteGridFile = CheckForAlias(numeratorConvoluteGridFile, "grid");
-        numeratorConvolutePDFFile = CheckForAlias(numeratorConvolutePDFFile, "pdf");
-        denominatorReferenceGridFile = CheckForAlias(denominatorReferenceGridFile, "grid");
+        std::string numeratorGridAlias = CheckForAlias(numeratorConvoluteGridFile, "grid");
+        std::string numeratorPDFAlias = CheckForAlias(numeratorConvolutePDFFile, "pdf");
+        std::string denominatorGridAlias = CheckForAlias(denominatorReferenceGridFile, "grid");
 
         //Error if reference grid steering file does NOT match the convolute grid file
         if(numeratorConvoluteGridFile.compare(denominatorReferenceGridFile) != 0) {
             throw SPXParseException(cn + mn + "Numerator's convolute grid file \"" + numeratorConvoluteGridFile + \
                 "\" MUST match the denominator's refererence grid file: \"" + denominatorReferenceGridFile + "\"");
+        }
+
+        //Use alias, if there is one, otherwise prepend directories
+        if(!numeratorConvoluteGridFile.compare(numeratorGridAlias)) {
+            numeratorConvoluteGridFile = gridDirectory + "/" + numeratorConvoluteGridFile;
+        } else {
+            numeratorConvoluteGridFile = numeratorGridAlias;
+        }
+        if(!numeratorConvolutePDFFile.compare(numeratorPDFAlias)) {
+            numeratorConvolutePDFFile = pdfDirectory + "/" + numeratorConvolutePDFFile;
+        } else {
+            numeratorConvolutePDFFile = numeratorPDFAlias;
+        }
+        if(!denominatorReferenceGridFile.compare(denominatorGridAlias)) {
+            denominatorReferenceGridFile = dataDirectory + "/" + denominatorReferenceGridFile;
+        } else {
+            denominatorReferenceGridFile = denominatorGridAlias;
         }
 
         if(debug) {
@@ -238,11 +301,6 @@ void SPXRatio::Parse(std::string &s) {
             ratioString = oss.str();
             std::cout << "\t " << ratioString << std::endl;
         }
-
-        //Prepend directory paths
-        numeratorConvoluteGridFile = gridDirectory + "/" + numeratorConvoluteGridFile;
-        numeratorConvolutePDFFile = pdfDirectory + "/" + numeratorConvolutePDFFile;
-        denominatorReferenceGridFile = gridDirectory + "/" + denominatorReferenceGridFile;
     }
 
     else if(ratioStyle.IsDataOverData()) {
@@ -260,8 +318,20 @@ void SPXRatio::Parse(std::string &s) {
         denominatorDataFile = SPXStringUtilities::RemoveCharacters(denBlob, "()");
 
         //Check for alias
-        numeratorDataFile = CheckForAlias(numeratorDataFile, "data");
-        denominatorDataFile = CheckForAlias(denominatorDataFile, "data");
+        std::string numeratorDataAlias = CheckForAlias(numeratorDataFile, "data");
+        std::string denominatorDataAlias = CheckForAlias(denominatorDataFile, "data");
+
+        //Use alias, if there is one, otherwise prepend directories
+        if(!numeratorDataFile.compare(numeratorDataAlias)) {
+            numeratorDataFile = gridDirectory + "/" + numeratorDataFile;
+        } else {
+            numeratorDataFile = numeratorDataAlias;
+        }
+        if(!denominatorDataFile.compare(denominatorDataAlias)) {
+            denominatorDataFile = dataDirectory + "/" + denominatorDataFile;
+        } else {
+            denominatorDataFile = denominatorDataAlias;
+        }
 
         if(debug) {
             std::cout << cn << mn << "Successfully parsed data / data string: " << std::endl;
@@ -270,9 +340,6 @@ void SPXRatio::Parse(std::string &s) {
             ratioString = oss.str();
             std::cout << "\t " << ratioString << std::endl;
         }
-
-        numeratorDataFile = dataDirectory + "/" + numeratorDataFile;
-        denominatorDataFile = dataDirectory + "/" + denominatorDataFile;
     }
 }
 
