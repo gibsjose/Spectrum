@@ -63,6 +63,9 @@ public:
 				min = xmin;
 			}
 		}
+#if PERFORM_DELTA_MIN_MAX == OFF
+		std::cout << "SOMETHING" << std::endl;
+#endif
 
 #if PERFORM_DELTA_MIN_MAX == ON
 		std::cout << "min was " << min << std::endl;
