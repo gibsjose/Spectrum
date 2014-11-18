@@ -70,7 +70,7 @@ $(BIN): $(OBJ) $(HDR)
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cxx
 	@echo
 	@echo -n "Building $<"
-	$(CXX) $(CXXFLAGS) -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
 	@echo " ---> Done"
 clean:
 	rm -f $(BIN) $(OBJ)
