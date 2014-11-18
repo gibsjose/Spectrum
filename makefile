@@ -60,12 +60,19 @@ dir:
 	@mkdir -p $(TST_DIR)
 
 $(BIN): $(OBJ) $(HDR)
+	@echo
+	@echo "============================"
+	@echo " Building $(BIN) Executable "
+	@echo "============================"
+	@echo
 	mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $(BIN) $(INC) $(OBJ) $(LIB_PATH) $(LIB)
+	@echo
+	@echo " ---> Done"
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cxx
-	@echo "Building $<..."
-	$(CXX) $(CXXFLAGS) $< -o $@
-	@echo " Done"
+	@echo "Building $<"
+	$(CXX) $(CXXFLAGS) $(INC) $< -o $@
+	@echo " ---> Done"
 clean:
 	rm -f $(BIN)
