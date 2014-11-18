@@ -41,7 +41,7 @@ public:
     void GetGraphs(void);
     void Print(void);
 
-    std::string SPXRatio::CheckForAlias(std::string &, std::string &);
+    std::string CheckForAlias(std::string &, std::string &);
 
     static bool GetDebug(void) {
         return debug;
