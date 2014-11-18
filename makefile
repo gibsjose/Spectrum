@@ -53,9 +53,8 @@ all: dir $(BIN)
 
 dir:
 	@echo "=================================="
-	@echo " Spectrum Makefile"
+	@echo "        Spectrum Makefile         "
 	@echo "=================================="
-	@echo
 	@mkdir -p $(SRC_DIR)
 	@mkdir -p $(OBJ_DIR)
 	@mkdir -p $(BIN_DIR)
