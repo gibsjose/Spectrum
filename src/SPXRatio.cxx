@@ -314,6 +314,8 @@ void SPXRatio::GetGraphs(void) {
 
         //Check for existence of data key
         if(dataFileGraphMap->count(dataKey) == 0) {
+            PrintDataFileGraphMapKeys(std::cerr);
+
             std::ostringstream oss;
             oss << "dataFileGraphMap[" << dataKey << "] was not found: Invalid key";
             throw SPXGraphException(cn + mn + oss.str());
@@ -321,6 +323,8 @@ void SPXRatio::GetGraphs(void) {
 
         //Check for existence of convolute key
         if(convoluteFileGraphMap->count(convoluteKey) == 0) {
+            PrintConvoluteFileGraphMapKeys(std::cerr);
+
             std::ostringstream oss;
             oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
             throw SPXGraphException(cn + mn + oss.str());
@@ -356,6 +360,8 @@ void SPXRatio::GetGraphs(void) {
 
         //Check for existence of convolute key
         if(convoluteFileGraphMap->count(convoluteKey) == 0) {
+            PrintConvoluteFileGraphMapKeys(std::cerr);
+
             std::ostringstream oss;
             oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
             throw SPXGraphException(cn + mn + oss.str());
@@ -363,6 +369,8 @@ void SPXRatio::GetGraphs(void) {
 
         //Check for existence of data key
         if(dataFileGraphMap->count(dataKey) == 0) {
+            PrintDataFileGraphMapKeys(std::cerr);
+
             std::ostringstream oss;
             oss << "dataFileGraphMap[" << dataKey << "] was not found: Invalid key";
             throw SPXGraphException(cn + mn + oss.str());
@@ -398,6 +406,8 @@ void SPXRatio::GetGraphs(void) {
 
         //Check for existence of convolute key
         if(convoluteFileGraphMap->count(convoluteKey) == 0) {
+            PrintConvoluteFileGraphMapKeys(std::cerr);
+
             std::ostringstream oss;
             oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
             throw SPXGraphException(cn + mn + oss.str());
@@ -405,6 +415,8 @@ void SPXRatio::GetGraphs(void) {
 
         //Check for existence of reference key
         if(referenceFileGraphMap->count(referenceKey) == 0) {
+            PrintReferenceFileGraphMapKeys(std::cerr);
+
             std::ostringstream oss;
             oss << "referenceFileGraphMap[" << referenceKey << "] was not found: Invalid key";
             throw SPXGraphException(cn + mn + oss.str());
@@ -440,6 +452,8 @@ void SPXRatio::GetGraphs(void) {
 
         //Check for existence of numerator data key
         if(dataFileGraphMap->count(numDataKey) == 0) {
+            PrintDataFileGraphMapKeys(std::cerr);
+
             std::ostringstream oss;
             oss << "dataFileGraphMap[" << numDataKey << "] was not found: Invalid key";
             throw SPXGraphException(cn + mn + oss.str());
@@ -447,6 +461,8 @@ void SPXRatio::GetGraphs(void) {
 
         //Check for existence of denominator data key
         if(dataFileGraphMap->count(denDataKey) == 0) {
+            PrintDataFileGraphMapKeys(std::cerr);
+            
             std::ostringstream oss;
             oss << "dataFileGraphMap[" << denDataKey << "] was not found: Invalid key";
             throw SPXGraphException(cn + mn + oss.str());
