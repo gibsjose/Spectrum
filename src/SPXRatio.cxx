@@ -268,7 +268,14 @@ void SPXRatio::AddConvoluteFileGraphMap(StringPairGraphMap_T &convoluteFileGraph
 void SPXRatio::GetGraphs(void) {
     std::string mn = "GetGraphs: ";
 
+    SPXDisplayStyle &ds = plotConfiguration.GetDisplayStyle();
+
     if(ratioStyle.IsDataStat() || ratioStyle.IsDataTot()) {
+
+        if(!ds.ContainsData()) {
+            throw SPXGraphException(cn + mn + "Display Style does NOT contain \"data\", yet a ratio with data is specified: " + ratioStyle.ToString());
+        }
+
         std::string key = numeratorDataFile;
         if(debug) std::cout << cn << mn << "Key = [" << key << "]" << std::endl;
 
@@ -306,6 +313,14 @@ void SPXRatio::GetGraphs(void) {
         //Create keys
         std::string dataKey = numeratorDataFile;
         StringPair_T convoluteKey = StringPair_T(denominatorConvoluteGridFile, denominatorConvolutePDFFile);
+
+        if(!ds.ContainsData()) {
+            throw SPXGraphException(cn + mn + "Display Style does NOT contain \"data\", yet a ratio with data is specified: " + ratioStyle.ToString());
+        }
+
+        if(!ds.ContainsConvolute()) {
+            throw SPXGraphException(cn + mn + "Display Style does NOT contain \"convolute\", yet a ratio with convolute is specified: " + ratioStyle.ToString());
+        }
 
         if(debug) {
             std::cout << cn << mn << "Data Key = [" << dataKey << "]" << std::endl;
@@ -353,6 +368,14 @@ void SPXRatio::GetGraphs(void) {
         StringPair_T convoluteKey = StringPair_T(numeratorConvoluteGridFile, numeratorConvolutePDFFile);
         std::string dataKey = denominatorDataFile;
 
+        if(!ds.ContainsConvolute()) {
+            throw SPXGraphException(cn + mn + "Display Style does NOT contain \"convolute\", yet a ratio with convolute is specified: " + ratioStyle.ToString());
+        }
+
+        if(!ds.ContainsData()) {
+            throw SPXGraphException(cn + mn + "Display Style does NOT contain \"data\", yet a ratio with data is specified: " + ratioStyle.ToString());
+        }
+
         if(debug) {
             std::cout << cn << mn << "Convolute Key = [" << convoluteKey.first << ", " << convoluteKey.second << "]" << std::endl;
             std::cout << cn << mn << "Data Key = [" << dataKey << "]" << std::endl;
@@ -398,6 +421,14 @@ void SPXRatio::GetGraphs(void) {
         //Create keys
         StringPair_T convoluteKey = StringPair_T(numeratorConvoluteGridFile, numeratorConvolutePDFFile);
         std::string referenceKey = denominatorReferenceGridFile;
+
+        if(!ds.ContainsConvolute()) {
+            throw SPXGraphException(cn + mn + "Display Style does NOT contain \"convolute\", yet a ratio with convolute is specified: " + ratioStyle.ToString());
+        }
+
+        if(!ds.ContainsReference()) {
+            throw SPXGraphException(cn + mn + "Display Style does NOT contain \"reference\", yet a ratio with reference is specified: " + ratioStyle.ToString());
+        }
 
         if(debug) {
             std::cout << cn << mn << "Convolute Key = [" << convoluteKey.first << ", " << convoluteKey.second << "]" << std::endl;
@@ -445,6 +476,10 @@ void SPXRatio::GetGraphs(void) {
         std::string numDataKey = numeratorDataFile;
         std::string denDataKey = denominatorDataFile;
 
+        if(!ds.ContainsData()) {
+            throw SPXGraphException(cn + mn + "Display Style does NOT contain \"data\", yet a ratio with data is specified: " + ratioStyle.ToString());
+        }
+
         if(debug) {
             std::cout << cn << mn << "Numerator Data Key = [" << numDataKey << "]" << std::endl;
             std::cout << cn << mn << "Denominator Data Key = [" << denDataKey << "]" << std::endl;
@@ -462,7 +497,7 @@ void SPXRatio::GetGraphs(void) {
         //Check for existence of denominator data key
         if(dataFileGraphMap->count(denDataKey) == 0) {
             PrintDataFileGraphMapKeys(std::cerr);
-            
+
             std::ostringstream oss;
             oss << "dataFileGraphMap[" << denDataKey << "] was not found: Invalid key";
             throw SPXGraphException(cn + mn + oss.str());
