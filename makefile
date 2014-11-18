@@ -80,4 +80,4 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cxx
 	@echo " ---> Done"
 
 clean:
-	rm -f $(BIN) $(OBJ)
+	rm -f $(BIN) $(OBJ) $(OBJ_DIR)/*.d
