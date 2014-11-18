@@ -41,6 +41,8 @@ public:
     void GetGraphs(void);
     void Print(void);
 
+    std::string CheckForAlias(std::string &, const std::string);
+
     static bool GetDebug(void) {
         return debug;
     }
@@ -93,6 +95,36 @@ public:
         return false;
     }
 
+    void PrintDataFileGraphMapKeys(std::ostream &out = std::cout) {
+        out << "SPXRatio::PrintDataFileGraphMapKeys: " << std::endl;
+        out << "\t Key Format: [Data]" << std::endl;
+        out << "\t ============ KNOWN KEYS ============" << std::endl;
+        for(StringGraphMap_T::iterator it = dataFileGraphMap->begin(); it != dataFileGraphMap->end(); ++it) {
+            out << "\t [" << it->first << "]" << std::endl;
+        }
+        out << "\t ====================================" << std::endl << std::endl;
+    }
+
+    void PrintReferenceFileGraphMapKeys(std::ostream &out = std::cout) {
+        out << "SPXRatio::PrintReferenceFileGraphMapKeys: " << std::endl;
+        out << "\t Key Format: [Grid]" << std::endl;
+        out << "\t ============ KNOWN KEYS ============" << std::endl;
+        for(StringGraphMap_T::iterator it = referenceFileGraphMap->begin(); it != referenceFileGraphMap->end(); ++it) {
+            out << "\t [" << it->first << "]" << std::endl;
+        }
+        out << "\t ====================================" << std::endl << std::endl;
+    }
+
+    void PrintConvoluteFileGraphMapKeys(std::ostream &out = std::cout) {
+        out << "SPXRatio::PrintConvoluteFileGraphMapKeys: " << std::endl;
+        out << "\t Key Format: [Grid, PDF]" << std::endl;
+        out << "\t ============ KNOWN KEYS ============" << std::endl;
+        for(StringPairGraphMap_T::iterator it = convoluteFileGraphMap->begin(); it != convoluteFileGraphMap->end(); ++it) {
+            out << "\t [" << it->first.first << ", " << it->first.second << "]" << std::endl;
+        }
+        out << "\t ====================================" << std::endl << std::endl;
+    }
+
     void Divide(void) {
         //Grab the plot configuration instance
         SPXPlotConfigurationInstance pci;
@@ -131,11 +163,16 @@ public:
 
         if(ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverReference()) {
             pci = plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
-            pci.Print();
+            if(debug) {
+                pci.Print();
+            }
         }
 
         else if(ratioStyle.IsDataOverConvolute()) {
             pci = plotConfiguration.GetPlotConfigurationInstance(denominatorConvolutePDFFile);
+            if(debug) {
+                pci.Print();
+            }
         }
 
         //@TODO What if it's Data/Data???

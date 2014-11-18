@@ -8,7 +8,7 @@ CXX = g++
 
 STD = $(shell echo $(CXX_STD))
 
-CXXFLAGS += -g -O3 $(STD)
+CXXFLAGS += -g -O3 $(STD) -MP -MMD
 
 #ROOT
 ROOTINCS = $(shell root-config --cflags)
@@ -28,15 +28,18 @@ LHAPDFLIBS = -L$(LHAPDFDIR) -lLHAPDF
 CXXFLAGS += $(ROOTARCH) $(ROOTINCS) $(APPLCXXFLAGS) $(LHAPDFINCS)
 
 SRC_DIR = ./src
+OBJ_DIR = ./obj
 BIN_DIR = .
 TST_DIR = $(SRC_DIR)/test
 
-SRC = $(SRC_DIR)/Spectrum.cxx $(SRC_DIR)/SPXSteeringFile.cxx $(SRC_DIR)/SPXRatioStyle.cxx $(SRC_DIR)/SPXDisplayStyle.cxx \
-		$(SRC_DIR)/SPXOverlayStyle.cxx $(SRC_DIR)/SPXPDFBandType.cxx $(SRC_DIR)/SPXPDFErrorType.cxx $(SRC_DIR)/SPXPDFErrorSize.cxx \
-		$(SRC_DIR)/SPXPlotConfiguration.cxx $(SRC_DIR)/SPXPDFSteeringFile.cxx $(SRC_DIR)/SPXGridSteeringFile.cxx $(SRC_DIR)/SPXDataSteeringFile.cxx \
-		$(SRC_DIR)/SPXDataFormat.cxx $(SRC_DIR)/SPXData.cxx $(SRC_DIR)/SPXPlot.cxx $(SRC_DIR)/SPXCrossSection.cxx \
-		$(SRC_DIR)/SPXGrid.cxx $(SRC_DIR)/SPXPDF.cxx $(SRC_DIR)/SPXRatio.cxx $(SRC_DIR)/SPXPlotType.cxx $(SRC_DIR)/SPXAtlasStyle.cxx
-HDR = $(SRC_DIR)/*.h
+RAW_SRC = 	Spectrum.cxx SPXSteeringFile.cxx SPXRatioStyle.cxx SPXDisplayStyle.cxx SPXOverlayStyle.cxx SPXPDFBandType.cxx \
+			SPXPDFErrorType.cxx SPXPDFErrorSize.cxx SPXPlotConfiguration.cxx SPXPDFSteeringFile.cxx SPXGridSteeringFile.cxx \
+			SPXDataSteeringFile.cxx SPXDataFormat.cxx SPXData.cxx SPXPlot.cxx SPXCrossSection.cxx SPXGrid.cxx SPXPDF.cxx \
+			SPXRatio.cxx SPXPlotType.cxx SPXAtlasStyle.cxx
+
+SRC = $(RAW_SRC:%.cxx=$(SRC_DIR)/%.cxx)
+OBJ = $(RAW_SRC:%.cxx=$(OBJ_DIR)/%.o)
+DEP = $(OBJ:%.o=%.d)
 INC = -I./inih/include -I$(SRC_DIR)
 LIB_PATH = -L./inih/lib
 LIB = -linih $(ROOTLIBS) $(APPLCLIBS) $(APPLFLIBS) $(LHAPDFLIBS)
@@ -44,26 +47,37 @@ BIN = $(BIN_DIR)/Spectrum
 
 .SUFFIXES: .cxx .o
 
-.PHONY: clean test
+.PHONY: all dir clean
 
-# all: $(BIN) test
+all: dir $(BIN)
 
-all: $(BIN)
+-include $(DEP)
 
-$(BIN): $(SRC) $(HDR)
-	mkdir -p $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) -o $(BIN) $(INC) $(SRC) $(LIB_PATH) $(LIB)
+dir:
+	@echo "=================================="
+	@echo "        Spectrum Makefile         "
+	@echo "=================================="
+	@mkdir -p $(SRC_DIR)
+	@mkdir -p $(OBJ_DIR)
+	@mkdir -p $(BIN_DIR)
+	@mkdir -p $(TST_DIR)
 
-test: $(TST_DIR)/TestSPXRatioStyle $(TST_DIR)/TestSPXDisplayStyle $(TST_DIR)/TestSPXOverlayStyle
+$(BIN): $(OBJ)
+	@echo
+	@echo "=================================="
+	@echo " Building $(BIN) Executable 		 "
+	@echo "=================================="
+	@$(CXX) $(CXXFLAGS) -o $(BIN) $(INC) $(OBJ) $(LIB_PATH) $(LIB)
+	@echo "=================================="
+	@echo "=============  Done  ============="
+	@echo "=================================="
+	@echo
 
-$(TST_DIR)/TestSPXRatioStyle: $(SRC_DIR)/SPXRatioStyle.cxx $(TST_DIR)/TestSPXRatioStyle.cxx
-	$(CXX) $(CXXFLAGS) -o $@ $(INC) $^ $(LIB_PATH) $(LIB)
-
-$(TST_DIR)/TestSPXDisplayStyle: $(SRC_DIR)/SPXDisplayStyle.cxx $(TST_DIR)/TestSPXDisplayStyle.cxx
-	$(CXX) $(CXXFLAGS) -o $@ $(INC) $^ $(LIB_PATH) $(LIB)
-
-$(TST_DIR)/TestSPXOverlayStyle: $(SRC_DIR)/SPXOverlayStyle.cxx $(TST_DIR)/TestSPXOverlayStyle.cxx
-	$(CXX) $(CXXFLAGS) -o $@ $(INC) $^ $(LIB_PATH) $(LIB)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cxx
+	@echo
+	@echo -n "Building $<"
+	@$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
+	@echo " ---> Done"
 
 clean:
-	rm -f $(BIN) $(TST)
+	rm -f $(BIN) $(OBJ) $(DEP)

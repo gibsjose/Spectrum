@@ -58,7 +58,7 @@ x_units = GeV
 y_units = pb
 y_bin_width_units = TeV
 jet_algorithm_label = antikt
-jet_algorithm_number = 4
+jet_algorithm_radius = 4
 
 ;--------------------------------------------------------------
 ; NOTE:
@@ -70,7 +70,7 @@ jet_algorithm_number = 4
 ;		spectrum_t1a
 ;		spectrum_t2s
 ;		spectrum_t2a
-;		herapdf
+;		herafitter
 ;
 ; See the file 'data_formats.txt' for a more comprehensive
 ; explanation of the different formats
@@ -80,8 +80,8 @@ jet_algorithm_number = 4
 ; Data Options
 ;==============================================================
 [DATA]
-data_format = spectrum_t3s
-data_file = Data/spectrum_t3s_data.txt
+data_format = spectrum
+data_file = Data/spectrum_t3a_data.txt
 divided_by_bin_width = true
 normalized_to_total_sigma = true
 error_in_percent = true

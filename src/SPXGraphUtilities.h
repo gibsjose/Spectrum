@@ -21,8 +21,8 @@
 #include "SPXROOT.h"
 #include "SPXException.h"
 
-//Adds extra space for the frame bounds
-#define PERFORM_DELTA_MIN_MAX true
+//Adds extra space for the frame bounds (set to OFF to disable)
+#define PERFORM_DELTA_MIN_MAX	1
 
 #if PERFORM_DELTA_MIN_MAX
 const double DELTA_MIN_MAX = 0.10;	//Extra space on the graph for min/max: 0.10 = 10%
@@ -61,7 +61,7 @@ public:
 			}
 		}
 
-#if PERFORM_DELTA_MIN_MAX
+#if PERFORM_DELTA_MIN_MAX == 1
 		min -= (min * DELTA_MIN_MAX);
 #endif
 
@@ -82,7 +82,7 @@ public:
 			}
 		}
 
-#if PERFORM_DELTA_MIN_MAX
+#if PERFORM_DELTA_MIN_MAX == 1
 		max += (max * DELTA_MIN_MAX);
 #endif
 
@@ -103,7 +103,7 @@ public:
 			}
 		}
 
-#if PERFORM_DELTA_MIN_MAX
+#if PERFORM_DELTA_MIN_MAX == 1
 		min -= (min * DELTA_MIN_MAX);
 #endif
 		return min;
@@ -123,7 +123,7 @@ public:
 			}
 		}
 
-#if PERFORM_DELTA_MIN_MAX
+#if PERFORM_DELTA_MIN_MAX == 1
 		max += (max * DELTA_MIN_MAX);
 #endif
 		return max;

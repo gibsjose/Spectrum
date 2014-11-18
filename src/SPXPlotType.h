@@ -4,7 +4,7 @@
 //
 //	Outlines the SPXPlotType class, which defines the four
 //	supported plot types:
-//		
+//
 //		1)	data, grid, pdf
 //
 //			ONE data file
@@ -38,6 +38,8 @@
 #ifndef SPXPLOTTYPE_H
 #define SPXPLOTTYPE_H
 
+#include <string>
+
 //Bitfields for determining style type
 const int PT_INVALID =		-1;
 const int PT_DATA = 		(1 << 0);	//0b00000001
@@ -59,24 +61,24 @@ class SPXPlotType {
 public:
 	SPXPlotType () : type(0) {}
 	explicit SPXPlotType(std::string s);
-	
+
 	void Parse(std::string s);
 	void Print(void);
 	std::string ToString(void);
 	bool IsValid(void);
-	
+
 	void Clear(void) {
 		type = 0;
 	}
-	
+
 	static bool GetDebug(void) {
 		return debug;
 	}
-	
+
 	static void SetDebug(bool b) {
 		debug = b;
 	}
-	
+
 	int GetType(void) {
 		return (int)type;
 	}

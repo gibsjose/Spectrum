@@ -35,16 +35,6 @@ const int ALPHA_S_ERROR_NUM_EMPTY = -1;
 
 class SPXPDFSteeringFile {
 
-	//Currently implemented as just a string...
-	//Any reason to use enum?
-	/*
-	typedef enum PDFOrder_t {
-		LO = 0,
-		NLO = 1,
-		NNLO = 2
-	} PDFOrder_t;
-	*/
-	
 private:
 
 	//INI Reader
@@ -55,20 +45,20 @@ private:
 
 	//[GEN]
 	bool debug;
-	
+
 	//[DESC]
 	std::string name;
 	std::string nameVar;
 	std::string type;
-	std::string order;
+	unsigned int order;
 	int numberOfMembers;
 	std::string pdfSetPath;
-	
+
 	//[STYLE]
 	int fillStyle;
 	int fillColor;
 	int markerStyle;
-	
+
 	//[PDF]
 	int defaultID;
 	int defaultIDVar;
@@ -90,32 +80,32 @@ private:
 	std::string alphaSPDFNameDown;
 	std::string alphaSPDFHistogramNameUp;
 	std::string alphaSPDFHistogramNameDown;
-	
+
 	void SetDefaults(void);
-	
+
 public:
 
 	void Print(void);
 	void Parse(void);
 
 	SPXPDFSteeringFile(void) : filename(""), debug(false) {}
-	
-	explicit SPXPDFSteeringFile(const std::string &filename) : debug(false) {	
-		this->filename = filename;		
+
+	explicit SPXPDFSteeringFile(const std::string &filename) : debug(false) {
+		this->filename = filename;
 	}
-	
+
 	std::string GetFilename(void) const {
 		return this->filename;
 	}
-	
+
 	void SetDebug(bool b) {
 		debug = b;
 	}
-	
+
 	bool GetDebug(void) const {
 		return this->debug;
 	}
-	
+
 	const std::string & GetName(void) const {
 		return this->name;
 	}
@@ -123,42 +113,35 @@ public:
 	const std::string & GetNameVar(void) const {
 		return this->nameVar;
 	}
-	
+
 	const std::string & GetType(void) const {
 		return this->type;
 	}
-	
+
 	unsigned int GetNumberOfMembers(void) const {
 		return this->numberOfMembers;
 	}
 
-	const std::string & GetOrder(void) const {
-		return this->order;
+	unsigned int GetOrder(void) const {
+		return order;
 	}
 
-	//@TODO Make 'Order'/'NumLoops' its own class...
 	unsigned int GetNumberOfLoops(void) const {
-		if(!this->order.compare("LO") || !this->order.compare("lo")) {
-			return 0;
-		} else if(!this->order.compare("NLO") || !this->order.compare("nlo")) {
-			return 1;
-		} else {
-			return 2;
-		}
+		return GetOrder();
 	}
 
 	const std::string & GetPDFSetPath(void) const {
 		return this->pdfSetPath;
 	}
-	
+
 	int GetFillStyle(void) const {
 		return this->fillStyle;
 	}
-	
+
 	int GetFillColor(void) const {
 		return this->fillColor;
-	}	
-	
+	}
+
 	int GetMarkerStyle(void) const {
 		return this->markerStyle;
 	}
@@ -198,7 +181,7 @@ public:
 	bool GetIncludeEig(void) const {
 		return this->includeEig;
 	}
-	
+
 	bool GetIncludeQuad(void) const {
 		return this->includeQuad;
 	}
@@ -206,39 +189,39 @@ public:
 	bool GetIncludeMax(void) const {
 		return this->includeMax;
 	}
-	
+
 	SPXPDFBandType & GetBandType(void) {
 		return this->bandType;
 	}
-	
+
 	SPXPDFErrorType & GetErrorType(void) {
 		return this->errorType;
 	}
-	
+
 	SPXPDFErrorSize & GetErrorSize(void) {
 		return this->errorSize;
 	}
-	
+
 	int GetAlphaSErrorNumberUp(void) const {
 		return this->alphaSErrorNumberUp;
 	}
-	
+
 	int GetAlphaSErrorNumberDown(void) const {
 		return this->alphaSErrorNumberDown;
 	}
-	
+
 	const std::string & GetAlphaSPDFNameUp(void) const {
 		return this->alphaSPDFNameUp;
 	}
-	
+
 	const std::string & GetAlphaSPDFNameDown(void) const {
 		return this->alphaSPDFNameDown;
-	}	
-	
+	}
+
 	const std::string & GetAlphaSPDFHistogramNameUp(void) const {
 		return this->alphaSPDFHistogramNameUp;
 	}
-	
+
 	const std::string & GetAlphaSPDFHistogramNameDown(void) const {
 		return this->alphaSPDFHistogramNameDown;
 	}

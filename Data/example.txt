@@ -58,7 +58,7 @@ x_units = GeV													;[REQUIRED] X Axis Units (MeV, GeV or TeV) - [default 
 y_units = pb													;[REQUIRED] Y Axis Units (pb or fb) - [default = fb]
 y_bin_width_units = TeV											;[REQUIRED] Y Axis Bin Width Units (MeV, GeV or TeV): Whatever is in the Y-Axis label : [1 / ...]
 jet_algorithm_label = antikt									;[Optional] Jet Algorithm Label
-jet_algorithm_number = 4										;[Optional] Jet Algorithm Number
+jet_algorithm_radius = 4										;[Optional] Jet Algorithm Radius
 
 ;--------------------------------------------------------------
 ; NOTE:
@@ -70,7 +70,7 @@ jet_algorithm_number = 4										;[Optional] Jet Algorithm Number
 ;		spectrum_t1a
 ;		spectrum_t2s
 ;		spectrum_t2a
-;		herapdf
+;		herafitter
 ;
 ; See the file 'data_formats.txt' for a more comprehensive
 ; explanation of the different formats

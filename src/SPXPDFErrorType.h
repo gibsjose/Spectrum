@@ -3,7 +3,7 @@
 //	PDF Error Type Header
 //
 //	Outlines the SPXPDFErrorType class, which describes the PDF
-//	error type. The options are 'alpha_s' or 'pdf_band' 
+//	error type. The options are 'alpha_s' or 'pdf_band'
 //
 //	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
 //	@Date:		29.09.2014
@@ -13,6 +13,8 @@
 
 #ifndef SPXPDFERRORTYPE_H
 #define SPXPDFERRORTYPE_H
+
+#include <string>
 
 //Bitfields for determining error type
 const int ET_INVALID =		-1;
@@ -27,42 +29,42 @@ public:
 		this->type = type;
 	}
 	explicit SPXPDFErrorType(std::string s);
-	
+
 	void Parse(std::string s);
 	void Print(void);
 	std::string ToString(void);
 	bool IsEmpty(void);
 	bool IsValid(void);
-	
+
 	void Clear(void) {
 		type = 0;
 	}
-	
+
 	static bool GetDebug(void) {
 		return debug;
 	}
-	
+
 	static void SetDebug(bool b) {
 		debug = b;
 	}
-	
+
 	int GetType(void) {
 		return (int)type;
 	}
-	
+
 	bool IsAlphaS(void) {
 		if((type == ET_ALPHA_S) && this->IsValid()) {
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	bool IsPDFBand(void) {
 		if((type == ET_PDF_BAND) && this->IsValid()) {
 			return true;
 		}
-		
+
 		return false;
 	}
 

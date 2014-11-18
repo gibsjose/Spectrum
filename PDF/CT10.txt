@@ -1,6 +1,6 @@
 ;==============================================================
 ;
-; Description:		
+; Description:
 ;	Example PDF Steering File
 ;
 ; Authors:
@@ -17,7 +17,7 @@
 ;==============================================================
 
 ;--------------------------------------------------------------
-; NOTE: 
+; NOTE:
 ;
 ; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
 ;
@@ -41,9 +41,9 @@ debug = false
 name = CT10
 name_var = CT10_R04
 type = CT10
-order = NLO
+order = 1
 num_members = 53
-; pdf_set_path = 
+; pdf_set_path =
 
 ;==============================================================
 ; Style Options
@@ -51,23 +51,23 @@ num_members = 53
 [STYLE]
 fill_style = 3005
 fill_color = 600
-marker_style = 20
+marker_style = 22
 
 ;==============================================================
 ; PDF Options
 ;==============================================================
 [PDF]
-default_id = 0 	
-default_id_var = 0	
-first_eig = 1	
-last_eig = 0		
+default_id = 0
+default_id_var = 0
+first_eig = 1
+last_eig = 0
 first_quad = 1
 last_quad = 25
 first_max = 1
 last_max = 6
-include_eig = true 
-include_quad = true 
-include_max = false 
+include_eig = true
+include_quad = true
+include_max = false
 band_type =	use_error_band
 error_type = pdf_band
 error_size = one_sigma
@@ -77,4 +77,3 @@ alpha_s_pdf_name_up = none
 alpha_s_pdf_name_down = CT10as
 alpha_s_pdf_histogram_name_up = CT10as120_prenorm
 alpha_s_pdf_histogram_name_down = CT10as116_prenorm
-
