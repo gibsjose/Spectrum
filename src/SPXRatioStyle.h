@@ -17,6 +17,8 @@
 #ifndef SPXRATIOSTYLE_H
 #define SPXRATIOSTYLE_H
 
+#include <string>
+
 //Bitfields for determining numerator/denominator contents
 const int RS_INVALID =		-1;
 const int RS_DATA = 		(1 << 0);	//0b00000001
