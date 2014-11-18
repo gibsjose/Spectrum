@@ -93,7 +93,7 @@ public:
         return false;
     }
 
-    void PrintDataFileGraphMapKeys(std::ostream out = std::cout) {
+    void PrintDataFileGraphMapKeys(std::ostream &out = std::cout) {
         out << "SPXRatio::PrintDataFileGraphMapKeys: " << std::endl;
         out << "\t Key Format: [Data]" << std::endl;
         out << "\t ============ KNOWN KEYS ============" << std::endl;
@@ -103,7 +103,7 @@ public:
         out << "\t ====================================" << std::endl << std::endl;
     }
 
-    void PrintReferenceFileGraphMapKeys(std::ostream out = std::cout) {
+    void PrintReferenceFileGraphMapKeys(std::ostream &out = std::cout) {
         out << "SPXRatio::PrintReferenceFileGraphMapKeys: " << std::endl;
         out << "\t Key Format: [Grid]" << std::endl;
         out << "\t ============ KNOWN KEYS ============" << std::endl;
@@ -113,7 +113,7 @@ public:
         out << "\t ====================================" << std::endl << std::endl;
     }
 
-    void PrintConvoluteFileGraphMapKeys(std::ostream out = std::cout) {
+    void PrintConvoluteFileGraphMapKeys(std::ostream &out = std::cout) {
         out << "SPXRatio::PrintConvoluteFileGraphMapKeys: " << std::endl;
         out << "\t Key Format: [Grid, PDF]" << std::endl;
         out << "\t ============ KNOWN KEYS ============" << std::endl;
