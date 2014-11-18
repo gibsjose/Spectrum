@@ -268,7 +268,7 @@ void SPXRatio::AddConvoluteFileGraphMap(StringPairGraphMap_T &convoluteFileGraph
 void SPXRatio::GetGraphs(void) {
     std::string mn = "GetGraphs: ";
 
-    SPXDisplayStyle &os = plotConfiguration.GetOverlayStyle();
+    SPXOverlayStyle &os = plotConfiguration.GetOverlayStyle();
 
     if(ratioStyle.IsDataStat() || ratioStyle.IsDataTot()) {
 
