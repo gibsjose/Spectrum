@@ -76,16 +76,16 @@ void SPXRatio::Parse(std::string &s) {
         //Check for alias
         std::string alias = CheckForAlias(s, "data");
 
-        //If there was no alias, prepend data directory, and append _stat
+        //If there was no alias, prepend data directory
         if(!s.compare(alias)) {
-            numeratorDataFile = dataDirectory + "/" + s + "_tot";
-            denominatorDataFile = dataDirectory + "/" + s + "_tot";
+            numeratorDataFile = dataDirectory + "/" + s;
+            denominatorDataFile = dataDirectory + "/" + s;
         }
 
-        //If there was an alias, just append _tot (alias already contains directory)
+        //If there was an alias, just use it (alias already contains directory)
         else {
-            numeratorDataFile = alias + "_tot";
-            denominatorDataFile = alias + "_tot";
+            numeratorDataFile = alias;
+            denominatorDataFile = alias;
         }
 
         if(debug) std::cout << cn << mn << "Successfully parsed data tot ratio with data file: " << numeratorDataFile << std::endl;
