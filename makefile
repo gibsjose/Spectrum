@@ -63,7 +63,6 @@ $(BIN): $(OBJ) $(HDR)
 	@echo " Building $(BIN) Executable "
 	@echo "============================"
 	@echo
-	mkdir -p $(BIN_DIR)
 	@$(CXX) $(CXXFLAGS) -o $(BIN) $(INC) $(OBJ) $(LIB_PATH) $(LIB)
 	@echo
 	@echo " ---> Done"
@@ -71,7 +70,7 @@ $(BIN): $(OBJ) $(HDR)
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cxx
 	@echo
 	@echo "Building $<"
-	$(CXX) $(CXXFLAGS) -o $@ $(INC) -c $< $(LIB_PATH) $(LIB)
+	@$(CXX) $(CXXFLAGS) -o $@ $(INC) -c $< $(LIB_PATH) $(LIB)
 	@echo " ---> Done"
 	@echo
 clean:
