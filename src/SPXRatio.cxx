@@ -274,6 +274,8 @@ void SPXRatio::GetGraphs(void) {
 
         //Check for existence of data key
         if(dataFileGraphMap->count(key) == 0) {
+            PrintDataFileGraphMapKeys(std::cerr);
+
             std::ostringstream oss;
             oss << "dataFileGraphMap[" << key << "] was not found: Invalid key";
             throw SPXGraphException(cn + mn + oss.str());
