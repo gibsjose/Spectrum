@@ -425,11 +425,6 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
 
-	//Do nothing if overlay is not plotted
-	if(!ds.ContainsOverlay()) {
-		return;
-	}
-
 	DetermineOverlayFrameBounds(xMinOverlay, xMaxOverlay, yMinOverlay, yMaxOverlay);
 
 	overlayPad->cd();
@@ -457,16 +452,13 @@ void SPXPlot::DrawRatioPadFrame(void) {
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
 
-	//Do nothing if overlay is not plotted
-	if(!ds.ContainsRatio()) {
-		return;
-	}
-
 	DetermineRatioFrameBounds(xMinRatio, xMaxRatio, yMinRatio, yMaxRatio);
 
-	//Force Ratio X Min/Max to match Overlay (should alread match anyway...)
-	xMinRatio = xMinOverlay;
-	xMaxRatio = xMaxOverlay;
+	//Force Ratio X Min/Max to match Overlay, if plotted (should alread match anyway...)
+	if(ds.ContainsOverlay()) {
+		xMinRatio = xMinOverlay;
+		xMaxRatio = xMaxOverlay;
+	}
 
 	ratioPad->cd();
 	ratioFrameHisto = ratioPad->DrawFrame(xMinRatio, yMinRatio, xMaxRatio, yMaxRatio);
