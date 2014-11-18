@@ -54,10 +54,6 @@ BIN = $(BIN_DIR)/Spectrum
 all: dir $(BIN)
 
 dir:
-	@echo $(SRC)
-	@echo
-	@echo
-	@echo $(OBJ)
 	@mkdir -p $(SRC_DIR)
 	@mkdir -p $(OBJ_DIR)
 	@mkdir -p $(BIN_DIR)
@@ -68,7 +64,8 @@ $(BIN): $(OBJ) $(HDR)
 	$(CXX) $(CXXFLAGS) -o $(BIN) $(INC) $(OBJ) $(LIB_PATH) $(LIB)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cxx
+	@echo "Building $<..."
 	$(CXX) $(CXXFLAGS) $< -o $@
-
+	@echo " Done"
 clean:
 	rm -f $(BIN)
