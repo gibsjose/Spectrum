@@ -63,6 +63,14 @@ public:
 				min = xmin;
 			}
 		}
+
+		std::cout << "XMIN::::::::::::: TEST TEST TEST" << std::endl;
+
+#ifdef PERFORM_DELTA_MIN_MAX
+		std::cout << "DEFINED" << std::endl;
+#else
+		std::cout << "UNDEFINED" << std::endl;
+#endif
 #if PERFORM_DELTA_MIN_MAX == OFF
 		std::cout << "SOMETHING" << std::endl;
 #endif
