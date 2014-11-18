@@ -258,7 +258,7 @@ void SPXRatio::Parse(std::string &s) {
 
 //Checks the 'original' string to see whether it contains an alias, and attempts to
 // resolve that alias based on the alias type
-std::string SPXRatio::CheckForAlias(std::string &original, std::string &alias_type) {
+std::string SPXRatio::CheckForAlias(std::string &original, const std::string alias_type) {
     std::string mn = "CheckForAlias: ";
 
     std::string tmp;
@@ -292,16 +292,16 @@ std::string SPXRatio::CheckForAlias(std::string &original, std::string &alias_ty
 
         try {
             if(!alias_type.compare("data")) {
-                alias = plotConfiguration.GetPlotConfigurationInstance(i).dataSteeringFile.GetFilename();
+                alias = plotConfiguration.GetPlotConfigurationInstance(index).dataSteeringFile.GetFilename();
             } else if(!alias_type.compare("grid")) {
-                alias = plotConfiguration.GetPlotConfigurationInstance(i).gridSteeringFile.GetFilename();
+                alias = plotConfiguration.GetPlotConfigurationInstance(index).gridSteeringFile.GetFilename();
             } else if(!alias_type.compare("pdf")) {
-                alias = plotConfiguration.GetPlotConfigurationInstance(i).pdfSteeringFile.GetFilename();
+                alias = plotConfiguration.GetPlotConfigurationInstance(index).pdfSteeringFile.GetFilename();
             }
 
             if(debug) std::cout << cn << mn << "Successfully aliased \"" << original << "\" to " << alias << std::endl;
             return alias;
-            
+
         } catch(const SPXException &e) {
             std::cerr << e.what() << std::endl;
             throw SPXParseException(cn + mn + "Index " + s_index + " is out of bounds/invalid");
