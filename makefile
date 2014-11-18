@@ -70,8 +70,8 @@ $(BIN): $(OBJ) $(HDR)
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cxx
 	@echo
 	@echo "Building $<"
-	@$(CXX) $(CXXFLAGS) -o $@ $(INC) -c $< $(LIB_PATH) $(LIB)
+	$(CXX) $(CXXFLAGS) -o $@ -c $< 
 	@echo " ---> Done"
 	@echo
 clean:
-	rm -f $(BIN)
+	rm -f $(BIN) $(OBJ)
