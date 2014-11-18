@@ -53,6 +53,8 @@ void SPXRatio::Parse(std::string &s) {
 
     //Check for special cases (data stat and data tot)
     if(ratioStyle.IsDataStat()) {
+        //Check for alias
+        s = CheckForAlias(s, "data");
         numeratorDataFile = dataDirectory + "/" + s + "_stat";
         denominatorDataFile = dataDirectory + "/" + s + "_stat";
         if(debug) std::cout << cn << mn << "Successfully parsed data stat ratio with data file: " << numeratorDataFile << std::endl;
@@ -60,6 +62,8 @@ void SPXRatio::Parse(std::string &s) {
     }
 
     if(ratioStyle.IsDataTot()) {
+        //Check for alias
+        s = CheckForAlias(s, "data");
         numeratorDataFile = dataDirectory + "/" + s;
         denominatorDataFile = dataDirectory + "/" + s;
         if(debug) std::cout << cn << mn << "Successfully parsed data tot ratio with data file: " << numeratorDataFile << std::endl;
