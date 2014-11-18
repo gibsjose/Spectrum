@@ -25,7 +25,7 @@
 #define PERFORM_DELTA_MIN_MAX	1
 
 #if PERFORM_DELTA_MIN_MAX
-const double DELTA_MIN_MAX = 0.20;	//Extra space on the graph for min/max: 0.10 = 10%
+const double DELTA_MIN_MAX = 0.50;	//Extra space on the graph for min/max: 0.10 = 10%
 #endif
 
 typedef enum DivideErrorType_t {
@@ -60,17 +60,6 @@ public:
 				min = xmin;
 			}
 		}
-
-		std::cout << "XMIN::::::::::::: TEST TEST TEST" << std::endl;
-
-#ifdef PERFORM_DELTA_MIN_MAX
-		std::cout << "DEFINED" << std::endl;
-#else
-		std::cout << "UNDEFINED" << std::endl;
-#endif
-#if PERFORM_DELTA_MIN_MAX == 0
-		std::cout << "SOMETHING" << std::endl;
-#endif
 
 #if PERFORM_DELTA_MIN_MAX == 1
 		std::cout << "min was " << min << std::endl;

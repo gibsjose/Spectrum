@@ -8,7 +8,7 @@ CXX = g++
 
 STD = $(shell echo $(CXX_STD))
 
-CXXFLAGS += -g -O3 $(STD) -MP -MD
+CXXFLAGS += -g -O3 $(STD) -MP -MMD
 
 #ROOT
 ROOTINCS = $(shell root-config --cflags)
@@ -45,11 +45,11 @@ LIB_PATH = -L./inih/lib
 LIB = -linih $(ROOTLIBS) $(APPLCLIBS) $(APPLFLIBS) $(LHAPDFLIBS)
 BIN = $(BIN_DIR)/Spectrum
 
--include $(SRC:.cxx=.d)
-
-.SUFFIXES: .cxx .o .h
+.SUFFIXES: .cxx .o
 
 .PHONY: all dir clean
+
+-include $(SRC:.cxx=.d)
 
 all: dir $(BIN)
 
