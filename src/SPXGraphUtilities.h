@@ -25,7 +25,7 @@
 #define PERFORM_DELTA_MIN_MAX true
 
 #if PERFORM_DELTA_MIN_MAX
-const double DELTA_MIN_MAX = 0.40;	//Extra space on the graph for min/max: 0.10 = 10%
+const double DELTA_MIN_MAX = 0.20;	//Extra space on the graph for min/max: 0.10 = 10%
 #endif
 
 typedef enum DivideErrorType_t {
@@ -62,7 +62,9 @@ public:
 		}
 
 #if PERFORM_DELTA_MIN_MAX
+		std::cout << "min was " << min << std::endl;
 		min -= (min * DELTA_MIN_MAX);
+		std::cout << "min reduced " << (DELTA_MIN_MAX * 100) << "%% to " << min << std::endl;
 #endif
 
 		return min;
