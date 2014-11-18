@@ -39,7 +39,7 @@ RAW_SRC = 	Spectrum.cxx SPXSteeringFile.cxx SPXRatioStyle.cxx SPXDisplayStyle.cx
 
 SRC = $(RAW_SRC:%.cxx=$(SRC_DIR)/%.cxx)
 OBJ = $(RAW_SRC:%.cxx=$(OBJ_DIR)/%.o)
-HDR = $(SRC_DIR)/*.h
+DEP = $(OBJ:%.o=%.d)
 INC = -I./inih/include -I$(SRC_DIR)
 LIB_PATH = -L./inih/lib
 LIB = -linih $(ROOTLIBS) $(APPLCLIBS) $(APPLFLIBS) $(LHAPDFLIBS)
@@ -49,9 +49,9 @@ BIN = $(BIN_DIR)/Spectrum
 
 .PHONY: all dir clean
 
--include $(SRC:.cxx=.d)
+all: dir $(BIN) $(DEP)
 
-all: dir $(BIN)
+-include $(DEP)
 
 dir:
 	@echo "=================================="
@@ -62,7 +62,7 @@ dir:
 	@mkdir -p $(BIN_DIR)
 	@mkdir -p $(TST_DIR)
 
-$(BIN): $(OBJ)
+$(BIN): $(OBJ) $(DEP)
 	@echo
 	@echo "=================================="
 	@echo " Building $(BIN) Executable 		 "
@@ -80,4 +80,4 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cxx
 	@echo " ---> Done"
 
 clean:
-	rm -f $(BIN) $(OBJ) $(OBJ_DIR)/*.d
+	rm -f $(BIN) $(OBJ) $(DEP)
