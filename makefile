@@ -32,7 +32,7 @@ OBJ_DIR = ./obj
 BIN_DIR = .
 TST_DIR = $(SRC_DIR)/test
 
-RAW_SRC = Spectrum.cxx SPXSteeringFile.cxx SPXRatioStyle.cxx SPXDisplayStyle.cxx SPXOverlayStyle.cxx SPXPDFBandType.cxx \
+RAW_SRC = 	Spectrum.cxx SPXSteeringFile.cxx SPXRatioStyle.cxx SPXDisplayStyle.cxx SPXOverlayStyle.cxx SPXPDFBandType.cxx \
 			SPXPDFErrorType.cxx SPXPDFErrorSize.cxx SPXPlotConfiguration.cxx SPXPDFSteeringFile.cxx SPXGridSteeringFile.cxx \
 			SPXDataSteeringFile.cxx SPXDataFormat.cxx SPXData.cxx SPXPlot.cxx SPXCrossSection.cxx SPXGrid.cxx SPXPDF.cxx \
 			SPXRatio.cxx SPXPlotType.cxx SPXAtlasStyle.cxx
@@ -54,10 +54,10 @@ BIN = $(BIN_DIR)/Spectrum
 all: dir $(BIN)
 
 dir:
-	mkdir -p $(SRC_DIR)
-	mkdir -p $(OBJ_DIR)
-	mkdir -p $(BIN_DIR)
-	mkdir -p $(TST_DIR)
+	@mkdir -p $(SRC_DIR)
+	@mkdir -p $(OBJ_DIR)
+	@mkdir -p $(BIN_DIR)
+	@mkdir -p $(TST_DIR)
 
 $(OBJ_DIR)/%.o: %.cxx
 	$(CXX) $(CXXFLAGS) $< -o $@
