@@ -22,6 +22,10 @@ plots
 *.lo
 *.o
 *.obj
+*.d
+
+# Temp files
+.__*
 
 # Precompiled Headers
 *.gch
