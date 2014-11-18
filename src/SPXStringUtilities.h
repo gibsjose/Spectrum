@@ -60,6 +60,14 @@ public:
 		return valor;
 	}
 
+	static bool BeginsWith(std::string &s, std::string &b) {
+		if(s.find(b) == s.begin()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	//Trim LEADING whitespace
 	static std::string LeftTrim(std::string s) {
 		s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));

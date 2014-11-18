@@ -115,6 +115,9 @@ void SPXRatio::Parse(std::string &s) {
         //Get the data steering file from the numerator
         numeratorDataFile = SPXStringUtilities::RemoveCharacters(numBlob, "()");
 
+        //Check for alias
+        numeratorDataFile = CheckForAlias(numeratorDataFile, "data");
+
         //Get the grid/pdf steering files from the denominator
         denBlob = SPXStringUtilities::RemoveCharacters(denBlob, "()");
         denBlob = SPXStringUtilities::RemoveCharacters(denBlob, "[]");
@@ -250,6 +253,62 @@ void SPXRatio::Parse(std::string &s) {
 
         numeratorDataFile = dataDirectory + "/" + numeratorDataFile;
         denominatorDataFile = dataDirectory + "/" + denominatorDataFile;
+    }
+}
+
+//Checks the 'original' string to see whether it contains an alias, and attempts to
+// resolve that alias based on the alias type
+std::string SPXRatio::CheckForAlias(std::string &original, std::string &alias_type) {
+    std::string mn = "CheckForAlias: ";
+
+    std::string tmp;
+    std::string s_index;
+    int index = -1;
+    std::string alias;
+
+    //Make sure the alias type is only: data, reference, or convolute
+    if(alias_type.compare("data") && alias_type.compare("grid") && alias_type.compare("pdf")) {
+        throw SPXParseException(cn + mn + "Alias Type: " + alias_type + " is not valid: Must be \"data\", \"grid\", or \"pdf\"");
+    }
+
+    tmp = alias_type + "_";
+
+    //Try to follow the alias
+    if(SPXStringUtilities::BeginsWith(original, tmp)) {
+        try {
+            s_index = SPXStringUtilities::RemoveFirstSubstring(original, tmp);
+            if(!s_index.empty()) {
+                index = SPXStringUtilities::StringToNumber<int>(s_index);
+            } else {
+                throw SPXParseException(cn + mn + "Empty alias: " + tmp + ": Alias MUST contain an index");
+            }
+        } catch(const SPXException &e) {
+            if(debug) std::cout << cn << mn << "Ratio string: " << original << " could not be converted to an alias index: Will assume it's an actual file and not an alias" << std::endl;
+            return original;
+        }
+
+        //Alias
+        if(debug) std::cout << cn << mn << "Ratio string: " << original << " is assumed to be an alias to " << alias_type << "_steering_files[" << index << "]" << std::endl;
+
+        try {
+            if(!alias_type.compare("data")) {
+                alias = plotConfiguration.GetPlotConfigurationInstance(i).dataSteeringFile.GetFilename();
+            } else if(!alias_type.compare("grid")) {
+                alias = plotConfiguration.GetPlotConfigurationInstance(i).gridSteeringFile.GetFilename();
+            } else if(!alias_type.compare("pdf")) {
+                alias = plotConfiguration.GetPlotConfigurationInstance(i).pdfSteeringFile.GetFilename();
+            }
+
+            if(debug) std::cout << cn << mn << "Successfully aliased \"" << original << "\" to " << alias << std::endl;
+            return alias;
+            
+        } catch(const SPXException &e) {
+            std::cerr << e.what() << std::endl;
+            throw SPXParseException(cn + mn + "Index " + s_index + " is out of bounds/invalid");
+        }
+    } else {
+        if(debug) std::cout << cn << mn << "\"" << original << "\" is not an alias" << std::endl;
+        return original;
     }
 }
 
