@@ -49,7 +49,7 @@ BIN = $(BIN_DIR)/Spectrum
 
 .PHONY: all dir clean
 
-all: dir $(BIN) $(DEP)
+all: dir $(BIN)
 
 -include $(DEP)
 
@@ -62,7 +62,7 @@ dir:
 	@mkdir -p $(BIN_DIR)
 	@mkdir -p $(TST_DIR)
 
-$(BIN): $(OBJ) $(DEP)
+$(BIN): $(OBJ)
 	@echo
 	@echo "=================================="
 	@echo " Building $(BIN) Executable 		 "
