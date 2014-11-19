@@ -314,6 +314,14 @@ public:
 				}
 			}
 		}
+
+		std::cout << "Printing Master" << std::endl;
+		master->Print();
+		std::cout << std::endl;
+
+		std::cout << "Printing Master" << std::endl;
+		slave->Print();
+		std::cout << std::endl;
 	}
 
 	//Divide two graphs
