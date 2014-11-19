@@ -179,6 +179,9 @@ public:
 			throw SPXGraphException("SPXGraphUtilities::MatchBinning: Master and/or slave graph is invalid");
 		}
 
+		//Alias for dividedByBinWidth
+		bool db = dividedByBinWidth;
+
 		//Get the master/slave binning
 		unsigned int m_bins = master->GetN();
 		unsigned int s_bins = slave->GetN();
@@ -192,7 +195,7 @@ public:
 			double s_x, s_y, s_exl, s_exh, s_eyl, s_eyh;
 
 			slave->GetPoint(i, s_x, s_y);
-			slave->GetPointErrors(i, s_exl, s_eyl, s_exh, s_eyh);
+			slave->GetPointError(i, s_exl, s_eyl, s_exh, s_eyh);
 
 			if((s_x < m_xmin) || (s_x > m_xmax)) {
 				slave->RemovePoint(i);
@@ -205,7 +208,7 @@ public:
 			double m_bw;
 
 			master->GetPoint(i, m_x, m_y);
-			master->GetPointErrors(i, m_exl, m_eyl, m_exh, m_eyh);
+			master->GetPointError(i, m_exl, m_eyl, m_exh, m_eyh);
 			m_bw = m_exh - m_exl;
 
 			unsigned int s_count = 0;
@@ -221,7 +224,7 @@ public:
 				double s_bw;
 
 				slave->GetPoint(j, s_x, s_y);
-				slave->GetPointErrors(j, s_exl, s_eyl, s_exh, s_eyh);
+				slave->GetPointError(j, s_exl, s_eyl, s_exh, s_eyh);
 				s_bw = s_exh - s_exl;
 
 				//Exception if slave bin width is greater than master bin width
@@ -270,11 +273,11 @@ public:
 					//At the end of each master bin recalculate the new slave bin based off the sum of the sub-bins
 					if(s_exh == m_exh) {
 						//New point values
-						double n_ex, n_ey, n_exl, n_exh, n_eyl, n_eyh;
+						double n_x, n_y, n_exl, n_exh, n_eyl, n_eyh;
 
 						n_exl = m_exl;
 						n_exh = m_exh;
-						n_ex  = (n_exh - n_exl) / 2;
+						n_x  = (n_exh - n_exl) / 2;
 
 						//Divided by bin width
 						if(db) {
@@ -289,7 +292,7 @@ public:
 
 						//Set last bin to use new values
 						slave->SetPoint(j, n_x, n_y);
-						slave->SetPointErrors(j, n_exl, n_eyl, n_exh, n_eyh);
+						slave->SetPointError(j, n_exl, n_eyl, n_exh, n_eyh);
 
 						//Remove all sub-bins except last bin
 						for(int k = (j - s_count); k < j; k++) {
