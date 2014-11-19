@@ -987,6 +987,12 @@ void SPXPlot::NormalizeCrossSections(void) {
 			SPXGraphUtilities::Normalize(crossSections[i].GetPDFBandResults(), yBinWidthScale, normalizeToTotalSigma, divideByBinWidth);
 
 			if(debug) std::cout << cn << mn << "Sucessfully normalized Cross Section " << i << std::endl;
+
+			//Print cross section
+			if(debug) {
+				crossSections[i].Print();
+			}
+
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
 			throw SPXGraphException("SPXPlot::NormalizeCrossSections: Unable to obtain X/Y Scale based on Data/Grid Units");
