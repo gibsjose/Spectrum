@@ -198,7 +198,7 @@ public:
 			s_exl = slave->GetErrorXlow(i);
 			s_exh = slave->GetErrorXhigh(i);
 			s_eyl = slave->GetErrorYlow(i);
-			s_eyh = slave->GetErrorYhight(i);
+			s_eyh = slave->GetErrorYhigh(i);
 
 			if((s_x < m_xmin) || (s_x > m_xmax)) {
 				slave->RemovePoint(i);
@@ -214,7 +214,7 @@ public:
 			m_exl = master->GetErrorXlow(i);
 			m_exh = master->GetErrorXhigh(i);
 			m_eyl = master->GetErrorYlow(i);
-			m_eyh = master->GetErrorYhight(i);
+			m_eyh = master->GetErrorYhigh(i);
 			m_bw = m_exh - m_exl;
 
 			unsigned int s_count = 0;
@@ -233,7 +233,7 @@ public:
 				s_exl = slave->GetErrorXlow(j);
 				s_exh = slave->GetErrorXhigh(j);
 				s_eyl = slave->GetErrorYlow(j);
-				s_eyh = slave->GetErrorYhight(j);
+				s_eyh = slave->GetErrorYhigh(j);
 				s_bw = s_exh - s_exl;
 
 				//Exception if slave bin width is greater than master bin width
