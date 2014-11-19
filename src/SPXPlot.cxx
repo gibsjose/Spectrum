@@ -990,7 +990,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 
 			//Print cross section
 			if(debug) {
-				crossSections[i].Print();
+				crossSections[i].GetPDFBandResults()->Print();
 			}
 
 		} catch(const SPXException &e) {
