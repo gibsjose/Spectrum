@@ -817,7 +817,7 @@ void SPXPlot::InitializeRatios(void) {
 			ratioInstance.Divide();
 
 			ratios.push_back(ratioInstance);
-			
+
 		} catch(const SPXException &e) {
 			throw;
 		}
