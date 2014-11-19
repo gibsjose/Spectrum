@@ -195,7 +195,10 @@ public:
 			double s_x, s_y, s_exl, s_exh, s_eyl, s_eyh;
 
 			slave->GetPoint(i, s_x, s_y);
-			slave->GetPointError(i, s_exl, s_eyl, s_exh, s_eyh);
+			s_exl = slave->GetErrorXlow(i);
+			s_exh = slave->GetErrorXhigh(i);
+			s_eyl = slave->GetErrorYlow(i);
+			s_eyh = slave->GetErrorYhight(i);
 
 			if((s_x < m_xmin) || (s_x > m_xmax)) {
 				slave->RemovePoint(i);
@@ -208,7 +211,10 @@ public:
 			double m_bw;
 
 			master->GetPoint(i, m_x, m_y);
-			master->GetPointError(i, m_exl, m_eyl, m_exh, m_eyh);
+			m_exl = master->GetErrorXlow(i);
+			m_exh = master->GetErrorXhigh(i);
+			m_eyl = master->GetErrorYlow(i);
+			m_eyh = master->GetErrorYhight(i);
 			m_bw = m_exh - m_exl;
 
 			unsigned int s_count = 0;
@@ -224,7 +230,10 @@ public:
 				double s_bw;
 
 				slave->GetPoint(j, s_x, s_y);
-				slave->GetPointError(j, s_exl, s_eyl, s_exh, s_eyh);
+				s_exl = slave->GetErrorXlow(j);
+				s_exh = slave->GetErrorXhigh(j);
+				s_eyl = slave->GetErrorYlow(j);
+				s_eyh = slave->GetErrorYhight(j);
 				s_bw = s_exh - s_exl;
 
 				//Exception if slave bin width is greater than master bin width
