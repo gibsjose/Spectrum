@@ -172,6 +172,139 @@ public:
 	}
 	*/
 
+	//Match binning of slave graph to the binning of the master graph
+	static void MatchBinning(TGraphAsymmErrors *master, TGraphAsymmErrors *slave, bool dividedByBinWidth) {
+		//Make sure graphs are valid
+		if(!master || !slave) {
+			throw SPXGraphException("SPXGraphUtilities::MatchBinning: Master and/or slave graph is invalid");
+		}
+
+		//Get the master/slave binning
+		unsigned int m_bins = master->GetN();
+		unsigned int s_bins = slave->GetN();
+
+		//Get the master xmin/max
+		double m_xmin, m_xmax, m_ymin, m_ymax;
+		master->ComputeRange(m_xmin, m_ymin, m_xmax, m_ymax);
+
+		//Remove slave points that are not within the master xmin/max
+		for(int i = 0; i < s_bins; i++) {
+			double s_x, s_y, s_exl, s_exh, s_eyl, s_eyh;
+
+			slave->GetPoint(i, s_x, s_y);
+			slave->GetPointErrors(i, s_exl, s_eyl, s_exh, s_eyh);
+
+			if((s_x < m_xmin) || (s_x > m_xmax)) {
+				slave->RemovePoint(i);
+			}
+		}
+
+		//Match the binning
+		for(int i = 0; i < m_bins; i++) {
+			double m_x, m_y, m_exl, m_exh, m_eyl, m_eyh;
+			double m_bw;
+
+			master->GetPoint(i, m_x, m_y);
+			master->GetPointErrors(i, m_exl, m_eyl, m_exh, m_eyh);
+			m_bw = m_exh - m_exl;
+
+			unsigned int s_count = 0;
+			double s_y_sum = 0;
+			double s_eyl_sum = 0;
+			double s_eyh_sum = 0;
+
+			//Recompute number of slave bins
+			s_bins = slave->GetN();
+
+			for(int j = 0; j < s_bins; j++) {
+				double s_x, s_y, s_exl, s_exh, s_eyl, s_eyh;
+				double s_bw;
+
+				slave->GetPoint(j, s_x, s_y);
+				slave->GetPointErrors(j, s_exl, s_eyl, s_exh, s_eyh);
+				s_bw = s_exh - s_exl;
+
+				//Exception if slave bin width is greater than master bin width
+				if(s_bw > m_bw) {
+					std::ostringstream oss;
+					oss << "SPXGraphUtilities::MatchBinning: (recomputed) Slave Bin " << j << ": (exl, exh) = (" << s_exl << \
+						", " << s_exh << "): Slave bin width greater than master bin width";
+					throw SPXGraphException(oss.str());
+				}
+
+				//Exception if there is a phase shift (slave xlow is below master xlow AND slave xhigh is
+				//	above, or vice versa for the master xhigh)
+				if(((s_exl < m_exl) && (s_exh > m_exl)) || ((s_exh > m_exh) && (s_exl < m_exh))) {
+					throw SPXGraphException("SPXGraphUtilities::MatchBinning: Slave graph is phase-shifted with respect to master: Unable to match binning");
+				}
+
+				//
+				//Slave is NOT phase shifted, and slave bin is equal to or less than master
+				//
+
+				//Check if slave point lies within the current master bin
+				if((s_x >= m_exl) && (s_x <= m_exh)) {
+
+					//Check for exact match: Do nothing and move on to next master bin
+					if(s_bw == m_bw) {
+						break;
+					}
+
+					//Bin width is smaller than the master (multiple slave bins per single master bin)
+					else {
+						//Count of slave sub bins inside master bin
+						s_count++;
+
+						//If divided by bin width, scale by the slave bin width before summing
+						if(db) {
+							s_y_sum += s_y * s_bw;
+							s_eyl_sum += s_eyl * s_bw;
+							s_eyh_sum += s_eyh * s_bw;
+						} else {
+							s_y_sum += s_y;
+							s_eyl_sum += s_eyl;
+							s_eyh_sum += s_eyh;
+						}
+					}
+
+					//At the end of each master bin recalculate the new slave bin based off the sum of the sub-bins
+					if(s_exh == m_exh) {
+						//New point values
+						double n_ex, n_ey, n_exl, n_exh, n_eyl, n_eyh;
+
+						n_exl = m_exl;
+						n_exh = m_exh;
+						n_ex  = (n_exh - n_exl) / 2;
+
+						//Divided by bin width
+						if(db) {
+							n_y = s_y_sum / m_bw;
+							n_eyl = s_eyl_sum / m_bw;
+							n_eyh = s_eyh_sum / m_bw;
+						} else {
+							n_y = s_y_sum;
+							n_eyl = s_eyl_sum;
+							n_eyh = s_eyh_sum;
+						}
+
+						//Set last bin to use new values
+						slave->SetPoint(j, n_x, n_y);
+						slave->SetPointErrors(j, n_exl, n_eyl, n_exh, n_eyh);
+
+						//Remove all sub-bins except last bin
+						for(int k = (j - s_count); k < j; k++) {
+							slave->RemovePoint(k);
+						}
+
+						//Move on to next master bin
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	//Divide two graphs
 	static TGraphAsymmErrors * Divide(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, DivideErrorType_t dt) {
 
 		//Make sure graphs are valid
