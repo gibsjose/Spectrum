@@ -205,8 +205,21 @@ public:
 			}
 		}
 
+		std::cout << "After stripping off excess slave points" << std::endl;
+		slave->Print();
+		std::cout << std::endl;
+
 		//Match the binning
 		for(int i = 0; i < m_bins; i++) {
+
+			std::cout << "Master " << i << std::endl;
+			master->Print();
+			std::cout << std::endl;
+
+			std::cout << "Slave " << i << std::endl;
+			slave->Print();
+			std::cout << std::endl;
+
 			double m_x, m_y, m_exl, m_exh, m_eyl, m_eyh;
 			double m_bw;
 
@@ -263,6 +276,7 @@ public:
 
 					//Check for exact match: Do nothing and move on to next master bin
 					if(s_bw == m_bw) {
+						std::cout << "EXACT MATCH m_index " << i << " s_index " << j << std::endl;
 						break;
 					}
 
@@ -285,6 +299,8 @@ public:
 
 					//At the end of each master bin recalculate the new slave bin based off the sum of the sub-bins
 					if(s_exh == m_exh) {
+						std::cout << "END OF BOUNDARY m_index " << i << " s_index " << j << std::endl; 
+
 						//New point values
 						double n_x, n_y, n_exl, n_exh, n_eyl, n_eyh;
 
