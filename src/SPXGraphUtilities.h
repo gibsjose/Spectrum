@@ -309,9 +309,9 @@ public:
 						//New point values
 						double n_x, n_y, n_exl, n_exh, n_eyl, n_eyh;
 
-						n_exl = m_exl;
-						n_exh = m_exh;
-						n_x  = (n_exh - n_exl) / 2;
+						n_exl = m_x - m_exl;
+						n_exh = m_exh - m_x;
+						n_x = (m_exh + m_exl) / 2;
 
 						//Divided by bin width
 						if(db) {
@@ -326,7 +326,7 @@ public:
 
 						//Set last bin to use new values
 						slave->SetPoint(j, n_x, n_y);
-						slave->SetPointError(j, n_exl, n_eyl, n_exh, n_eyh);
+						slave->SetPointError(j, n_exl, n_exh, n_eyl, n_eyh);
 
 						//Remove all sub-bins except last bin
 						for(int k = (j - (s_count -1)); k < j; k++) {
