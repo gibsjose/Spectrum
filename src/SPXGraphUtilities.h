@@ -190,8 +190,10 @@ public:
 		double m_xmin, m_xmax, m_ymin, m_ymax;
 		master->ComputeRange(m_xmin, m_ymin, m_xmax, m_ymax);
 
+		std::cout << "m_xmin = " << m_xmin << " m_xmax = " << m_xmax << std::endl;
+
 		//Remove slave points that are not within the master xmin/max
-		for(int i = 0; i < s_bins; i++) {
+		for(int i = 0; i < slave->GetN(); ) {
 			double s_x, s_y, s_exl, s_exh, s_eyl, s_eyh;
 
 			slave->GetPoint(i, s_x, s_y);
@@ -202,7 +204,10 @@ public:
 
 			if((s_x < m_xmin) || (s_x > m_xmax)) {
 				slave->RemovePoint(i);
+				i = -1;
 			}
+
+			i++;
 		}
 
 		std::cout << "After stripping off excess slave points" << std::endl;
@@ -299,7 +304,7 @@ public:
 
 					//At the end of each master bin recalculate the new slave bin based off the sum of the sub-bins
 					if(s_exh == m_exh) {
-						std::cout << "END OF BOUNDARY m_index " << i << " s_index " << j << std::endl; 
+						std::cout << "END OF BOUNDARY m_index " << i << " s_index " << j << std::endl;
 
 						//New point values
 						double n_x, n_y, n_exl, n_exh, n_eyl, n_eyh;
