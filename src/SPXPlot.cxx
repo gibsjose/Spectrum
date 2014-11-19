@@ -817,7 +817,7 @@ void SPXPlot::InitializeRatios(void) {
 			ratioInstance.Divide();
 
 			ratios.push_back(ratioInstance);
-
+			
 		} catch(const SPXException &e) {
 			throw;
 		}
@@ -990,7 +990,9 @@ void SPXPlot::NormalizeCrossSections(void) {
 
 			//Print cross section
 			if(debug) {
+				std::cout << cn << mn << "Printing Cross Section " << i << std::endl;
 				crossSections[i].GetPDFBandResults()->Print();
+				std::cout << std::endl;
 			}
 
 		} catch(const SPXException &e) {

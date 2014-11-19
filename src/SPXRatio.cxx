@@ -445,16 +445,6 @@ void SPXRatio::GetGraphs(void) {
             oss << "TGraph pointer at dataFileGraphMap[" << key << "] is NULL";
             throw SPXGraphException(cn + mn + oss.str());
         }
-
-        if(debug) {
-            std::cout << cn << mn << "Printing graphs: " << std::endl;
-            std::cout << "\t Numerator: " << std::endl;
-            numeratorGraph->Print();
-            std::cout << std::endl;
-            std::cout << "\t Denominator: " << std::endl;
-            denominatorGraph->Print();
-            std::cout << std::endl;
-        }
     }
 
     if(ratioStyle.IsDataOverConvolute()) {
@@ -669,7 +659,16 @@ void SPXRatio::GetGraphs(void) {
         }
     }
 
-    return;
+    //Print graph numerator/denominator
+    // if(debug) {
+    //     std::cout << cn << mn << "Printing ratio numerator/denominator graphs: " << std::endl;
+    //     std::cout << "Numerator: " << std::endl;
+    //     numeratorGraph->Print();
+    //     std::cout << std::endl;
+    //     std::cout << "Denominator: " << std::endl;
+    //     denominatorGraph->Print();
+    //     std::cout << std::endl;
+    // }
 }
 
 bool SPXRatio::MatchesConvoluteString(std::string &s) {
