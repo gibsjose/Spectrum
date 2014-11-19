@@ -215,6 +215,8 @@ public:
 			m_exh = master->GetErrorXhigh(i);
 			m_eyl = master->GetErrorYlow(i);
 			m_eyh = master->GetErrorYhigh(i);
+			m_exl = m_x - m_exl;
+			m_exh = m_x + m_exh;
 			m_bw = m_exh - m_exl;
 
 			unsigned int s_count = 0;
@@ -234,6 +236,8 @@ public:
 				s_exh = slave->GetErrorXhigh(j);
 				s_eyl = slave->GetErrorYlow(j);
 				s_eyh = slave->GetErrorYhigh(j);
+				s_exl = s_x - s_exl;
+				s_exh = s_x + s_exh;
 				s_bw = s_exh - s_exl;
 
 				//Exception if slave bin width is greater than master bin width
@@ -304,7 +308,7 @@ public:
 						slave->SetPointError(j, n_exl, n_eyl, n_exh, n_eyh);
 
 						//Remove all sub-bins except last bin
-						for(int k = (j - s_count); k < j; k++) {
+						for(int k = (j - (s_count -1)); k < j; k++) {
 							slave->RemovePoint(k);
 						}
 
