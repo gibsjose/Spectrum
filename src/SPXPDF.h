@@ -40,10 +40,12 @@ class SPXPDF {
     public:
         //VARIABLES
 
-        TGraphAsymmErrors *h_PDFBand_results; //@TODO Used by CrossSection
+        TGraphAsymmErrors *h_PDFBand_results;
         TGraphAsymmErrors *h_PDFBand_results_ratio_to_ref;
-        TGraphAsymmErrors *h_AlphaS_results;  //@TODO Used by CrossSection
+        TGraphAsymmErrors *h_AlphaS_results;
         TGraphAsymmErrors *h_AlphaS_results_ratio_to_ref;
+        TGraphAsymmErrors *h_Scale_results;
+        TGraphAsymmErrors *h_Scale_results_ratio_to_ref;
 
         string calc_desc;
 

@@ -489,17 +489,30 @@ public:
 	}
 
 	static void SetAllYErrors(TGraphAsymmErrors * g, double err) {
-
-		std::cout << "Graph has " << g->GetN() << " bins" << std::endl;
-
 		for(int i = 0; i < g->GetN(); i++) {
-			std::cout << "Setting point " << i << " Y errors to " << err << std::endl;
 			g->SetPointEYhigh(i, err);
 			g->SetPointEYlow(i, err);
 		}
+	}
 
-		std::cout << "Printing graph" << std::endl;
-		g->Print();
+	static void ScaleXErrors(TGraphAsymmErrors * g, double scale) {
+		for(int i = 0; i < g->GetN(); i++) {
+			double exl, exh;
+			exl = g->GetPointEXlow(i);
+			exh = g->GetPointEXhigh(i);
+			g->SetPointEXlow(i, exl * scale);
+			g->SetPointEXhigh(i, exl * scale);
+		}
+	}
+
+	static void ScaleYErrors(TGraphAsymmErrors * g, double scale) {
+		for(int i = 0; i < g->GetN(); i++) {
+			double eyl, eyh;
+			eyl = g->GetPointEYlow(i);
+			eyh = g->GetPointEYhigh(i);
+			g->SetPointEYlow(i, eyl * scale);
+			g->SetPointEYhigh(i, eyl * scale);
+		}
 	}
 
 	static TGraphAsymmErrors * HistogramToGraph(TH1 *h) {
