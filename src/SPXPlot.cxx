@@ -235,10 +235,14 @@ void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yM
 
 		//Sanity check
 		if(xMin > xMax) {
-			throw SPXGraphException("xMin calculated to be larger than xMax");
+			std::ostringstream oss;
+			oss << cn << mn << "xMin (" << xMin << ") calculated to be larger than xMax (" << xMax << ")" << std::endl;
+			throw SPXGraphException(oss.str());
 		}
 
 		if(yMin > yMax) {
+			std::ostringstream oss;
+			oss << cn << mn << "yMin (" << yMin << ") calculated to be larger than yMax (" << yMax << ")" << std::endl;
 			throw SPXGraphException("yMin calculated to be larger than yMax");
 		}
 	}
@@ -613,7 +617,7 @@ void SPXPlot::DrawOverlay(void) {
 			//Draw Alpha S Band and Scale Band if necessary
 			//@TODO Fix steering file: Allow for either plotting only the PDF band or the PDF band + uncertainties and check here
 			//@TODO Also: What to do if plot_band is off? Plot tick marks? Force plot_band if they want uncertainties?
-			if(true) {
+			if(false) {
 				TGraphAsymmErrors *pdfb = crossSections[i].GetPDFBandResults();
 				TGraphAsymmErrors *asb = crossSections[i].GetAlphaSBandResults();
 				TGraphAsymmErrors *scb = crossSections[i].GetScaleBandResults();
