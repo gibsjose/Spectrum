@@ -18,4 +18,6 @@
 #include "SPXFileUtilities.h"
 #include "SPXMathUtilities.h"
 
+extern bool Test;
+
 #endif
