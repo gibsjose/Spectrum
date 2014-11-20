@@ -22,6 +22,8 @@
 #include "SPXPDFSteeringFile.h"
 #include "SPXPlotConfiguration.h"
 
+#include "SPXUtilities.h"
+
 class SPXCrossSection {
 
 public:
