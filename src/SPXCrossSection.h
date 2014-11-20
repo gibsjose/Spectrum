@@ -54,7 +54,7 @@ public:
 	TGraphAsymmErrors *GetAlphaSResults(void) {
 		//return pdf->h_AlphaS_results;
 		static TGraphAsymmErrors as;
-		as = &pdf->h_PDFBand_results;
+		as = *(pdf->h_PDFBand_results);
 		SPXGraphUtilities::ScaleYErrors(&as, (1.0/3.0));
 		return &as;
 	}
@@ -62,7 +62,7 @@ public:
 	//Pseudo-Method for returning Scale results: (Just scales PDF errors by 1/3)
 	TGraphAsymmErrors *GetScaleResults(void) {
 		static TGraphAsymmErrors sc;
-		sc = &pdf->h_PDFBand_results;
+		sc = *(pdf->h_PDFBand_results);
 		SPXGraphUtilities::ScaleYErrors(&sc, (1.0/4.0));
 		return &sc;
 	}
