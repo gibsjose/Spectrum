@@ -5,6 +5,7 @@
 @gibsjose @csembree Dr. Tancredi Carli
 
 ## Change Log
+* Completely changed the example steering directory structure: Now all examples are in '/example'
 * Implemented the SPXGraphUtilities::MatchBinning function to match the binning of a slave graph to the binning of a master
 * Moved SPXGraphUtilities to it's own CXX file to improve compilation speed and modularity
 * Improved the argument processing
@@ -12,6 +13,7 @@
 * Added pseudo methods for obtaining the AlphaSBandResults and ScaleBandResults from SPXCrossSection
 
 ## In Progress (v1.0)
+* Update all example steering files to reflect new changes
 * Move ‘data/grid/pdf_directory' to the plot-level settings, and read as comma separated list
 * Grid Hadronization and Electroweak corrections
 * Actual Alpha S and Scale uncertainty bands from the SPXPDF/CrossSection class
