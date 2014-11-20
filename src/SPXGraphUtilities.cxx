@@ -12,6 +12,8 @@
 
 #include "SPXGraphUtilities.h"
 
+std::string cn = "SPXGraphUtilities::";
+
 double SPXGraphUtilities::GetXMin(std::vector<TGraphAsymmErrors *> graphs) {
 
     double min = 1e30;
@@ -94,57 +96,15 @@ double SPXGraphUtilities::GetYMax(std::vector<TGraphAsymmErrors *> graphs) {
     return max;
 }
 
-/*
-//@TODO Modify to add the error from g2 to g1 instead of returning a new graph
-TGraphAsymmErrors * SPXGraphUtilities::AddYErrors(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2) {
-    //Make sure graphs are valid
-    if((!g1) || (!g2)) {
-        throw SPXGraphException("SPXGraphUtilities::AddYErrors: At least one of the operand graphs is invalid");
-    }
-
-    int n1 = g1->GetN();
-    int n2 = g2->GetN();
-
-    //Make sure the two graphs are the same size
-    if(n1 != n2) {
-        std::ostringstream oss;
-        oss << "SPXGraphUtilities::AddYErrors: Graphs do not contain the same number of bins: G1 N= " << n1 << " G2 N = " << n2;
-        throw SPXGraphException(oss.str());
-    }
-
-    //@TODO Pass result as parameter and return that way! Don't call 'new' in a function
-    TGraphAsymmErrors *result = new TGraphAsymmErrors();
-
-    double x, y;
-
-    Double_t* 	EYhigh1 = g1->GetEYhigh();
-    Double_t* 	EYlow1 =  g1->GetEYlow();
-    Double_t* 	EYhigh2 = g2->GetEYhigh();
-    Double_t* 	EYlow2 =  g2->GetEYlow();
-
-    for(int i = 0; i < n1; i++) {
-        double eyh_tot = 0;
-        double eyl_tot = 0;
-
-        eyh_tot = sqrt(pow(EYhigh1[i], 2.0) + pow(EYhigh2[i], 2.0));
-        eyl_tot = sqrt(pow(EYlow1[i], 2.0) + pow(EYlow2[i], 2.0));
-
-        result->SetPointEYhigh(i, eyh_tot);
-        result->SetPointEYlow(i, eyl_tot);
-    }
-
-    return result;
-}
-*/
-
 //Match binning of slave graph to the binning of the master graph
 void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmErrors *slave, bool dividedByBinWidth) {
+    std::string mn = "MatchBinning: ";
 
     bool debug = true;
 
     //Make sure graphs are valid
     if(!master || !slave) {
-        throw SPXGraphException("SPXGraphUtilities::MatchBinning: Master and/or slave graph is invalid");
+        throw SPXGraphException(cn + mn + "Master and/or slave graph is invalid");
     }
 
     //Alias for dividedByBinWidth
@@ -178,7 +138,7 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
 
     //After stripping points
     if(debug) {
-        std::cout << "SPXGraphUtilities::MatchBinning: After stripping slave points" << std::endl;
+        std::cout << cn << mn << "Stripped slave points" << std::endl;
         slave->Print();
         std::cout << std::endl;
     }
@@ -222,7 +182,7 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
             //Exception if slave bin width is greater than master bin width
             if(s_bw > m_bw) {
                 std::ostringstream oss;
-                oss << "SPXGraphUtilities::MatchBinning: (recomputed) Slave Bin " << j << ": (exl, exh) = (" << s_exl << \
+                oss << cn << mn << "(recomputed) Slave Bin " << j << ": (exl, exh) = (" << s_exl << \
                     ", " << s_exh << "): Slave bin width greater than master bin width";
                 throw SPXGraphException(oss.str());
             }
@@ -230,7 +190,7 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
             //Exception if there is a phase shift (slave xlow is below master xlow AND slave xhigh is
             //	above, or vice versa for the master xhigh)
             if(((s_exl < m_exl) && (s_exh > m_exl)) || ((s_exh > m_exh) && (s_exl < m_exh))) {
-                throw SPXGraphException("SPXGraphUtilities::MatchBinning: Slave graph is phase-shifted with respect to master: Unable to match binning");
+                throw SPXGraphException(cn + mn + "Slave graph is phase-shifted with respect to master: Unable to match binning");
             }
 
             //
@@ -249,8 +209,6 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
                 else {
                     //Count of slave sub bins inside master bin
                     s_count++;
-                    std::cout << endl;
-                    std::cout << "s_count = " << s_count << std::endl;
 
                     //If divided by bin width, scale by the slave bin width before summing
                     if(db) {
@@ -263,22 +221,22 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
                         s_eyh_sum += s_eyh;
                     }
 
-                    std::cout << "Slave point will be removed or modified" << std::endl;
-                    std::cout << "slave index = " << j << std::endl;
-                    std::cout << "s_x = " << s_x << std::endl;
-                    std::cout << "s_y = " << s_y << std::endl;
-                    std::cout << "s_exl = " << s_exl << std::endl;
-                    std::cout << "s_exh = " << s_exh << std::endl;
-                    std::cout << "s_y_sum = " << s_y_sum << std::endl;
-                    std::cout << "s_eyl_sum = " << s_eyl_sum << std::endl;
-                    std::cout << "s_eyh_sum = " << s_eyh_sum << std::endl;
+                    if(debug) {
+                        std::cout << cn << mn << "Slave point will be removed or modified" << std::endl;
+                        std::cout << "\t slave index = " << j << std::endl;
+                        std::cout << "\t s_x = " << s_x << std::endl;
+                        std::cout << "\t s_y = " << s_y << std::endl;
+                        std::cout << "\t s_exl = " << s_exl << std::endl;
+                        std::cout << "\t s_exh = " << s_exh << std::endl;
+                        std::cout << "\t s_y_sum = " << s_y_sum << std::endl;
+                        std::cout << "\t s_eyl_sum = " << s_eyl_sum << std::endl;
+                        std::cout << "\t s_eyh_sum = " << s_eyh_sum << std::endl;
+                    }
                 }
 
                 //At the end of each master bin recalculate the new slave bin based off the sum of the sub-bins
                 if(s_exh == m_exh) {
-                    std::cout << "End of master bin " << i << " slave bin " << j << std::endl;
-                    slave->Print();
-                    std::cout << endl;
+                    if(debug) std::cout << cn << mn << "End of master bin " << i << " slave bin " << j << std::endl;
 
                     //New point values
                     double n_x, n_y, n_exl, n_exh, n_eyl, n_eyh;
@@ -300,14 +258,17 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
 
                     double t_x, t_y;
                     slave->GetPoint(j, t_x, t_y);
-                    std::cout << "MODIFYING slave point with (index, x, y) = (" << j << ", " << t_x << ", " << t_y << ")" << std::endl;
 
-                    std::cout << "n_x = " << n_x << std::endl;
-                    std::cout << "n_y = " << n_y << std::endl;
-                    std::cout << "n_exl = " << n_exl << std::endl;
-                    std::cout << "n_exh = " << n_exh << std::endl;
-                    std::cout << "n_eyl = " << n_eyl << std::endl;
-                    std::cout << "n_eyh = " << n_eyh << std::endl;
+                    if(debug) {
+                        std::cout << cn << mn << "MODIFYING slave point with (index, x, y) = (" << j << ", " << t_x << ", " << t_y << ")" << std::endl;
+                        std::cout << cn << mn << "New point values: " << std::endl;
+                        std::cout << "\t x = " << n_x << std::endl;
+                        std::cout << "\t y = " << n_y << std::endl;
+                        std::cout << "\t exl = " << n_exl << std::endl;
+                        std::cout << "\t exh = " << n_exh << std::endl;
+                        std::cout << "\t eyl = " << n_eyl << std::endl;
+                        std::cout << "\t eyh = " << n_eyh << std::endl;
+                    }
 
                     //Set last bin to use new values
                     slave->SetPoint(j, n_x, n_y);
@@ -329,29 +290,12 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
                         t_exl = t_x - t_exl;
                         t_exh = t_x + t_exh;
 
-                        std::cout << "REMOVING slave point with (index, x, y, exl, exh, eyl, eyh) = (" << index << ", " << t_x << ", " << t_y << ", " << t_exl << ", " << t_exh << ", " << t_eyl << ", " << t_eyh << ")" << std::endl;
+                        if(debug) std::cout << cn << mn << "REMOVING slave point with (index, x, y, exl, exh, eyl, eyh) = (" \
+                            << index << ", " << t_x << ", " << t_y << ", " << t_exl << ", " << t_exh << ", " << t_eyl << ", " \
+                            << t_eyh << ")" << std::endl;
+
                         slave->RemovePoint(index);
                     }
-
-                    //Remove all sub-bins except last bin
-                    // for(int k = (j - (s_count - 1) - rem_count); k < (j - rem_count); k++) {
-                    //     double t_x, t_y;
-                    //     double t_exl, t_exh, t_eyl, t_eyh;
-                    //     slave->GetPoint(k, t_x, t_y);
-                    //     t_exl = slave->GetErrorXlow(k);
-                    //     t_exh = slave->GetErrorXhigh(k);
-                    //     t_eyl = slave->GetErrorYlow(k);
-                    //     t_eyh = slave->GetErrorYhigh(k);
-                    //     t_exl = t_x - t_exl;
-                    //     t_exh = t_x + t_exh;
-                    //
-                    //     std::cout << "REMOVING slave point with (index, x, y, exl, exh, eyl, eyh) = (" << k << ", " << t_x << ", " << t_y << ", " << t_exl << ", " << t_exh << ", " << t_eyl << ", " << t_eyh << ")" << std::endl;
-                    //     slave->RemovePoint(k);
-                    //
-                    //     rem_count++;
-                    //
-                    //     std::cout << "rem_count incremented to " << rem_count << std::endl;
-                    // }
 
                     //Move on to next master bin
                     break;
@@ -362,11 +306,11 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
 
     //Print Graphs
     if(debug) {
-        std::cout << "SPXGraphUtilities::MatchBinning: Printing Master Graph" << std::endl;
+        std::cout << cn << mn << "Printing Master Graph" << std::endl;
         master->Print();
         std::cout << std::endl;
 
-        std::cout << "SPXGraphUtilities::MatchBinning: Printing Slave Graph" << std::endl;
+        std::cout << cn << mn << "Printing Slave Graph" << std::endl;
         slave->Print();
         std::cout << std::endl;
     }
@@ -374,10 +318,11 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
 
 //Divide two graphs
 TGraphAsymmErrors * SPXGraphUtilities::Divide(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, DivideErrorType_t dt) {
+    std::string mn = "Divide: ";
 
     //Make sure graphs are valid
     if((!g1) || (!g2)) {
-        throw SPXGraphException("SPXGraphUtilities::Divide: At least one of the operand graphs is invalid");
+        throw SPXGraphException(cn + mn + "At least one of the operand graphs is invalid");
     }
 
     int n1 = g1->GetN();
@@ -386,7 +331,7 @@ TGraphAsymmErrors * SPXGraphUtilities::Divide(TGraphAsymmErrors *g1, TGraphAsymm
     //Make sure the two graphs are the same size
     if(n1 != n2) {
         std::ostringstream oss;
-        oss << "SPXGraphUtilities::Divide: Graphs do not contain the same number of bins: G1 N= " << n1 << " G2 N = " << n2;
+        oss << cn << mn << "Graphs do not contain the same number of bins: G1 N= " << n1 << " G2 N = " << n2;
         throw SPXGraphException(oss.str());
     }
 
@@ -483,7 +428,7 @@ TGraphAsymmErrors * SPXGraphUtilities::Divide(TGraphAsymmErrors *g1, TGraphAsymm
         }
 
         if(matchcount > 1) {
-            throw SPXGraphException("SPXGraphUtilities::Divide: Too many X-Points matched");
+            throw SPXGraphException(cn + mn + "Too many X-Points matched");
         }
     }
 
@@ -539,10 +484,11 @@ void SPXGraphUtilities::ScaleYErrors(TGraphAsymmErrors * g, double scale) {
 }
 
 TGraphAsymmErrors * SPXGraphUtilities::HistogramToGraph(TH1 *h) {
+    std::string mn = "HistogramToGraph: ";
 
     //Make sure histogram is valid
     if(!h) {
-        throw SPXGraphException("SPXGraphUtilities::HistogramToGraph: Histogram provided was invalid");
+        throw SPXGraphException(cn + mn + "Histogram provided was invalid");
     }
 
     //@TODO Don't call 'new' in a function call...
@@ -569,6 +515,7 @@ double SPXGraphUtilities::GetYBinWidthUnitsScale(std::string master, std::string
 
 //Returns how to scale the SLAVE units to match the MASTER units
 double SPXGraphUtilities::GetXUnitsScale(std::string master, std::string slave) {
+    std::string mn = "GetXUnitsScale: ";
 
     bool debug = false;
 
@@ -591,30 +538,31 @@ double SPXGraphUtilities::GetXUnitsScale(std::string master, std::string slave) 
     //Get the index of the master string
     try {
         masterIndex = SPXStringUtilities::GetIndexOfStringInVector(units, SPXStringUtilities::ToUpper(master));
-        if(debug) std::cout << "Found masterIndex = " << masterIndex << std::endl;
+        if(debug) std::cout << cn << mn << "Found masterIndex = " << masterIndex << std::endl;
     } catch(const SPXException &e) {
         std::cerr << e.what() << std::endl;
 
-        throw SPXGraphException("SPXGraphUtilities::GetXUnitsScale: Master units (\"" + master + "\") are invalid");
+        throw SPXGraphException(cn + mn + "Master units (\"" + master + "\") are invalid");
     }
 
     //Get the index of the slave string
     try {
         slaveIndex = SPXStringUtilities::GetIndexOfStringInVector(units, SPXStringUtilities::ToUpper(slave));
-        if(debug) std::cout << "Found slaveIndex = " << slaveIndex << std::endl;
+        if(debug) std::cout << cn << mn << "Found slaveIndex = " << slaveIndex << std::endl;
     } catch(const SPXException &e) {
         std::cerr << e.what() << std::endl;
 
-        throw SPXGraphException("SPXGraphUtilities::GetXUnitsScale: Slave units (\"" + slave + "\") are invalid");
+        throw SPXGraphException(cn + mn + "Slave units (\"" + slave + "\") are invalid");
     }
 
-    if(debug) std::cout << "Calculated scale = " << pow(10.0, ((double)(masterIndex - slaveIndex) * 3.0)) << std::endl;
+    if(debug) std::cout << cn << mn << "Calculated scale = " << pow(10.0, ((double)(masterIndex - slaveIndex) * 3.0)) << std::endl;
 
     return pow(10.0, ((double)(masterIndex - slaveIndex) * 3.0));
 }
 
 //Returns how to scale the SLAVE units to match the MASTER units
 double SPXGraphUtilities::GetYUnitsScale(std::string master, std::string slave) {
+    std::string mn = "GetYUnitsScale: ";
 
     //Possible Y units are 'pb', 'fb'		pb = 1000x fb
     //std::vector<std::string> units = {"FB", "PB"};
@@ -630,7 +578,7 @@ double SPXGraphUtilities::GetYUnitsScale(std::string master, std::string slave) 
     } catch(const SPXException &e) {
         std::cerr << e.what() << std::endl;
 
-        throw SPXGraphException("SPXGraphUtilities::GetXUnitsScale: Master units (\"" + master + "\") are invalid");
+        throw SPXGraphException(cn + mn + "Master units (\"" + master + "\") are invalid");
     }
 
     //Get the index of the slave string
@@ -639,7 +587,7 @@ double SPXGraphUtilities::GetYUnitsScale(std::string master, std::string slave) 
     } catch(const SPXException &e) {
         std::cerr << e.what() << std::endl;
 
-        throw SPXGraphException("SPXGraphUtilities::GetXUnitsScale: Slave units (\"" + slave + "\") are invalid");
+        throw SPXGraphException(cn + mn + "Slave units (\"" + slave + "\") are invalid");
     }
 
     return pow(10.0, ((double)(masterIndex - slaveIndex) * 3.0));
