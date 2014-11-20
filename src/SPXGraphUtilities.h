@@ -498,8 +498,8 @@ public:
 	static void ScaleXErrors(TGraphAsymmErrors * g, double scale) {
 		for(int i = 0; i < g->GetN(); i++) {
 			double exl, exh;
-			exl = g->GetPointEXlow(i);
-			exh = g->GetPointEXhigh(i);
+			exl = g->GetErrorXlow(i);
+			exh = g->GetErrorXhigh(i);
 			g->SetPointEXlow(i, exl * scale);
 			g->SetPointEXhigh(i, exl * scale);
 		}
@@ -508,8 +508,8 @@ public:
 	static void ScaleYErrors(TGraphAsymmErrors * g, double scale) {
 		for(int i = 0; i < g->GetN(); i++) {
 			double eyl, eyh;
-			eyl = g->GetPointEYlow(i);
-			eyh = g->GetPointEYhigh(i);
+			eyl = g->GetErrorYlow(i);
+			eyh = g->GetErrorYhigh(i);
 			g->SetPointEYlow(i, eyl * scale);
 			g->SetPointEYhigh(i, eyl * scale);
 		}
