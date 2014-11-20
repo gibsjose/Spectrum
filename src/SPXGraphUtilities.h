@@ -322,6 +322,17 @@ public:
 				}
 			}
 		}
+
+		//Print Graphs
+		if(debug) {
+			std::cout << "SPXGraphUtilities::MatchBinning: Printing Master Graph" << std::endl;
+			master->Print();
+			std::cout << std::endl;
+
+			std::cout << "SPXGraphUtilities::MatchBinning: Printing Slave Graph" << std::endl;
+			slave->Print();
+			std::cout << std::endl;
+		}
 	}
 
 	//Divide two graphs
