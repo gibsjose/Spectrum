@@ -317,7 +317,7 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
 
                     //Remove the (j - s_count - 1)th index, (s_count - 1) times
                     for(int k = 0; k < (s_count - 1); k++) {
-                        unsigned int index = (j - s_count - 1);
+                        unsigned int index = (j - (s_count - 1));
 
                         double t_x, t_y;
                         double t_exl, t_exh, t_eyl, t_eyh;
