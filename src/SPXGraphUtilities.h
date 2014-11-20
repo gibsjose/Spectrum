@@ -21,8 +21,8 @@
 #include "SPXROOT.h"
 #include "SPXException.h"
 
-//Adds extra space for the frame bounds
-#define PERFORM_DELTA_MIN_MAX true
+//Adds extra space for the frame bounds (set to OFF to disable)
+#define PERFORM_DELTA_MIN_MAX	1
 
 #if PERFORM_DELTA_MIN_MAX
 const double DELTA_MIN_MAX = 0.10;	//Extra space on the graph for min/max: 0.10 = 10%
@@ -61,7 +61,7 @@ public:
 			}
 		}
 
-#if PERFORM_DELTA_MIN_MAX
+#if PERFORM_DELTA_MIN_MAX == 1
 		min -= (min * DELTA_MIN_MAX);
 #endif
 
@@ -82,7 +82,7 @@ public:
 			}
 		}
 
-#if PERFORM_DELTA_MIN_MAX
+#if PERFORM_DELTA_MIN_MAX == 1
 		max += (max * DELTA_MIN_MAX);
 #endif
 
@@ -103,7 +103,7 @@ public:
 			}
 		}
 
-#if PERFORM_DELTA_MIN_MAX
+#if PERFORM_DELTA_MIN_MAX == 1
 		min -= (min * DELTA_MIN_MAX);
 #endif
 		return min;
@@ -123,7 +123,7 @@ public:
 			}
 		}
 
-#if PERFORM_DELTA_MIN_MAX
+#if PERFORM_DELTA_MIN_MAX == 1
 		max += (max * DELTA_MIN_MAX);
 #endif
 		return max;
@@ -172,6 +172,184 @@ public:
 	}
 	*/
 
+	//Match binning of slave graph to the binning of the master graph
+	static void MatchBinning(TGraphAsymmErrors *master, TGraphAsymmErrors *slave, bool dividedByBinWidth) {
+		//Make sure graphs are valid
+		if(!master || !slave) {
+			throw SPXGraphException("SPXGraphUtilities::MatchBinning: Master and/or slave graph is invalid");
+		}
+
+		//Alias for dividedByBinWidth
+		bool db = dividedByBinWidth;
+
+		//Get the master/slave binning
+		unsigned int m_bins = master->GetN();
+		unsigned int s_bins = slave->GetN();
+
+		//Get the master xmin/max
+		double m_xmin, m_xmax, m_ymin, m_ymax;
+		master->ComputeRange(m_xmin, m_ymin, m_xmax, m_ymax);
+
+		std::cout << "m_xmin = " << m_xmin << " m_xmax = " << m_xmax << std::endl;
+
+		//Remove slave points that are not within the master xmin/max
+		for(int i = 0; i < slave->GetN(); ) {
+			double s_x, s_y, s_exl, s_exh, s_eyl, s_eyh;
+
+			slave->GetPoint(i, s_x, s_y);
+			s_exl = slave->GetErrorXlow(i);
+			s_exh = slave->GetErrorXhigh(i);
+			s_eyl = slave->GetErrorYlow(i);
+			s_eyh = slave->GetErrorYhigh(i);
+
+			if((s_x < m_xmin) || (s_x > m_xmax)) {
+				slave->RemovePoint(i);
+				i = -1;
+			}
+
+			i++;
+		}
+
+		std::cout << "After stripping off excess slave points" << std::endl;
+		slave->Print();
+		std::cout << std::endl;
+
+		//Match the binning
+		for(int i = 0; i < m_bins; i++) {
+
+			std::cout << "Master " << i << std::endl;
+			master->Print();
+			std::cout << std::endl;
+
+			std::cout << "Slave " << i << std::endl;
+			slave->Print();
+			std::cout << std::endl;
+
+			double m_x, m_y, m_exl, m_exh, m_eyl, m_eyh;
+			double m_bw;
+
+			master->GetPoint(i, m_x, m_y);
+			m_exl = master->GetErrorXlow(i);
+			m_exh = master->GetErrorXhigh(i);
+			m_eyl = master->GetErrorYlow(i);
+			m_eyh = master->GetErrorYhigh(i);
+			m_exl = m_x - m_exl;
+			m_exh = m_x + m_exh;
+			m_bw = m_exh - m_exl;
+
+			unsigned int s_count = 0;
+			double s_y_sum = 0;
+			double s_eyl_sum = 0;
+			double s_eyh_sum = 0;
+
+			//Recompute number of slave bins
+			s_bins = slave->GetN();
+
+			for(int j = 0; j < s_bins; j++) {
+				double s_x, s_y, s_exl, s_exh, s_eyl, s_eyh;
+				double s_bw;
+
+				slave->GetPoint(j, s_x, s_y);
+				s_exl = slave->GetErrorXlow(j);
+				s_exh = slave->GetErrorXhigh(j);
+				s_eyl = slave->GetErrorYlow(j);
+				s_eyh = slave->GetErrorYhigh(j);
+				s_exl = s_x - s_exl;
+				s_exh = s_x + s_exh;
+				s_bw = s_exh - s_exl;
+
+				//Exception if slave bin width is greater than master bin width
+				if(s_bw > m_bw) {
+					std::ostringstream oss;
+					oss << "SPXGraphUtilities::MatchBinning: (recomputed) Slave Bin " << j << ": (exl, exh) = (" << s_exl << \
+						", " << s_exh << "): Slave bin width greater than master bin width";
+					throw SPXGraphException(oss.str());
+				}
+
+				//Exception if there is a phase shift (slave xlow is below master xlow AND slave xhigh is
+				//	above, or vice versa for the master xhigh)
+				if(((s_exl < m_exl) && (s_exh > m_exl)) || ((s_exh > m_exh) && (s_exl < m_exh))) {
+					throw SPXGraphException("SPXGraphUtilities::MatchBinning: Slave graph is phase-shifted with respect to master: Unable to match binning");
+				}
+
+				//
+				//Slave is NOT phase shifted, and slave bin is equal to or less than master
+				//
+
+				//Check if slave point lies within the current master bin
+				if((s_x >= m_exl) && (s_x <= m_exh)) {
+
+					//Check for exact match: Do nothing and move on to next master bin
+					if(s_bw == m_bw) {
+						std::cout << "EXACT MATCH m_index " << i << " s_index " << j << std::endl;
+						break;
+					}
+
+					//Bin width is smaller than the master (multiple slave bins per single master bin)
+					else {
+						//Count of slave sub bins inside master bin
+						s_count++;
+
+						//If divided by bin width, scale by the slave bin width before summing
+						if(db) {
+							s_y_sum += s_y * s_bw;
+							s_eyl_sum += s_eyl * s_bw;
+							s_eyh_sum += s_eyh * s_bw;
+						} else {
+							s_y_sum += s_y;
+							s_eyl_sum += s_eyl;
+							s_eyh_sum += s_eyh;
+						}
+					}
+
+					//At the end of each master bin recalculate the new slave bin based off the sum of the sub-bins
+					if(s_exh == m_exh) {
+						std::cout << "END OF BOUNDARY m_index " << i << " s_index " << j << std::endl;
+
+						//New point values
+						double n_x, n_y, n_exl, n_exh, n_eyl, n_eyh;
+
+						n_exl = m_x - m_exl;
+						n_exh = m_exh - m_x;
+						n_x = (m_exh + m_exl) / 2;
+
+						//Divided by bin width
+						if(db) {
+							n_y = s_y_sum / m_bw;
+							n_eyl = s_eyl_sum / m_bw;
+							n_eyh = s_eyh_sum / m_bw;
+						} else {
+							n_y = s_y_sum;
+							n_eyl = s_eyl_sum;
+							n_eyh = s_eyh_sum;
+						}
+
+						//Set last bin to use new values
+						slave->SetPoint(j, n_x, n_y);
+						slave->SetPointError(j, n_exl, n_exh, n_eyl, n_eyh);
+
+						//Remove all sub-bins except last bin
+						for(int k = (j - (s_count -1)); k < j; k++) {
+							slave->RemovePoint(k);
+						}
+
+						//Move on to next master bin
+						break;
+					}
+				}
+			}
+		}
+
+		std::cout << "Printing Master" << std::endl;
+		master->Print();
+		std::cout << std::endl;
+
+		std::cout << "Printing Master" << std::endl;
+		slave->Print();
+		std::cout << std::endl;
+	}
+
+	//Divide two graphs
 	static TGraphAsymmErrors * Divide(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, DivideErrorType_t dt) {
 
 		//Make sure graphs are valid
@@ -311,17 +489,30 @@ public:
 	}
 
 	static void SetAllYErrors(TGraphAsymmErrors * g, double err) {
-
-		std::cout << "Graph has " << g->GetN() << " bins" << std::endl;
-
 		for(int i = 0; i < g->GetN(); i++) {
-			std::cout << "Setting point " << i << " Y errors to " << err << std::endl;
 			g->SetPointEYhigh(i, err);
 			g->SetPointEYlow(i, err);
 		}
+	}
 
-		std::cout << "Printing graph" << std::endl;
-		g->Print();
+	static void ScaleXErrors(TGraphAsymmErrors * g, double scale) {
+		for(int i = 0; i < g->GetN(); i++) {
+			double exl, exh;
+			exl = g->GetErrorXlow(i);
+			exh = g->GetErrorXhigh(i);
+			g->SetPointEXlow(i, exl * scale);
+			g->SetPointEXhigh(i, exl * scale);
+		}
+	}
+
+	static void ScaleYErrors(TGraphAsymmErrors * g, double scale) {
+		for(int i = 0; i < g->GetN(); i++) {
+			double eyl, eyh;
+			eyl = g->GetErrorYlow(i);
+			eyh = g->GetErrorYhigh(i);
+			g->SetPointEYlow(i, eyl * scale);
+			g->SetPointEYhigh(i, eyl * scale);
+		}
 	}
 
 	static TGraphAsymmErrors * HistogramToGraph(TH1 *h) {

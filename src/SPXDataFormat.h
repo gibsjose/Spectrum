@@ -18,6 +18,8 @@
 #ifndef SPXDATAFORMAT_H
 #define SPXDATAFORMAT_H
 
+#include <string>
+
 //Bitfields for determining band format
 const int DF_INVALID =			-1;
 const int DF_SPECTRUM =			(1 << 0);	//0b10000000
