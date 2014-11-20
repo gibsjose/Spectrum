@@ -174,6 +174,9 @@ public:
 
 	//Match binning of slave graph to the binning of the master graph
 	static void MatchBinning(TGraphAsymmErrors *master, TGraphAsymmErrors *slave, bool dividedByBinWidth) {
+
+		bool debug = true;
+		
 		//Make sure graphs are valid
 		if(!master || !slave) {
 			throw SPXGraphException("SPXGraphUtilities::MatchBinning: Master and/or slave graph is invalid");
