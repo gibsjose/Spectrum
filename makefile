@@ -32,10 +32,10 @@ OBJ_DIR = ./obj
 BIN_DIR = .
 TST_DIR = $(SRC_DIR)/test
 
-RAW_SRC = 	Spectrum.cxx SPXSteeringFile.cxx SPXRatioStyle.cxx SPXDisplayStyle.cxx SPXOverlayStyle.cxx SPXPDFBandType.cxx \
-			SPXPDFErrorType.cxx SPXPDFErrorSize.cxx SPXPlotConfiguration.cxx SPXPDFSteeringFile.cxx SPXGridSteeringFile.cxx \
-			SPXDataSteeringFile.cxx SPXDataFormat.cxx SPXData.cxx SPXPlot.cxx SPXCrossSection.cxx SPXGrid.cxx SPXPDF.cxx \
-			SPXRatio.cxx SPXPlotType.cxx SPXAtlasStyle.cxx SPXGraphUtilities.cxx
+RAW_SRC = 	SPXGraphUtilities.cxx Spectrum.cxx SPXSteeringFile.cxx SPXRatioStyle.cxx SPXDisplayStyle.cxx SPXOverlayStyle.cxx \
+ 			SPXPDFBandType.cxx SPXPDFErrorType.cxx SPXPDFErrorSize.cxx SPXPlotConfiguration.cxx SPXPDFSteeringFile.cxx \
+			SPXGridSteeringFile.cxx SPXDataSteeringFile.cxx SPXDataFormat.cxx SPXData.cxx SPXPlot.cxx SPXCrossSection.cxx \
+			SPXGrid.cxx SPXPDF.cxx SPXRatio.cxx SPXPlotType.cxx SPXAtlasStyle.cxx
 
 SRC = $(RAW_SRC:%.cxx=$(SRC_DIR)/%.cxx)
 OBJ = $(RAW_SRC:%.cxx=$(OBJ_DIR)/%.o)

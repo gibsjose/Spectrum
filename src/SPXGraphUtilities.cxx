@@ -12,7 +12,7 @@
 
 #include "SPXGraphUtilities.h"
 
-static double SPXGraphUtilities::GetXMin(std::vector<TGraphAsymmErrors *> graphs) {
+double SPXGraphUtilities::GetXMin(std::vector<TGraphAsymmErrors *> graphs) {
 
     double min = 1e30;
 
@@ -33,7 +33,7 @@ static double SPXGraphUtilities::GetXMin(std::vector<TGraphAsymmErrors *> graphs
     return min;
 }
 
-static double SPXGraphUtilities::GetXMax(std::vector<TGraphAsymmErrors *> graphs) {
+double SPXGraphUtilities::GetXMax(std::vector<TGraphAsymmErrors *> graphs) {
 
     double max = -1e30;
 
@@ -54,7 +54,7 @@ static double SPXGraphUtilities::GetXMax(std::vector<TGraphAsymmErrors *> graphs
     return max;
 }
 
-static double SPXGraphUtilities::GetYMin(std::vector<TGraphAsymmErrors *> graphs) {
+double SPXGraphUtilities::GetYMin(std::vector<TGraphAsymmErrors *> graphs) {
 
     double min = 1e30;
 
@@ -74,7 +74,7 @@ static double SPXGraphUtilities::GetYMin(std::vector<TGraphAsymmErrors *> graphs
     return min;
 }
 
-static double SPXGraphUtilities::GetYMax(std::vector<TGraphAsymmErrors *> graphs) {
+double SPXGraphUtilities::GetYMax(std::vector<TGraphAsymmErrors *> graphs) {
 
     double max = -1e30;
 
@@ -96,7 +96,7 @@ static double SPXGraphUtilities::GetYMax(std::vector<TGraphAsymmErrors *> graphs
 
 /*
 //@TODO Modify to add the error from g2 to g1 instead of returning a new graph
-static TGraphAsymmErrors * SPXGraphUtilities::AddYErrors(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2) {
+TGraphAsymmErrors * SPXGraphUtilities::AddYErrors(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2) {
     //Make sure graphs are valid
     if((!g1) || (!g2)) {
         throw SPXGraphException("SPXGraphUtilities::AddYErrors: At least one of the operand graphs is invalid");
@@ -138,7 +138,7 @@ static TGraphAsymmErrors * SPXGraphUtilities::AddYErrors(TGraphAsymmErrors *g1, 
 */
 
 //Match binning of slave graph to the binning of the master graph
-static void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmErrors *slave, bool dividedByBinWidth) {
+void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmErrors *slave, bool dividedByBinWidth) {
 
     bool debug = true;
 
@@ -355,7 +355,7 @@ static void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsy
 }
 
 //Divide two graphs
-static TGraphAsymmErrors * SPXGraphUtilities::Divide(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, DivideErrorType_t dt) {
+TGraphAsymmErrors * SPXGraphUtilities::Divide(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, DivideErrorType_t dt) {
 
     //Make sure graphs are valid
     if((!g1) || (!g2)) {
@@ -472,35 +472,35 @@ static TGraphAsymmErrors * SPXGraphUtilities::Divide(TGraphAsymmErrors *g1, TGra
     return result;
 }
 
-static void SPXGraphUtilities::ClearXErrors(TGraphAsymmErrors * g) {
+void SPXGraphUtilities::ClearXErrors(TGraphAsymmErrors * g) {
     for(int i = 0; i < g->GetN(); i++) {
         g->SetPointEXhigh(i, 0.0);
         g->SetPointEXlow(i, 0.0);
     }
 }
 
-static void SPXGraphUtilities::ClearYErrors(TGraphAsymmErrors * g) {
+void SPXGraphUtilities::ClearYErrors(TGraphAsymmErrors * g) {
     for(int i = 0; i < g->GetN(); i++) {
         g->SetPointEYhigh(i, 0.0);
         g->SetPointEYlow(i, 0.0);
     }
 }
 
-static void SPXGraphUtilities::SetAllXErrors(TGraphAsymmErrors * g, double err) {
+void SPXGraphUtilities::SetAllXErrors(TGraphAsymmErrors * g, double err) {
     for(int i = 0; i < g->GetN(); i++) {
         g->SetPointEXhigh(i, err);
         g->SetPointEXlow(i, err);
     }
 }
 
-static void SPXGraphUtilities::SetAllYErrors(TGraphAsymmErrors * g, double err) {
+void SPXGraphUtilities::SetAllYErrors(TGraphAsymmErrors * g, double err) {
     for(int i = 0; i < g->GetN(); i++) {
         g->SetPointEYhigh(i, err);
         g->SetPointEYlow(i, err);
     }
 }
 
-static void SPXGraphUtilities::ScaleXErrors(TGraphAsymmErrors * g, double scale) {
+void SPXGraphUtilities::ScaleXErrors(TGraphAsymmErrors * g, double scale) {
     for(int i = 0; i < g->GetN(); i++) {
         double exl, exh;
         exl = g->GetErrorXlow(i);
@@ -510,7 +510,7 @@ static void SPXGraphUtilities::ScaleXErrors(TGraphAsymmErrors * g, double scale)
     }
 }
 
-static void SPXGraphUtilities::ScaleYErrors(TGraphAsymmErrors * g, double scale) {
+void SPXGraphUtilities::ScaleYErrors(TGraphAsymmErrors * g, double scale) {
     for(int i = 0; i < g->GetN(); i++) {
         double eyl, eyh;
         eyl = g->GetErrorYlow(i);
@@ -520,7 +520,7 @@ static void SPXGraphUtilities::ScaleYErrors(TGraphAsymmErrors * g, double scale)
     }
 }
 
-static TGraphAsymmErrors * SPXGraphUtilities::HistogramToGraph(TH1 *h) {
+TGraphAsymmErrors * SPXGraphUtilities::HistogramToGraph(TH1 *h) {
 
     //Make sure histogram is valid
     if(!h) {
@@ -545,12 +545,12 @@ static TGraphAsymmErrors * SPXGraphUtilities::HistogramToGraph(TH1 *h) {
     return graph;
 }
 
-static double SPXGraphUtilities::GetYBinWidthUnitsScale(std::string master, std::string slave) {
+double SPXGraphUtilities::GetYBinWidthUnitsScale(std::string master, std::string slave) {
     return GetXUnitsScale(master, slave);
 }
 
 //Returns how to scale the SLAVE units to match the MASTER units
-static double SPXGraphUtilities::GetXUnitsScale(std::string master, std::string slave) {
+double SPXGraphUtilities::GetXUnitsScale(std::string master, std::string slave) {
 
     bool debug = false;
 
@@ -596,7 +596,7 @@ static double SPXGraphUtilities::GetXUnitsScale(std::string master, std::string 
 }
 
 //Returns how to scale the SLAVE units to match the MASTER units
-static double SPXGraphUtilities::GetYUnitsScale(std::string master, std::string slave) {
+double SPXGraphUtilities::GetYUnitsScale(std::string master, std::string slave) {
 
     //Possible Y units are 'pb', 'fb'		pb = 1000x fb
     //std::vector<std::string> units = {"FB", "PB"};
@@ -628,7 +628,7 @@ static double SPXGraphUtilities::GetYUnitsScale(std::string master, std::string 
 }
 
 //Scales the TGraph based on the x and y scale
-static void SPXGraphUtilities::Scale(TGraphAsymmErrors *graph, double xScale, double yScale) {
+void SPXGraphUtilities::Scale(TGraphAsymmErrors *graph, double xScale, double yScale) {
     double *x = graph->GetX();
     double *y = graph->GetY();
     double *exh = graph->GetEXhigh();
@@ -644,7 +644,7 @@ static void SPXGraphUtilities::Scale(TGraphAsymmErrors *graph, double xScale, do
 }
 
 //Normalizes the TGraph and handles bin width division
-static void SPXGraphUtilities::Normalize(TGraphAsymmErrors *graph, double yBinWidthScale, bool normalizeToTotalSigma, bool divideByBinWidth) {
+void SPXGraphUtilities::Normalize(TGraphAsymmErrors *graph, double yBinWidthScale, bool normalizeToTotalSigma, bool divideByBinWidth) {
 
     //TEMPORARY DEBUG
     bool debug = false;
