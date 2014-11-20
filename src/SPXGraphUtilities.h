@@ -351,7 +351,7 @@ public:
 						unsigned int rem_count = 0;
 
 						//Remove all sub-bins except last bin
-						for(int k = (j - (s_count - 1 - rem_count)); k < (j - rem_count); k++) {
+						for(int k = (j - (s_count - 1 - rem_count)); k < j; k++) {
 							double t_x, t_y;
 							double t_exl, t_exh, t_eyl, t_eyh;
 							slave->GetPoint(k, t_x, t_y);
