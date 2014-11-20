@@ -19,9 +19,6 @@
 #include "SPXPlot.h"
 #include "SPXUtilities.h"
 
-//Test features
-extern bool Test;
-
 const std::string cn = "SPXPlot::";
 
 //Must define the static debug variable in the implementation
@@ -626,9 +623,9 @@ void SPXPlot::DrawOverlay(void) {
 			//Draw Alpha S Band and Scale Band if necessary
 			//@TODO Fix steering file: Allow for either plotting only the PDF band or the PDF band + uncertainties and check here
 			//@TODO Also: What to do if plot_band is off? Plot tick marks? Force plot_band if they want uncertainties?
-			if(Test) {
+			if(Test::TestFeatures) {
 				std::cout << cn << mn << "TEST FEATURE" << std::endl;
-				
+
 				TGraphAsymmErrors *pdfb = crossSections[i].GetPDFBandResults();
 				TGraphAsymmErrors *asb = crossSections[i].GetAlphaSBandResults();
 				TGraphAsymmErrors *scb = crossSections[i].GetScaleBandResults();

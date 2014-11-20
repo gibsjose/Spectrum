@@ -18,6 +18,8 @@
 #include "SPXFileUtilities.h"
 #include "SPXMathUtilities.h"
 
-extern bool Test;
+namespace Test {
+    extern bool TestFeatures;
+}
 
 #endif

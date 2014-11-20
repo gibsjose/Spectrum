@@ -16,8 +16,6 @@
 #include "SPXAnalysis.h"
 #include "SPXException.h"
 
-extern bool Test;
-
 int main(int argc, char *argv[]) {
 
 	if((argc - 1) < 1) {
@@ -27,7 +25,7 @@ int main(int argc, char *argv[]) {
 
 	std::string file;
 
-	Test = false;
+	Test::TestFeatures = false;
 	bool drawApplication = true;
 
 	std::cout << "==================================" << std::endl;
@@ -45,7 +43,7 @@ int main(int argc, char *argv[]) {
 
 		//Test mode (implements test features)
 		else if(!arg.compare("-t")) {
-			Test = true;
+			Test::TestFeatures = true;
 		}
 
 		//No known flag: Treat as file name
