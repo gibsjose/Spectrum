@@ -176,7 +176,7 @@ public:
 	static void MatchBinning(TGraphAsymmErrors *master, TGraphAsymmErrors *slave, bool dividedByBinWidth) {
 
 		bool debug = true;
-		
+
 		//Make sure graphs are valid
 		if(!master || !slave) {
 			throw SPXGraphException("SPXGraphUtilities::MatchBinning: Master and/or slave graph is invalid");
@@ -209,6 +209,13 @@ public:
 			}
 
 			i++;
+		}
+
+		//After stripping points
+		if(debug) {
+			std::cout << "SPXGraphUtilities::MatchBinning: After stripping slave points" << std::endl;
+			slave->Print();
+			std::cout << std::endl;
 		}
 
 		//Match the binning
