@@ -622,6 +622,17 @@ void SPXPlot::DrawOverlay(void) {
 					throw SPXGraphException(cn + mn + "Alpha S and/or Scale Band graphs are invalid");
 				}
 
+				//Print graphs
+				if(debug) {
+					std::cout << cn << mn << "Printing Alpha S Band Graph" << std::endl;
+					asb->Print();
+					std::cout << std::endl;
+
+					std::cout << cn << mn << "Printing Scale Band Graph" << std::endl;
+					scb->Print();
+					std::cout << std::endl;
+				}
+
 				//Darken alpha s and scale bands
 				asb->SetFillColor(pdfb->GetFillColor() + 1);
 				scb->SetFillColor(pdfb->GetFillColor() + 2);
