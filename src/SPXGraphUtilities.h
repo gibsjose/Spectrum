@@ -327,7 +327,7 @@ public:
 
 						double t_x, t_y;
 						slave->GetPoint(j, t_x, t_y);
-						std::cout << "Modifying slave point with (index, x, y) = (" << k << ", " << t_x << ", " << t_y << ")" << std::endl;
+						std::cout << "Modifying slave point with (index, x, y) = (" << j << ", " << t_x << ", " << t_y << ")" << std::endl;
 
 						std::cout << "n_x = " << n_x << std::endl;
 						std::cout << "n_y = " << n_x << std::endl;
