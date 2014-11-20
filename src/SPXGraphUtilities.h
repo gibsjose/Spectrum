@@ -218,8 +218,6 @@ public:
 			std::cout << std::endl;
 		}
 
-		unsigned int tot_count = 0;
-
 		//Match the binning
 		for(int i = 0; i < m_bins; i++) {
 
@@ -350,8 +348,10 @@ public:
 						slave->SetPoint(j, n_x, n_y);
 						slave->SetPointError(j, n_exl, n_exh, n_eyl, n_eyh);
 
+						unsigned int rem_count = 0;
+
 						//Remove all sub-bins except last bin
-						for(int k = (j - (s_count - 1)); k < (j - tot_count); k++) {
+						for(int k = (j - (s_count - 1 - rem_count)); k < (j - rem_count); k++) {
 							double t_x, t_y;
 							double t_exl, t_exh, t_eyl, t_eyh;
 							slave->GetPoint(k, t_x, t_y);
@@ -365,10 +365,10 @@ public:
 							std::cout << "REMOVING slave point with (index, x, y, exl, exh, eyl, eyh) = (" << k << ", " << t_x << ", " << t_y << ", " << t_exl << ", " << t_exh << ", " << t_eyl << ", " << t_eyh << ")" << std::endl;
 							slave->RemovePoint(k);
 
-							tot_count++;
-						}
+							rem_count++;
 
-						std::cout << "tot_count = " << tot_count << std::endl;
+							std::cout << "rem_count incremented to " << rem_count << std::endl;
+						}
 
 						//Move on to next master bin
 						break;
