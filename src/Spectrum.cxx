@@ -16,6 +16,8 @@
 #include "SPXAnalysis.h"
 #include "SPXException.h"
 
+extern bool Test;
+
 int main(int argc, char *argv[]) {
 
 	if((argc - 1) < 1) {
@@ -23,30 +25,33 @@ int main(int argc, char *argv[]) {
 		exit(0);
 	}
 
-	std::string flag;
 	std::string file;
 
+	Test = false;
 	bool drawApplication = true;
 
 	std::cout << "==================================" << std::endl;
 	std::cout << "      	   Spectrum		        " << std::endl;
 	std::cout << "==================================" << std::endl <<std::endl;
 
-	//A flag was specified
-	if((argc - 1) > 1) {
-		flag = std::string(argv[1]);
-		file = std::string(argv[2]);
+	//Process arguments
+	for(int i = 1; i < argc; i++) {
+		std::string arg = std::string(argv[i]);
 
-		//PNG-Only mode
-		if(!flag.compare("-p")) {
+		//PNG Only mode
+		if(!arg.compare("-p")) {
 			drawApplication = false;
 		}
-	}
 
-	//No flags
-	else {
-		file = std::string(argv[1]);
-		drawApplication = true;
+		//Test mode (implements test features)
+		else if(!arg.compare("-t")) {
+			Test = true;
+		}
+
+		//No known flag: Treat as file name
+		else {
+			file = arg;
+		}
 	}
 
 	//Set Atlas Style (SPXAtlasStyle.h)
