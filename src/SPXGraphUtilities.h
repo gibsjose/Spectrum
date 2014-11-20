@@ -314,6 +314,8 @@ public:
 					//At the end of each master bin recalculate the new slave bin based off the sum of the sub-bins
 					if(s_exh == m_exh) {
 						std::cout << "End of master bin " << i << " slave bin " << j << std::endl;
+						slave->Print();
+						std::cout << endl;
 
 						//New point values
 						double n_x, n_y, n_exl, n_exh, n_eyl, n_eyh;
@@ -362,10 +364,10 @@ public:
 
 							std::cout << "REMOVING slave point with (index, x, y, exl, exh, eyl, eyh) = (" << k << ", " << t_x << ", " << t_y << ", " << t_exl << ", " << t_exh << ", " << t_eyl << ", " << t_eyh << ")" << std::endl;
 							slave->RemovePoint(k);
-						}
 
-						//Update total count
-						tot_count += s_count;
+							tot_count++;
+						}
+						
 						std::cout << "tot_count = " << tot_count << std::endl;
 
 						//Move on to next master bin
