@@ -305,7 +305,7 @@ public:
 
 					//At the end of each master bin recalculate the new slave bin based off the sum of the sub-bins
 					if(s_exh == m_exh) {
-						std::cout << "End of master bin " << i << " slave bin " << std::endl;
+						std::cout << "End of master bin " << i << " slave bin " << j << std::endl;
 
 						//New point values
 						double n_x, n_y, n_exl, n_exh, n_eyl, n_eyh;
@@ -327,14 +327,14 @@ public:
 
 						double t_x, t_y;
 						slave->GetPoint(j, t_x, t_y);
-						std::cout << "Modifying slave point with (index, x, y) = (" << j << ", " << t_x << ", " << t_y << ")" << std::endl;
+						std::cout << "MODIFYING slave point with (index, x, y) = (" << j << ", " << t_x << ", " << t_y << ")" << std::endl;
 
 						std::cout << "n_x = " << n_x << std::endl;
-						std::cout << "n_y = " << n_x << std::endl;
-						std::cout << "n_exl = " << n_x << std::endl;
-						std::cout << "n_exh = " << n_x << std::endl;
-						std::cout << "n_eyl = " << n_x << std::endl;
-						std::cout << "n_eyh = " << n_x << std::endl;
+						std::cout << "n_y = " << n_y << std::endl;
+						std::cout << "n_exl = " << n_exl << std::endl;
+						std::cout << "n_exh = " << n_exh << std::endl;
+						std::cout << "n_eyl = " << n_eyl << std::endl;
+						std::cout << "n_eyh = " << n_eyh << std::endl;
 
 						//Set last bin to use new values
 						slave->SetPoint(j, n_x, n_y);
@@ -343,8 +343,16 @@ public:
 						//Remove all sub-bins except last bin
 						for(int k = (j - (s_count -1)); k < j; k++) {
 							double t_x, t_y;
+							double t_exl, t_exh, t_eyl, t_eyh;
 							slave->GetPoint(k, t_x, t_y);
-							std::cout << "Removed slave point with (index, x, y) = (" << k << ", " << t_x << ", " << t_y << ")" << std::endl;
+							t_exl = slave->GetErrorXlow(k);
+							t_exh = slave->GetErrorXhigh(k);
+							t_eyl = slave->GetErrorYlow(k);
+							t_eyh = slave->GetErrorYhigh(k);
+							t_exl = t_x - t_exl;
+							t_exh = t_x + t_exh;
+
+							std::cout << "REMOVING slave point with (index, x, y, exl, exh, eyl, eyh) = (" << k << ", " << t_x << ", " << t_y << ", " << t_exl << ", " << t_exh << ", " << t_eyl << ", " << t_eyh << ")" << std::endl;
 							slave->RemovePoint(k);
 						}
 
