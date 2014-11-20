@@ -218,6 +218,8 @@ public:
 			std::cout << std::endl;
 		}
 
+		unsigned int tot_count = 0;
+
 		//Match the binning
 		for(int i = 0; i < m_bins; i++) {
 
@@ -284,7 +286,7 @@ public:
 					else {
 						//Count of slave sub bins inside master bin
 						s_count++;
-
+						std::cout << endl;
 						std::cout << "s_count = " << s_count << std::endl;
 
 						//If divided by bin width, scale by the slave bin width before summing
@@ -299,6 +301,7 @@ public:
 						}
 
 						std::cout << "Slave point will be removed or modified" << std::endl;
+						std::cout << "slave index = " << j << std::endl;
 						std::cout << "s_x = " << s_x << std::endl;
 						std::cout << "s_y = " << s_y << std::endl;
 						std::cout << "s_exl = " << s_exl << std::endl;
@@ -360,6 +363,10 @@ public:
 							std::cout << "REMOVING slave point with (index, x, y, exl, exh, eyl, eyh) = (" << k << ", " << t_x << ", " << t_y << ", " << t_exl << ", " << t_exh << ", " << t_eyl << ", " << t_eyh << ")" << std::endl;
 							slave->RemovePoint(k);
 						}
+
+						//Update total count
+						tot_count += s_count;
+						std::cout << "tot_count = " << tot_count << std::endl;
 
 						//Move on to next master bin
 						break;
