@@ -199,6 +199,7 @@ void SPXPlot::CreateCanvas(void) {
 
 //Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
 void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax) {
+	std::string mn = "DetermineOverlayFrameBounds: ";
 
 	//Get the plot configuration and display style from steering file
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
@@ -250,7 +251,8 @@ void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yM
 
 //Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
 void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax) {
-
+	std::string mn = "DetermineRatioFrameBounds: ";
+	
 	//Get the plot configuration and display style from steering file
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
@@ -274,10 +276,14 @@ void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin
 
 		//Sanity check
 		if(xMin > xMax) {
-			throw SPXGraphException("xMin calculated to be larger than xMax");
+			std::ostringstream oss;
+			oss << cn << mn << "xMin (" << xMin << ") calculated to be larger than xMax (" << xMax << ")" << std::endl;
+			throw SPXGraphException(oss.str());
 		}
 
 		if(yMin > yMax) {
+			std::ostringstream oss;
+			oss << cn << mn << "yMin (" << yMin << ") calculated to be larger than yMax (" << yMax << ")" << std::endl;
 			throw SPXGraphException("yMin calculated to be larger than yMax");
 		}
 	}
