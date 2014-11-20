@@ -298,6 +298,11 @@ public:
 							s_eyh_sum += s_eyh;
 						}
 
+						std::cout << "Slave point will be removed or modified" << std::endl;
+						std::cout << "s_x = " << s_x << std::endl;
+						std::cout << "s_y = " << s_y << std::endl;
+						std::cout << "s_exl = " << s_exl << std::endl;
+						std::cout << "s_exh = " << s_exh << std::endl;
 						std::cout << "s_y_sum = " << s_y_sum << std::endl;
 						std::cout << "s_eyl_sum = " << s_eyl_sum << std::endl;
 						std::cout << "s_eyh_sum = " << s_eyh_sum << std::endl;
