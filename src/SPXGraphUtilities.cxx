@@ -313,27 +313,45 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
                     slave->SetPoint(j, n_x, n_y);
                     slave->SetPointError(j, n_exl, n_exh, n_eyl, n_eyh);
 
-                    unsigned int rem_count = 0;
+                    // unsigned int rem_count = 0;
 
-                    //Remove all sub-bins except last bin
-                    for(int k = (j - (s_count - 1) - rem_count); k < (j - rem_count); k++) {
+                    //Remove the (j - s_count - 1)th index, (s_count - 1) times
+                    for(int k = 0; k < (s_count - 1); k++) {
+                        unsigned int index = (j - s_count - 1);
+
                         double t_x, t_y;
                         double t_exl, t_exh, t_eyl, t_eyh;
-                        slave->GetPoint(k, t_x, t_y);
-                        t_exl = slave->GetErrorXlow(k);
-                        t_exh = slave->GetErrorXhigh(k);
-                        t_eyl = slave->GetErrorYlow(k);
-                        t_eyh = slave->GetErrorYhigh(k);
+                        slave->GetPoint(index, t_x, t_y);
+                        t_exl = slave->GetErrorXlow(index);
+                        t_exh = slave->GetErrorXhigh(index);
+                        t_eyl = slave->GetErrorYlow(index);
+                        t_eyh = slave->GetErrorYhigh(index);
                         t_exl = t_x - t_exl;
                         t_exh = t_x + t_exh;
 
-                        std::cout << "REMOVING slave point with (index, x, y, exl, exh, eyl, eyh) = (" << k << ", " << t_x << ", " << t_y << ", " << t_exl << ", " << t_exh << ", " << t_eyl << ", " << t_eyh << ")" << std::endl;
-                        slave->RemovePoint(k);
-
-                        rem_count++;
-
-                        std::cout << "rem_count incremented to " << rem_count << std::endl;
+                        std::cout << "REMOVING slave point with (index, x, y, exl, exh, eyl, eyh) = (" << index << ", " << t_x << ", " << t_y << ", " << t_exl << ", " << t_exh << ", " << t_eyl << ", " << t_eyh << ")" << std::endl;
+                        slave->RemovePoint(index);
                     }
+
+                    //Remove all sub-bins except last bin
+                    // for(int k = (j - (s_count - 1) - rem_count); k < (j - rem_count); k++) {
+                    //     double t_x, t_y;
+                    //     double t_exl, t_exh, t_eyl, t_eyh;
+                    //     slave->GetPoint(k, t_x, t_y);
+                    //     t_exl = slave->GetErrorXlow(k);
+                    //     t_exh = slave->GetErrorXhigh(k);
+                    //     t_eyl = slave->GetErrorYlow(k);
+                    //     t_eyh = slave->GetErrorYhigh(k);
+                    //     t_exl = t_x - t_exl;
+                    //     t_exh = t_x + t_exh;
+                    //
+                    //     std::cout << "REMOVING slave point with (index, x, y, exl, exh, eyl, eyh) = (" << k << ", " << t_x << ", " << t_y << ", " << t_exl << ", " << t_exh << ", " << t_eyl << ", " << t_eyh << ")" << std::endl;
+                    //     slave->RemovePoint(k);
+                    //
+                    //     rem_count++;
+                    //
+                    //     std::cout << "rem_count incremented to " << rem_count << std::endl;
+                    // }
 
                     //Move on to next master bin
                     break;
