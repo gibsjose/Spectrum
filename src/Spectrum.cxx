@@ -16,6 +16,10 @@
 #include "SPXAnalysis.h"
 #include "SPXException.h"
 
+namespace Test {
+	bool TestFeatures = false;
+}
+
 int main(int argc, char *argv[]) {
 
 	if((argc - 1) < 1) {
