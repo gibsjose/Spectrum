@@ -166,6 +166,16 @@ public:
             if(debug) {
                 pci.Print();
             }
+
+            //Match the convolute binning to the data binning
+            if(ratioStyle.IsConvoluteOverData()) {
+                try {
+                    SPXGraphUtilities::MatchBinning(denominatorGraph, numeratorGraph, true);
+                } catch(const SPXException &e) {
+                    std::cerr << e.what() << std::endl;
+                    throw SPXGraphException("SPXRatio::Divide: Unable to match convolute binning to data binning");
+                }
+            }
         }
 
         else if(ratioStyle.IsDataOverConvolute()) {
@@ -173,11 +183,21 @@ public:
             if(debug) {
                 pci.Print();
             }
+
+            //Match the convolute binning to the data binning
+            try {
+                SPXGraphUtilities::MatchBinning(numeratorGraph, denominatorGraph, true);
+            } catch(const SPXException &e) {
+                std::cerr << e.what() << std::endl;
+                throw SPXGraphException("SPXRatio::Divide: Unable to match convolute binning to data binning");
+            }
         }
 
         //@TODO What if it's Data/Data???
         else if(ratioStyle.IsDataOverData()) {
             if(debug) std::cout << "SPXRatio::Divide: Data/Data: Could not get pci" << std::endl;
+
+            //@TODO Match binning here? Who is the master?
         }
 
         try {

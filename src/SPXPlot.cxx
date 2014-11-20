@@ -199,6 +199,7 @@ void SPXPlot::CreateCanvas(void) {
 
 //Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
 void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax) {
+	std::string mn = "DetermineOverlayFrameBounds: ";
 
 	//Get the plot configuration and display style from steering file
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
@@ -235,17 +236,22 @@ void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yM
 
 		//Sanity check
 		if(xMin > xMax) {
-			throw SPXGraphException("xMin calculated to be larger than xMax");
+			std::ostringstream oss;
+			oss << cn << mn << "xMin (" << xMin << ") calculated to be larger than xMax (" << xMax << ")" << std::endl;
+			throw SPXGraphException(oss.str());
 		}
 
 		if(yMin > yMax) {
-			throw SPXGraphException("yMin calculated to be larger than yMax");
+			std::ostringstream oss;
+			oss << cn << mn << "yMin (" << yMin << ") calculated to be larger than yMax (" << yMax << ")" << std::endl;
+			throw SPXGraphException(oss.str());
 		}
 	}
 }
 
 //Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
 void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax) {
+	std::string mn = "DetermineRatioFrameBounds: ";
 
 	//Get the plot configuration and display style from steering file
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
@@ -270,11 +276,15 @@ void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin
 
 		//Sanity check
 		if(xMin > xMax) {
-			throw SPXGraphException("xMin calculated to be larger than xMax");
+			std::ostringstream oss;
+			oss << cn << mn << "xMin (" << xMin << ") calculated to be larger than xMax (" << xMax << ")" << std::endl;
+			throw SPXGraphException(oss.str());
 		}
 
 		if(yMin > yMax) {
-			throw SPXGraphException("yMin calculated to be larger than yMax");
+			std::ostringstream oss;
+			oss << cn << mn << "yMin (" << yMin << ") calculated to be larger than yMax (" << yMax << ")" << std::endl;
+			throw SPXGraphException(oss.str());
 		}
 	}
 }
@@ -607,7 +617,46 @@ void SPXPlot::DrawOverlay(void) {
 				SPXGraphUtilities::ClearXErrors(crossSections[i].GetPDFBandResults());
 			}
 
+			//Draw PDF Band
 			crossSections[i].GetPDFBandResults()->Draw(csOptions.c_str());
+
+			//Draw Alpha S Band and Scale Band if necessary
+			//@TODO Fix steering file: Allow for either plotting only the PDF band or the PDF band + uncertainties and check here
+			//@TODO Also: What to do if plot_band is off? Plot tick marks? Force plot_band if they want uncertainties?
+			if(Test::TestFeatures) {
+				std::cout << cn << mn << "TEST FEATURE" << std::endl;
+
+				TGraphAsymmErrors *pdfb = crossSections[i].GetPDFBandResults();
+				TGraphAsymmErrors *asb = crossSections[i].GetAlphaSBandResults();
+				TGraphAsymmErrors *scb = crossSections[i].GetScaleBandResults();
+
+				if(!asb || !scb) {
+					throw SPXGraphException(cn + mn + "Alpha S and/or Scale Band graphs are invalid");
+				}
+
+				//Print graphs
+				if(debug) {
+					std::cout << cn << mn << "Printing Alpha S Band Graph" << std::endl;
+					asb->Print();
+					std::cout << std::endl;
+
+					std::cout << cn << mn << "Printing Scale Band Graph" << std::endl;
+					scb->Print();
+					std::cout << std::endl;
+				}
+
+				//Darken alpha s and scale bands
+				asb->SetFillColor(pdfb->GetFillColor() + 1);
+				scb->SetFillColor(pdfb->GetFillColor() + 2);
+
+				//Fixed styles
+				asb->SetFillStyle(3001);
+				scb->SetFillStyle(3013);
+
+				//Draw
+				asb->Draw("2");
+				scb->Draw("2");
+			}
 
 			if(debug) std::cout << cn << mn << "Sucessfully drew cross section for Plot " << id << " cross section " << i << \
 				" with options = " << csOptions << std::endl;
@@ -987,6 +1036,14 @@ void SPXPlot::NormalizeCrossSections(void) {
 			SPXGraphUtilities::Normalize(crossSections[i].GetPDFBandResults(), yBinWidthScale, normalizeToTotalSigma, divideByBinWidth);
 
 			if(debug) std::cout << cn << mn << "Sucessfully normalized Cross Section " << i << std::endl;
+
+			//Print cross section
+			if(debug) {
+				std::cout << cn << mn << "Printing Cross Section " << i << std::endl;
+				crossSections[i].GetPDFBandResults()->Print();
+				std::cout << std::endl;
+			}
+
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
 			throw SPXGraphException("SPXPlot::NormalizeCrossSections: Unable to obtain X/Y Scale based on Data/Grid Units");
