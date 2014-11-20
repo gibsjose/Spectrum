@@ -857,14 +857,14 @@ void SPXData::CreateGraphs(void) {
 
 	if(debug) {
 		std::cout << cn << mn << "Statistical Error Graph created with name: " << statName << std::endl;
+		std::cout << std::endl;
 		statisticalErrorGraph->Print();
-		std::cout << std::endl << std::endl;
+		std::cout << std::endl;
 		std::cout << cn << mn << "Systematic Error Graph created with name: " << systName << std::endl;
 		systematicErrorGraph->Print();
 		std::cout << std::endl << std::endl;
 		std::cout << cn << mn << "Total Error Graph created with name: " << totName << std::endl;
 		totalErrorGraph->Print();
-
 		std::cout << std::endl;
 	}
 }
