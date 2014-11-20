@@ -61,7 +61,7 @@ public:
 
 	//Pseudo-Method for returning Scale results: (Just scales PDF errors by 1/3)
 	TGraphAsymmErrors *GetScaleResults(void) {
-		static TGraphAsymmErrors sc
+		static TGraphAsymmErrors sc;
 		sc = &pdf->h_PDFBand_results;
 		SPXGraphUtilities::ScaleYErrors(&sc, (1.0/4.0));
 		return &sc;
