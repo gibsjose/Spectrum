@@ -31,6 +31,7 @@ SRC_DIR = ./src
 OBJ_DIR = ./obj
 BIN_DIR = .
 TST_DIR = $(SRC_DIR)/test
+PLT_DIR = ./plots
 
 RAW_SRC = 	SPXGraphUtilities.cxx Spectrum.cxx SPXSteeringFile.cxx SPXRatioStyle.cxx SPXDisplayStyle.cxx SPXOverlayStyle.cxx \
  			SPXPDFBandType.cxx SPXPDFErrorType.cxx SPXPDFErrorSize.cxx SPXPlotConfiguration.cxx SPXPDFSteeringFile.cxx \
@@ -61,6 +62,7 @@ dir:
 	@mkdir -p $(OBJ_DIR)
 	@mkdir -p $(BIN_DIR)
 	@mkdir -p $(TST_DIR)
+	@mkdir -p $(PLT_DIR)
 
 $(BIN): $(OBJ)
 	@echo
