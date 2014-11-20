@@ -613,23 +613,23 @@ void SPXPlot::DrawOverlay(void) {
 			//Draw Alpha S Band and Scale Band if necessary
 			//@TODO Fix steering file: Allow for either plotting only the PDF band or the PDF band + uncertainties and check here
 			//@TODO Also: What to do if plot_band is off? Plot tick marks? Force plot_band if they want uncertainties?
-			if(true) {
-				TGraphAsymmErrors *pdfb = crossSections[i].GetPDFBandResults();
-				TGraphAsymmErrors *asb = crossSections[i].GetAlphaSBandResults();
-				TGraphAsymmErrors *scb = crossSections[i].GetScaleBandResults();
-
-				//Darken alpha s and scale bands
-				asb->SetFillColor(pdfb->GetFillColor() + 1);
-				scb->SetFillColor(pdfb->GetFillColor() + 2);
-
-				//Fixed styles
-				asb->SetFillStyle(3001);
-				scb->SetFillStyle(3013);
-
-				//Draw
-				asb->Draw("2");
-				scb->Draw("2");
-			}
+			// if(true) {
+			// 	TGraphAsymmErrors *pdfb = crossSections[i].GetPDFBandResults();
+			// 	TGraphAsymmErrors *asb = crossSections[i].GetAlphaSBandResults();
+			// 	TGraphAsymmErrors *scb = crossSections[i].GetScaleBandResults();
+			//
+			// 	//Darken alpha s and scale bands
+			// 	asb->SetFillColor(pdfb->GetFillColor() + 1);
+			// 	scb->SetFillColor(pdfb->GetFillColor() + 2);
+			//
+			// 	//Fixed styles
+			// 	asb->SetFillStyle(3001);
+			// 	scb->SetFillStyle(3013);
+			//
+			// 	//Draw
+			// 	asb->Draw("2");
+			// 	scb->Draw("2");
+			// }
 
 			if(debug) std::cout << cn << mn << "Sucessfully drew cross section for Plot " << id << " cross section " << i << \
 				" with options = " << csOptions << std::endl;
