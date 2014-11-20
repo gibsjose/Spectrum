@@ -351,7 +351,7 @@ public:
 						slave->SetPointError(j, n_exl, n_exh, n_eyl, n_eyh);
 
 						//Remove all sub-bins except last bin
-						for(int k = (j - (s_count -1)); k < j; k++) {
+						for(int k = (j - (s_count - 1 - tot_count)); k < (j - tot_count); k++) {
 							double t_x, t_y;
 							double t_exl, t_exh, t_eyl, t_eyh;
 							slave->GetPoint(k, t_x, t_y);
@@ -367,7 +367,7 @@ public:
 
 							tot_count++;
 						}
-						
+
 						std::cout << "tot_count = " << tot_count << std::endl;
 
 						//Move on to next master bin
