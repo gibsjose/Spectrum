@@ -1,8 +1,0 @@
-@TODO Clean up todo python script and send copy to Jesse and Dr. Carli
-@TODO Allow todo.py to accommodate multi-line comments (like SPXSteeringFile.h: 75)
-@TODO Perhaps add a way to specify a line number and filename and remove the @TODO statement at that line
-
-@TODO Figure out what to do with INIH library (can't just provide binary .a...)
-
-@TODO Make sure ALL returns are const/not and reference/not where appropriate
-@TODO Make sure ALL function parameters are const/not reference/not where appropriate
