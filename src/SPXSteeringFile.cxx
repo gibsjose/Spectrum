@@ -46,7 +46,7 @@ void SPXSteeringFile::SetDefaults(void) {
 	if(debug) std::cout << cn << mn << "plotStaggered set to default: \"false\"" << std::endl;
 
 	matchBinning = true;
-	if(debug) std::cout << cn << mn << "matchBinning set to default: \"true\"" << Std::endl;
+	if(debug) std::cout << cn << mn << "matchBinning set to default: \"true\"" << std::endl;
 
 	labelSqrtS = false;
 	if(debug) std::cout << cn << mn << "labelSqrtS set to default: \"false\"" << std::endl;
