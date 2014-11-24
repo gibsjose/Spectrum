@@ -574,6 +574,7 @@ void SPXPlot::DrawOverlay(void) {
 
 	//Do nothing if not drawing overlay
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXPlotType &pt = pc.GetPlotType();
 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
 	SPXOverlayStyle &os = pc.GetOverlayStyle();
 
@@ -583,6 +584,44 @@ void SPXPlot::DrawOverlay(void) {
 
 	//Change to the overlay pad
 	overlayPad->cd();
+
+	//Match binning of all graphs within each PCI, if matchBinning set
+	if(steeringFile->GetMatchBinning()) {
+
+		TGraphAsymmErrors *master;
+
+		//Match all data bins if necessary
+		if(os.ContainsData()) {
+			//Master is index 0
+			master = data.at(0).GetTotalErrorGraph();
+
+			if(pt.ContainsMultipleData()) {
+				for(int i = 1; i < data.size(); i++) {
+					TGraphAsymmErrors *slaveStat = data.at(i).GetStatisticalErrorGraph();
+					TGraphAsymmErrors *slaveSyst = data.at(i).GetSystematicErrorGraph();
+					TGraphAsymmErrors *slaveTot = data.at(i).GetTotalErrorGraph();
+					SPXGraphUtilities::MatchBinning(master, slaveStat);
+					SPXGraphUtilities::MatchBinning(master, slaveSyst);
+					SPXGraphUtilities::MatchBinning(master, slaveTot);
+				}
+			}
+		}
+
+		//Match all convolutes to the data master (if data is plotted) or to the master convolute
+		if(os.ContainsConvolute()) {
+			
+			if(os.ContainsData()) {
+				master = data.at(0).GetTotalErrorGraph();
+			} else {
+				master = crossSections.at(0).GetPDFBandResults();
+			}
+
+			for(int i = 1; i < crossSections.size(); i++) {
+				TGraphAsymmErrors *slave = crossSections.at(i);
+				SPXGraphUtilities::MatchBinning(master, slave);
+			}
+		}
+	}
 
 	//@TODO Reference Overlay
 

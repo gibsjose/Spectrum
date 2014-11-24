@@ -45,6 +45,7 @@ grid_directory = Grids/top/mcfm
 plot_error_ticks = true
 plot_marker = true
 plot_staggered = true
+match_binning = true
 label_sqrt_s = true
 x_legend = 0.9
 y_legend = 0.9

@@ -48,6 +48,7 @@ grid_directory = Grids/top/mcfm									;[Optional] If specified, will prepend t
 ; plot_error_ticks = 											;[Optional] Use small 'ticks' at end of error  bars - [default = false]
 plot_marker = true												;[Optional] Plot a marker on data points - [default = false]
 plot_staggered = true											;[Optional] Stagger points horizontally to improve readability - [default = false]
+match_binning = true											;[Optional] Match the binning for all graphs in the plot - [default = true]
 label_sqrt_s = true												;[Optional] Specify to show the Sqrt(s) on the legend - [default = false]
 x_legend = 0.9													;[Optional] X(Right)-Position of Legend, based on top right side
 y_legend = 0.9													;[Optional]	Y(Top)-Position of legend, based on top right side
