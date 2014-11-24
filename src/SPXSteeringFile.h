@@ -61,6 +61,7 @@ private:
 	bool plotErrorTicks;			//Flag to indicate that tick marks should be used at the end of error bars
 	bool plotMarker;				//Flag to indicate that data point markers should be plotted
 	bool plotStaggered;				//Flag to indicate that points should be staggered horizontally for readability
+	bool matchBinning;				//Flag to indicate that the binning of all graphs on the plot should be matched
 	bool labelSqrtS;				//Flag to indicate that the Sqrt(s) value should be shown in the legend
 	double xLegend;					//X Position of the legend, based on top-right corner
 	double yLegend;					//Y Position of the legend, based on top-right corner
@@ -137,6 +138,10 @@ public:
 
 	bool GetPlotStaggered(void) const {
 		return this->plotStaggered;
+	}
+
+	bool GetMatchBinning(void) const {
+		return this->matchBinning;
 	}
 
 	bool GetLabelSqrtS(void) const {
