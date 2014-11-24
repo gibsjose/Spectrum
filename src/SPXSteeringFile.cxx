@@ -489,6 +489,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmp = reader->Get(plotSection, "x_scale", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(debug) std::cout << cn << mn << "No plot option for x_scale was specified" << std::endl;
+			tmp = "1.0";
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -509,6 +510,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmp = reader->Get(plotSection, "y_scale", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(debug) std::cout << cn << mn << "No plot option for y_scale was specified" << std::endl;
+			tmp = "1.0";
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -518,6 +520,8 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
 				}
 			}
+
+			if(Test::TestFeatures) std::cin.get();
 
 			//Add to configurations map
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("y_scale", tmpVector));
