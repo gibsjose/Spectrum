@@ -46,6 +46,7 @@ name = ATLAS_epj_atlas_mtt
 [GRAPH]
 x_units = GeV
 y_units = fb
+; y_scale = 
 divided_by_bin_width = true
 
 ;==============================================================
