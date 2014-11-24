@@ -1,0 +1,79 @@
+;==============================================================
+;
+; Description:
+;	Example PDF Steering File
+;
+; Authors:
+;	Jon Doe
+;	Jean Pierre Larousse
+;	...
+;
+; Date:
+;	17.09.2014
+;
+; Other:
+;	Other information...
+;
+;==============================================================
+
+;--------------------------------------------------------------
+; NOTE:
+;
+; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
+;
+;	"  some_thing = "  <--- BAD
+;	"; some_thing = "  <--- OKAY
+;
+; If you forget to do this, some trailing comments could
+; be included in the option's value
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = false
+
+;==============================================================
+; Description
+;==============================================================
+[DESC]
+name = HERAPDF15NLO_EIG
+; name_var = HERAPDF15NLO_EIG_R04
+type = HERAPDF15NLO
+order = NLO
+num_members = 33
+; pdf_set_path =
+
+;==============================================================
+; Style Options
+;==============================================================
+[STYLE]
+fill_style = 3004
+fill_color = 810
+marker_style = 23
+
+;==============================================================
+; PDF Options
+;==============================================================
+[PDF]
+default_id = 0
+default_id_var = 0
+first_eig = 1
+last_eig = 20
+first_quad = 1
+last_quad = 8
+first_max = 9
+last_max = 12
+include_eig = true
+include_quad = true
+include_max = true
+band_type =	use_error_band
+error_type = pdf_band
+error_size = one_sigma
+alpha_s_error_number_up = 11
+alpha_s_error_number_down = 9
+alpha_s_pdf_name_up = HERAPDF15NLO_ALPHAS
+alpha_s_pdf_name_down = HERAPDF15NLO_ALPHAS
+alpha_s_pdf_histogram_name_up = HERAPDF15NLOas1156_prenorm
+alpha_s_pdf_histogram_name_down = HERAPDF15NLOasxxx_prenorm
