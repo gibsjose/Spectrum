@@ -490,7 +490,8 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		if(!tmp.compare("EMPTY")) {
 			if(debug) std::cout << cn << mn << "No plot option for x_scale was specified" << std::endl;
 			tmp = "1.0";
-		} else {
+		}
+		{
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
 			if(debug) {
@@ -511,7 +512,8 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		if(!tmp.compare("EMPTY")) {
 			if(debug) std::cout << cn << mn << "No plot option for y_scale was specified" << std::endl;
 			tmp = "1.0";
-		} else {
+		}
+		{
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
 			if(debug) {
