@@ -995,7 +995,11 @@ void SPXPlot::NormalizeCrossSections(void) {
 			//Also scale by the artificial scale from the plot configuration instance
 			xScale *= pci->xScale;
 			yScale *= pci->yScale;
+			SPXGraphUtilities::Scale(crossSections[i].GetPDFBandResults(), xScale, yScale);
 
+			//Also scale by the arficicial grid scale from the grid steering file
+			xScale = 1.0;
+			yScale = pci->gridSteeringFile.GetYScale();
 			SPXGraphUtilities::Scale(crossSections[i].GetPDFBandResults(), xScale, yScale);
 
 			if(debug) {

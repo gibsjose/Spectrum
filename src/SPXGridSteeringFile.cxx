@@ -36,6 +36,9 @@ void SPXGridSteeringFile::SetDefaults(void) {
 	dividedByBinWidth = false;
 	if(debug) std::cout << cn << mn << "dividedByBinWidth set to default: \"false\"" << std::endl;
 
+	yScale = 1.0;
+	if(debug) std::cout << cn << mn << "yScale set to default: \"1.0\"" << std::endl;
+
 	gridFilepath.clear();
 	if(debug) std::cout << cn << mn << "gridFilepath set to default: \" \"" << std::endl;
 
@@ -59,6 +62,7 @@ void SPXGridSteeringFile::Print(void) {
 	std::cout << "\t Graphing Options [GRAPH]" << std::endl;
 	std::cout << "\t\t X Units: " << xUnits << std::endl;
 	std::cout << "\t\t Y Units: " << yUnits << std::endl;
+	std::cout << "\t\t Y Scale: " << yScale << std::endl;
 	std::cout << "\t\t Reference Histogram Divided by Bin Width? " << (dividedByBinWidth ? "YES" : "NO") << std::endl << std::endl;
 	std::cout << "\t Grid Options [GRID]" << std::endl;
 	std::cout << "\t\t Grid File: " << gridFilepath << std::endl;
@@ -113,6 +117,8 @@ void SPXGridSteeringFile::Parse(void) {
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Y Units: " << yUnits << std::endl;
 	}
+
+	yScale = reader->GetReal("GRAPH", "y_scale", y_scale);
 
 	dividedByBinWidth = reader->GetBoolean("GRAPH", "divided_by_bin_width", false);
 	if(debug) std::cout << cn << mn << "Divided By Bin Width set to: " << (dividedByBinWidth ? "ON" : "OFF") << std::endl;

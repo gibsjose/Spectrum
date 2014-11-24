@@ -41,6 +41,7 @@ private:
 	std::string xUnits;
 	std::string yUnits;
 	bool dividedByBinWidth;
+	double yScale;
 
 	//[GRID]
 	std::string gridFilepath;
@@ -87,6 +88,10 @@ public:
 
 	bool IsDividedByBinWidth(void) const {
 		return this->dividedByBinWidth;
+	}
+
+	double GetYScale(void) const {
+		return this->yScale;
 	}
 
 	const std::string & GetGridFilepath(void) const {
