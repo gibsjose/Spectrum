@@ -118,7 +118,7 @@ void SPXGridSteeringFile::Parse(void) {
 		if(debug) std::cout << cn << mn << "Successfully read Y Units: " << yUnits << std::endl;
 	}
 
-	yScale = reader->GetReal("GRAPH", "y_scale", y_scale);
+	yScale = reader->GetReal("GRAPH", "y_scale", yScale);
 
 	dividedByBinWidth = reader->GetBoolean("GRAPH", "divided_by_bin_width", false);
 	if(debug) std::cout << cn << mn << "Divided By Bin Width set to: " << (dividedByBinWidth ? "ON" : "OFF") << std::endl;
