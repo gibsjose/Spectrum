@@ -566,6 +566,8 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		pci.id = i;
 
+		std::cout << "ddr.size() = " << ddr.size();
+
 		//Copy from vectors to pci
 		pci.dataDirectory = ddr[i];
 		pci.gridDirectory = gdr[i];
