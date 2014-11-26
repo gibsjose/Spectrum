@@ -43,6 +43,7 @@ void SPXPlot::Plot(void) {
 	CreateCanvas();
 	DivideCanvasIntoPads();
 	ConfigurePads();
+	MatchOverlayBinning();
 	DrawOverlayPadFrame();
 	DrawRatioPadFrame();
 	SetAxisLabels();
@@ -565,43 +566,26 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 	}
 }
 
-// void SPXPlot::MatchBinning(void) {
-// 	std::string mn = "MatchBinning: ";
-//
-// 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
-// 	SPXPlotType &pt = pc.GetPlotType();
-// 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
-// 	SPXOverlayStyle &os = pc.GetOverlayStyle();
-//
-// 	//First loop over all data and match all of them
-//MAKE SURE TO SET DIVIDED_BY_BIN_WIDTH CORRECTLY!!!
-// 	for(int i = 0; i < data.size(); i++) {
-//
-//	}
-//
-// 	//Next loop over configuration instances and match all convolutions to the data
-//	//MAKE SURE TO SET DIVIDED_BY_BIN_WIDTH CORRECTLY!!!
-// }
+//Matches the overlay binning if the match_binning flag is set
+//NOTE: Ratios are automatically matched, since they must align in order
+//		to use the SPXGraphUtilities::Divide function
+void SPXPlot::MatchOverlayBinning(void) {
+	std::string mn = "MatchBinning: ";
 
-void SPXPlot::DrawOverlay(void) {
-	std::string mn = "DrawOverlay: ";
-
-	if(!overlayPad) {
-		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DrawOverlayPadFrame before drawing the overlay graphs");
-	}
-
-	//Do nothing if not drawing overlay
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXPlotType &pt = pc.GetPlotType();
 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
 	SPXOverlayStyle &os = pc.GetOverlayStyle();
 
+	//Do nothing if not drawing overlay
 	if(!ds.ContainsOverlay()) {
 		return;
 	}
 
-	//Change to the overlay pad
-	overlayPad->cd();
+	//@TODO SET DIVIDED_BY_BIN_WIDTH CORRECTLY!!!
+	//@TODO How to have access to the dividedByBinWidth flag?
+	//		Make copy in SPXData and SPXCrossSection upon initialization in constructor...
+	//		Make method: IsDividedByBinWidth for both SPXData and SPXCrossSection
 
 	//Match binning of all graphs within each PCI, if matchBinning set
 	if(steeringFile->GetMatchBinning()) {
@@ -640,6 +624,27 @@ void SPXPlot::DrawOverlay(void) {
 			}
 		}
 	}
+}
+
+void SPXPlot::DrawOverlay(void) {
+	std::string mn = "DrawOverlay: ";
+
+	if(!overlayPad) {
+		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DrawOverlayPadFrame before drawing the overlay graphs");
+	}
+
+	//Do nothing if not drawing overlay
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXPlotType &pt = pc.GetPlotType();
+	SPXDisplayStyle &ds = pc.GetDisplayStyle();
+	SPXOverlayStyle &os = pc.GetOverlayStyle();
+
+	if(!ds.ContainsOverlay()) {
+		return;
+	}
+
+	//Change to the overlay pad
+	overlayPad->cd();
 
 	//@TODO Reference Overlay
 

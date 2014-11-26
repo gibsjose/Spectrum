@@ -40,6 +40,7 @@ public:
 	explicit SPXData(const SPXPlotConfigurationInstance &pci) {
 		this->pci = pci;
 		this->dataFormat = pci.dataSteeringFile.GetDataFormat();
+		dividedByBinWidth = this->pci.dataSteeringFile.IsDividedByBinWidth();
 	}
 
 	void Parse(void);
@@ -63,6 +64,10 @@ public:
 
 	unsigned int GetNumberOfBins(void) {
 		return numberOfBins;
+	}
+
+	bool IsDividedByBinWidth(void) const {
+		return dividedByBinWidth;
 	}
 
 	unsigned int GetNumberOfIndividualSystematicErrors(void) const {
@@ -142,6 +147,7 @@ private:
 	std::ifstream *dataFile;						//Must declare as pointer... ifstream's copy constructor is private
 	SPXPlotConfigurationInstance pci;				//Frame options instance which contains the data steering file as well as the plot options
 	SPXDataFormat dataFormat;						//Format of this data: Included directly simply to cut down on syntax in implementation
+	bool dividedByBinWidth;							//Flag indicating whether the initial data was already divided by the bin width
 
 	//Number of bins in data map
 	unsigned int numberOfBins;
