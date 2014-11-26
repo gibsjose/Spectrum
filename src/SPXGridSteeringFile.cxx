@@ -27,6 +27,30 @@ void SPXGridSteeringFile::SetDefaults(void) {
 	name.clear();
 	if(debug) std::cout << cn << mn << "name set to default: \" \"" << std::endl;
 
+	author.clear();
+	if(debug) std::cout << cn << mn << "author set to default: \" \"" << std::endl;
+
+	lumiConfigFile.clear();
+	if(debug) std::cout << cn << mn << "lumiConfigFile set to default: \" \"" << std::endl;
+
+	scale.clear();
+	if(debug) std::cout << cn << mn << "scale set to default: \" \"" << std::endl;
+
+	referenceJournalName.clear();
+	if(debug) std::cout << cn << mn << "referenceJournalName set to default: \" \"" << std::endl;
+
+	referenceLinkToArXiv.clear();
+	if(debug) std::cout << cn << mn << "referenceLinkToArXiv set to default: \" \"" << std::endl;
+
+	nloProgramName.clear();
+	if(debug) std::cout << cn << mn << "nloProgramName set to default: \" \"" << std::endl;
+
+	gridProgramName.clear();
+	if(debug) std::cout << cn << mn << "gridProgramName set to default: \" \"" << std::endl;
+
+	observableDefinitionLinkToCode.clear();
+	if(debug) std::cout << cn << mn << "observableDefinitionLinkToCode set to default: \" \"" << std::endl;
+
 	xUnits.clear();
 	if(debug) std::cout << cn << mn << "xUnits set to default: \" \"" << std::endl;
 
@@ -58,7 +82,15 @@ void SPXGridSteeringFile::Print(void) {
 	std::cout << "\t General Options [GEN]" << std::endl;
 	std::cout << "\t\t Debug is " << (debug ? "ON" : "OFF") << std::endl << std::endl;
 	std::cout << "\t Description [DESC]" << std::endl;
-	std::cout << "\t\t Name: " << name << std::endl << std::endl;
+	std::cout << "\t\t Name: " << name << std::endl;
+	std::cout << "\t\t Author: " << author << std::endl;
+	std::cout << "\t\t Lumi Config File: " << lumiConfigFile << std::endl;
+	std::cout << "\t\t Scale: " << scale << std::endl;
+	std::cout << "\t\t Reference Journal Name: " << referenceJournalName << std::endl;
+	std::cout << "\t\t Reference Link to arXiv: " << referenceLinkToArXiv << std::endl;
+	std::cout << "\t\t NLO Program Name: " << nloProgramName << std::endl;
+	std::cout << "\t\t Grid Program Name: " << gridProgramName << std::endl;
+	std::cout << "\t\t Observable Definition Link To Code: " << observableDefinitionLinkToCode << std::endl << std::endl;
 	std::cout << "\t Graphing Options [GRAPH]" << std::endl;
 	std::cout << "\t\t X Units: " << xUnits << std::endl;
 	std::cout << "\t\t Y Units: " << yUnits << std::endl;
@@ -101,6 +133,70 @@ void SPXGridSteeringFile::Parse(void) {
 		name.clear();
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Grid Name: " << name << std::endl;
+	}
+
+	author = reader->Get("DESC", "author", "EMPTY");
+	if(!author.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Author was not specified" << std::endl;
+		author.clear();
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read Author: " << author << std::endl;
+	}
+
+	lumiConfigFile = reader->Get("DESC", "lumi_config_file", "EMPTY");
+	if(!lumiConfigFile.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Lumi Config File was not specified" << std::endl;
+		lumiConfigFile.clear();
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read Lumi Config File: " << lumiConfigFile << std::endl;
+	}
+
+	scale = reader->Get("DESC", "scale", "EMPTY");
+	if(!scale.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Scale was not specified" << std::endl;
+		scale.clear();
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read Scale: " << scale << std::endl;
+	}
+
+	referenceJournalName = reader->Get("DESC", "reference_journal_name", "EMPTY");
+	if(!referenceJournalName.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Reference Journal Name was not specified" << std::endl;
+		referenceJournalName.clear();
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read Reference Journal Name: " << referenceJournalName << std::endl;
+	}
+
+	referenceLinkToArXiv = reader->Get("DESC", "reference_link_to_arxiv", "EMPTY");
+	if(!referenceLinkToArXiv.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Reference Link to arXiv was not specified" << std::endl;
+		referenceLinkToArXiv.clear();
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read Reference Link to arXiv: " << referenceLinkToArXiv << std::endl;
+	}
+
+	nloProgramName = reader->Get("DESC", "nlo_program_name", "EMPTY");
+	if(!nloProgramName.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "NLO Program Name was not specified" << std::endl;
+		nloProgramName.clear();
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read NLO Program Name: " << nloProgramName << std::endl;
+	}
+
+	gridProgramName = reader->Get("DESC", "grid_program_name", "EMPTY");
+	if(!gridProgramName.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Grid Program Name was not specified" << std::endl;
+		gridProgramName.clear();
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read Grid Program Name: " << gridProgramName << std::endl;
+	}
+
+	observableDefinitionLinkToCode = reader->Get("DESC", "observable_definition_link_to_code", "EMPTY");
+	if(!observableDefinitionLinkToCode.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Observable Definition Link to Code was not specified" << std::endl;
+		observableDefinitionLinkToCode.clear();
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read Observable Definition Link to Code: " << observableDefinitionLinkToCode << std::endl;
 	}
 
 	//Graping Options [GRAPH]
