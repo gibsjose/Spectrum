@@ -39,6 +39,14 @@ debug = false
 ;==============================================================
 [DESC]
 name = ATLAS_epj_atlas_mtt
+author = John Smith
+lumi_config_file = some_file.config
+scale = Pt^2
+reference_journal_name = Some Physics Journal
+reference_link_to_arxiv = www.heresthelink.com
+nlo_program_name = Sherpa
+grid_program_name = mcgrid
+observable_definition_link_to_code = www.heresthelink.com
 
 ;==============================================================
 ; Graphing Options
@@ -46,7 +54,7 @@ name = ATLAS_epj_atlas_mtt
 [GRAPH]
 x_units = GeV
 y_units = fb
-; y_scale = 
+; y_scale =
 divided_by_bin_width = true
 
 ;==============================================================

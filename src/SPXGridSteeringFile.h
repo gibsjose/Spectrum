@@ -35,7 +35,16 @@ private:
 	bool debug;
 
 	//[DESC]
-	std::string name;
+	std::string name;									//Grid name
+	std::string author;									//Grid author
+	std::string lumiConfigFile;							//Sub-process configuration file for the grid program (APPLgrid)
+	std::string scale;									//Choice of renormalization scale (Q^2)
+	std::string referenceJournalName;					//Name of reference journal for the corresponding dataset
+	std::string referenceLinkToArXiv;					//Link to reference on arXiv for the corresponding dataset
+	std::string nloProgramName;							//NLO Program used to generate the grids
+	std::string gridProgramName;						//Program used as an interface between NLO program and APPLgrid
+	std::string observableDefinitionLinkToCode;			//Link to the piece of code/file which defines the observable and applies \
+															event selection cut, fills APPLgrid, etc.
 
 	//[GRAPH]
 	std::string xUnits;
@@ -76,6 +85,38 @@ public:
 
 	const std::string & GetName(void) const {
 		return this->name;
+	}
+
+	const std::string & GetAuthor(void) const {
+		return this->author;
+	}
+
+	const std::string & GetLumiConfigFile(void) const {
+		return this->lumiConfigFile;
+	}
+
+	const std::string & GetScale(void) const {
+		return this->scale;
+	}
+
+	const std::string & GetReferenceJournalName(void) const {
+		return this->referenceJournalName;
+	}
+
+	const std::string & GetReferenceLinkToArXiv(void) const {
+		return this->referenceLinkToArXiv;
+	}
+
+	const std::string & GetNLOProgramName(void) const {
+		return this->nloProgramName;
+	}
+
+	const std::string & GetGridProgramName(void) const {
+		return this->gridProgramName;
+	}
+
+	const std::string & GetObservableDefinitionLinkToCode(void) const {
+		return this->observableDefeinitionLinkToCode;
 	}
 
 	const std::string & GetXUnits(void) const {
