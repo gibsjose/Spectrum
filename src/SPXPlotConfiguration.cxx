@@ -342,50 +342,6 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	// AND determine the number of configuration instances
 	unsigned int numberOfConfigurationInstances;
 
-	//Process directories
-	if(ddrSize == 1) {
-		for(int i = 0; i < dsfSize; i++) {
-			ddr.push_back(options["data_directory"][0]);
-		}
-	} else {
-		for(int i = 0; i < dsfSize; i++) {
-			ddr.push_back(options["data_directory"][i]);
-		}
-	}
-
-	if(gdrSize == 1) {
-		for(int i = 0; i < gsfSize; i++) {
-			gdr.push_back(options["grid_directory"][0]);
-		}
-	} else {
-		for(int i = 0; i < gsfSize; i++) {
-			gdr.push_back(options["grid_directory"][i]);
-		}
-	}
-
-	if(pdrSize == 1) {
-		for(int i = 0; i < psfSize; i++) {
-			pdr.push_back(options["pdf_directory"][0]);
-		}
-	} else {
-		for(int i = 0; i < psfSize; i++) {
-			pdr.push_back(options["pdf_directory"][i]);
-		}
-	}
-
-	//DEBUG: Print directories:
-	if(debug) {
-		for(int i = 0; i < ddr.size(); i++) {
-			std::cout << cn << mn << "Data Directory [" << i << "]: " << ddr.at(i) << std::endl;
-		}
-		for(int i = 0; i < gdr.size(); i++) {
-			std::cout << cn << mn << "Grid Directory [" << i << "]: " << gdr.at(i) << std::endl;
-		}
-		for(int i = 0; i < pdr.size(); i++) {
-			std::cout << cn << mn << "PDF Directory [" << i << "]: " << pdr.at(i) << std::endl;
-		}
-	}
-
 	//data, grid, pdf
 	if(plotType.IsType1()) {
 		if(dsfSize != 1) {
@@ -527,6 +483,50 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 				xsc.push_back(options["x_scale"][0]);			//Just one instance of x scale
 				ysc.push_back(options["y_scale"][0]);			//Just one instance of y scale
 			}
+		}
+	}
+
+	//Process directories
+	if(ddrSize == 1) {
+		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+			ddr.push_back(options["data_directory"][0]);
+		}
+	} else {
+		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+			ddr.push_back(options["data_directory"][i]);
+		}
+	}
+
+	if(gdrSize == 1) {
+		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+			gdr.push_back(options["grid_directory"][0]);
+		}
+	} else {
+		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+			gdr.push_back(options["grid_directory"][i]);
+		}
+	}
+
+	if(pdrSize == 1) {
+		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+			pdr.push_back(options["pdf_directory"][0]);
+		}
+	} else {
+		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+			pdr.push_back(options["pdf_directory"][i]);
+		}
+	}
+
+	//DEBUG: Print directories:
+	if(debug) {
+		for(int i = 0; i < ddr.size(); i++) {
+			std::cout << cn << mn << "Data Directory [" << i << "]: " << ddr.at(i) << std::endl;
+		}
+		for(int i = 0; i < gdr.size(); i++) {
+			std::cout << cn << mn << "Grid Directory [" << i << "]: " << gdr.at(i) << std::endl;
+		}
+		for(int i = 0; i < pdr.size(); i++) {
+			std::cout << cn << mn << "PDF Directory [" << i << "]: " << pdr.at(i) << std::endl;
 		}
 	}
 
