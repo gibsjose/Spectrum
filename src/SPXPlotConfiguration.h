@@ -49,6 +49,9 @@ const std::string focn = "SPXPlotConfiguration::";
 const std::string foicn = "SPXPlotConfigurationInstance::";
 
 struct SPXPlotConfigurationInstance {
+	std::string dataDirectory;
+	std::string gridDirectory;
+	std::string pdfDirectory;
 	SPXDataSteeringFile dataSteeringFile;
 	SPXGridSteeringFile gridSteeringFile;
 	SPXPDFSteeringFile pdfSteeringFile;
@@ -68,6 +71,9 @@ struct SPXPlotConfigurationInstance {
 	}
 
 	void SetDefaults(void) {
+		dataDirectory = ".";
+		gridDirectory = ".";
+		pdfDirectory = ".";
 		dataMarkerStyle = PC_EMPTY_STYLE;
 		dataMarkerColor = PC_EMPTY_COLOR;
 		pdfFillStyle = PC_EMPTY_STYLE;
