@@ -382,10 +382,13 @@ std::string SPXRatio::CheckForAlias(std::string &original, const std::string ali
         try {
             if(!alias_type.compare("data")) {
                 alias = plotConfiguration.GetPlotConfigurationInstance(index).dataSteeringFile.GetFilename();
+                dataDirectory = plotConfiguration.GetPlotConfigurationInstance(index).dataDirectory;
             } else if(!alias_type.compare("grid")) {
                 alias = plotConfiguration.GetPlotConfigurationInstance(index).gridSteeringFile.GetFilename();
+                gridDirectory = plotConfiguration.GetPlotConfigurationInstance(index).gridDirectory;
             } else if(!alias_type.compare("pdf")) {
                 alias = plotConfiguration.GetPlotConfigurationInstance(index).pdfSteeringFile.GetFilename();
+                pdfDirectory = plotConfiguration.GetPlotConfigurationInstance(index).pdfDirectory;
             }
 
             if(debug) std::cout << cn << mn << "Successfully aliased \"" << original << "\" to " << alias << std::endl;
