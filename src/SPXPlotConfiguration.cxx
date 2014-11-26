@@ -373,6 +373,19 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		}
 	}
 
+	//DEBUG: Print directories:
+	if(debug) {
+		for(int i = 0; i < ddr.size(); i++) {
+			std::cout << cn << mn << "Data Directory [" << i << "]: " << ddr.at(i) << std::endl;
+		}
+		for(int i = 0; i < gdr.size(); i++) {
+			std::cout << cn << mn << "Grid Directory [" << i << "]: " << gdr.at(i) << std::endl;
+		}
+		for(int i = 0; i < pdr.size(); i++) {
+			std::cout << cn << mn << "PDF Directory [" << i << "]: " << pdr.at(i) << std::endl;
+		}
+	}
+
 	//data, grid, pdf
 	if(plotType.IsType1()) {
 		if(dsfSize != 1) {
@@ -565,8 +578,6 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		pci.SetDefaults();
 
 		pci.id = i;
-
-		std::cout << "ddr.size() = " << ddr.size();
 
 		//Copy from vectors to pci
 		pci.dataDirectory = ddr[i];
