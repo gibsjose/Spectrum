@@ -602,9 +602,9 @@ void SPXPlot::MatchOverlayBinning(void) {
 					TGraphAsymmErrors *slaveStat = data.at(i).GetStatisticalErrorGraph();
 					TGraphAsymmErrors *slaveSyst = data.at(i).GetSystematicErrorGraph();
 					TGraphAsymmErrors *slaveTot = data.at(i).GetTotalErrorGraph();
-					SPXGraphUtilities::MatchBinning(master, slaveStat, true);
-					SPXGraphUtilities::MatchBinning(master, slaveSyst, true);
-					SPXGraphUtilities::MatchBinning(master, slaveTot, true);
+					SPXGraphUtilities::MatchBinning(master, slaveStat, false);
+					SPXGraphUtilities::MatchBinning(master, slaveSyst, false);
+					SPXGraphUtilities::MatchBinning(master, slaveTot, false);
 				}
 			}
 		}
