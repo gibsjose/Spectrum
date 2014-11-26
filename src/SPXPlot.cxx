@@ -599,12 +599,19 @@ void SPXPlot::MatchOverlayBinning(void) {
 
 			if(pt.ContainsMultipleData()) {
 				for(int i = 1; i < data.size(); i++) {
+					bool dividedByBinWidth = false;
+
+					//Check if data master is divided by bin width
+					if(data.at(i).IsDividedByBinWidth()) {
+						dividedByBinWidth = true;
+					}
+
 					TGraphAsymmErrors *slaveStat = data.at(i).GetStatisticalErrorGraph();
 					TGraphAsymmErrors *slaveSyst = data.at(i).GetSystematicErrorGraph();
 					TGraphAsymmErrors *slaveTot = data.at(i).GetTotalErrorGraph();
-					SPXGraphUtilities::MatchBinning(master, slaveStat, false);
-					SPXGraphUtilities::MatchBinning(master, slaveSyst, false);
-					SPXGraphUtilities::MatchBinning(master, slaveTot, false);
+					SPXGraphUtilities::MatchBinning(master, slaveStat, dividedByBinWidth);
+					SPXGraphUtilities::MatchBinning(master, slaveSyst, dividedByBinWidth);
+					SPXGraphUtilities::MatchBinning(master, slaveTot, dividedByBinWidth);
 				}
 			}
 		}
@@ -619,8 +626,15 @@ void SPXPlot::MatchOverlayBinning(void) {
 			}
 
 			for(int i = 1; i < crossSections.size(); i++) {
+				bool dividedByBinWidth = false;
+
+				//Check if data master is divided by bin width
+				if(data.at(0).IsDividedByBinWidth()) {
+					dividedByBinWidth = true;
+				}
+
 				TGraphAsymmErrors *slave = crossSections.at(i).GetPDFBandResults();
-				SPXGraphUtilities::MatchBinning(master, slave, true);
+				SPXGraphUtilities::MatchBinning(master, slave, dividedByBinWidth);
 			}
 		}
 	}
