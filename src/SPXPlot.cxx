@@ -576,7 +576,7 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 // 	//First loop over all data and match all of them
 //MAKE SURE TO SET DIVIDED_BY_BIN_WIDTH CORRECTLY!!!
 // 	for(int i = 0; i < data.size(); i++) {
-//		
+//
 //	}
 //
 // 	//Next loop over configuration instances and match all convolutions to the data
@@ -635,7 +635,7 @@ void SPXPlot::DrawOverlay(void) {
 			}
 
 			for(int i = 1; i < crossSections.size(); i++) {
-				TGraphAsymmErrors *slave = crossSections.at(i);
+				TGraphAsymmErrors *slave = crossSections.at(i).GetPDFBandResults();
 				SPXGraphUtilities::MatchBinning(master, slave, true);
 			}
 		}
