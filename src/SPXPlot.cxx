@@ -620,7 +620,7 @@ void SPXPlot::MatchOverlayBinning(void) {
 
 			for(int i = 1; i < crossSections.size(); i++) {
 				TGraphAsymmErrors *slave = crossSections.at(i).GetPDFBandResults();
-				SPXGraphUtilities::MatchBinning(master, slave, true);
+				SPXGraphUtilities::MatchBinning(master, slave, false);
 			}
 		}
 	}
