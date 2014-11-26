@@ -24,15 +24,6 @@ void SPXSteeringFile::SetDefaults(void) {
 
 	if(debug) std::cout << cn << mn << "Setting default Steering File data" << std::endl;
 
-	pdfDirectory = ".";
-	if(debug) std::cout << cn << mn << "pdfDirectory set to default: \".\"" << std::endl;
-
-	dataDirectory = ".";
-	if(debug) std::cout << cn << mn << "dataDirectory set to default: \".\"" << std::endl;
-
-	gridDirectory = ".";
-	if(debug) std::cout << cn << mn << "gridDirectory set to default: \".\"" << std::endl;
-
 	plotBand = false;
 	if(debug) std::cout << cn << mn << "plotBand set to default: \"false\"" << std::endl;
 
@@ -117,9 +108,6 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "Steering File: " << filename << std::endl;
 	std::cout << "\t General configurations [GEN]" << std::endl;
 	std::cout << "\t\t Debug is " << (debug ? "ON" : "OFF") << std::endl;
-	std::cout << "\t\t PDF Directory: " << pdfDirectory << std::endl;
-	std::cout << "\t\t Data Directory: " << dataDirectory << std::endl;
-	std::cout << "\t\t Grid Directory: " << gridDirectory << std::endl << std::endl;
 	std::cout << "\t Graphing configurations [GRAPH]" << std::endl;
 	std::cout << "\t\t Plot Band is: " << (plotBand ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Error Ticks is: " << (plotErrorTicks ? "ON" : "OFF") << std::endl;
@@ -159,6 +147,9 @@ void SPXSteeringFile::Print(void) {
 			SPXPlotConfigurationInstance tmp;
 			tmp = plotConfigurations[i].GetPlotConfigurationInstance(j);
 
+			std::cout << "\t\t\t PDF Directory: " << tmp.pdfDirectory << std::endl;
+			std::cout << "\t\t\t Data Directory: " << tmp.dataDirectory << std::endl;
+			std::cout << "\t\t\t Grid Directory: " << tmp.gridDirectory << std::endl << std::endl;
 			std::cout << "\t\t\t Data Steering File " << j << ": " << tmp.dataSteeringFile.GetFilename() << std::endl;
 			std::cout << "\t\t\t Grid Steering File " << j << ": " << tmp.gridSteeringFile.GetFilename() << std::endl;
 			std::cout << "\t\t\t PDF Steering File " << j << ": " << tmp.pdfSteeringFile.GetFilename() << std::endl;
@@ -295,6 +286,81 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 			if(debug) std::cout << cn << mn << "configurations[plot_type] = " << configurations["plot_type"].at(0) << std::endl;
 		}
 
+		//Get the data_directory
+		tmp = reader->Get(plotSection, "data_directory", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+			if(debug) std::cout << cn << mn << "No directory specified: Defaulting to \".\"" << std::endl;
+			tmp = ".";
+		}
+		{
+			//Parse into vector
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				if(debug) {
+					std::cout << cn << mn << "data_directory configuration string: " << tmp << " parsed into:" << std::endl;
+					for(int j = 0; j < tmpVector.size(); j++) {
+						std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+					}
+				}
+			}
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("data_directory", tmpVector));
+
+			if(debug) std::cout << cn << mn << "configurations[data_directory] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["data_directory"]) << std::endl;
+		}
+
+		//Get the grid_directory
+		tmp = reader->Get(plotSection, "grid_directory", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+			if(debug) std::cout << cn << mn << "No directory specified: Defaulting to \".\"" << std::endl;
+			tmp = ".";
+		}
+		{
+			//Parse into vector
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				if(debug) {
+					std::cout << cn << mn << "grid_directory configuration string: " << tmp << " parsed into:" << std::endl;
+					for(int j = 0; j < tmpVector.size(); j++) {
+						std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+					}
+				}
+			}
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("grid_directory", tmpVector));
+
+			if(debug) std::cout << cn << mn << "configurations[grid_directory] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["grid_directory"]) << std::endl;
+		}
+
+		//Get the pdf_directory
+		tmp = reader->Get(plotSection, "pdf_directory", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+			if(debug) std::cout << cn << mn << "No directory specified: Defaulting to \".\"" << std::endl;
+			tmp = ".";
+		}
+		{
+			//Parse into vector
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				if(debug) {
+					std::cout << cn << mn << "pdf_directory configuration string: " << tmp << " parsed into:" << std::endl;
+					for(int j = 0; j < tmpVector.size(); j++) {
+						std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+					}
+				}
+			}
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("pdf_directory", tmpVector));
+
+			if(debug) std::cout << cn << mn << "configurations[pdf_directory] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_directory"]) << std::endl;
+		}
+
 		//Get the data_steering_files
 		tmp = reader->Get(plotSection, "data_steering_files", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
@@ -307,13 +373,6 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 				for(int j = 0; j < tmpVector.size(); j++) {
 					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
 				}
-			}
-
-			//Prepend data directory onto all data steering files
-			for(int j = 0; j < tmpVector.size(); j++) {
-				if(debug) std::cout << cn << mn << "Prepending: \"" << dataDirectory << "\" to \"" << tmpVector[j] << "\"" << std::endl;
-				tmpVector[j] = dataDirectory + "/" + tmpVector[j];
-				if(debug) std::cout << cn << mn << "Now: " << tmpVector[j] << std::endl;
 			}
 
 			//Add to configurations map
@@ -337,13 +396,6 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 				}
 			}
 
-			//Prepend grid directory onto all grid steering files
-			for(int j = 0; j < tmpVector.size(); j++) {
-				if(debug) std::cout << cn << mn << "Prepending: \"" << gridDirectory << "\" to \"" << tmpVector[j] << "\"" << std::endl;
-				tmpVector[j] = gridDirectory + "/" + tmpVector[j];
-				if(debug) std::cout << cn << mn << "Now: " << tmpVector[j] << std::endl;
-			}
-
 			//Add to configurations map
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("grid_steering_files", tmpVector));
 			if(debug) std::cout << cn << mn << "configurations[grid_steering_files] = " << \
@@ -362,13 +414,6 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 				for(int j = 0; j < tmpVector.size(); j++) {
 					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
 				}
-			}
-
-			//Prepend pdf directory onto all pdf steering files
-			for(int j = 0; j < tmpVector.size(); j++) {
-				if(debug) std::cout << cn << mn << "Prepending: \"" << pdfDirectory << "\" to \"" << tmpVector[j] << "\"" << std::endl;
-				tmpVector[j] = pdfDirectory + "/" + tmpVector[j];
-				if(debug) std::cout << cn << mn << "Now: " << tmpVector[j] << std::endl;
 			}
 
 			//Add to configurations map

@@ -52,9 +52,6 @@ private:
 
 	//[GEN]
 	bool debug;						//Flag to indicate debug mode
-	std::string pdfDirectory;		//Directory prepended to PDF steering files
-	std::string dataDirectory;		//Directory prepended to data steering files
-	std::string gridDirectory;		//Directory prepended to grid steering files
 
 	//[GRAPH]
 	bool plotBand;					//Flag to indicate that error bands should be plotted

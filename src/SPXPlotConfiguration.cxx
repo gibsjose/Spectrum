@@ -34,6 +34,9 @@ bool SPXPlotConfiguration::debug;
 bool SPXPlotConfigurationInstance::debug;
 
 //Constructs an SPXPlotConfiguration object with a map of string vectors, where keys are
+//	options["data_directory"] --> Vector of data directories
+//	options["grid_directory"] --> Vector of grid directories
+//	options["pdf_directory"] --> Vector of PDF directories
 //	options["data_steering_files"] --> Vector of data steering files
 //	options["grid_steering_files"] --> Vector of grid steering files
 //	options["pdf_steering_files"] --> Vector of PDF steering files
@@ -77,6 +80,9 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	std::string mn = "Parse: ";
 
 	//Vectors for creating the actual instances
+	std::vector<std::string> ddr;	//Data directories
+	std::vector<std::string> gdr;	//Grid directories
+	std::vector<std::string> pdr;	//PDF directories
 	std::vector<std::string> dsf;	//Data steering files
 	std::vector<std::string> gsf;	//Grid steering files
 	std::vector<std::string> psf;	//PDF steering files
@@ -126,6 +132,18 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		if(options.count("y_log") == 0) {
 			throw SPXParseException("The options map MUST contain an entry for y_log");
+		}
+
+		if(options.count("data_directory") == 0) {
+			throw SPXParseException("The options map MUST contain a vector for data_directory");
+		}
+
+		if(options.count("grid_directory") == 0) {
+			throw SPXParseException("The options map MUST contain a vector for grid_directory");
+		}
+
+		if(options.count("pdf_directory") == 0) {
+			throw SPXParseException("The options map MUST contain a vector for pdf_directory");
 		}
 
 		if(options.count("data_steering_files") == 0) {
@@ -180,6 +198,15 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		tmpVector = options["y_log"];
 		std::cout << "\ty_log = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+
+		tmpVector = options["data_directory"];
+		std::cout << "\tdata_directory = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+
+		tmpVector = options["grid_directory"];
+		std::cout << "\tgrid_directory = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+
+		tmpVector = options["pdf_directory"];
+		std::cout << "\tpdf_directory = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 
 		tmpVector = options["data_steering_files"];
 		std::cout << "\tdata_steering_files = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
@@ -244,6 +271,9 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	//Get vector sizes
 	unsigned int rsSize = options["ratio_style"].size();
 	unsigned int rSize = options["ratio"].size();
+	unsigned int ddrSize = options["data_directory"].size();
+	unsigned int gdrSize = options["grid_directory"].size();
+	unsigned int pdrSize = options["pdf_directory"].size();
 	unsigned int dsfSize = options["data_steering_files"].size();
 	unsigned int gsfSize = options["grid_steering_files"].size();
 	unsigned int psfSize = options["pdf_steering_files"].size();
@@ -296,9 +326,52 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		throw SPXParseException("Size of pdf_marker_style vector DOES NOT match the size of the pdf_steering_files vector");
 	}
 
+	//Check directory size: Could either be of length 1, in which case the directory is prepended to each steering file, or
+	//	the exact length of the steering file list
+	if((ddrSize != 1) && (ddrSize != dsfSize)) {
+		throw SPXParseException("Size of data_directory vector MUST be either '1' or the size of the data_steering_files vector");
+	}
+	if((gdrSize != 1) && (gdrSize != gsfSize)) {
+		throw SPXParseException("Size of grid_directory vector MUST be either '1' or the size of the grid_steering_files vector");
+	}
+	if((pdrSize != 1) && (pdrSize != psfSize)) {
+		throw SPXParseException("Size of pdf_directory vector MUST be either '1' or the size of the pdf_steering_files vector");
+	}
+
 	//Check the rest of the vector sizes based on the plot type
 	// AND determine the number of configuration instances
 	unsigned int numberOfConfigurationInstances;
+
+	//Process directories
+	if(ddrSize == 1) {
+		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+			ddr.push_back(options["data_directory"][0]);
+		}
+	} else {
+		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+			ddr.push_back(options["data_directory"][i]);
+		}
+	}
+
+	if(gdrSize == 1) {
+		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+			gdr.push_back(options["grid_directory"][0]);
+		}
+	} else {
+		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+			gdr.push_back(options["grid_directory"][i]);
+		}
+	}
+
+	if(pdrSize == 1) {
+		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+			pdr.push_back(options["pdf_directory"][0]);
+		}
+	} else {
+		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+			pdr.push_back(options["pdf_directory"][i]);
+		}
+	}
 
 	//data, grid, pdf
 	if(plotType.IsType1()) {
@@ -494,9 +567,12 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		pci.id = i;
 
 		//Copy from vectors to pci
-		pci.dataSteeringFile = SPXDataSteeringFile(dsf[i]);
-		pci.gridSteeringFile = SPXGridSteeringFile(gsf[i]);
-		pci.pdfSteeringFile = SPXPDFSteeringFile(psf[i]);
+		pci.dataDirectory = ddr[i];
+		pci.gridDirectory = gdr[i];
+		pci.pdfDirectory = pdr[i];
+		pci.dataSteeringFile = SPXDataSteeringFile(ddr[i] + "/" + dsf[i]);
+		pci.gridSteeringFile = SPXGridSteeringFile(gdr[i] + "/" + gsf[i]);
+		pci.pdfSteeringFile = SPXPDFSteeringFile(pdr[i] + "/" + psf[i]);
 		pci.dataMarkerStyle = atoi(dms[i].c_str());
 		pci.dataMarkerColor = atoi(dmc[i].c_str());
 
