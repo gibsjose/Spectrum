@@ -565,6 +565,24 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 	}
 }
 
+// void SPXPlot::MatchBinning(void) {
+// 	std::string mn = "MatchBinning: ";
+//
+// 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+// 	SPXPlotType &pt = pc.GetPlotType();
+// 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
+// 	SPXOverlayStyle &os = pc.GetOverlayStyle();
+//
+// 	//First loop over all data and match all of them
+//MAKE SURE TO SET DIVIDED_BY_BIN_WIDTH CORRECTLY!!!
+// 	for(int i = 0; i < data.size(); i++) {
+//		
+//	}
+//
+// 	//Next loop over configuration instances and match all convolutions to the data
+//	//MAKE SURE TO SET DIVIDED_BY_BIN_WIDTH CORRECTLY!!!
+// }
+
 void SPXPlot::DrawOverlay(void) {
 	std::string mn = "DrawOverlay: ";
 
@@ -600,16 +618,16 @@ void SPXPlot::DrawOverlay(void) {
 					TGraphAsymmErrors *slaveStat = data.at(i).GetStatisticalErrorGraph();
 					TGraphAsymmErrors *slaveSyst = data.at(i).GetSystematicErrorGraph();
 					TGraphAsymmErrors *slaveTot = data.at(i).GetTotalErrorGraph();
-					SPXGraphUtilities::MatchBinning(master, slaveStat);
-					SPXGraphUtilities::MatchBinning(master, slaveSyst);
-					SPXGraphUtilities::MatchBinning(master, slaveTot);
+					SPXGraphUtilities::MatchBinning(master, slaveStat, true);
+					SPXGraphUtilities::MatchBinning(master, slaveSyst, true);
+					SPXGraphUtilities::MatchBinning(master, slaveTot, true);
 				}
 			}
 		}
 
 		//Match all convolutes to the data master (if data is plotted) or to the master convolute
 		if(os.ContainsConvolute()) {
-			
+
 			if(os.ContainsData()) {
 				master = data.at(0).GetTotalErrorGraph();
 			} else {
@@ -618,7 +636,7 @@ void SPXPlot::DrawOverlay(void) {
 
 			for(int i = 1; i < crossSections.size(); i++) {
 				TGraphAsymmErrors *slave = crossSections.at(i);
-				SPXGraphUtilities::MatchBinning(master, slave);
+				SPXGraphUtilities::MatchBinning(master, slave, true);
 			}
 		}
 	}
