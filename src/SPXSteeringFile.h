@@ -109,18 +109,6 @@ public:
 		return this->debug;
 	}
 
-	const std::string & GetPDFDirectory(void) const {
-		return this->pdfDirectory;
-	}
-
-	const std::string & GetDataDirectory(void) const {
-		return this->dataDirectory;
-	}
-
-	const std::string & GetGridDirectory(void) const {
-		return this->gridDirectory;
-	}
-
 	bool GetPlotBand(void) const {
 		return this->plotBand;
 	}
