@@ -757,10 +757,6 @@ void SPXSteeringFile::Parse(void) {
 	//Set Defaults
 	this->SetDefaults();
 
-	pdfDirectory = reader->Get("GEN", "pdf_directory", pdfDirectory);
-	dataDirectory = reader->Get("GEN", "data_directory", dataDirectory);
-	gridDirectory = reader->Get("GEN", "grid_directory", gridDirectory);
-
 	//Enable all debug configurations if debug is on
 	if(debug) {
 		std::cout << cn << mn << "Debug is ON" << std::endl;
