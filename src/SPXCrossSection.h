@@ -30,6 +30,8 @@ public:
 	explicit SPXCrossSection(SPXPDFSteeringFile *psf, SPXPlotConfigurationInstance *pci) {
 		this->psf = psf;
 		this->pci = pci;
+
+		dividedByBinWidth = this->pci->gridSteeringFile.IsDividedByBinWidth();
 	}
 
 	~SPXCrossSection(void) {
@@ -46,6 +48,10 @@ public:
 
 	static void SetDebug(bool b) {
 		debug = b;
+	}
+
+	bool IsDividedByBinWidth(void) const {
+		return dividedByBinWidth;
 	}
 
 	TGraphAsymmErrors *GetPDFBandResults(void) {
@@ -98,6 +104,7 @@ private:
 	SPXPlotConfigurationInstance *pci;	//Fully parsed Plot configuration instance (contains grid steering file)
 	SPXGrid *grid;						//Grid
 	SPXPDF *pdf;						//PDF
+	bool dividedByBinWidth;				//Flag indicating that the grid was already divided by the bin width
 };
 
 #endif
