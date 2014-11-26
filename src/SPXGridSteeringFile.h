@@ -116,7 +116,7 @@ public:
 	}
 
 	const std::string & GetObservableDefinitionLinkToCode(void) const {
-		return this->observableDefeinitionLinkToCode;
+		return this->observableDefinitionLinkToCode;
 	}
 
 	const std::string & GetXUnits(void) const {
