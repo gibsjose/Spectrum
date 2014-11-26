@@ -344,31 +344,31 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 	//Process directories
 	if(ddrSize == 1) {
-		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+		for(int i = 0; i < dsfSize; i++) {
 			ddr.push_back(options["data_directory"][0]);
 		}
 	} else {
-		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+		for(int i = 0; i < dsfSize; i++) {
 			ddr.push_back(options["data_directory"][i]);
 		}
 	}
 
 	if(gdrSize == 1) {
-		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+		for(int i = 0; i < gsfSize; i++) {
 			gdr.push_back(options["grid_directory"][0]);
 		}
 	} else {
-		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+		for(int i = 0; i < gsfSize; i++) {
 			gdr.push_back(options["grid_directory"][i]);
 		}
 	}
 
 	if(pdrSize == 1) {
-		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+		for(int i = 0; i < psfSize; i++) {
 			pdr.push_back(options["pdf_directory"][0]);
 		}
 	} else {
-		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+		for(int i = 0; i < psfSize; i++) {
 			pdr.push_back(options["pdf_directory"][i]);
 		}
 	}
