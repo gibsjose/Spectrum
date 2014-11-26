@@ -934,9 +934,9 @@ void SPXPlot::InitializeRatios(void) {
 			ratioInstance.AddDataFileGraphMap(dataFileGraphMap);
 			ratioInstance.AddReferenceFileGraphMap(referenceFileGraphMap);
 			ratioInstance.AddConvoluteFileGraphMap(convoluteFileGraphMap);
-			ratioInstance.SetDataDirectory(steeringFile->GetDataDirectory());
-			ratioInstance.SetGridDirectory(steeringFile->GetGridDirectory());
-			ratioInstance.SetPDFDirectory(steeringFile->GetPDFDirectory());
+			// ratioInstance.SetDataDirectory(steeringFile->GetDataDirectory());
+			// ratioInstance.SetGridDirectory(steeringFile->GetGridDirectory());
+			// ratioInstance.SetPDFDirectory(steeringFile->GetPDFDirectory());
 			ratioInstance.Parse(ratioString);
 			ratioInstance.GetGraphs();
 			ratioInstance.Divide();
