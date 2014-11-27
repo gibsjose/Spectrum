@@ -188,7 +188,7 @@ void SPXGridCorrections::Parse(void) {
     //if(debug) Print();
 }
 
-void SPXGridCorrections::PrintMap(std::string &s, StringDoubleMap_T &m) {
+void SPXGridCorrections::PrintMap(std::string &s, StringDoubleVectorMap_T &m) {
     std::string mn = "PrintMap: ";
 
     std::cout cn << mn << "Printing " << s << " map: " << std::endl << std::endl;

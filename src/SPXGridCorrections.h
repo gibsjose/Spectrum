@@ -36,7 +36,7 @@ public:
     }
 
     void Parse(void);
-    void PrintMap(std::string &s, StringDoubleMap_T &m);
+    void PrintMap(std::string &s, StringDoubleVectorMap_T &m);
     void Print(void);
 
     static bool GetDebug(void) {
