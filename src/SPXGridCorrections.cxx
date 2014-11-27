@@ -195,9 +195,6 @@ void SPXGridCorrections::Parse(void) {
     totalCorrections.insert(StringDoubleVectorPair_T("eyh", tot_eyh));
 
     if(debug) std::cout << cn << mn << "Successfully added all corrections to map" << std::endl;
-
-    //Print everything...
-    //if(debug) Print();
 }
 
 void SPXGridCorrections::PrintMap(std::string &s, StringDoubleVectorMap_T &m) {
