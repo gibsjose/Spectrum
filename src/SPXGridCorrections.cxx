@@ -111,7 +111,7 @@ void SPXGridCorrections::Parse(void) {
                     exl.push_back(tmp[1]);
                     exh.push_back(tmp[2]);
 
-                    if(numberOfColumns == 5) {
+                    if(numberOfColumns == 4) {
                         y.push_back(tmp[3]);
                         eyl.push_back(tmp[3]);
                         eyh.push_back(tmp[3]);
