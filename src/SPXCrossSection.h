@@ -40,7 +40,7 @@ public:
 	}
 
 	void Create(void);
-	//void ConfigureStyle();
+	void ApplyCorrections(void);
 
 	static bool GetDebug(void) {
 		return debug;
@@ -98,13 +98,14 @@ public:
 	*/
 
 private:
-	static bool debug;					//Flag indicating debug mode
-	unsigned int plotID;				//Plot ID
-	SPXPDFSteeringFile *psf;			//Fully parsed PDF Steering File
-	SPXPlotConfigurationInstance *pci;	//Fully parsed Plot configuration instance (contains grid steering file)
-	SPXGrid *grid;						//Grid
-	SPXPDF *pdf;						//PDF
-	bool dividedByBinWidth;				//Flag indicating that the grid was already divided by the bin width
+	static bool debug;							//Flag indicating debug mode
+	unsigned int plotID;						//Plot ID
+	SPXPDFSteeringFile *psf;					//Fully parsed PDF Steering File
+	SPXPlotConfigurationInstance *pci;			//Fully parsed Plot configuration instance (contains grid steering file)
+	SPXGrid *grid;								//Grid
+	SPXPDF *pdf;								//PDF
+	SPXGridCorrections *corrections;			//Grid corrections
+	bool dividedByBinWidth;						//Flag indicating that the grid was already divided by the bin width
 };
 
 #endif

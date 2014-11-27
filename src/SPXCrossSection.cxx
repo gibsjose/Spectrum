@@ -32,31 +32,55 @@ void SPXCrossSection::Create(void) {
 		throw;
 	}
 
-	//Attempt to create the PDF object
+	//Attempt to create the PDF object and perform convolution
 	try {
 		pdf = new SPXPDF(psf, grid->GetGridName());
 	} catch(const SPXException &e) {
 		throw;
 	}
+
+	//Check if grid contains corrections
+	if(pci.gridSteeringFile.GetNumberOfCorrectionFiles() != 0) {
+		try {
+			corrections = new SPXGridCorrections(pci);
+			corrections->Parse();
+			corrections->Print();
+		} catch(const SPXException &e) {
+			throw;
+		}
+	}
 }
 
-//@TODO Already done in SPXPDF::Initialize()
-/*
-void SPXCrossSection::ConfigureStyle(void) {
+void SPXCrossSection::ApplyCorrections(void) {
+	if(pci.gridSteeringFile.GetNumberOfCorrectionFiles() == 0) {
+		return;
+	}
 
-	//Set marker style
-	pdf->h_PDFBand_results->SetMarkerStyle(psf->GetMarkerStyle());
+	//Loop over the band bins and make sure they match, if not just do nothing
 
-	//Set marker color
-	pdf->h_PDFBand_results->SetMarkerColor(psf->GetMarkerColor());
+	// unsigned int nBins = pdf->h_PDFBand_results->GetN();
+	// double *x = pdf->h_PDFBand_results->GetX();
+	// double *y = pdf->h_PDFBand
 
-	//Set marker size
-	pdf->h_PDFBand_results->SetMarkerSize(1.0);
+	//@TODO Should calculate the TOTAL scale for sigma, dsig+, dsig- and have it accessible as a vector from the SPXGridCorrections class
+	//		then only need to loop over bins and make sure there is a corresponding bin for each total scale, and if there is, apply it.
+	//		The SPXGridCorrections class should do the check to see whether the different corrections have the same binning
 
-	//Set line color
-	pdf->h_PDFBand_results->SetLineColor(1);
+	// //PDF Band
+	// for(int i = 0; i < pci.gridSteeringFile.GetNumberOfCorrectionFiles(); i++) {
+	// 	std::string &key = pci.gridSteeringFile.GetCorrectionFile(i);
+	// 	std::vector<std::vector<double> > &matrix;
+	//
+	// 	matrix = corrections.GetCorrections(key);
+	//
+	//
+	// 	//Loop over bins in band and apply corrections if the bins match up
+	// 	for(int j = 0; j < nBins; j++) {
+	//
+	//
+	// 		if(matrix[1] != )
+	// 	}
+	// }
 
-	//Set line width
-	pdf->h_PDFBand_results->SetLineWidth(1);
+	//@TODO Do the same for Alpha S and Scale uncertainty bands
 }
-*/

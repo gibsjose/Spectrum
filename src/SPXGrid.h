@@ -41,7 +41,7 @@ public:
 	static bool GetDebug(void) {
 		return debug;
 	}
-	
+
 	static void SetDebug(bool b) {
 		debug = b;
 	}
@@ -54,9 +54,9 @@ public:
 	TH1D *GetReference(void);
 
 private:
-	static bool debug;					//Flag indicating debug mode
-	SPXPlotConfigurationInstance *pci;	//Plot configuration instance
-	appl::grid *grid;					//APPLGrid Grid
+	static bool debug;						//Flag indicating debug mode
+	SPXPlotConfigurationInstance *pci;		//Plot configuration instance
+	appl::grid *grid;						//APPLGrid Grid
 };
 
 #endif

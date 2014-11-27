@@ -287,7 +287,7 @@ public:
 
 		if((index + 1) > configurationInstances.size()) {
 			int top = configurationInstances.size() - 1;
-			throw SPXOutOfRangeException(top, index, "SPXPlotConfiguration::GetFrameOptionsInstance: Index out of range");
+			throw SPXOutOfRangeException(top, index, focn + mn + "Index out of range");
 		}
 
 		return configurationInstances.at(index);
