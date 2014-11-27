@@ -67,10 +67,10 @@ void SPXCrossSection::ApplyCorrections(void) {
 	unsigned int nBins = pdf->h_PDFBand_results->GetN();
 	double *x = pdf->h_PDFBand_results->GetX();
 	double *y = pdf->h_PDFBand_results->GetY();
-	double *exl = pdf->h_PDFBand_results->GetErrorXlow();
-	double *exh = pdf->h_PDFBand_results->GetErrorXhigh();
-	double *eyl = pdf->h_PDFBand_results->GetErrorYlow();
-	double *eyh = pdf->h_PDFBand_results->GetErrorYhigh();
+	double *exl = pdf->h_PDFBand_results->GetEXlow();
+	double *exh = pdf->h_PDFBand_results->GetEXhigh();
+	double *eyl = pdf->h_PDFBand_results->GetEYlow();
+	double *eyh = pdf->h_PDFBand_results->GetEYhigh();
 
 	unsigned int nBinsCorr = corrections->GetNumberOfBins();
 	double *c_x = &(corrections->GetTotalX().at(0));
