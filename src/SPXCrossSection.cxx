@@ -95,6 +95,8 @@ void SPXCrossSection::ApplyCorrections(void) {
 			//Check for bin match
 			if(((x[i] - exl[i]) == c_exl[j]) && ((x[i] + exh[i]) == c_exh[j])) {
 
+				if(debug) std::cout << cn << mn << "Bins Match (i, j): (" << i << ", " << j << ")" << std::endl;
+
 				//Bins match; Scale y, eyl, and eyh
 				y[i] *= c_y[j];
 				eyl[i] *= c_eyl[j];
@@ -102,8 +104,6 @@ void SPXCrossSection::ApplyCorrections(void) {
 
 				break;
 			}
-
-			std::cout << "NO MATCH: " << i <<
 		}
 	}
 
