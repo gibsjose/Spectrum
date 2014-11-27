@@ -583,9 +583,6 @@ void SPXPlot::MatchOverlayBinning(void) {
 	}
 
 	//@TODO SET DIVIDED_BY_BIN_WIDTH CORRECTLY!!!
-	//@TODO How to have access to the dividedByBinWidth flag?
-	//		Make copy in SPXData and SPXCrossSection upon initialization in constructor...
-	//		Make method: IsDividedByBinWidth for both SPXData and SPXCrossSection
 
 	//Match binning of all graphs within each PCI, if matchBinning set
 	if(steeringFile->GetMatchBinning()) {
@@ -668,6 +665,15 @@ void SPXPlot::DrawOverlay(void) {
 		//Stagger overlay convolute points if requested
 		if(steeringFile->GetPlotStaggered() && !steeringFile->GetPlotBand()) {
 			StaggerConvoluteOverlay();
+		}
+
+		//Apply corrections to convolutes if requested
+		//Parse and apply corrections if flag is set in SF
+		if(steeringFile->GetGridCorr()) {
+			for(int i = 0; i < crossSections.size(); i++) {
+				crossSections.at(i).ParseCorrections();
+				crossSections.at(i).ApplyCorrections();
+			}
 		}
 
 		//Draw cross sections on Overlay Pad
@@ -988,13 +994,6 @@ void SPXPlot::InitializeCrossSections(void) {
 			SPXCrossSection crossSectionInstance = SPXCrossSection(&psf, &pci);
 			pcis.push_back(pci);
 			crossSectionInstance.Create();
-
-			//Parse and apply corrections if flag is set in SF
-			if(steeringFile->GetGridCorr()) {
-				crossSectionInstance.ParseCorrections();
-				crossSectionInstance.ApplyCorrections();
-			}
-
 			crossSections.push_back(crossSectionInstance);
 		} catch(const SPXException &e) {
 			throw;
