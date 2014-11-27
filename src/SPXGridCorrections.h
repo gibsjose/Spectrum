@@ -24,8 +24,8 @@
 #include "SPXException.h"
 #include "SPXUtilities.h"
 
-typedef CorrectionsMap_T std::map<std::string, StringDoubleVectorMap_T >;
-typedef CorrectionsPair_T std::pair<std::string, StringDoubleVectorMap_T >;
+typedef std::map<std::string, StringDoubleVectorMap_T >  CorrectionsMap_T;
+typedef std::pair<std::string, StringDoubleVectorMap_T >  CorrectionsPair_T;
 
 class SPXGridCorrections {
 
@@ -36,7 +36,7 @@ public:
     }
 
     void Parse(void);
-    void PrintMap(std::string &s, StringDoubleMap_T &m);
+    void PrintMap(std::string &s, StringDoubleVectorMap_T &m);
     void Print(void);
 
     static bool GetDebug(void) {
