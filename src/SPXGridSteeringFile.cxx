@@ -14,6 +14,7 @@
 //************************************************************/
 
 #include "SPXGridSteeringFile.h"
+#include "SPXUtilities.h"
 #include "SPXException.h"
 
 //Class name for debug statements
