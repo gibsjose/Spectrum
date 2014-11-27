@@ -41,6 +41,7 @@ public:
 	}
 
 	void Create(void);
+	void ParseCorrections(void);
 	void ApplyCorrections(void);
 
 	static bool GetDebug(void) {
