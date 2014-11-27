@@ -48,32 +48,78 @@ void SPXGridCorrections::Parse(void) {
         std::vector<double> y;
         std::vector<double> eyl;
         std::vector<double> eyh;
+        unsigned int bin_count = 0;
+        unsigned int numberOfColumns = 0;
 
-        //Process the file
-        while(correctionFile->good()) {
-            std::getline(*correctionFile, line);
+        try {
+            //Process the file
+            while(correctionFile->good()) {
+                std::getline(*correctionFile, line);
 
-            //Skip empty lines
-            if(line.empty()) {
-                continue;
+                //Skip empty lines
+                if(line.empty()) {
+                    continue;
+                }
+
+                //Read in line if it starts with a digit
+                if(isdigit((int)SPXStringUtilities::LeftTrim(line).at(0))) {
+
+                    if(debug) std::cout << "LINE: " << line << std::endl;
+
+                    //Parse line into vector
+                    //Convert all tabs to spaces
+                    std::string formatted_line = SPXStringUtilities::ReplaceAll(line, "\t", " ");
+                    std::vector<double> tmp = SPXStringUtilities::ParseStringToDoubleVector(formatted_line, ' ');
+
+                    if(tmp.size() < 4) {
+                        throw SPXParseException(cn + mn + "There must be at least 4 correction columns (xm, xlow, xhigh, sigma corr)");
+                    }
+
+                    //Set number of columns to the size of the 0th bin
+                    if(!bin_count) {
+                        //Set number of columns
+                        numberOfColumns = tmp.size();
+
+                        //Only 2 options: 4 columns or 6 columns (without eyl/eyh or with)
+                        if((numberOfColumns != 4) && (numberOfColumns != 6)) {
+                            throw SPXParseException(cn + mn + "There can only be either 4 or 6 columns in correction file");
+                        }
+
+                        std::cout << cn << mn << "WARNING: The remaining bins MUST also have exactly " << numberOfColumns << " columns" << std::endl;
+                    }
+
+                    //After the 0th bin, make sure all other bins have the exact same number of columns
+                    else {
+                        if(tmp.size() != numberOfColumns) {
+                            std::ostringstream oss;
+                            oss << cn << mn << "Number of columns for bin " << bin_count + 1<< " (" << tmp.size() << \
+                            ") does NOT match expected (" << numberOfColumns << ")" << std::endl;
+                            throw SPXParseException(oss.str());
+
+                        }
+                    }
+
+                    //Increment bin count
+                    bin_count++;
+
+                    //Obtain the correction type (SPXGridCorrectionType???)
+                    //Build the matrix based on the xm, dx-, dx+, sigma, dsigma-, dsigma+
+                    x.push_back(tmp[0]);
+                    exl.push_back(tmp[1]);
+                    exh.push_back(tmp[2]);
+
+                    if(numberOfColumns == 5) {
+                        y.push_back(tmp[3]);
+                    } else if(numberOfColumns == 6) {
+                        y.push_back(tmp[3]);
+                        eyl.push_back(tmp[4]);
+                        eyh.push_back(tmp[5]);
+                    }
+                }
             }
-
-            if(SPXStringUtilities::Trim(line))
-
-            std::istringstream iss(line);
-
-            std::cout << "LINE: " << line << std::endl;
-
-            //Obtain the correction type (SPXGridCorrectionType???)
-            //Build the matrix based on the xm, dx-, dx+, sigma, dsigma-, dsigma+
-            x.push_back(1.0);
-            exl.push_back(1.0);
-            exh.push_back(1.0);
-            y.push_back(1.0);
-            eyl.push_back(1.0);
-            eyh.push_back(1.0);
-
-            //MAKE SURE TO CONVERT XLOW/XHIGH TO DELTA INSTEAD OF ABSOLUTE (e.g. 100, 8, 6 instead of 100, 92, 106)
+        } catch(const SPXException &e) {
+            std::cerr << e.what() << std::endl;
+            throw SPXParseException(cn + mn + "Unable to parse corrections file: " + filename);
         }
 
         //Set number of bins to match the first corrections vector's xm size

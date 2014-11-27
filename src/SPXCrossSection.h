@@ -21,6 +21,7 @@
 #include "SPXPDF.h"
 #include "SPXPDFSteeringFile.h"
 #include "SPXPlotConfiguration.h"
+#include "SPXGridCorrections.h"
 
 #include "SPXUtilities.h"
 
