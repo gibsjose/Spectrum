@@ -988,6 +988,13 @@ void SPXPlot::InitializeCrossSections(void) {
 			SPXCrossSection crossSectionInstance = SPXCrossSection(&psf, &pci);
 			pcis.push_back(pci);
 			crossSectionInstance.Create();
+
+			//Parse and apply corrections if flag is set in SF
+			if(steeringFile->GetGridCorr()) {
+				crossSectionInstance.ParseCorrections();
+				crossSectionInstance.ApplyCorrections();
+			}
+
 			crossSections.push_back(crossSectionInstance);
 		} catch(const SPXException &e) {
 			throw;

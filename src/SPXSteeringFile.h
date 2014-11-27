@@ -59,6 +59,7 @@ private:
 	bool plotMarker;				//Flag to indicate that data point markers should be plotted
 	bool plotStaggered;				//Flag to indicate that points should be staggered horizontally for readability
 	bool matchBinning;				//Flag to indicate that the binning of all graphs on the plot should be matched
+	bool gridCorr;					//Flag to indicate that, if specified in the grid steering, the grid corrections should be applied
 	bool labelSqrtS;				//Flag to indicate that the Sqrt(s) value should be shown in the legend
 	double xLegend;					//X Position of the legend, based on top-right corner
 	double yLegend;					//Y Position of the legend, based on top-right corner
@@ -127,6 +128,10 @@ public:
 
 	bool GetMatchBinning(void) const {
 		return this->matchBinning;
+	}
+
+	bool GetGridCorr(void) const {
+		return this->gridCorr;
 	}
 
 	bool GetLabelSqrtS(void) const {
