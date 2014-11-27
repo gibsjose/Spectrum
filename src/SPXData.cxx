@@ -16,7 +16,6 @@
 #include <string.h> //malloc
 
 #include "SPXData.h"
-#include "SPXUtilities.h"
 
 //Class name for debug statements
 const std::string cn = "SPXData::";

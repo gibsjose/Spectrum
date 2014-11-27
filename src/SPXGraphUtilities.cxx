@@ -183,7 +183,7 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
             if(s_bw > m_bw) {
                 std::ostringstream oss;
                 oss << cn << mn << "(recomputed) Slave Bin " << j << ": (exl, exh) = (" << s_exl << \
-                    ", " << s_exh << "): Slave bin width greater than master bin width";
+                    ", " << s_exh << "): Slave bin width (" << s_bw << ") greater than master bin width (" << m_bw << ")";
                 throw SPXGraphException(oss.str());
             }
 
@@ -687,12 +687,12 @@ void SPXGraphUtilities::Normalize(TGraphAsymmErrors *graph, double yBinWidthScal
 
         if(debug) {
             std::cout << "Bin[" << i << "]:" << std::endl;
-            std::cout << "\t x = " << pX[i] << std::endl;
-            std::cout << "\t y = " << y << std::endl;
-            std::cout << "\t exl = " << pEXlow[i] << std::endl;
-            std::cout << "\t exh = " << pEXhigh[i] << std::endl;
-            std::cout << "\t eyl = " << eyl << std::endl;
-            std::cout << "\t eyh = " << eyh << std::endl;
+            std::cout << std::scientific << "\t x = " << pX[i] << std::endl;
+            std::cout << std::scientific << "\t y = " << y << std::endl;
+            std::cout << std::scientific << "\t exl = " << pEXlow[i] << std::endl;
+            std::cout << std::scientific << "\t exh = " << pEXhigh[i] << std::endl;
+            std::cout << std::scientific << "\t eyl = " << eyl << std::endl;
+            std::cout << std::scientific << "\t eyh = " << eyh << std::endl;
         }
 
         graph->SetPoint(i, pX[i], y);

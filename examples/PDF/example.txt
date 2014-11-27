@@ -1,0 +1,82 @@
+;==============================================================
+;
+; Description:		
+;	Example PDF Steering File
+;
+; Authors:
+;	Jon Doe
+;	Jean Pierre Larousse
+;	...
+;
+; Date:
+;	17.09.2014
+;
+; Other:
+;	Other information...
+;
+;==============================================================
+
+;--------------------------------------------------------------
+; NOTE: 
+;
+; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
+;
+;	"  some_thing = "  <--- BAD
+;	"; some_thing = "  <--- OKAY
+;
+; If you forget to do this, some trailing comments could
+; be included in the option's value
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = true													;[Optional] Turn on/off debug statements - [default = false]
+
+;==============================================================
+; Description
+;==============================================================
+[DESC]
+name = CT10														;[REQUIRED] PDF Name (may or may not differ from PDF Type)
+name_var = 	CT10_R04											;[REQUIRED] PDF Name Variation
+type = CT10														;[REQUIRED] PDF Type - Ex: CT10, MSTW2008nlo, NNPDF23nlo, HERAPDF15NLO, etc. 
+order = NLO														;[Optional] Order for convolution: LO, NLO, NNLO [default = NLO]
+num_members = 53												;[REQUIRED] Number of members of PDF: 53, 41, 101, 33, ...
+pdf_set_path = some_dir/some_other_dir							;[Optional] Override the default PDF Set Path (./PDFsets)								
+
+;==============================================================
+; Style Options
+;==============================================================
+[STYLE]
+fill_style = 3005												;[REQUIRED] PDF fill style for printing error bands
+																;			See: http://root.cern.ch/root/html/TAttFill.html#F1
+																;			for more information on what the codes mean
+fill_color = 600												;[REQUIRED]	PDF fill color code
+marker_style = 20												;[REQUIRED] PDF marker style code
+
+;==============================================================
+; PDF Options
+;==============================================================
+[PDF]
+default_id = 0 													;[REQUIRED] Default PDF ID
+default_id_var = 0 												;[REQUIRED] Default PDF Variation ID
+first_eig = 1 													;[REQUIRED] First Eigenvector Variation ID
+last_eig = 0  													;[REQUIRED] Last Eigenvector Variation ID
+first_quad = 1 													;[REQUIRED] First uncertainty to be added in quadrature 
+last_quad = 25 													;[REQUIRED] Last uncertainty to be added in quadrature
+first_max = 1 													;[REQUIRED] First uncertainty in which to look for a maximum
+last_max = 6 													;[REQUIRED] Last uncertainty in which to look for a maximum
+include_eig = true 												;[Optional] Include eigenvectors in band 
+include_quad = true 											;[Optional] Include parameterization uncertainties added in quadrature
+include_max = false 											;[Optional] Include model uncertainties among which one looks for a max
+band_type =	use_error_band										;[REQUIRED] PDF band type: use_alpha_s OR use_error_band
+error_type = pdf_band											;[REQUIRED] PDF error type: alpha_s OR pdf_band
+error_size = one_sigma											;[REQUIRED] PDF error size: one_sigma OR 90_percent
+alpha_s_error_number_up = 7										;[REQUIRED] Error number UP
+alpha_s_error_number_down = 3									;[REQUIRED] Error number DOWN
+alpha_s_pdf_name_up = none										;[REQUIRED] AlphaS PDF name UP @TODO If this is 'none', why is it required?
+alpha_s_pdf_name_down = CT10as									;[REQUIRED] AlphaS PDF name DOWN
+alpha_s_pdf_histogram_name_up = CT10as120_prenorm				;[REQUIRED] Histogram name UP
+alpha_s_pdf_histogram_name_down = CT10as116_prenorm				;[REQUIRED] Histogram name DOWN
+

@@ -33,9 +33,6 @@
 ;==============================================================
 [GEN]
 debug = true
-pdf_directory = PDF
-data_directory = Data
-grid_directory = Grids/top/mcfm
 
 ;==============================================================
 ; Graphing Options
@@ -45,6 +42,8 @@ grid_directory = Grids/top/mcfm
 plot_error_ticks = true
 plot_marker = true
 plot_staggered = true
+match_binning = true
+grid_corr = true
 label_sqrt_s = true
 x_legend = 0.9
 y_legend = 0.9
@@ -58,6 +57,9 @@ y_legend = 0.9
 ;==============================================================
 [PLOT_0]
 plot_type = data, grid, pdf[]
+pdf_directory = PDF
+data_directory = Data
+grid_directory = Grids/top/mcfm
 data_steering_files = atlas2012_top.txt
 grid_steering_files = grid--TTbar_mttatlas.txt
 pdf_steering_files = CT10.txt, HERAPDF15NLO.txt

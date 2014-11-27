@@ -52,15 +52,14 @@ private:
 
 	//[GEN]
 	bool debug;						//Flag to indicate debug mode
-	std::string pdfDirectory;		//Directory prepended to PDF steering files
-	std::string dataDirectory;		//Directory prepended to data steering files
-	std::string gridDirectory;		//Directory prepended to grid steering files
 
 	//[GRAPH]
 	bool plotBand;					//Flag to indicate that error bands should be plotted
 	bool plotErrorTicks;			//Flag to indicate that tick marks should be used at the end of error bars
 	bool plotMarker;				//Flag to indicate that data point markers should be plotted
 	bool plotStaggered;				//Flag to indicate that points should be staggered horizontally for readability
+	bool matchBinning;				//Flag to indicate that the binning of all graphs on the plot should be matched
+	bool gridCorr;					//Flag to indicate that, if specified in the grid steering, the grid corrections should be applied
 	bool labelSqrtS;				//Flag to indicate that the Sqrt(s) value should be shown in the legend
 	double xLegend;					//X Position of the legend, based on top-right corner
 	double yLegend;					//Y Position of the legend, based on top-right corner
@@ -111,18 +110,6 @@ public:
 		return this->debug;
 	}
 
-	const std::string & GetPDFDirectory(void) const {
-		return this->pdfDirectory;
-	}
-
-	const std::string & GetDataDirectory(void) const {
-		return this->dataDirectory;
-	}
-
-	const std::string & GetGridDirectory(void) const {
-		return this->gridDirectory;
-	}
-
 	bool GetPlotBand(void) const {
 		return this->plotBand;
 	}
@@ -137,6 +124,14 @@ public:
 
 	bool GetPlotStaggered(void) const {
 		return this->plotStaggered;
+	}
+
+	bool GetMatchBinning(void) const {
+		return this->matchBinning;
+	}
+
+	bool GetGridCorr(void) const {
+		return this->gridCorr;
 	}
 
 	bool GetLabelSqrtS(void) const {

@@ -49,6 +49,9 @@ const std::string focn = "SPXPlotConfiguration::";
 const std::string foicn = "SPXPlotConfigurationInstance::";
 
 struct SPXPlotConfigurationInstance {
+	std::string dataDirectory;
+	std::string gridDirectory;
+	std::string pdfDirectory;
 	SPXDataSteeringFile dataSteeringFile;
 	SPXGridSteeringFile gridSteeringFile;
 	SPXPDFSteeringFile pdfSteeringFile;
@@ -68,6 +71,9 @@ struct SPXPlotConfigurationInstance {
 	}
 
 	void SetDefaults(void) {
+		dataDirectory = ".";
+		gridDirectory = ".";
+		pdfDirectory = ".";
 		dataMarkerStyle = PC_EMPTY_STYLE;
 		dataMarkerColor = PC_EMPTY_COLOR;
 		pdfFillStyle = PC_EMPTY_STYLE;
@@ -281,7 +287,7 @@ public:
 
 		if((index + 1) > configurationInstances.size()) {
 			int top = configurationInstances.size() - 1;
-			throw SPXOutOfRangeException(top, index, "SPXPlotConfiguration::GetFrameOptionsInstance: Index out of range");
+			throw SPXOutOfRangeException(top, index, focn + mn + "Index out of range");
 		}
 
 		return configurationInstances.at(index);
