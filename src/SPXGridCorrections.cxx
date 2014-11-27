@@ -26,6 +26,9 @@ void SPXGridCorrections::Parse(void) {
     numberOfBins = 0;
 
     //Total correction scales
+    std::vector<double> t_x;
+    std::vector<double> t_exl;
+    std::vector<double> t_exh;
     std::vector<double> tot_y;
     std::vector<double> tot_eyl;
     std::vector<double> tot_eyh;
@@ -159,7 +162,14 @@ void SPXGridCorrections::Parse(void) {
         m.insert(StringDoubleVectorPair_T("eyh", eyh));
 
         //Insert it into the map
-        correctionsMap.insert(CorrectionsPair_T(filename, m));
+        corrections.insert(CorrectionsPair_T(filename, m));
+
+        //Set the total corrections x, exl, exh vectors based on the first file
+        if(i == 0) {
+            t_x = x;
+            t_exl = exl;
+            t_exh = exh;
+        }
 
         //Multiply total vectors by scale to maintain total scaling
         for(int j = 0; j < numberOfBins; j++) {
@@ -175,9 +185,9 @@ void SPXGridCorrections::Parse(void) {
     }
 
     //Insert the x, exl, exh, and total vectors into the totalCorrections map
-    totalCorrections.insert(StringDoubleVectorPair_T("x", x));
-    totalCorrections.insert(StringDoubleVectorPair_T("exl", exl));
-    totalCorrections.insert(StringDoubleVectorPair_T("exh", exh));
+    totalCorrections.insert(StringDoubleVectorPair_T("x", t_x));
+    totalCorrections.insert(StringDoubleVectorPair_T("exl", t_exl));
+    totalCorrections.insert(StringDoubleVectorPair_T("exh", t_exh));
     totalCorrections.insert(StringDoubleVectorPair_T("tot_y", tot_y));
     totalCorrections.insert(StringDoubleVectorPair_T("tot_eyl", tot_eyl));
     totalCorrections.insert(StringDoubleVectorPair_T("tot_eyh", tot_eyh));
