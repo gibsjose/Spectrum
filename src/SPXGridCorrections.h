@@ -141,7 +141,7 @@ private:
         if(vector.size() != masterSize) {
             std::ostringstream oss;
             oss << "Size error: \"" << name << "\" vector has different size (" << vector.size() << ") than master size (" << masterSize << ")" << std::endl;
-            throw SPXParseException(pci.dataSteeringFile.GetDataFile(), oss.str());
+            throw SPXParseException(oss.str());
         } else {
             if(debug) std::cout << "SPXGridCorrections::" << "CheckVectorSize: " << "\t -->  Success: \"" << name << "\" vector size matches master size" << std::endl;
         }
