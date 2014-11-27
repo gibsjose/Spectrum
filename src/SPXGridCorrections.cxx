@@ -237,5 +237,5 @@ void SPXGridCorrections::Print(void) {
     std::cout << "============================================================================================" << std::endl;
     std::cout << std::endl;
 
-    PrintMap("Total Corrections", totalCorrections);
+    PrintMap((std::string)"Total Corrections", totalCorrections);
 }
