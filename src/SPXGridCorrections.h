@@ -84,15 +84,27 @@ public:
         return corrections[filename]["eyh"];
     }
 
-    std::vector<double> & GetTotalYCorrectionVector(void) {
+    std::vector<double> & GetTotalX(void) {
+        return totalCorrections["x"];
+    }
+
+    std::vector<double> & GetTotalEXL(void) {
+        return totalCorrections["exl"];
+    }
+
+    std::vector<double> & GetTotalEXH(void) {
+        return totalCorrections["exh"];
+    }
+
+    std::vector<double> & GetTotalYCorrections(void) {
         return totalCorrections["y"];
     }
 
-    std::vector<double> & GetTotalEYLCorrectionVector(void) {
+    std::vector<double> & GetTotalEYLCorrections(void) {
         return totalCorrections["eyl"];
     }
 
-    std::vector<double> & GetTotalEYHCorrectionVector(void) {
+    std::vector<double> & GetTotalEYHCorrections(void) {
         return totalCorrections["eyh"];
     }
 
