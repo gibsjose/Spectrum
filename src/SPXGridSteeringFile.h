@@ -54,6 +54,7 @@ private:
 
 	//[GRID]
 	std::string gridFilepath;
+	std::vector<std::string> correctionFiles;
 	std::string generatorID;
 	std::string nTupleID;
 	unsigned int lowestOrder;
@@ -137,6 +138,20 @@ public:
 
 	const std::string & GetGridFilepath(void) const {
 		return this->gridFilepath;
+	}
+
+	unsigned int GetNumberOfCorrectionFiles(void) const {
+		return this->correctionFiles.size();
+	}
+
+	const std::string & GetCorrectionFile(unsigned int index) const {
+
+		if((index + 1) > correctionFiles.size()) {
+			int top = correctionFiles.size() - 1;
+			throw SPXOutOfRangeException(top, index, "SPXGridSteeringFile::GetCorrectionFile: Index out of range");
+		}
+
+		return correctionFiles.at(index);
 	}
 
 	const std::string & GetGeneratorID(void) const {

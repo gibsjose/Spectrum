@@ -98,6 +98,10 @@ void SPXGridSteeringFile::Print(void) {
 	std::cout << "\t\t Reference Histogram Divided by Bin Width? " << (dividedByBinWidth ? "YES" : "NO") << std::endl << std::endl;
 	std::cout << "\t Grid Options [GRID]" << std::endl;
 	std::cout << "\t\t Grid File: " << gridFilepath << std::endl;
+	std::cout << "\t\t Correction Files: " << std::endl;
+	for(int i = 0; i < correctionFiles.size(); i++) {
+		std::cout << "\t\t\t " << correctionFiles.at(i) << std::endl;
+	}
 	std::cout << "\t\t Generator ID: " << generatorID << std::endl;
 	std::cout << "\t\t NTuple ID: " << nTupleID << std::endl;
 	std::cout << "\t\t Lowest Order: " << lowestOrder << std::endl << std::endl;
@@ -118,6 +122,8 @@ void SPXGridSteeringFile::Parse(void) {
 
     	throw SPXFileIOException(filename, "INIReader::INIReader(): ParseError generated when parsing file");
 	}
+
+	std::string tmp;
 
 	//General Options [GEN]
 	debug = reader->GetBoolean("GEN", "debug", debug);
@@ -225,6 +231,22 @@ void SPXGridSteeringFile::Parse(void) {
 		throw SPXINIParseException("GRAPH", "grid_file", "You MUST specify the grid_file");
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Grid Filepath: " << gridFilepath << std::endl;
+	}
+
+	tmp = reader->Get("GRID", "correction_files", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "No correction files were specified" << std::endl;
+		correctionFiles.clear();
+	} else {
+		//Parse into vector
+		correctionFiles = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+
+		if(debug) {
+			std::cout << cn << mn << "correction_files string \"" << tmp << "\" parsed into:" << std::endl;
+			for(int i = 0; i < correctionFiles.size(); i++) {
+				std::cout << "\t " << correctionFiles.at(i);
+			}
+		}
 	}
 
 	generatorID = reader->Get("GRID", "generator_id", "EMPTY");
