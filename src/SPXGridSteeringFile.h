@@ -18,6 +18,8 @@
 
 #include "INIReader.h"
 
+#include "SPXException.h"
+
 #ifndef SPXGRIDSTEERINGFILE_H
 #define SPXGRIDSTEERINGFILE_H
 
