@@ -662,11 +662,6 @@ void SPXPlot::DrawOverlay(void) {
 	//Check if convolute is to be plotted in the overlay section
 	if(os.ContainsConvolute()) {
 
-		//Stagger overlay convolute points if requested
-		if(steeringFile->GetPlotStaggered() && !steeringFile->GetPlotBand()) {
-			StaggerConvoluteOverlay();
-		}
-
 		//Apply corrections to convolutes if requested
 		//Parse and apply corrections if flag is set in SF
 		if(steeringFile->GetGridCorr()) {
@@ -674,6 +669,11 @@ void SPXPlot::DrawOverlay(void) {
 				crossSections.at(i).ParseCorrections();
 				crossSections.at(i).ApplyCorrections();
 			}
+		}
+
+		//Stagger overlay convolute points if requested
+		if(steeringFile->GetPlotStaggered() && !steeringFile->GetPlotBand()) {
+			StaggerConvoluteOverlay();
 		}
 
 		//Draw cross sections on Overlay Pad
