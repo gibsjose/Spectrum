@@ -85,6 +85,13 @@ void SPXCrossSection::ApplyCorrections(void) {
 
 	for(int i = 0; i < nBins; i++) {
 		for(int j = 0; j < nBinsCorr; j++) {
+
+			std::cout << "x[" << i << "] - exl[" << i << "] = " << x[i] - exl[i] << std::endl;
+			std::cout << "c_exl[" << j << "] = " << c_exl[j] << std::endl;
+
+			std::cout << "x[" << i << "] + exh[" << i << "] = " << x[i] + exh[i] << std::endl;
+			std::cout << "c_exh[" << j << "] = " << c_exh[j] << std::endl;
+
 			//Check for bin match
 			if(((x[i] - exl[i]) == c_exl[j]) && ((x[i] + exh[i]) == c_exh[j])) {
 
@@ -95,6 +102,8 @@ void SPXCrossSection::ApplyCorrections(void) {
 
 				break;
 			}
+
+			std::cout << "NO MATCH: " << i <<
 		}
 	}
 
