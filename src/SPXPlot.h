@@ -48,6 +48,7 @@ public:
 	void ScaleAxes(void);
 	void CreateCanvas(void);
 	void MatchOverlayBinning(void);
+	void ApplyGridCorrections(void);
 	void DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax);
 	void DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax);
 	void DivideCanvasIntoPads(void);
