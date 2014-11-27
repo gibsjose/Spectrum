@@ -27,7 +27,7 @@ void SPXCrossSection::Create(void) {
 
 	//Attempt to create the Grid
 	try {
-		grid = new SPXGrid(*pci);
+		grid = new SPXGrid(pci);
 	} catch(const SPXException &e) {
 		throw;
 	}
@@ -42,7 +42,7 @@ void SPXCrossSection::Create(void) {
 	//Check if grid contains corrections
 	if(pci->gridSteeringFile.GetNumberOfCorrectionFiles() != 0) {
 		try {
-			corrections = new SPXGridCorrections(pci);
+			corrections = new SPXGridCorrections(*pci);
 			corrections->Parse();
 			corrections->Print();
 		} catch(const SPXException &e) {
