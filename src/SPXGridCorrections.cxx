@@ -113,6 +113,8 @@ void SPXGridCorrections::Parse(void) {
 
                     if(numberOfColumns == 5) {
                         y.push_back(tmp[3]);
+                        eyl.push_back(tmp[3]);
+                        eyh.push_back(tmp[3]);
                     } else if(numberOfColumns == 6) {
                         y.push_back(tmp[3]);
                         eyl.push_back(tmp[4]);
@@ -188,9 +190,9 @@ void SPXGridCorrections::Parse(void) {
     totalCorrections.insert(StringDoubleVectorPair_T("x", t_x));
     totalCorrections.insert(StringDoubleVectorPair_T("exl", t_exl));
     totalCorrections.insert(StringDoubleVectorPair_T("exh", t_exh));
-    totalCorrections.insert(StringDoubleVectorPair_T("tot_y", tot_y));
-    totalCorrections.insert(StringDoubleVectorPair_T("tot_eyl", tot_eyl));
-    totalCorrections.insert(StringDoubleVectorPair_T("tot_eyh", tot_eyh));
+    totalCorrections.insert(StringDoubleVectorPair_T("y", tot_y));
+    totalCorrections.insert(StringDoubleVectorPair_T("eyl", tot_eyl));
+    totalCorrections.insert(StringDoubleVectorPair_T("eyh", tot_eyh));
 
     if(debug) std::cout << cn << mn << "Successfully added all corrections to map" << std::endl;
 
@@ -201,7 +203,7 @@ void SPXGridCorrections::Parse(void) {
 void SPXGridCorrections::PrintMap(std::string &s, StringDoubleVectorMap_T &m) {
     std::string mn = "PrintMap: ";
 
-    std::cout << cn << mn << "Printing " << s << " map: " << std::endl << std::endl;
+    std::cout << cn << mn << "Printing " << s << " map: " << std::endl;
     std::cout << "===============================================================================" << std::endl;
     std::cout << "|          x |        exl |        exh |          y |        eyl |        eyh |" << std::endl;
     std::cout << "-------------------------------------------------------------------------------" << std::endl;
@@ -242,7 +244,6 @@ void SPXGridCorrections::Print(void) {
         PrintMap(filename, corrections[filename]);
     }
 
-    std::cout << std::endl;
     std::cout << "============================================================================================" << std::endl;
     std::cout << "============================================================================================" << std::endl;
     std::cout << std::endl;
