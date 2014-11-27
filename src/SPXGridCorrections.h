@@ -21,6 +21,7 @@
 #include <string>
 #include <vector>
 
+#include "SPXPlotConfiguration.h"
 #include "SPXException.h"
 #include "SPXUtilities.h"
 
