@@ -67,10 +67,10 @@ void SPXCrossSection::ApplyCorrections(void) {
 	unsigned int nBins = pdf->h_PDFBand_results->GetN();
 	double *x = pdf->h_PDFBand_results->GetX();
 	double *y = pdf->h_PDFBand_results->GetY();
-	double *exl = pdf->h_PDFBand_results->GetEXl();
-	double *exh = pdf->h_PDFBand_results->GetEXh();
-	double *eyl = pdf->h_PDFBand_results->GetEYl();
-	double *eyh = pdf->h_PDFBand_results->GetEYh();
+	double *exl = pdf->h_PDFBand_results->GetErrorXlow();
+	double *exh = pdf->h_PDFBand_results->GetErrorXhigh();
+	double *eyl = pdf->h_PDFBand_results->GetErrorYlow();
+	double *eyh = pdf->h_PDFBand_results->GetErrorYhigh();
 
 	unsigned int nBinsCorr = corrections->GetNumberOfBins();
 	double *c_x = &(corrections->GetTotalX().at(0));
@@ -92,7 +92,7 @@ void SPXCrossSection::ApplyCorrections(void) {
 				y[i] *= c_y[j];
 				eyl[i] *= c_eyl[j];
 				eyh[i] *= c_eyh[j];
-				
+
 				break;
 			}
 		}
