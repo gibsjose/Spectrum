@@ -21,10 +21,6 @@
 #include <string>
 #include <vector>
 
-#include "SPXROOT.h"
-#include "TMatrixTLazy.h"
-#include "TMatrixT.h"
-
 #include "SPXException.h"
 #include "SPXUtilities.h"
 
