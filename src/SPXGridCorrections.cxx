@@ -227,8 +227,8 @@ void SPXGridCorrections::PrintMap(std::string &s, StringDoubleVectorMap_T &m) {
         std::cout << " |" << std::endl;
     }
 
-    std::cout << "============================================================================================" << std::endl;
-    std::cout << std::endl << std::endl;
+    std::cout << "===============================================================================" << std::endl;
+    std::cout << std::endl;
 }
 
 //Print all individual corrections plus the total corrections
@@ -241,8 +241,8 @@ void SPXGridCorrections::Print(void) {
         PrintMap(filename, corrections[filename]);
     }
 
-    std::cout << "============================================================================================" << std::endl;
-    std::cout << "============================================================================================" << std::endl;
+    std::cout << "===============================================================================" << std::endl;
+    std::cout << "===============================================================================" << std::endl;
     std::cout << std::endl;
 
     std::string s = "Total Corrections";
