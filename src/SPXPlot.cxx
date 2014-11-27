@@ -30,6 +30,8 @@ void SPXPlot::Initialize(void) {
 		InitializeData();
 		InitializeCrossSections();
 		NormalizeCrossSections();
+		MatchOverlayBinning();
+		ApplyGridCorrections();
 		InitializeRatios();
 	} catch(const SPXException &e) {
 		throw;
@@ -43,7 +45,6 @@ void SPXPlot::Plot(void) {
 	CreateCanvas();
 	DivideCanvasIntoPads();
 	ConfigurePads();
-	MatchOverlayBinning();
 	DrawOverlayPadFrame();
 	DrawRatioPadFrame();
 	SetAxisLabels();
@@ -637,6 +638,15 @@ void SPXPlot::MatchOverlayBinning(void) {
 	}
 }
 
+void SPXPlot::ApplyGridCorrections(void) {
+
+	if(steeringFile->GetGridCorr()) {
+		for(int i = 0; i < crossSections.size(); i++) {
+			crossSections.at(i).ApplyCorrections();
+		}
+	}
+}
+
 void SPXPlot::DrawOverlay(void) {
 	std::string mn = "DrawOverlay: ";
 
@@ -661,15 +671,6 @@ void SPXPlot::DrawOverlay(void) {
 
 	//Check if convolute is to be plotted in the overlay section
 	if(os.ContainsConvolute()) {
-
-		//Apply corrections to convolutes if requested
-		//Parse and apply corrections if flag is set in SF
-		if(steeringFile->GetGridCorr()) {
-			for(int i = 0; i < crossSections.size(); i++) {
-				crossSections.at(i).ParseCorrections();
-				crossSections.at(i).ApplyCorrections();
-			}
-		}
 
 		//Stagger overlay convolute points if requested
 		if(steeringFile->GetPlotStaggered() && !steeringFile->GetPlotBand()) {
@@ -994,6 +995,11 @@ void SPXPlot::InitializeCrossSections(void) {
 			SPXCrossSection crossSectionInstance = SPXCrossSection(&psf, &pci);
 			pcis.push_back(pci);
 			crossSectionInstance.Create();
+
+			if(steeringFile->GetGridCorr()) {
+				crossSectionInstance.ParseCorrections();
+			}
+
 			crossSections.push_back(crossSectionInstance);
 		} catch(const SPXException &e) {
 			throw;
