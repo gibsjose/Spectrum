@@ -52,7 +52,7 @@ void SPXCrossSection::Create(void) {
 }
 
 void SPXCrossSection::ApplyCorrections(void) {
-	if(pci.gridSteeringFile.GetNumberOfCorrectionFiles() == 0) {
+	if(pci->gridSteeringFile.GetNumberOfCorrectionFiles() == 0) {
 		return;
 	}
 
