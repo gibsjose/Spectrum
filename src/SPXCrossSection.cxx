@@ -64,29 +64,39 @@ void SPXCrossSection::ApplyCorrections(void) {
 
 	//Loop over the band bins and make sure they match, if not just do nothing
 
-	// unsigned int nBins = pdf->h_PDFBand_results->GetN();
-	// double *x = pdf->h_PDFBand_results->GetX();
-	// double *y = pdf->h_PDFBand
+	unsigned int nBins = pdf->h_PDFBand_results->GetN();
+	double *x = pdf->h_PDFBand_results->GetX();
+	double *y = pdf->h_PDFBand_results->GetY();
+	double *exl = pdf->h_PDFBand_results->GetEXl();
+	double *exh = pdf->h_PDFBand_results->GetEXh();
+	double *eyl = pdf->h_PDFBand_results->GetEYl();
+	double *eyh = pdf->h_PDFBand_results->GetEYh();
 
-	//@TODO Should calculate the TOTAL scale for sigma, dsig+, dsig- and have it accessible as a vector from the SPXGridCorrections class
-	//		then only need to loop over bins and make sure there is a corresponding bin for each total scale, and if there is, apply it.
-	//		The SPXGridCorrections class should do the check to see whether the different corrections have the same binning
+	unsigned int nBinsCorr = corrections->GetNumberOfBins();
+	double *c_x = &(corrections->GetTotalX().at(0));
+	double *c_exl = &(corrections->GetTotalEXL().at(0));
+	double *c_exh = &(corrections->GetTotalEXH().at(0));
+	double *c_y = &(corrections->GetTotalYCorrections().at(0));
+	double *c_eyl = &(corrections->GetTotalEYLCorrections().at(0));
+	double *c_eyh = &(corrections->GetTotalEYHCorrections().at(0));
 
-	// //PDF Band
-	// for(int i = 0; i < pci.gridSteeringFile.GetNumberOfCorrectionFiles(); i++) {
-	// 	std::string &key = pci.gridSteeringFile.GetCorrectionFile(i);
-	// 	std::vector<std::vector<double> > &matrix;
-	//
-	// 	matrix = corrections.GetCorrections(key);
-	//
-	//
-	// 	//Loop over bins in band and apply corrections if the bins match up
-	// 	for(int j = 0; j < nBins; j++) {
-	//
-	//
-	// 		if(matrix[1] != )
-	// 	}
-	// }
+	//Loop over the smallest of the two
+	unsigned int n = (nBins < nBinsCorr ? nBins : nBinsCorr);
+
+	for(int i = 0; i < nBins; i++) {
+		for(int j = 0; j < nBinsCorr; j++) {
+			//Check for bin match
+			if(((x[i] - exl[i]) == c_exl[j]) && ((x[i] + exh[i]) == c_exh[j])) {
+
+				//Bins match; Scale y, eyl, and eyh
+				y[i] *= c_y[j];
+				eyl[i] *= c_eyl[j];
+				eyh[i] *= c_eyh[j];
+				
+				break;
+			}
+		}
+	}
 
 	//@TODO Do the same for Alpha S and Scale uncertainty bands
 }
