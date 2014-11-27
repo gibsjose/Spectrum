@@ -1,7 +1,7 @@
 ;==============================================================
 ;
-; Description:		
-;	Example Grid Steering File
+; Description:
+;	Example PDF Steering File
 ;
 ; Authors:
 ;	Jon Doe
@@ -17,7 +17,7 @@
 ;==============================================================
 
 ;--------------------------------------------------------------
-; NOTE: 
+; NOTE:
 ;
 ; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
 ;
@@ -32,27 +32,48 @@
 ; General Options
 ;==============================================================
 [GEN]
-debug = true													;[Optional] Turn on/off debug statements - [default = false]
+debug = false
 
 ;==============================================================
 ; Description
 ;==============================================================
 [DESC]
-name = ATLAS_epj_atlas_mtt										;[Optional] Grid Name
+name = HERAPDF15NLO_EIG
+; name_var = HERAPDF15NLO_EIG_R04
+type = HERAPDF15NLO
+order = NLO
+num_members = 33
+; pdf_set_path =
 
 ;==============================================================
-; Graphing Options
+; Style Options
 ;==============================================================
-[GRAPH]
-x_units = TeV													;[REQUIRED] X Units for scaling
-y_units = pb													;[REQUIERD] Y Units for scaling
-divided_by_bin_width = true										;[Optional] Note if grid's reference histogram has already been divided by the bin width
+[STYLE]
+fill_style = 3004
+fill_color = 810
+marker_style = 23
 
 ;==============================================================
-; Grid Options
+; PDF Options
 ;==============================================================
-[GRID]								
-grid_file = MyGrids/top/mcfm/grid-TTbar_mttatlas.root			;[REQUIRED] Path to the grid's root file
-generator_id = 													;[Optional] Specify who generated the grid, for informational purposes
-ntuple_id = MCFM												;[Optional] Specify who generated the NTuple (could be used to determine units)
-lowest_order = "NNLO"											;[Optional] Set the lowest order of what is in this grid
+[PDF]
+default_id = 0
+default_id_var = 0
+first_eig = 1
+last_eig = 20
+first_quad = 1
+last_quad = 8
+first_max = 9
+last_max = 12
+include_eig = true
+include_quad = true
+include_max = true
+band_type =	use_error_band
+error_type = pdf_band
+error_size = one_sigma
+alpha_s_error_number_up = 11
+alpha_s_error_number_down = 9
+alpha_s_pdf_name_up = HERAPDF15NLO_ALPHAS
+alpha_s_pdf_name_down = HERAPDF15NLO_ALPHAS
+alpha_s_pdf_histogram_name_up = HERAPDF15NLOas1156_prenorm
+alpha_s_pdf_histogram_name_down = HERAPDF15NLOasxxx_prenorm

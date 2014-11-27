@@ -33,12 +33,6 @@
 ;==============================================================
 [GEN]
 debug = true													;[Optional] Turn on/off debug statements - [default = false]
-pdf_directory = PDF 											;[Optional] If specified, will prepend this directory before
-																;			all PDF steering file paths below
-data_directory = Data/datanew									;[Optional] If specified, will prepend this directory before
-																;			all data steering file paths below
-grid_directory = Grids/top/mcfm									;[Optional] If specified, will prepend this directory before
-																;			all grid steering file paths below
 
 ;==============================================================
 ; Graphing Options
@@ -48,6 +42,8 @@ grid_directory = Grids/top/mcfm									;[Optional] If specified, will prepend t
 ; plot_error_ticks = 											;[Optional] Use small 'ticks' at end of error  bars - [default = false]
 plot_marker = true												;[Optional] Plot a marker on data points - [default = false]
 plot_staggered = true											;[Optional] Stagger points horizontally to improve readability - [default = false]
+match_binning = true											;[Optional] Match the binning for all graphs in the plot - [default = true]
+grid_corr = true												;[Optional] Apply the grid corrections for all grids if true
 label_sqrt_s = true												;[Optional] Specify to show the Sqrt(s) on the legend - [default = false]
 x_legend = 0.9													;[Optional] X(Right)-Position of Legend, based on top right side
 y_legend = 0.9													;[Optional]	Y(Top)-Position of legend, based on top right side
@@ -85,6 +81,23 @@ y_legend = 0.9													;[Optional]	Y(Top)-Position of legend, based on top r
 ; while file2.txt would use '21'
 ;
 ; Each plot is performed on it's own ROOT canvas
+;
+; NOTE: Regarding Directories:
+; 		The steering file directories can be defined in three ways:
+;		1) Completely leave out the 'xxxx_directory = ' configuration: Will default to root directory: "."
+;		2) Have exactly ONE: Will prepend the directory to ALL steering files of that type, i.e.
+;			pdf_directory = PDF
+;			...
+;			pdf_steering_files = some_file.txt, some_file_2.txt
+;
+;			---> Results in: PDF/some_file.txt, PDF/some_file_2.txt
+;		3) Have exactly N (where N = number of steering files): Will prepend the corresponding directory to the steering file
+;			grid_directory = Grids/top/mcfm, Grids/some/other/path
+;			...
+;			grid_steering_files = grid1.txt, grid2.txt
+;
+;			---> Results in: Grids/top/mcfm/grid1.txt, Grids/some/other/path/
+;
 ;--------------------------------------------------------------
 
 ;==============================================================
@@ -93,6 +106,9 @@ y_legend = 0.9													;[Optional]	Y(Top)-Position of legend, based on top r
 [PLOT_0]
 plot_type = data, grid, pdf 									;[REQUIRED] The plot type
 desc = atlas_mtt_5fb											;[REQUIRED] Description of plot (used as the plot title)
+pdf_directory = PDF 											;[Optional] See note above: "NOTE: Regarding Directories"
+data_directory = Data/datanew									;[Optional] See note above: "NOTE: Regarding Directories"
+grid_directory = Grids/top/mcfm									;[Optional] See note above: "NOTE: Regarding Directories"
 data_steering_files = atlas2012_5fb_top_mtt_ljet.txt			;[REQUIRED] List of all data steering files
 grid_steering_files = grid--TTbar_mttatlas.txt					;[REQUIRED] List of all grid steering files
 pdf_steering_files = CT10.txt									;[REQUIRED] List of all PDF steering files
@@ -117,17 +133,49 @@ overlay_style = data, convolute									;[REQUIRED]	What to plot in the overlay 
 ; [REQUIRED]: If ratio is plotted
 ;
 ; For each plot (in which display_style includes 'ratio'),
-; you can define any number of ratios below with the format:
+; to specify the ratios, you must first specify the ratio style
+; using the format:
+;		ratio_style_n	where n starts at 0
+;
+;		data_tot
+;		data_stat
+;		data / data
+;		data / convolute
+;		convolute / data
+;		convolute / reference
+;
+; You can optionally prepend a '!' to the beginning of any 'data' keyword in the ratio style,
+; which will tell Spectrum to NOT include the systematic or statistical errors in the ratio for that dataset
+;
+; You then define any number of ratios (corresponding to the ratio styles above) below with the format:
 ;		ratio_n 	where n starts at 0
 ;
-; There are either 3 or 4 supported ratio formats, depending on the
+; There are either 4 or 5 supported ratio formats, depending on the
 ; plot_type:
 ;
+;		data_file								<-- data_tot or data_stat	Supported for all plot_types
 ;		(data_file) / (data_file) 				<-- Data / Data 			Supported ONLY for: plot_type = data[], grid[], pdf
 ;		(data_file) / ([grid_file, pdf_file])	<-- Data / Convolute: 		Supported for all plot_types
 ;		([grid_file, pdf_file]) / (data_file)   <-- Convolute / Data: 		Supported for all plot_types
 ;		([grid_file, pdf_file]) / (grid_file)	<-- Convolute / Reference: 	Supported for all plot_types:
 ;													NOTE: You MUST use the same grid file for conv. and ref.
+;
+; The data, grid, and pdf files in the ratio definition can be either explicitly spelled out, i.e.:
+;		data_steering_files = some_data.txt, some_data_2.txt
+;		...
+;		ratio_style_0 = data_tot
+;		ratio_0 = some_data.txt
+;
+; OR you can use an alias to choose between the data, grid, and pdf files defined in the ....._steering_files above:
+;		data_steering_files = some_data.txt
+;		grid_steering_files = some_grid.txt
+;		pdf_steering_files = some_pdf.txt, some_pdf_2.txt
+;		...
+;		ratio_style_0 = convolute / data
+;		ratio_0 = ([grid_0, pdf_1]) / (data_0)
+;
+; In the example above, 'data_0' is aliased to 'some_data.txt', 'grid_0' is aliased to 'some_grid.txt' and
+; 'pdf_1' is aliased to 'some_pdf_2.txt'
 ;--------------------------------------------------------------
 
 ;For example, this defines a convolute / data ratio, and a convolute / reference ratio,

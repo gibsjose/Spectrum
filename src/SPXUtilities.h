@@ -22,4 +22,16 @@ namespace Test {
     extern bool TestFeatures;
 }
 
+//Typedefs for Maps/Pairs
+typedef std::map<std::string, std::vector<double> >  StringDoubleVectorMap_T;
+typedef std::pair<std::string, std::vector<double> >  StringDoubleVectorPair_T;
+typedef StringDoubleVectorMap_T::iterator StringDoubleVectorMapIterator_T;
+
+//Matrix Typedefs
+typedef std::vector<std::vector<double> >  DoubleMatrix_T;
+
+typedef std::map<std::string, DoubleMatrix_T >  StringDoubleMatrixMap_T;
+typedef std::pair<std::string, DoubleMatrix_T >  StringDoubleMatrixPair_T;
+typedef StringDoubleMatrixMap_T::iterator StringDoubleMatrixMapIterator_T;
+
 #endif

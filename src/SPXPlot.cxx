@@ -30,6 +30,8 @@ void SPXPlot::Initialize(void) {
 		InitializeData();
 		InitializeCrossSections();
 		NormalizeCrossSections();
+		MatchOverlayBinning();
+		ApplyGridCorrections();
 		InitializeRatios();
 	} catch(const SPXException &e) {
 		throw;
@@ -565,6 +567,86 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 	}
 }
 
+//Matches the overlay binning if the match_binning flag is set
+//NOTE: Ratios are automatically matched, since they must align in order
+//		to use the SPXGraphUtilities::Divide function
+void SPXPlot::MatchOverlayBinning(void) {
+	std::string mn = "MatchBinning: ";
+
+	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXPlotType &pt = pc.GetPlotType();
+	SPXDisplayStyle &ds = pc.GetDisplayStyle();
+	SPXOverlayStyle &os = pc.GetOverlayStyle();
+
+	//Do nothing if not drawing overlay
+	if(!ds.ContainsOverlay()) {
+		return;
+	}
+
+	//@TODO SET DIVIDED_BY_BIN_WIDTH CORRECTLY!!!
+
+	//Match binning of all graphs within each PCI, if matchBinning set
+	if(steeringFile->GetMatchBinning()) {
+
+		TGraphAsymmErrors *master;
+
+		//Match all data bins if necessary
+		if(os.ContainsData()) {
+			//Master is index 0
+			master = data.at(0).GetTotalErrorGraph();
+
+			if(pt.ContainsMultipleData()) {
+				for(int i = 1; i < data.size(); i++) {
+					bool dividedByBinWidth = false;
+
+					//Check if data master is divided by bin width
+					if(data.at(i).IsDividedByBinWidth()) {
+						dividedByBinWidth = true;
+					}
+
+					TGraphAsymmErrors *slaveStat = data.at(i).GetStatisticalErrorGraph();
+					TGraphAsymmErrors *slaveSyst = data.at(i).GetSystematicErrorGraph();
+					TGraphAsymmErrors *slaveTot = data.at(i).GetTotalErrorGraph();
+					SPXGraphUtilities::MatchBinning(master, slaveStat, dividedByBinWidth);
+					SPXGraphUtilities::MatchBinning(master, slaveSyst, dividedByBinWidth);
+					SPXGraphUtilities::MatchBinning(master, slaveTot, dividedByBinWidth);
+				}
+			}
+		}
+
+		//Match all convolutes to the data master (if data is plotted) or to the master convolute
+		if(os.ContainsConvolute()) {
+
+			if(os.ContainsData()) {
+				master = data.at(0).GetTotalErrorGraph();
+			} else {
+				master = crossSections.at(0).GetPDFBandResults();
+			}
+
+			for(int i = 1; i < crossSections.size(); i++) {
+				bool dividedByBinWidth = false;
+
+				//Check if data master is divided by bin width
+				if(data.at(0).IsDividedByBinWidth()) {
+					dividedByBinWidth = true;
+				}
+
+				TGraphAsymmErrors *slave = crossSections.at(i).GetPDFBandResults();
+				SPXGraphUtilities::MatchBinning(master, slave, dividedByBinWidth);
+			}
+		}
+	}
+}
+
+void SPXPlot::ApplyGridCorrections(void) {
+
+	if(steeringFile->GetGridCorr()) {
+		for(int i = 0; i < crossSections.size(); i++) {
+			crossSections.at(i).ApplyCorrections();
+		}
+	}
+}
+
 void SPXPlot::DrawOverlay(void) {
 	std::string mn = "DrawOverlay: ";
 
@@ -574,6 +656,7 @@ void SPXPlot::DrawOverlay(void) {
 
 	//Do nothing if not drawing overlay
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+	SPXPlotType &pt = pc.GetPlotType();
 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
 	SPXOverlayStyle &os = pc.GetOverlayStyle();
 
@@ -858,9 +941,9 @@ void SPXPlot::InitializeRatios(void) {
 			ratioInstance.AddDataFileGraphMap(dataFileGraphMap);
 			ratioInstance.AddReferenceFileGraphMap(referenceFileGraphMap);
 			ratioInstance.AddConvoluteFileGraphMap(convoluteFileGraphMap);
-			ratioInstance.SetDataDirectory(steeringFile->GetDataDirectory());
-			ratioInstance.SetGridDirectory(steeringFile->GetGridDirectory());
-			ratioInstance.SetPDFDirectory(steeringFile->GetPDFDirectory());
+			// ratioInstance.SetDataDirectory(steeringFile->GetDataDirectory());
+			// ratioInstance.SetGridDirectory(steeringFile->GetGridDirectory());
+			// ratioInstance.SetPDFDirectory(steeringFile->GetPDFDirectory());
 			ratioInstance.Parse(ratioString);
 			ratioInstance.GetGraphs();
 			ratioInstance.Divide();
@@ -912,6 +995,11 @@ void SPXPlot::InitializeCrossSections(void) {
 			SPXCrossSection crossSectionInstance = SPXCrossSection(&psf, &pci);
 			pcis.push_back(pci);
 			crossSectionInstance.Create();
+
+			if(steeringFile->GetGridCorr()) {
+				crossSectionInstance.ParseCorrections();
+			}
+
 			crossSections.push_back(crossSectionInstance);
 		} catch(const SPXException &e) {
 			throw;
@@ -995,7 +1083,11 @@ void SPXPlot::NormalizeCrossSections(void) {
 			//Also scale by the artificial scale from the plot configuration instance
 			xScale *= pci->xScale;
 			yScale *= pci->yScale;
+			SPXGraphUtilities::Scale(crossSections[i].GetPDFBandResults(), xScale, yScale);
 
+			//Also scale by the arficicial grid scale from the grid steering file
+			xScale = 1.0;
+			yScale = pci->gridSteeringFile.GetYScale();
 			SPXGraphUtilities::Scale(crossSections[i].GetPDFBandResults(), xScale, yScale);
 
 			if(debug) {

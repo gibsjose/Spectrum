@@ -32,7 +32,7 @@ void SPXCrossSection::Create(void) {
 		throw;
 	}
 
-	//Attempt to create the PDF object
+	//Attempt to create the PDF object and perform convolution
 	try {
 		pdf = new SPXPDF(psf, grid->GetGridName());
 	} catch(const SPXException &e) {
@@ -40,23 +40,66 @@ void SPXCrossSection::Create(void) {
 	}
 }
 
-//@TODO Already done in SPXPDF::Initialize()
-/*
-void SPXCrossSection::ConfigureStyle(void) {
-
-	//Set marker style
-	pdf->h_PDFBand_results->SetMarkerStyle(psf->GetMarkerStyle());
-
-	//Set marker color
-	pdf->h_PDFBand_results->SetMarkerColor(psf->GetMarkerColor());
-
-	//Set marker size
-	pdf->h_PDFBand_results->SetMarkerSize(1.0);
-
-	//Set line color
-	pdf->h_PDFBand_results->SetLineColor(1);
-
-	//Set line width
-	pdf->h_PDFBand_results->SetLineWidth(1);
+void SPXCrossSection::ParseCorrections(void) {
+	//Check if grid contains corrections
+	if(pci->gridSteeringFile.GetNumberOfCorrectionFiles() != 0) {
+		try {
+			corrections = new SPXGridCorrections(*pci);
+			corrections->Parse();
+			corrections->Print();
+		} catch(const SPXException &e) {
+			throw;
+		}
+	}
 }
-*/
+
+void SPXCrossSection::ApplyCorrections(void) {
+	std::string mn = "ApplyCorrections: ";
+
+	if(pci->gridSteeringFile.GetNumberOfCorrectionFiles() == 0) {
+		return;
+	}
+
+	std::cout << cn << mn << ">>>>>>>>>>>>>>>>> APPLY CORRECTIONS <<<<<<<<<<<<<<<<<" << std::endl;
+
+	//Loop over the band bins and make sure they match, if not just do nothing
+
+	unsigned int nBins = pdf->h_PDFBand_results->GetN();
+	double *x = pdf->h_PDFBand_results->GetX();
+	double *y = pdf->h_PDFBand_results->GetY();
+	double *exl = pdf->h_PDFBand_results->GetEXlow();
+	double *exh = pdf->h_PDFBand_results->GetEXhigh();
+	double *eyl = pdf->h_PDFBand_results->GetEYlow();
+	double *eyh = pdf->h_PDFBand_results->GetEYhigh();
+
+	unsigned int nBinsCorr = corrections->GetNumberOfBins();
+	double *c_x = &(corrections->GetTotalX().at(0));
+	double *c_exl = &(corrections->GetTotalEXL().at(0));
+	double *c_exh = &(corrections->GetTotalEXH().at(0));
+	double *c_y = &(corrections->GetTotalYCorrections().at(0));
+	double *c_eyl = &(corrections->GetTotalEYLCorrections().at(0));
+	double *c_eyh = &(corrections->GetTotalEYHCorrections().at(0));
+
+	//Loop over the smallest of the two
+	unsigned int n = (nBins < nBinsCorr ? nBins : nBinsCorr);
+
+	for(int i = 0; i < nBins; i++) {
+		for(int j = 0; j < nBinsCorr; j++) {
+
+			//Check for bin match
+			if(((x[i] - exl[i]) == c_exl[j]) && ((x[i] + exh[i]) == c_exh[j])) {
+
+				if(debug) std::cout << cn << mn << "Bins Match (i, j): (" << i << ", " << j << ")" << std::endl;
+
+				//Bins match; Scale y, eyl, and eyh
+				y[i] *= c_y[j];
+				eyl[i] *= c_eyl[j];
+				eyh[i] *= c_eyh[j];
+
+				break;
+			}
+		}
+	}
+
+	//@TODO Do the same for Alpha S and Scale uncertainty bands
+}

@@ -15,8 +15,11 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "INIReader.h"
+
+#include "SPXException.h"
 
 #ifndef SPXGRIDSTEERINGFILE_H
 #define SPXGRIDSTEERINGFILE_H
@@ -35,15 +38,26 @@ private:
 	bool debug;
 
 	//[DESC]
-	std::string name;
+	std::string name;									//Grid name
+	std::string author;									//Grid author
+	std::string lumiConfigFile;							//Sub-process configuration file for the grid program (APPLgrid)
+	std::string scale;									//Choice of renormalization scale (Q^2)
+	std::string referenceJournalName;					//Name of reference journal for the corresponding dataset
+	std::string referenceLinkToArXiv;					//Link to reference on arXiv for the corresponding dataset
+	std::string nloProgramName;							//NLO Program used to generate the grids
+	std::string gridProgramName;						//Program used as an interface between NLO program and APPLgrid
+	std::string observableDefinitionLinkToCode;			//Link to the piece of code/file which defines the observable and applies \
+															event selection cut, fills APPLgrid, etc.
 
 	//[GRAPH]
 	std::string xUnits;
 	std::string yUnits;
 	bool dividedByBinWidth;
+	double yScale;
 
 	//[GRID]
 	std::string gridFilepath;
+	std::vector<std::string> correctionFiles;
 	std::string generatorID;
 	std::string nTupleID;
 	unsigned int lowestOrder;
@@ -77,6 +91,38 @@ public:
 		return this->name;
 	}
 
+	const std::string & GetAuthor(void) const {
+		return this->author;
+	}
+
+	const std::string & GetLumiConfigFile(void) const {
+		return this->lumiConfigFile;
+	}
+
+	const std::string & GetScale(void) const {
+		return this->scale;
+	}
+
+	const std::string & GetReferenceJournalName(void) const {
+		return this->referenceJournalName;
+	}
+
+	const std::string & GetReferenceLinkToArXiv(void) const {
+		return this->referenceLinkToArXiv;
+	}
+
+	const std::string & GetNLOProgramName(void) const {
+		return this->nloProgramName;
+	}
+
+	const std::string & GetGridProgramName(void) const {
+		return this->gridProgramName;
+	}
+
+	const std::string & GetObservableDefinitionLinkToCode(void) const {
+		return this->observableDefinitionLinkToCode;
+	}
+
 	const std::string & GetXUnits(void) const {
 		return this->xUnits;
 	}
@@ -89,8 +135,26 @@ public:
 		return this->dividedByBinWidth;
 	}
 
+	double GetYScale(void) const {
+		return this->yScale;
+	}
+
 	const std::string & GetGridFilepath(void) const {
 		return this->gridFilepath;
+	}
+
+	unsigned int GetNumberOfCorrectionFiles(void) const {
+		return this->correctionFiles.size();
+	}
+
+	const std::string & GetCorrectionFile(unsigned int index) const {
+
+		if((index + 1) > correctionFiles.size()) {
+			int top = correctionFiles.size() - 1;
+			throw SPXOutOfRangeException(top, index, "SPXGridSteeringFile::GetCorrectionFile: Index out of range");
+		}
+
+		return correctionFiles.at(index);
 	}
 
 	const std::string & GetGeneratorID(void) const {
