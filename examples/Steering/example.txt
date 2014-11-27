@@ -43,6 +43,7 @@ debug = true													;[Optional] Turn on/off debug statements - [default = f
 plot_marker = true												;[Optional] Plot a marker on data points - [default = false]
 plot_staggered = true											;[Optional] Stagger points horizontally to improve readability - [default = false]
 match_binning = true											;[Optional] Match the binning for all graphs in the plot - [default = true]
+grid_corr = true												;[Optional] Apply the grid corrections for all grids if true
 label_sqrt_s = true												;[Optional] Specify to show the Sqrt(s) on the legend - [default = false]
 x_legend = 0.9													;[Optional] X(Right)-Position of Legend, based on top right side
 y_legend = 0.9													;[Optional]	Y(Top)-Position of legend, based on top right side

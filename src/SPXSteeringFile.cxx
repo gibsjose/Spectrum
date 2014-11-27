@@ -39,6 +39,9 @@ void SPXSteeringFile::SetDefaults(void) {
 	matchBinning = true;
 	if(debug) std::cout << cn << mn << "matchBinning set to default: \"true\"" << std::endl;
 
+	gridCorr = false;
+	if(debug) std::cout << cn << mn << "gridCorr set to default: \"false\"" << std::endl;
+
 	labelSqrtS = false;
 	if(debug) std::cout << cn << mn << "labelSqrtS set to default: \"false\"" << std::endl;
 
@@ -114,6 +117,7 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Plot Marker is: " << (plotMarker ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Staggered is: " << (plotStaggered ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Match Binning is: " << (matchBinning ? "ON" : "OFF") << std::endl;
+	std::cout << "\t\t Grid Corrections are: " << (gridCorr ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Label Sqrt(s) on Leggend: " << (labelSqrtS ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t X Legend: " << xLegend << std::endl;
 	std::cout << "\t\t Y Legend: " << yLegend << std::endl;
@@ -776,6 +780,7 @@ void SPXSteeringFile::Parse(void) {
 	plotMarker = reader->GetBoolean("GRAPH", "plot_marker", plotMarker);
 	plotStaggered = reader->GetBoolean("GRAPH", "plot_staggered", plotStaggered);
 	matchBinning = reader->GetBoolean("GRAPH", "match_binning", matchBinning);
+	gridCorr = reader->GetBoolean("GRAPH", "grid_corr", gridCorr);
 	labelSqrtS = reader->GetBoolean("GRAPH", "label_sqrt_s", labelSqrtS);
 	xLegend = reader->GetReal("GRAPH", "x_legend", xLegend);
 	yLegend = reader->GetReal("GRAPH", "y_legend", xLegend);

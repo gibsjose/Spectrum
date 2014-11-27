@@ -38,7 +38,9 @@ void SPXCrossSection::Create(void) {
 	} catch(const SPXException &e) {
 		throw;
 	}
+}
 
+void SPXCrossSection::ParseCorrections(void) {
 	//Check if grid contains corrections
 	if(pci->gridSteeringFile.GetNumberOfCorrectionFiles() != 0) {
 		try {
@@ -52,9 +54,13 @@ void SPXCrossSection::Create(void) {
 }
 
 void SPXCrossSection::ApplyCorrections(void) {
+	std::string mn = "ApplyCorrections: ";
+
 	if(pci->gridSteeringFile.GetNumberOfCorrectionFiles() == 0) {
 		return;
 	}
+
+	std::cout << cn << mn << ">>>>>>>>>>>>>>>>> APPLY CORRECTIONS <<<<<<<<<<<<<<<<<" << std::endl;
 
 	//Loop over the band bins and make sure they match, if not just do nothing
 
