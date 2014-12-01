@@ -449,6 +449,20 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 		if(debug) std::cout << cn << mn << "Forcing Overlay Y Axis Maxmimum to " << yMaxOverlay << std::endl;
 	}
 
+	//Force to non-negative if plotting logarithmic axis
+	if(pc.IsXLog()) {
+		if(xMinOverlay < 0) {
+			xMinOverlay = 0;
+			if(debug) std::cerr << cn << mn << "WARNING: Forcing non-negative Overlay X Axis since it was specified as Logarithmic" << std::endl;
+		}
+	}
+	if(pc.IsYLog()) {
+		if(yMinOverlay < 0) {
+			yMinOverlay = 0;
+			if(debug) std::cerr << cn << mn << "WARNING: Forcing non-negative Overlay Y Axis since it was specified as Logarithmic" << std::endl;
+		}
+	}
+
 	overlayPad->cd();
 	overlayFrameHisto = overlayPad->DrawFrame(xMinOverlay, yMinOverlay, xMaxOverlay, yMaxOverlay);
 	xAxisOverlay = overlayFrameHisto->GetXaxis();
@@ -490,6 +504,17 @@ void SPXPlot::DrawRatioPadFrame(void) {
 	if(ds.ContainsOverlay()) {
 		xMinRatio = xMinOverlay;
 		xMaxRatio = xMaxOverlay;
+	}
+
+	//@TODO What to do here for forcing Y axis within logarithmic limits like I do for overlay? It doesn't matter now, since
+	//			only overlay Y is logarithmic, and the X follows the overlay exactly (if it's plotted)
+	
+	//Force to non-negative if plotting logarithmic axis
+	if(pc.IsXLog()) {
+		if(xMinRatio < 0) {
+			xMinRatio = 0;
+			if(debug) std::cerr << cn << mn << "WARNING: Forcing non-negative Ratio X Axis since it was specified as Logarithmic" << std::endl;
+		}
 	}
 
 	ratioPad->cd();
@@ -639,7 +664,7 @@ void SPXPlot::MatchOverlayBinning(void) {
 
 			if(os.ContainsData()) {
 				master = data.at(0).GetTotalErrorGraph();
-				
+
 				if(debug) std::cout << cn << mn << "Matching overlay convolutes to data master" << std::endl;
 
 				for(int i = 0; i < crossSections.size(); i++) {
