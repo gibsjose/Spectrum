@@ -442,9 +442,11 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 	//Force to steering file Y bounds if set
 	if(steeringFile->GetYOverlayMin() != MIN_EMPTY) {
 		yMinOverlay = steeringFile->GetYOverlayMin();
+		if(debug) std::cout << cn << mn << "Forcing Overlay Y Axis Minimum to " << yMinOverlay << std::endl;
 	}
 	if(steeringFile->GetYOverlayMax() != MAX_EMPTY) {
 		yMaxOverlay = steeringFile->GetYOverlayMax();
+		if(debug) std::cout << cn << mn << "Forcing Overlay Y Axis Maxmimum to " << yMaxOverlay << std::endl;
 	}
 
 	overlayPad->cd();
@@ -477,9 +479,11 @@ void SPXPlot::DrawRatioPadFrame(void) {
 	//Force to steering file Y bounds if set
 	if(steeringFile->GetYRatioMin() != MIN_EMPTY) {
 		yMinRatio = steeringFile->GetYRatioMin();
+		if(debug) std::cout << cn << mn << "Forcing Ratio Y Axis Minimum to " << yMinRatio << std::endl;
 	}
 	if(steeringFile->GetYRatioMax() != MAX_EMPTY) {
 		yMaxRatio = steeringFile->GetYRatioMax();
+		if(debug) std::cout << cn << mn << "Forcing Ratio Y Axis Maxmimum to " << yMaxRatio << std::endl;
 	}
 
 	//Force Ratio X Min/Max to match Overlay, if plotted (should alread match anyway...)
