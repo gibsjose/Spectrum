@@ -639,22 +639,37 @@ void SPXPlot::MatchOverlayBinning(void) {
 
 			if(os.ContainsData()) {
 				master = data.at(0).GetTotalErrorGraph();
+				
 				if(debug) std::cout << cn << mn << "Matching overlay convolutes to data master" << std::endl;
-			} else {
-				master = crossSections.at(0).GetPDFBandResults();
-				if(debug) std::cout << cn << mn << "Matching overlay convolutes to convolute master" << std::endl;
-			}
 
-			for(int i = 1; i < crossSections.size(); i++) {
-				bool dividedByBinWidth = false;
+				for(int i = 0; i < crossSections.size(); i++) {
+					bool dividedByBinWidth = false;
 
-				//Check if data master is divided by bin width
-				if(data.at(0).IsDividedByBinWidth()) {
-					dividedByBinWidth = true;
+					//Check if data master is divided by bin width
+					if(data.at(0).IsDividedByBinWidth()) {
+						dividedByBinWidth = true;
+					}
+
+					TGraphAsymmErrors *slave = crossSections.at(i).GetPDFBandResults();
+					SPXGraphUtilities::MatchBinning(master, slave, dividedByBinWidth);
 				}
 
-				TGraphAsymmErrors *slave = crossSections.at(i).GetPDFBandResults();
-				SPXGraphUtilities::MatchBinning(master, slave, dividedByBinWidth);
+			} else {
+				master = crossSections.at(0).GetPDFBandResults();
+
+				if(debug) std::cout << cn << mn << "Matching overlay convolutes to convolute master" << std::endl;
+
+				for(int i = 1; i < crossSections.size(); i++) {
+					bool dividedByBinWidth = false;
+
+					//Check if convolute master is divided by bin width
+					if(crossSections.at(0).IsDividedByBinWidth()) {
+						dividedByBinWidth = true;
+					}
+
+					TGraphAsymmErrors *slave = crossSections.at(i).GetPDFBandResults();
+					SPXGraphUtilities::MatchBinning(master, slave, dividedByBinWidth);
+				}
 			}
 		}
 	}
