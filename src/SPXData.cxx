@@ -141,6 +141,7 @@ void SPXData::ParseSpectrum(void) {
 					std::string p_name = name + "+";
 					std::string n_name = name + "-";
 
+					if(debug) std::cout << std::endl;
 					if(debug) std::cout << cn << mn << "Found new symmetric systematic error: " << name << std::endl;
 					if(debug) std::cout << cn << mn << "Converted to asymmetric errors: " << p_name << " and " << n_name << std::endl;
 					if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
@@ -157,6 +158,7 @@ void SPXData::ParseSpectrum(void) {
 					if(name.find("+") != std::string::npos) {
 						pos_count++;
 
+						if(debug) std::cout << std::endl;
 						if(debug) std::cout << cn << mn << "Found new individual systematic error: " << name << std::endl;
 						if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
 					}
@@ -209,9 +211,6 @@ void SPXData::ParseSpectrum(void) {
 					}
 				}
 
-				//Increment bin count
-				bin_count++;
-
 				//Parse out required data
 				xm_t = tmp_data[XM_COL];
 				xlow_t = tmp_data[XLOW_COL];
@@ -235,6 +234,9 @@ void SPXData::ParseSpectrum(void) {
 					syst_p.push_back(syst_p_t);
 					syst_n.push_back(syst_n_t);
 				}
+
+				//Increment bin count
+				bin_count++;
 
 				//Fill required vectors with temp variables
 				xm.push_back(xm_t);
@@ -334,6 +336,7 @@ void SPXData::ParseSpectrum(void) {
 	}
 
 	//Check vector sizes: all vectors should be the same size
+	if(debug) std::cout << std::endl;
 	if(debug) std::cout << cn << mn << "Checking sizes of all other vectors..." << std::endl;
 
 	try {
