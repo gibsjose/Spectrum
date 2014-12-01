@@ -84,7 +84,7 @@ public:
 		return name;
 	}
 
-	const std::String & GetComments(void) const {
+	const std::string & GetComments(void) const {
 		return comments;
 	}
 
