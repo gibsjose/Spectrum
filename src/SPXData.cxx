@@ -118,8 +118,6 @@ void SPXData::ParseSpectrum(void) {
 		if(!line.empty() && (line[0] == ';')) {
 			continue;
 		} else if(!line.empty()) {
-			//Print line (DEBUG)
-			if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
 
 			//Check for systematic errors (line contains 'syst_')
 			if(line.find("syst_") != std::string::npos) {
@@ -143,8 +141,10 @@ void SPXData::ParseSpectrum(void) {
 					std::string p_name = name + "+";
 					std::string n_name = name + "-";
 
+					if(debug) std::cout << std::endl;
 					if(debug) std::cout << cn << mn << "Found new symmetric systematic error: " << name << std::endl;
 					if(debug) std::cout << cn << mn << "Converted to asymmetric errors: " << p_name << " and " << n_name << std::endl;
+					if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
 
 					//Add to map
 					StringDoubleVectorPair_T p_pair(p_name, tmp_syst);
@@ -158,10 +158,14 @@ void SPXData::ParseSpectrum(void) {
 					if(name.find("+") != std::string::npos) {
 						pos_count++;
 
+						if(debug) std::cout << std::endl;
 						if(debug) std::cout << cn << mn << "Found new individual systematic error: " << name << std::endl;
+						if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
 					}
 					else if(name.find("-") != std::string::npos) {
 						neg_count++;
+
+						if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
 
 						if(individualSystematics.count(SPXStringUtilities::ReplaceAll(name, "-", "+")) == 0) {
 							std::cerr << cn << mn << "WARNING: Unbalanced sytematic error: " << SPXStringUtilities::RemoveCharacters(name, "+-") << std::endl;
@@ -176,6 +180,8 @@ void SPXData::ParseSpectrum(void) {
 
 			//Not a systematic error: Read as data if it starts with a number (if first non-whitespace character is a digit)
 			else if(isdigit((int)SPXStringUtilities::LeftTrim(line).at(0))) {
+
+				if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
 
 				//Parse line into data vector
 				//Convert all tabs to spaces
@@ -205,9 +211,6 @@ void SPXData::ParseSpectrum(void) {
 					}
 				}
 
-				//Increment bin count
-				bin_count++;
-
 				//Parse out required data
 				xm_t = tmp_data[XM_COL];
 				xlow_t = tmp_data[XLOW_COL];
@@ -231,6 +234,9 @@ void SPXData::ParseSpectrum(void) {
 					syst_p.push_back(syst_p_t);
 					syst_n.push_back(syst_n_t);
 				}
+
+				//Increment bin count
+				bin_count++;
 
 				//Fill required vectors with temp variables
 				xm.push_back(xm_t);
@@ -274,12 +280,12 @@ void SPXData::ParseSpectrum(void) {
 				std::vector<double> &syst = it->second;
 
 				//Positive systematic
-				if(name.find("_p") != std::string::npos) {
+				if(name.find("+") != std::string::npos) {
 					p_errors.push_back(syst.at(i));
 				}
 
 				//Negative systematic
-				else if(name.find("_n") != std::string::npos) {
+				else if(name.find("-") != std::string::npos) {
 					n_errors.push_back(syst.at(i));
 				}
 
@@ -293,6 +299,7 @@ void SPXData::ParseSpectrum(void) {
 			syst_p_t = SPXMathUtilities::AddErrorsInQuadrature(p_errors);
 			syst_n_t = SPXMathUtilities::AddErrorsInQuadrature(n_errors);
 
+			if(debug) std::cout << std::endl;
 			if(debug) std::cout << cn << mn << "Total positive systematic error for bin " << i << " calculated as: " << syst_p_t << std::endl;
 			if(debug) std::cout << cn << mn << "Total negative systematic error for bin " << i << " calculated as: " << syst_n_t << std::endl;
 
@@ -316,20 +323,21 @@ void SPXData::ParseSpectrum(void) {
 
 				if(percentDifference_p > INDIV_VS_TOT_ACCEPTABLE_ERROR) {
 					std::cerr << cn << mn << "WARNING: Bin " << i << ": Sum of POSITIVE individual errors (" << syst_p_t << \
-					 	") does not agree witihin " << (INDIV_VS_TOT_ACCEPTABLE_ERROR * 100) << \
-							"%% with the given POSITIVE total systematic error (" << given_total_p << ")" << std::endl;
+					 	") does not agree within " << (INDIV_VS_TOT_ACCEPTABLE_ERROR * 100) << \
+							"% with the given POSITIVE total systematic error (" << given_total_p << ")" << std::endl;
 				}
 
 				if(percentDifference_n > INDIV_VS_TOT_ACCEPTABLE_ERROR) {
 					std::cerr << cn << mn << "WARNING: Bin " << i << ": Sum of NEGATIVE individual errors (" << syst_n_t << \
-						") does not agree witihin " << (INDIV_VS_TOT_ACCEPTABLE_ERROR * 100) << \
-							"%% with the given NEGATIVE total systematic error (" << given_total_n << ")" << std::endl;
+						") does not agree within " << (INDIV_VS_TOT_ACCEPTABLE_ERROR * 100) << \
+							"% with the given NEGATIVE total systematic error (" << given_total_n << ")" << std::endl;
 				}
 			}
 		}
 	}
 
 	//Check vector sizes: all vectors should be the same size
+	if(debug) std::cout << std::endl;
 	if(debug) std::cout << cn << mn << "Checking sizes of all other vectors..." << std::endl;
 
 	try {
@@ -855,8 +863,8 @@ void SPXData::CreateGraphs(void) {
 	totalErrorGraph->SetName(totName);
 
 	if(debug) {
-		std::cout << cn << mn << "Statistical Error Graph created with name: " << statName << std::endl;
 		std::cout << std::endl;
+		std::cout << cn << mn << "Statistical Error Graph created with name: " << statName << std::endl;
 		statisticalErrorGraph->Print();
 		std::cout << std::endl;
 		std::cout << cn << mn << "Systematic Error Graph created with name: " << systName << std::endl;

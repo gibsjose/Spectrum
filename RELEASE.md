@@ -1,10 +1,11 @@
-# Spectrum v0.6
-### 27 November, 2014
+# Spectrum v0.6.1
+### 01 December, 2014
 
 ## Authors
 @gibsjose @csembree Dr. Tancredi Carli
 
 ## Change Log
+* Fixed bug with reading in +/- individual systematic errors (was checking for '_p' and '_n' in name in map, not '+' and '-', as it should have been)
 * Update all example steering files to reflect new changes
 * Move ‘data/grid/pdf_directory' to the plot-level settings, and read as comma separated list
 * Grid Hadronization and Electroweak corrections
