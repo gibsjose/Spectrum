@@ -279,11 +279,6 @@ void SPXData::ParseSpectrum(void) {
 				const std::string &name = it->first;
 				std::vector<double> &syst = it->second;
 
-				//DEBUG
-				std::cout << std::endl;
-				std::cout << "===============> name = " << name << std::endl;
-				std::cout << "===============> syst[" << i << "] = " << syst.at(i) << std::endl;
-
 				//Positive systematic
 				if(name.find("+") != std::string::npos) {
 					p_errors.push_back(syst.at(i));
