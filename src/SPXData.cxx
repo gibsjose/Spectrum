@@ -118,8 +118,6 @@ void SPXData::ParseSpectrum(void) {
 		if(!line.empty() && (line[0] == ';')) {
 			continue;
 		} else if(!line.empty()) {
-			//Print line (DEBUG)
-			if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
 
 			//Check for systematic errors (line contains 'syst_')
 			if(line.find("syst_") != std::string::npos) {
@@ -145,6 +143,7 @@ void SPXData::ParseSpectrum(void) {
 
 					if(debug) std::cout << cn << mn << "Found new symmetric systematic error: " << name << std::endl;
 					if(debug) std::cout << cn << mn << "Converted to asymmetric errors: " << p_name << " and " << n_name << std::endl;
+					if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
 
 					//Add to map
 					StringDoubleVectorPair_T p_pair(p_name, tmp_syst);
@@ -159,9 +158,12 @@ void SPXData::ParseSpectrum(void) {
 						pos_count++;
 
 						if(debug) std::cout << cn << mn << "Found new individual systematic error: " << name << std::endl;
+						if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
 					}
 					else if(name.find("-") != std::string::npos) {
 						neg_count++;
+
+						if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
 
 						if(individualSystematics.count(SPXStringUtilities::ReplaceAll(name, "-", "+")) == 0) {
 							std::cerr << cn << mn << "WARNING: Unbalanced sytematic error: " << SPXStringUtilities::RemoveCharacters(name, "+-") << std::endl;
@@ -176,6 +178,8 @@ void SPXData::ParseSpectrum(void) {
 
 			//Not a systematic error: Read as data if it starts with a number (if first non-whitespace character is a digit)
 			else if(isdigit((int)SPXStringUtilities::LeftTrim(line).at(0))) {
+
+				if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
 
 				//Parse line into data vector
 				//Convert all tabs to spaces
