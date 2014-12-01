@@ -439,6 +439,14 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 
 	DetermineOverlayFrameBounds(xMinOverlay, xMaxOverlay, yMinOverlay, yMaxOverlay);
 
+	//Force to steering file Y bounds if set
+	if(steeringFile->GetYOverlayMin() != MIN_EMPTY) {
+		yMinOverlay = steeringFile->GetYOverlayMin();
+	}
+	if(steeringFile->GetYOverlayMax() != MAX_EMPTY) {
+		yMaxOverlay = steeringFile->GetYOverlayMax();
+	}
+
 	overlayPad->cd();
 	overlayFrameHisto = overlayPad->DrawFrame(xMinOverlay, yMinOverlay, xMaxOverlay, yMaxOverlay);
 	xAxisOverlay = overlayFrameHisto->GetXaxis();
@@ -465,6 +473,14 @@ void SPXPlot::DrawRatioPadFrame(void) {
 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
 
 	DetermineRatioFrameBounds(xMinRatio, xMaxRatio, yMinRatio, yMaxRatio);
+
+	//Force to steering file Y bounds if set
+	if(steeringFile->GetYRatioMin() != MIN_EMPTY) {
+		yMinRatio = steeringFile->GetYRatioMin();
+	}
+	if(steeringFile->GetYRatioMax() != MAX_EMPTY) {
+		yMaxRatio = steeringFile->GetYRatioMax();
+	}
 
 	//Force Ratio X Min/Max to match Overlay, if plotted (should alread match anyway...)
 	if(ds.ContainsOverlay()) {

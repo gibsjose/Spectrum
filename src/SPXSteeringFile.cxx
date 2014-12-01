@@ -51,17 +51,17 @@ void SPXSteeringFile::SetDefaults(void) {
 	yLegend = 0.9;
 	if(debug) std::cout << cn << mn << "yLegend set to default: \"0.9\"" << std::endl;
 
-	yOverlayMin = 0;
-	if(debug) std::cout << cn << mn << "yOverlayMin set to default: \"0\"" << std::endl;
+	yOverlayMin = MIN_EMPTY;
+	if(debug) std::cout << cn << mn << "yOverlayMin set to default: \"" << MIN_EMPTY << "\"" << std::endl;
 
-	yOverlayMax = 0;
-	if(debug) std::cout << cn << mn << "yOverlayMax set to default: \"0\"" << std::endl;
+	yOverlayMax = MAX_EMPTY;
+	if(debug) std::cout << cn << mn << "yOverlayMax set to default: \"" << MAX_EMPTY << "\"" << std::endl;
 
-	yRatioMin = 0;
-	if(debug) std::cout << cn << mn << "yRatioMin set to default: \"0\"" << std::endl;
+	yRatioMin = MIN_EMPTY;
+	if(debug) std::cout << cn << mn << "yRatioMin set to default: \"" << MIN_EMPTY << "\"" << std::endl;
 
-	yRatioMax = 0;
-	if(debug) std::cout << cn << mn << "yRatioMax set to default: \"0\"" << std::endl;
+	yRatioMax = MAX_EMPTY;
+	if(debug) std::cout << cn << mn << "yRatioMax set to default: \"" << MAX_EMPTY << "\"" << std::endl;
 }
 
 void SPXSteeringFile::PrintAll(void) {
