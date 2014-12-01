@@ -826,14 +826,14 @@ void SPXSteeringFile::ParseDataSteeringFiles(void) {
 				//Use default marker style or marker color if currently empty
 				if(pci.dataMarkerStyle == PC_EMPTY_STYLE) {
 					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
-						" Data Marker Style was empty: Defaulting to Data Steering file: " << dataSteeringFile.GetMarkerStyle() << std::endl;
-					pci.dataMarkerStyle = dataSteeringFile.GetMarkerStyle();
+						" Data Marker Style was empty: Defaulting to Circle (20)" << std::endl;
+					pci.dataMarkerStyle = 20;	//DEFAULT TO 20 (circle)
 				}
 
 				if(pci.dataMarkerColor == PC_EMPTY_COLOR) {
 					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
-						" Data Marker Color was empty: Defaulting to Data Steering file: " << dataSteeringFile.GetMarkerColor() << std::endl;
-					pci.dataMarkerColor = dataSteeringFile.GetMarkerColor();
+						" Data Marker Color was empty: Defaulting to Blac (1)" << std::endl;
+					pci.dataMarkerColor = 1;	//DEFAULT TO BLACK
 				}
 
 			//Update PCI with new data
