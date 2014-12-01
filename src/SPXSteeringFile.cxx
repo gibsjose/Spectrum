@@ -816,7 +816,8 @@ void SPXSteeringFile::ParseDataSteeringFiles(void) {
 	for(int i = 0; i < plotConfigurations.size(); i++) {
 		for(int j = 0; j < plotConfigurations.at(i).GetNumberOfConfigurationInstances(); j++) {
 
-			SPXDataSteeringFile &dataSteeringFile = plotConfigurations.at(i).GetPlotConfigurationInstance(j).dataSteeringFile;
+			SPXPlotConfigurationInstance &pci = plotConfigurations.at(i).GetPlotConfigurationInstance(j);
+			SPXDataSteeringFile &dataSteeringFile = pci.dataSteeringFile;
 
 			//Attempt to parse the Data Steering File
 			try {
