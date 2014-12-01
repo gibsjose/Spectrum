@@ -40,8 +40,8 @@
 const int STYLE_EMPTY = -1;
 const int COLOR_EMPTY = -1;
 
-const long long MAX_EMPTY = -1e30;
-const long long MIN_EMPTY = 1e30;
+const long long MAX_EMPTY = -1e20;
+const long long MIN_EMPTY = 1e20;
 
 class SPXSteeringFile {
 
