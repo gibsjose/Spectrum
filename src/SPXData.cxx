@@ -285,12 +285,12 @@ void SPXData::ParseSpectrum(void) {
 				std::cout << "===============> syst[" << i << "] = " << syst.at(i) << std::endl;
 
 				//Positive systematic
-				if(name.find("-") != std::string::npos) {
+				if(name.find("+") != std::string::npos) {
 					p_errors.push_back(syst.at(i));
 				}
 
 				//Negative systematic
-				else if(name.find("+") != std::string::npos) {
+				else if(name.find("-") != std::string::npos) {
 					n_errors.push_back(syst.at(i));
 				}
 
