@@ -35,7 +35,10 @@ public:
 		this->id = plotNumber;
 
 		if(debug) {
+			SPXData::SetDebug(true);
+			SPXDataFormat::SetDebug(true);
 			SPXCrossSection::SetDebug(true);
+			SPXGridCorrections::SetDebug(true);
 			SPXRatio::SetDebug(true);
 		}
 	}
