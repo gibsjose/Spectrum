@@ -302,40 +302,62 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 	//Check vector sizes that do not depend on the plot type
 	if(rSize != rsSize) {
-		throw SPXParseException("Size of ratio vector DOES NOT match the size of the ratio_style vector");
+		std::ostringstream oss;
+		oss << "Size of ratio vector (" << rSize << ") DOES NOT match the size of the ratio_style vector (" << rsSize << ")";
+		throw SPXParseException(oss.str());
 	}
 	if(dmsSize != dsfSize) {
-		throw SPXParseException("Size of data_marker_style vector DOES NOT match the size of the data_steering_files vector");
+		std::ostringstream oss;
+		oss << "Size of data_marker_style vector (" << dmsSize << ") DOES NOT match the size of the data_steering_files vector (" << dsfSize << ")";
+		throw SPXParseException(oss.str());
 	}
 	if(dmcSize != dsfSize) {
-		throw SPXParseException("Size of data_marker_color vector DOES NOT match the size of the data_steering_files vector");
+		std::ostringstream oss;
+		oss << "Size of data_marker_color vector (" << dmcSize << ") DOES NOT match the size of the data_steering_files vector (" << dsfSize << ")";
+		throw SPXParseException(oss.str());
 	}
 	if(xsSize != dsfSize) {
-		throw SPXParseException("Size of x_scale vector DOES NOT match the size of the data_steering_files vector");
+		std::ostringstream oss;
+		oss << "Size of x_scale vector (" << xsSize << ") DOES NOT match the size of the data_steering_files vector (" << dsfSize << ")";
+		throw SPXParseException(oss.str());
 	}
 	if(ysSize != dsfSize) {
-		throw SPXParseException("Size of y_scale vector DOES NOT match the size of the data_steering_files vector");
+		std::ostringstream oss;
+		oss << "Size of y_scale vector (" << ysSize << ") DOES NOT match the size of the data_steering_files vector (" << dsfSize << ")";
+		throw SPXParseException(oss.str());
 	}
 	if((pfsSize != 0) && (pfsSize != psfSize)) {
-		throw SPXParseException("Size of pdf_fill_style vector DOES NOT match the size of the pdf_steering_files vector");
+		std::ostringstream oss;
+		oss << "Size of pdf_fill_style vector (" << pfsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
 	}
 	if((pfcSize != 0) && (pfcSize != psfSize)) {
-		throw SPXParseException("Size of pdf_fill_color vector DOES NOT match the size of the pdf_steering_files vector");
+		std::ostringstream oss;
+		oss << "Size of pdf_fill_color vector (" << pfcSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
 	}
 	if((pmsSize != 0) && (pmsSize != psfSize)) {
-		throw SPXParseException("Size of pdf_marker_style vector DOES NOT match the size of the pdf_steering_files vector");
+		std::ostringstream oss;
+		oss << "Size of pdf_marker_style vector (" << pmsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
 	}
 
 	//Check directory size: Could either be of length 1, in which case the directory is prepended to each steering file, or
 	//	the exact length of the steering file list
 	if((ddrSize != 1) && (ddrSize != dsfSize)) {
-		throw SPXParseException("Size of data_directory vector MUST be either '1' or the size of the data_steering_files vector");
+		std::ostringstream oss;
+		oss << "Size of data_directory vector (" << ddrSize << ") MUST be either '1' or the size of the data_steering_files vector (" << dsfSize << ")";
+		throw SPXParseException(oss.str());
 	}
 	if((gdrSize != 1) && (gdrSize != gsfSize)) {
-		throw SPXParseException("Size of grid_directory vector MUST be either '1' or the size of the grid_steering_files vector");
+		std::ostringstream oss;
+		oss << "Size of grid_directory vector (" << gdrSize << ") MUST be either '1' or the size of the grid_steering_files vector (" << gsfSize << ")";
+		throw SPXParseException(oss.str());
 	}
 	if((pdrSize != 1) && (pdrSize != psfSize)) {
-		throw SPXParseException("Size of pdf_directory vector MUST be either '1' or the size of the pdf_steering_files vector");
+		std::ostringstream oss;
+		oss << "Size of pdf_directory vector (" << pdrSize << ") MUST be either '1' or the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
 	}
 
 	//Check the rest of the vector sizes based on the plot type
