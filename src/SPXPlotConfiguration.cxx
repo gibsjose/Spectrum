@@ -558,24 +558,29 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	overlayStyle = SPXOverlayStyle(options["overlay_style"].at(0));
 	ratioTitle = options["ratio_title"].at(0);
 
-	//Parse the ratio_style vector
-	for(int i = 0; i < options["ratio_style"].size(); i++) {
-		SPXRatioStyle rs;
+	//Parse the ratio_style vector if the display style contains 'ratio'
+	if(displayStyle.ContainsRatio()) {
+		for(int i = 0; i < options["ratio_style"].size(); i++) {
+			SPXRatioStyle rs;
 
-		try {
-			rs = SPXRatioStyle(options["ratio_style"].at(i), id, i);
-			ratioStyles.push_back(rs);
-		} catch(const SPXException &e) {
-			std::cerr << e.what() << std::endl;
+			try {
+				rs = SPXRatioStyle(options["ratio_style"].at(i), id, i);
+				ratioStyles.push_back(rs);
+			} catch(const SPXException &e) {
+				std::cerr << e.what() << std::endl;
 
-			std::ostringstream oss;
-			oss << "Unable to parse ratio_style_" << i;
-			throw SPXParseException(oss.str());
+				std::ostringstream oss;
+				oss << "Unable to parse ratio_style_" << i;
+				throw SPXParseException(oss.str());
+			}
 		}
-	}
 
-	//Copy the ratio string vector
-	ratios = options["ratio"];
+		//Copy the ratio string vector
+		ratios = options["ratio"];
+	} else {
+		ratioStyle.clear();
+		ratios.clear();
+	}
 
 	//Parse the xLog and yLog
 	std::string xls = options["x_log"].at(0);
