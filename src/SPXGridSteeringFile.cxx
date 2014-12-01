@@ -28,6 +28,9 @@ void SPXGridSteeringFile::SetDefaults(void) {
 	name.clear();
 	if(debug) std::cout << cn << mn << "name set to default: \" \"" << std::endl;
 
+	comments.clear();
+	if(debug) std::cout << cn << mn << "comments set to default: \" \"" << std::endl;
+
 	author.clear();
 	if(debug) std::cout << cn << mn << "author set to default: \" \"" << std::endl;
 
@@ -84,6 +87,7 @@ void SPXGridSteeringFile::Print(void) {
 	std::cout << "\t\t Debug is " << (debug ? "ON" : "OFF") << std::endl << std::endl;
 	std::cout << "\t Description [DESC]" << std::endl;
 	std::cout << "\t\t Name: " << name << std::endl;
+	std::cout << "\t\t Comments: " << comments << std::endl;
 	std::cout << "\t\t Author: " << author << std::endl;
 	std::cout << "\t\t Lumi Config File: " << lumiConfigFile << std::endl;
 	std::cout << "\t\t Scale: " << scale << std::endl;
@@ -140,6 +144,14 @@ void SPXGridSteeringFile::Parse(void) {
 		name.clear();
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Grid Name: " << name << std::endl;
+	}
+
+	tmp = reader->Get("DESC", "comments", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Comments were not specified" << std::endl;
+	} else {
+		comments = tmp;
+		if(debug) std::cout << cn << mn << "Successfully read Comments: " << comments << std::endl;
 	}
 
 	author = reader->Get("DESC", "author", "EMPTY");

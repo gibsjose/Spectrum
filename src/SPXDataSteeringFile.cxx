@@ -32,6 +32,9 @@ void SPXDataSteeringFile::SetDefaults(void) {
 	name.clear();
 	if(debug) std::cout << cn << mn << "name set to default: \" \"" << std::endl;
 
+	comments.clear();
+	if(debug) std::cout << cn << mn << "comments set to default: \" \"" << std::endl;
+
 	year = 0;
 	if(debug) std::cout << cn << mn << "year set to default: \" \"" << std::endl;
 
@@ -91,6 +94,7 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t\t Debug is " << (debug ? "ON" : "OFF") << std::endl << std::endl;
 	std::cout << "\t Description [DESC]" << std::endl;
 	std::cout << "\t\t Name: " << name << std::endl;
+	std::cout << "\t\t Comments: " << comments << std::endl;
 	std::cout << "\t\t Year: " << year << std::endl;
 	std::cout << "\t\t Reaction: " << reaction << std::endl << std::endl;
 	std::cout << "\t Graphing Options [GRAPH]" << std::endl;
@@ -144,6 +148,14 @@ void SPXDataSteeringFile::Parse(void) {
 	} else {
 		name = tmp;
 		if(debug) std::cout << cn << mn << "Successfully read Data Name: " << name << std::endl;
+	}
+
+	tmp = reader->Get("DESC", "comments", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Comments were not specified" << std::endl;
+	} else {
+		comments = tmp;
+		if(debug) std::cout << cn << mn << "Successfully read Comments: " << comments << std::endl;
 	}
 
 	year = reader->GetInteger("DESC", "year", year);

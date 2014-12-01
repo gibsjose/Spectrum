@@ -39,6 +39,7 @@ private:
 
 	//[DESC]
 	std::string name;									//Grid name
+	std::string comments;								//Grid comments
 	std::string author;									//Grid author
 	std::string lumiConfigFile;							//Sub-process configuration file for the grid program (APPLgrid)
 	std::string scale;									//Choice of renormalization scale (Q^2)
@@ -89,6 +90,10 @@ public:
 
 	const std::string & GetName(void) const {
 		return this->name;
+	}
+
+	const std::string & GetComments(void) const {
+		return this->comments;
 	}
 
 	const std::string & GetAuthor(void) const {

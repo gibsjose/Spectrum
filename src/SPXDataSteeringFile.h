@@ -38,6 +38,7 @@ private:
 
 	//[DESC]
 	std::string name;				//Name of Steering Data
+	std::string comments;			//Data comments
 	unsigned long year;				//Year
 	std::string experiment;			//Experiment
 	std::string reaction;			//Reaction name
@@ -83,6 +84,10 @@ public:
 		return name;
 	}
 
+	const std::String & GetComments(void) const {
+		return comments;
+	}
+
 	unsigned long GetYear(void) const {
 		return year;
 	}
@@ -118,16 +123,6 @@ public:
 	const std::string & GetYBinWidthUnits(void) const {
 		return yBinWidthUnits;
 	}
-
-	/*
-	double GetFrameXMin(void) const {
-		return frameXMin;
-	}
-
-	double GetFrameYMin(void) const {
-		return frameYMin;
-	}
-	*/
 
 	const std::string & GetJetAlgorithmLabel(void) const {
 		return jetAlgorithmLabel;
