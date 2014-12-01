@@ -578,7 +578,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		//Copy the ratio string vector
 		ratios = options["ratio"];
 	} else {
-		ratioStyle.clear();
+		ratioStyles.clear();
 		ratios.clear();
 	}
 
