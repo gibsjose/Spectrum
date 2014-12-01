@@ -172,6 +172,9 @@ struct SPXPlotConfigurationInstance {
 	}
 };
 
+typedef std::map<std::string, SPXPlotConfigurationInstance> StringPCIMap_T;
+typedef std::pair<std::string, SPXPlotConfigurationInstance> StringPCIPair_T;
+
 class SPXPlotConfiguration {
 
 public:
@@ -196,10 +199,17 @@ public:
 		//Add the instance to the instance vector
 		configurationInstances.push_back(instance);
 
-		//Add the configuration instance to the instance/pdf steering file map
-		std::string filename = instance.pdfSteeringFile.GetFilename();
+		//Add the pairs of filenames with the PCI to the map (this is used to look up PCI's by the corresponding filename)
+		std::string pdfFilename = instance.pdfSteeringFile.GetFilename();
+		std::string dataFilename = instance.dataSteeringFile.GetFilename();
 		SPXPlotConfigurationInstance pci = instance;
-		pdfFileToPlotConfigurationInstanceMap.insert(std::pair<std::string, SPXPlotConfigurationInstance>(filename, pci));
+
+		StringPCIPair_T dataPair(dataFilename, instance);
+		StringPCIPair_T pdfPair(pdfFilename, instance);
+
+		filenameToPCIMap.insert(dataPair);
+		filenameToPCIMap.insert(pdfPair);
+
 		if(debug) std::cout << focn << mn << "Successfully added a configuration instance to the instance vector" << std::endl;
 	}
 
@@ -293,16 +303,16 @@ public:
 		return configurationInstances.at(index);
 	}
 
-	SPXPlotConfigurationInstance & GetPlotConfigurationInstance(std::string pdfFilename) {
+	SPXPlotConfigurationInstance & GetPlotConfigurationInstance(std::string filename) {
 		std::string mn = "GetPlotConfigurationInstance: ";
 
-		if(debug) std::cout << focn << mn << "PDF Filename Key: [" << pdfFilename << "]" << std::endl;
+		if(debug) std::cout << focn << mn << "Filename Key: [" << filename << "]" << std::endl;
 
-		if(pdfFileToPlotConfigurationInstanceMap.count(pdfFilename) == 0) {
-			throw SPXGraphException(focn + mn + "Invalid key: pdfFileConfigurationInstanceMap[" + pdfFilename + "]");
+		if(filenameToPCIMap.count(filename) == 0) {
+			throw SPXGraphException(focn + mn + "Invalid key: filenameToPCIMap[" + filename + "]");
 		}
 
-		return pdfFileToPlotConfigurationInstanceMap[pdfFilename];
+		return filenameToPCIMap[filename];
 	}
 
 private:
@@ -320,7 +330,7 @@ private:
 
 	std::vector<SPXPlotConfigurationInstance> configurationInstances;
 
-	std::map<std::string, SPXPlotConfigurationInstance> pdfFileToPlotConfigurationInstanceMap;
+	StringPCIMap_T filenameToPCIMap;
 
 	void SetDefaults(void) {
 		std::string mn = "SetDefaults: ";

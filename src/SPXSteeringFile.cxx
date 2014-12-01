@@ -821,6 +821,25 @@ void SPXSteeringFile::ParseDataSteeringFiles(void) {
 			//Attempt to parse the Data Steering File
 			try {
 				dataSteeringFile.Parse();
+
+				//Use default marker style or marker color if currently empty
+				if(pci.dataMarkerStyle == PC_EMPTY_STYLE) {
+					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
+						" Data Marker Style was empty: Defaulting to Data Steering file: " << dataSteeringFile.GetMarkerStyle() << std::endl;
+					pci.dataMarkerStyle = dataSteeringFile.GetMarkerStyle();
+				}
+
+				if(pci.dataMarkerColor == PC_EMPTY_COLOR) {
+					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
+						" Data Marker Color was empty: Defaulting to Data Steering file: " << dataSteeringFile.GetMarkerColor() << std::endl;
+					pci.dataMarkerColor = dataSteeringFile.GetMarkerColor();
+				}
+
+			//Update PCI with new data
+			SPXPlotConfigurationInstance &pcim = plotConfigurations.at(i).GetPlotConfigurationInstance(dataSteeringFile.GetFilename());
+			pcim.dataMarkerStyle = pci.dataMarkerStyle;
+			pcim.dataMarkerColor = pci.dataMarkerColor;
+
 			} catch(const SPXException &e) {
 				std::cerr << e.what() << std::endl;
 
@@ -906,7 +925,7 @@ void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 					pci.pdfMarkerStyle = pdfSteeringFile.GetMarkerStyle();
 				}
 
-				//Update PCI in PDF Filemap with new data
+				//Update PCI with new data
 				SPXPlotConfigurationInstance &pcim = plotConfigurations.at(i).GetPlotConfigurationInstance(pdfSteeringFile.GetFilename());
 				pcim.pdfFillStyle = pci.pdfFillStyle;
 				pcim.pdfFillColor = pci.pdfFillColor;
