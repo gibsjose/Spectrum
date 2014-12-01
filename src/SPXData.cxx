@@ -299,6 +299,7 @@ void SPXData::ParseSpectrum(void) {
 			syst_p_t = SPXMathUtilities::AddErrorsInQuadrature(p_errors);
 			syst_n_t = SPXMathUtilities::AddErrorsInQuadrature(n_errors);
 
+			if(debug) std::cout << std::endl;
 			if(debug) std::cout << cn << mn << "Total positive systematic error for bin " << i << " calculated as: " << syst_p_t << std::endl;
 			if(debug) std::cout << cn << mn << "Total negative systematic error for bin " << i << " calculated as: " << syst_n_t << std::endl;
 
@@ -862,8 +863,8 @@ void SPXData::CreateGraphs(void) {
 	totalErrorGraph->SetName(totName);
 
 	if(debug) {
-		std::cout << cn << mn << "Statistical Error Graph created with name: " << statName << std::endl;
 		std::cout << std::endl;
+		std::cout << cn << mn << "Statistical Error Graph created with name: " << statName << std::endl;
 		statisticalErrorGraph->Print();
 		std::cout << std::endl;
 		std::cout << cn << mn << "Systematic Error Graph created with name: " << systName << std::endl;

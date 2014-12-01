@@ -36,6 +36,7 @@ void SPXGridCorrections::Parse(void) {
     for(int i = 0; i < numberOfCorrectionFiles; i++) {
         std::string filename = pci.gridSteeringFile.GetCorrectionFile(i);
 
+        if(debug) std::cout << std::endl;
         if(debug) std::cout << cn << mn << "Beginning to parse correction file: " << filename << std::endl;
 
         //Open the file
@@ -67,7 +68,7 @@ void SPXGridCorrections::Parse(void) {
                 //Read in line if it starts with a digit
                 if(isdigit((int)SPXStringUtilities::LeftTrim(line).at(0))) {
 
-                    if(debug) std::cout << "LINE: " << line << std::endl;
+                    if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
 
                     //Parse line into vector
                     //Convert all tabs to spaces
