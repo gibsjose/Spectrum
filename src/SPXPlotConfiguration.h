@@ -126,27 +126,17 @@ struct SPXPlotConfigurationInstance {
 
 		//Not empty, but fields are missing
 		if(dataSteeringFile.GetFilename().empty()) {
-			if(debug) std::cout << foicn << mn << "Data Steering Filename field missing from FrameOptionsInstance Object" << std::endl;
+			if(debug) std::cout << foicn << mn << "Data Steering Filename field missing from PlotConfigurationInstance Object" << std::endl;
 			return false;
 		}
 
 		if(gridSteeringFile.GetFilename().empty()) {
-			if(debug) std::cout << foicn << mn << "Grid Steering Filename field missing from FrameOptionsInstance Object" << std::endl;
+			if(debug) std::cout << foicn << mn << "Grid Steering Filename field missing from PlotConfigurationInstance Object" << std::endl;
 			return false;
 		}
 
 		if(pdfSteeringFile.GetFilename().empty()) {
-			if(debug) std::cout << foicn << mn << "PDF Steering Filename field missing from FrameOptionsInstance Object" << std::endl;
-			return false;
-		}
-
-		if(dataMarkerStyle == PC_EMPTY_STYLE) {
-			if(debug) std::cout << foicn << mn << "Marker Style field missing from FrameOptionsInstance Object" << std::endl;
-			return false;
-		}
-
-		if(dataMarkerColor == PC_EMPTY_COLOR) {
-			if(debug) std::cout << foicn << mn << "Marker Color field missing from FrameOptionsInstance Object" << std::endl;
+			if(debug) std::cout << foicn << mn << "PDF Steering Filename field missing from PlotConfigurationInstance Object" << std::endl;
 			return false;
 		}
 
