@@ -429,7 +429,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		//Get the data_marker_style
 		tmp = reader->Get(plotSection, "data_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			throw SPXINIParseException(plotSection, "data_marker_style", "You MUST specify the data_marker_style");
+			std::cout << cn << mn << "WARNING: No plot option for data_marker_color found: Defaulting to data steering file settings" << std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -449,7 +449,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		//Get the data_marker_color
 		tmp = reader->Get(plotSection, "data_marker_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			throw SPXINIParseException(plotSection, "data_marker_color", "You MUST specify the data_marker_color");
+			std::cout << cn << mn << "WARNING: No plot option for data_marker_color found: Defaulting to data steering file settings" << std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -470,7 +470,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmp = reader->Get(plotSection, "pdf_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(plotBand) {
-				std::cerr << cn << mn << "WARNING: No plot option for pdf_fill_style found, but plot_band = true. Defaulting to pdf steering file settings" << std::endl;
+				std::cout << cn << mn << "WARNING: No plot option for pdf_fill_style found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
 			} else {
 				if(debug) std::cout << cn << mn << "No plot option for pdf_fill_style found" << std::endl;
 			}
@@ -494,7 +494,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmp = reader->Get(plotSection, "pdf_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(plotBand) {
-				std::cerr << cn << mn << "WARNING: No plot option for pdf_fill_color found, but plot_band = true. Defaulting to pdf steering file settings" << std::endl;
+				std::cout << cn << mn << "WARNING: No plot option for pdf_fill_color found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
 			} else {
 				if(debug) std::cout << cn << mn << "No plot options for pdf_fill_color found" << std::endl;
 			}
@@ -518,7 +518,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmp = reader->Get(plotSection, "pdf_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(plotMarker) {
-				std::cerr << cn << mn << "WARNING: No plot option for pdf_marker_style found, but plot_marker = true. Defaulting to pdf steering file settings" << std::endl;
+				std::cout << cn << mn << "WARNING: No plot option for pdf_marker_style found, but plot_marker = true: Defaulting to pdf steering file settings" << std::endl;
 			} else {
 				if(debug) std::cout << cn << mn << "No plot option for pdf_marker_style found" << std::endl;
 			}
