@@ -639,8 +639,10 @@ void SPXPlot::MatchOverlayBinning(void) {
 
 			if(os.ContainsData()) {
 				master = data.at(0).GetTotalErrorGraph();
+				if(debug) std::cout << cn << mn << "Matching overlay convolutes to data master" << std::endl;
 			} else {
 				master = crossSections.at(0).GetPDFBandResults();
+				if(debug) std::cout << cn << mn << "Matching overlay convolutes to convolute master" << std::endl;
 			}
 
 			for(int i = 1; i < crossSections.size(); i++) {
