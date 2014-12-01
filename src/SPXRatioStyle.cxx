@@ -1,12 +1,9 @@
 //************************************************************/
 //
-//	Ratio Style Implementation
+//	Ratio Style Header
 //
-//	Implements the SPXRatioStyle class, which describes the type of
-//	ratio to be plotted in the ratio section. Ratio styles can
-//	include: [data AND/OR reference AND/OR convolute] in the
-//	numerator, and [data XOR reference XOR convolute] in the
-//	demominator.
+//	Outlines the SPXRatioStyle class, which describes the type of
+//	ratio to be plotted in the ratio section.
 //
 //	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
 //	@Date:		25.09.2014
@@ -162,6 +159,10 @@ void SPXRatioStyle::Parse(std::string &s) {
 		if(debug) std::cout << cn << mn << "Found denominator string = \"convolute\"" << std::endl;
 		denominator = RS_CONVOLUTE;
 	}
+	else if(!den.compare("nominal")) {
+		if(debug) std::cout << cn << mn << "Found denominator string = \"nominal\"" << std::endl;
+		denominator = RS_NOMINAL;
+	}
 	else {
 		numerator = RS_INVALID;
 		denominator = RS_INVALID;
@@ -177,6 +178,11 @@ void SPXRatioStyle::Parse(std::string &s) {
 			numerator = RS_INVALID;
 			denominator = RS_INVALID;
 			throw SPXINIParseException(plotNumber, ratioStyleNumber, "Invalid ratio combination: data / reference is not supported");
+		}
+		else if(denominator == RS_NOMINAL) {
+			numerator = RS_INVALID;
+			denominator = RS_INVALID;
+			throw SPXINIParseException(plotNumber, ratioStyleNumber, "Invalid ratio combination: data / nominal is not supported");
 		}
 	}
 
@@ -241,6 +247,9 @@ std::string SPXRatioStyle::ToString(void) {
 	else if(denominator == RS_CONVOLUTE) {
 		den = "convolute";
 	}
+	else if(denominator == RS_NOMINAL) {
+		den = "nominal";
+	}
 
 	if(zeroNumeratorErrors) {
 		num += "(!)";
@@ -285,7 +294,7 @@ bool SPXRatioStyle::IsValid(void) {
 		return false;
 	}
 
-	if((denominator != RS_DATA) && (denominator != RS_REFERENCE) && (denominator != RS_CONVOLUTE)) {
+	if((denominator != RS_DATA) && (denominator != RS_REFERENCE) && (denominator != RS_CONVOLUTE) && (denominator != RS_NOMINAL)) {
 		if(debug) std::cout << cn << mn << "Denominator is invalid: denominator = " << denominator << std::endl;
 		return false;
 	}

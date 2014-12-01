@@ -72,7 +72,7 @@ public:
     }
 
     bool HasConvolute(void) {
-        if(ratioStyle.IsDataOverConvolute() || ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverReference()) {
+        if(ratioStyle.IsDataOverConvolute() || ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverReference() || ratioStyle.IsConvoluteOverNominal()) {
             return true;
         }
 
@@ -89,6 +89,14 @@ public:
 
     bool HasReference(void) {
         if(ratioStyle.IsConvoluteOverReference()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    bool HasNominal(void) {
+        if(ratioStyle.IsConvoluteOverNominal()) {
             return true;
         }
 
@@ -161,7 +169,7 @@ public:
             return;
         }
 
-        if(ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverReference()) {
+        if(ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverReference() || ratioStyle.IsConvoluteOverNominal()) {
             pci = plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
             if(debug) {
                 pci.Print();
