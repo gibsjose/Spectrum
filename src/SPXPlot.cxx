@@ -452,13 +452,13 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 	//Force to non-negative if plotting logarithmic axis
 	if(pc.IsXLog()) {
 		if(xMinOverlay < 0) {
-			xMinOverlay = 0;
+			xMinOverlay = 1e-10;
 			if(debug) std::cerr << cn << mn << "WARNING: Forcing non-negative Overlay X Axis since it was specified as Logarithmic" << std::endl;
 		}
 	}
 	if(pc.IsYLog()) {
 		if(yMinOverlay < 0) {
-			yMinOverlay = 0;
+			yMinOverlay = 1e-10;
 			if(debug) std::cerr << cn << mn << "WARNING: Forcing non-negative Overlay Y Axis since it was specified as Logarithmic" << std::endl;
 		}
 	}
@@ -508,11 +508,11 @@ void SPXPlot::DrawRatioPadFrame(void) {
 
 	//@TODO What to do here for forcing Y axis within logarithmic limits like I do for overlay? It doesn't matter now, since
 	//			only overlay Y is logarithmic, and the X follows the overlay exactly (if it's plotted)
-	
+
 	//Force to non-negative if plotting logarithmic axis
 	if(pc.IsXLog()) {
 		if(xMinRatio < 0) {
-			xMinRatio = 0;
+			xMinRatio = 1e-10;
 			if(debug) std::cerr << cn << mn << "WARNING: Forcing non-negative Ratio X Axis since it was specified as Logarithmic" << std::endl;
 		}
 	}
