@@ -157,14 +157,6 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		if(options.count("pdf_steering_files") == 0) {
 			throw SPXParseException("The options map MUST contain a vector for pdf_steering_files");
 		}
-
-		if(options.count("data_marker_style") == 0) {
-			throw SPXParseException("The options map MUST contain a vector for data_marker_style");
-		}
-
-		if(options.count("data_marker_color") == 0) {
-			throw SPXParseException("The options map MUST contain a vector for data_marker_color");
-		}
 	}
 
 	if(debug) {
