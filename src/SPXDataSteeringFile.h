@@ -136,8 +136,16 @@ public:
 		return dataFormat;
 	}
 
-	const std::string GetDataFile(void) const {
+	const std::string & GetDataFile(void) const {
 		return dataFilepath;
+	}
+
+	void SetDataFile(std::string & filepath) {
+		dataFilepath = filepath;
+	}
+
+	void PrependDataFile(std::string & path) {
+		dataFilepath = path + "/" + dataFilepath;
 	}
 
 	bool IsDividedByBinWidth(void) const {
