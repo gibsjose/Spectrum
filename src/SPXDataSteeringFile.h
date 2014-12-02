@@ -95,12 +95,36 @@ public:
 		return comments;
 	}
 
-	unsigned long GetYear(void) const {
-		return year;
-	}
-
 	const std::string & GetReaction(void) const {
 		return reaction;
+	}
+
+	const std::string & GetDatasetYear(void) const {
+		return datasetYear;
+	}
+
+	const std::string & GetDatasetLumi(void) const {
+		return datasetLumi;
+	}
+
+	const std::string & GetReferenceJournalName(void) const {
+		return referenceJournalName;
+	}
+
+	const std::string & GetReferenceJournalYear(void) const {
+		return referenceJournalYear;
+	}
+
+	const std::string & GetReferenceArXivNumber(void) const {
+		return referenceArXivNumber;
+	}
+
+	const std::string & GetReferenceArXivYear(void) const {
+		return referenceArXivYear;
+	}
+
+	const std::string & GetPublicationStatus(void) const {
+		return publicationStatus;
 	}
 
 	double GetSqrtS(void) const {
@@ -165,6 +189,10 @@ public:
 
 	bool IsErrorInPercent(void) const {
 		return errorInPercent;
+	}
+
+	double GetLumiScaleFactor(void) const {
+		return lumiScaleFactor;
 	}
 };
 
