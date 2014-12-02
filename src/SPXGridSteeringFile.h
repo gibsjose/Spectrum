@@ -148,6 +148,14 @@ public:
 		return this->gridFilepath;
 	}
 
+	void SetGridFilepath(std::string &filepath) {
+		this->gridFilepath = filepath;
+	}
+
+	void PrependGridFilepath(std::string &path) {
+		this->gridFilepath = path + "/" + this->gridFilepath;
+	}
+
 	unsigned int GetNumberOfCorrectionFiles(void) const {
 		return this->correctionFiles.size();
 	}

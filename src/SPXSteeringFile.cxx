@@ -826,7 +826,7 @@ void SPXSteeringFile::ParseDataSteeringFiles(void) {
 			try {
 				dataSteeringFile.Parse();
 
-				//Attempt to prepend the data directory onto the steering file's data path
+				//Prepend the data directory onto the steering file's data path
 				dataSteeringFile.PrependDataFile(pci.dataDirectory);
 				if(debug) std::cout << cn << mn << "Successfully prepended directory \"" << pci.dataDirectory << "\" onto data file" << std::endl;
 				if(debug) std::cout << cn << mn << "Resulting data filepath: \"" << dataSteeringFile.GetDataFile() << "\"" << std::endl;
@@ -881,6 +881,10 @@ void SPXSteeringFile::ParseGridSteeringFiles(void) {
 			//Attempt to parse the Grid Steering File
 			try {
 				gridSteeringFile.Parse();
+
+				gridSteeringFile.PrependGridFilepath(pci.gridDirectory);
+				if(debug) std::cout << cn << mn << "Successfully prepended directory \"" << pci.gridDirectory << "\" onto grid file" << std::endl;
+				if(debug) std::cout << cn << mn << "Resulting grid filepath: \"" << gridSteeringFile.GetGridFilepath() << "\"" << std::endl;
 			} catch(const SPXException &e) {
 				std::cerr << e.what() << std::endl;
 
