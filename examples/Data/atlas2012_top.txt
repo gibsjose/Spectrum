@@ -42,9 +42,16 @@ debug = false
 ;==============================================================
 [DESC]
 name = ATLAS_2012_diffcross_mtt
-year = 2013
 experiment = ATLAS
 reaction = P P --> top top
+data_set_year = 2013
+data_set_lumi = 4.5	[Units]
+reference_journal_name = Some Journal
+reference_journal_year = 2014
+reference_arxiv_number = arXiv:12345678
+reference_arxiv_year = 2014
+publication_status = published
+lumi_scale_factor = 1.0
 
 ;==============================================================
 ; Graphing Options

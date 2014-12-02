@@ -37,11 +37,17 @@ private:
 	bool debug;
 
 	//[DESC]
-	std::string name;				//Name of Steering Data
-	std::string comments;			//Data comments
-	unsigned long year;				//Year
-	std::string experiment;			//Experiment
-	std::string reaction;			//Reaction name
+	std::string name;					//Name of Steering Data
+	std::string comments;				//Data comments
+	std::string experiment;				//Experiment
+	std::string reaction;				//Reaction name
+	std::string datasetYear;			//Year of dataset
+	std::string datasetLumi;			//Dataset luminosity string
+	std::string referenceJournalName;	//Name of journal
+	std::string referenceJournalYear;	//Year of publication in journal
+	std::string referenceArXivNumber;	//ID number of arXiv
+	std::string referenceArXivYear;		//Year of arXiv
+	std::string publicationStatus;		//Status of publication
 
 	//[GRAPH]
 	double sqrtS;					//Sqrt(s) value for dataset
@@ -62,6 +68,7 @@ private:
 	bool dividedByBinWidth;			//Flag to indicate that data has been divided by the bin width
 	bool normalizedToTotalSigma;	//Flag to indicate that cross section data is normalized to the total cross section
 	bool errorInPercent;			//Flag to indicate the errors in the data file are given in percents
+	double lumiScaleFactor;			//Luminosity scale factor: Default to 1.0
 
 	void SetDefaults(void);
 
