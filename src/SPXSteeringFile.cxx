@@ -829,7 +829,7 @@ void SPXSteeringFile::ParseDataSteeringFiles(void) {
 				//Attempt to prepend the data directory onto the steering file's data path
 				dataSteeringFile.PrependDataFile(pci.dataDirectory);
 				if(debug) std::cout << cn << mn << "Successfully prepended directory \"" << pci.dataDirectory << "\" onto data file" << std::endl;
-				if(debug) std::cout << cn << mn << "Resulting data filepath: \"" << dataSteeringFile.GetDataFilePath() << "\"" << std::endl;
+				if(debug) std::cout << cn << mn << "Resulting data filepath: \"" << dataSteeringFile.GetDataFile() << "\"" << std::endl;
 
 				//Use default marker style or marker color if currently empty
 				if(pci.dataMarkerStyle == PC_EMPTY_STYLE) {
