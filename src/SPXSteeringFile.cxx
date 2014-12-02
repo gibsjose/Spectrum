@@ -876,7 +876,8 @@ void SPXSteeringFile::ParseGridSteeringFiles(void) {
 	for(int i = 0; i < plotConfigurations.size(); i++) {
 		for(int j = 0; j < plotConfigurations.at(i).GetNumberOfConfigurationInstances(); j++) {
 
-			SPXGridSteeringFile &gridSteeringFile = plotConfigurations.at(i).GetPlotConfigurationInstance(j).gridSteeringFile;
+			SPXPlotConfigurationInstance &pci = plotConfigurations.at(i).GetPlotConfigurationInstance(j);
+			SPXGridSteeringFile &gridSteeringFile = pci.gridSteeringFile;
 
 			//Attempt to parse the Grid Steering File
 			try {
