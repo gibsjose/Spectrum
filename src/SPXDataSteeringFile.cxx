@@ -263,6 +263,11 @@ void SPXDataSteeringFile::Parse(void) {
 	} else {
 		dataFilepath = tmp;
 		if(debug) std::cout << cn << mn << "Successfully read Data File: " << dataFilepath << std::endl;
+
+		//Prepend the data directory onto the data file
+		dataFilepath = pci.dataDirectory + "/" + dataFilepath;
+		if(debug) std::cout << cn << mn << "Successfully prepended directory \"" << pci.dataDirectory << "\" onto data file" << std::endl;
+		if(debug) std::cout << cn << mn << "Resulting data filepath: \"" << dataFilepath << "\"" << std::endl;
 	}
 
 	dividedByBinWidth = reader->GetBoolean("DATA", "divided_by_bin_width", false);
