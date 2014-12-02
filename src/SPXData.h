@@ -37,6 +37,8 @@ public:
 		this->pci = pci;
 		this->dataFormat = pci.dataSteeringFile.GetDataFormat();
 		dividedByBinWidth = this->pci.dataSteeringFile.IsDividedByBinWidth();
+		std::cout << ">>>>>>" << pci.dataDirectory << std::endl;
+		std::cout << pci.dataSteeringFile.GetFilename() << std::endl;
 	}
 
 	void Parse(void);

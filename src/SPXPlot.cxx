@@ -1239,6 +1239,8 @@ void SPXPlot::InitializeData(void) {
 		if(debug) std::cout << cn << mn << "Added data with key = [" << key << "] to dataSet" << std::endl;
 
 		SPXData dataInstance = SPXData(pci);
+
+		//@DEBUG
 		std::cout << pci.dataDirectory << std::endl;
 		std::cout << pci.dataSteeringFile.GetFilename() << std::endl;
 
