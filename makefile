@@ -48,11 +48,7 @@ BIN = $(BIN_DIR)/Spectrum
 
 .SUFFIXES: .cxx .o
 
-.PHONY: all dir clean print
-
-print: *.cxx
-	lpr -p $?
-	touch print
+.PHONY: all dir clean
 
 all: dir $(BIN)
 
