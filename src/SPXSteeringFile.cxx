@@ -19,6 +19,9 @@
 //Class name for debug statements
 const std::string cn = "SPXSteeringFile::";
 
+const int DEFAULT_DATA_MARKER_STYLE = 20;	//Circle
+const int DEFAULT_DATA_MARKER_COLOR = 1;	//Black
+
 void SPXSteeringFile::SetDefaults(void) {
 	std::string mn = "SetDefaults: ";
 
@@ -429,7 +432,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		//Get the data_marker_style
 		tmp = reader->Get(plotSection, "data_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			std::cout << cn << mn << "WARNING: No plot option for data_marker_color found: Defaulting to data steering file settings" << std::endl;
+			std::cout << cn << mn << "WARNING: No plot option for data_marker_color found: Defaulting to pre-defined settings (" << DEFAULT_DATA_MARKER_STYLE << ")" << std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -449,7 +452,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		//Get the data_marker_color
 		tmp = reader->Get(plotSection, "data_marker_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			std::cout << cn << mn << "WARNING: No plot option for data_marker_color found: Defaulting to data steering file settings" << std::endl;
+			std::cout << cn << mn << "WARNING: No plot option for data_marker_color found: Defaulting to pre-defined settings (" << DEFAULT_DATA_MARKER_COLOR << ")" << std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -827,13 +830,13 @@ void SPXSteeringFile::ParseDataSteeringFiles(void) {
 				if(pci.dataMarkerStyle == PC_EMPTY_STYLE) {
 					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
 						" Data Marker Style was empty: Defaulting to Circle (20)" << std::endl;
-					pci.dataMarkerStyle = 20;	//DEFAULT TO 20 (circle)
+					pci.dataMarkerStyle = DEFAULT_DATA_MARKER_STYLE;	//DEFAULT TO 20 (circle)
 				}
 
 				if(pci.dataMarkerColor == PC_EMPTY_COLOR) {
 					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
 						" Data Marker Color was empty: Defaulting to Blac (1)" << std::endl;
-					pci.dataMarkerColor = 1;	//DEFAULT TO BLACK
+					pci.dataMarkerColor = DEFAULT_DATA_MARKER_COLOR;	//DEFAULT TO BLACK
 				}
 
 			//Update PCI with new data
