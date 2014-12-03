@@ -192,8 +192,8 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
                 std::ostringstream oss;
 
                 oss << cn << mn << "Slave bin width (" << s_bw << ") greater than master bin witdh (" << m_bw << "):" <<
-                    "\n\tSlave Point: (s index, x, y, exl, exh) = (" << j << ", " << s_x << ", " << s_y << ", " << s_exl << ", " << s_exh << ")" <<
-                    "\n\tMater Point: (m index, x, y, exl, exh) = (" << i << ", " << m_x << ", " << m_y << ", " << m_exl << ", " << m_exh << ")" << std::endl;
+                    "\n\tSlave Point: (s index, x, exl, exh) = (" << j << ", " << s_x << ", " << s_exl << ", " << s_exh << ")" <<
+                    "\n\tMater Point: (m index, x, exl, exh) = (" << i << ", " << m_x << ", " << m_exl << ", " << m_exh << ")" << std::endl;
 
                 throw SPXGraphException(oss.str());
             }
