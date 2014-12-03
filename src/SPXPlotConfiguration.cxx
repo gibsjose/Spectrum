@@ -390,9 +390,9 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(pmsSize) pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
 
 			if(xsSize) 	xsc.push_back(options["x_scale"][0]);				//Just one instance of x scale
-			else		xsc.push_back(1.0);
+			else		xsc.push_back("1.0");
 			if(ysSize) 	ysc.push_back(options["y_scale"][0]);				//Just one instance of y scale
-			else		ysc.push_back(1.0);
+			else		ysc.push_back("1.0");
 		}
 	}
 
@@ -429,11 +429,11 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 			if(xsSize > 1) 			xsc.push_back(options["x_scale"][i]);
 			else if(xsSize == 1)	xsc.push_back(options["x_scale"][0]);
-			else					xsc.push_back(1.0);
+			else					xsc.push_back("1.0");
 
 			if(ysSize > 1) 			ysc.push_back(options["y_scale"][i]);
 			else if(ysSize == 1)	ysc.push_back(options["y_scale"][0]);
-			else					ysc.push_back(1.0);
+			else					ysc.push_back("1.0");
 		}
 	}
 
@@ -465,10 +465,10 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(pmsSize) pms.push_back(options["pdf_marker_style"][i]);
 
 			if(xsSize) 	xsc.push_back(options["x_scale"][0]);				//Just one instance of x scale
-			else		xsc.push_back(1.0);
+			else		xsc.push_back("1.0");
 
 			if(ysSize) 	ysc.push_back(options["y_scale"][0]);				//Just one instance of y scale
-			else		ysc.push_back(1.0);
+			else		ysc.push_back("1.0");
 		}
 	}
 
@@ -500,10 +500,10 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(pmsSize) pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
 
 			if(xsSize) 	xsc.push_back(options["x_scale"][0]);				//Just one instance of x scale
-			else		xsc.push_back(1.0);
+			else		xsc.push_back("1.0");
 
 			if(ysSize) 	ysc.push_back(options["y_scale"][0]);				//Just one instance of y scale
-			else		ysc.push_back(1.0);
+			else		ysc.push_back("1.0");
 		}
 	}
 
