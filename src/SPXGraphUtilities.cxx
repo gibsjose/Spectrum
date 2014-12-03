@@ -584,6 +584,7 @@ double SPXGraphUtilities::GetYUnitsScale(std::string master, std::string slave) 
         std::vector<std::string> units;
         units.push_back("FB");
         units.push_back("PB");
+        units.push_back("NB");
     int masterIndex;
     int slaveIndex;
 
