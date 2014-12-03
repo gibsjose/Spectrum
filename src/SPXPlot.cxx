@@ -762,8 +762,19 @@ void SPXPlot::DrawOverlay(void) {
 				SPXGraphUtilities::ClearXErrors(crossSections[i].GetPDFBandResults());
 			}
 
+			//Warn user that the number of bins in data does not match the number in convolute, if that's the case
+			if(os.ContainsData()) {
+				unsigned int cbins = crossSections.at(i).GetPDFBandResults()->GetN();
+				unsigned int dbins = data.at(0).GetTotalErrorGraph()->GetN();
+
+				if(cbins != dbins) {
+					std::cerr << cn << mn << "WARNING: The number of convolute bins (" << cbins << ") does not match the number of master data bins (" << dbins << ")" << std::endl;
+					std::cerr << "\t You can enable bin matching with the \"match_binning = true\" flag in the steering file, if you would like to do so" << std::endl;
+				}
+			}
+
 			//Draw PDF Band
-			crossSections[i].GetPDFBandResults()->Draw(csOptions.c_str());
+			crossSections.at(i).GetPDFBandResults()->Draw(csOptions.c_str());
 
 			//Draw Alpha S Band and Scale Band if necessary
 			//@TODO Fix steering file: Allow for either plotting only the PDF band or the PDF band + uncertainties and check here
