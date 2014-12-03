@@ -181,9 +181,20 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
 
             //Exception if slave bin width is greater than master bin width
             if(s_bw > m_bw) {
+                if(debug) std::cout << cn << mn << "Slave bin width greater than master bin width: Printing debug info: " << std::endl;
+                if(debug) std::cout << cn << mn << "Slave point (index, x, y, exl, exh, eyl, eyh) = (" \
+                    << j << ", " << s_x << ", " << s_y << ", " << s_exl << ", " << s_exh << ", " << s_eyl << ", " \
+                    << s_eyh << ")" << std::endl;
+                if(debug) std::cout << cn << mn << "Master point (index, x, y, exl, exh, eyl, eyh) = (" \
+                        << i << ", " << m_x << ", " << m_y << ", " << m_exl << ", " << m_exh << ", " << m_eyl << ", " \
+                        << m_eyh << ")" << std::endl;
+
                 std::ostringstream oss;
-                oss << cn << mn << "(recomputed) Slave Bin " << j << ": (exl, exh) = (" << s_exl << \
-                    ", " << s_exh << "): Slave bin width (" << s_bw << ") greater than master bin width (" << m_bw << ")";
+
+                oss << cn << mn << "Slave bin width (" << s_bw << ") greater than master bin witdh (" << m_bw << "):" <<
+                    "\n\tSlave Point: (s index, x, y, exl, exh) = (" << j << ", " << s_x << ", " << s_y << ", " << s_exl << ", " << s_exh << ")" <<
+                    "\n\tMater Point: (m index, x, y, exl, exh) = (" << i << ", " << m_x << ", " << m_y << ", " << m_exl << ", " << m_exh << ")" << std::endl;
+
                 throw SPXGraphException(oss.str());
             }
 
