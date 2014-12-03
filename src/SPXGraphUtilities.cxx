@@ -163,7 +163,8 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
         double s_eyl_sum = 0;
         double s_eyh_sum = 0;
 
-        std::cout << "CHECKING MASTER BIN NUMBER " << i << std::endl;
+        std::cout << std::endl;
+        std::cout << cn << mn << "Checking master bin number " << i << std::endl;
 
         //Recompute number of slave bins
         s_bins = slave->GetN();
@@ -181,8 +182,8 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
             s_exh = s_x + s_exh;
             s_bw = s_exh - s_exl;
 
-            //Exception if slave bin width is greater than master bin width
-            if(s_bw > m_bw) {
+            //Exception if point lies within master bin AND slave bin width is greater than master bin width
+            if(((s_x >= m_exl) && (s_x <= m_exh)) && (s_bw > m_bw)) {
                 if(debug) std::cout << std::endl;
                 if(debug) std::cout << cn << mn << "Slave bin width greater than master bin width: Printing debug info: " << std::endl;
                 if(debug) std::cout << cn << mn << "Slave point (index, x, y, exl, exh, eyl, eyh) = (" \
