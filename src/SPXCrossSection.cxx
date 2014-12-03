@@ -48,8 +48,8 @@ void SPXCrossSection::Create(void) {
 	TString scaleName;
 
 	//Check if name exists
-	if(!pci.gridSteeringFile.GetName().empty()) {
-		name = TString(pci.gridSteeringFile.GetName());
+	if(!pci->gridSteeringFile.GetName().empty()) {
+		name = TString(pci->gridSteeringFile.GetName());
 		pdfName = name + "_pdf";
 		alphaSName = name + "_alpha_s";
 		scaleName = name + "_scale";
@@ -59,7 +59,7 @@ void SPXCrossSection::Create(void) {
 	//Default to filename
 	else {
 		if(debug) std::cout << cn << mn << "Grid steering file has no name value: using filename instead" << std::endl;
-		name = pci.gridSteeringFile.GetFilename();
+		name = pci->gridSteeringFile.GetFilename();
 		name.ReplaceAll(TString(".txt"), TString(""));
 		pdfName = name + "_pdf";
 		alphaSName = name + "_alpha_s";
@@ -67,9 +67,9 @@ void SPXCrossSection::Create(void) {
 	}
 
 	//Set the graph names
-	pdf.h_PDFBand_results->SetName(pdfName);
-	pdf.h_AlphaS_results->SetName(alphaSName);
-	pdf.h_Scale_results->SetName(scaleName);
+	pdf->h_PDFBand_results->SetName(pdfName);
+	pdf->h_AlphaS_results->SetName(alphaSName);
+	pdf->h_Scale_results->SetName(scaleName);
 }
 
 void SPXCrossSection::ParseCorrections(void) {
