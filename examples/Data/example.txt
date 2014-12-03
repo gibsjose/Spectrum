@@ -51,7 +51,6 @@ reference_journal_year = 2014									;[Optional] Journal year
 reference_arxiv_number = arXiv:12345678							;[Optional] ArXiv number
 reference_arxiv_year = 2014										;[Optional] ArXiv year
 publication_status = published									;[Optional] Publication status
-lumi_scale_factor = 1.0											;[Optional] Luminosity scale factor [default = 1.0]
 
 ;==============================================================
 ; Graphing Options
@@ -93,3 +92,4 @@ divided_by_bin_width = true										;[Optional] Specify if data is already divi
 normalized_to_total_sigma = true								;[Optional] Specify if the cross-section data (sigma) has been
 																;			normalized to the total sigma
 error_in_percent = true											;[Optional] Specify that errors are reported in percents
+lumi_scale_factor = 1.0											;[Optional] Luminosity scale factor [default = 1.0]

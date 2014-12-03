@@ -51,7 +51,6 @@ reference_journal_year = 2014
 reference_arxiv_number = arXiv:12345678
 reference_arxiv_year = 2014
 publication_status = published
-lumi_scale_factor = 1.0
 
 ;==============================================================
 ; Graphing Options
@@ -92,3 +91,4 @@ data_file = Data/spectrum_t3a_data.txt
 divided_by_bin_width = true
 normalized_to_total_sigma = true
 error_in_percent = true
+lumi_scale_factor = 1.0
