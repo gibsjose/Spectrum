@@ -314,12 +314,12 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		oss << "Size of data_marker_color vector (" << dmcSize << ") DOES NOT match the size of the data_steering_files vector (" << dsfSize << ")";
 		throw SPXParseException(oss.str());
 	}
-	if(xsSize != dsfSize) {
+	if((xsSize > 1) && (xsSize != dsfSize)) {
 		std::ostringstream oss;
 		oss << "Size of x_scale vector (" << xsSize << ") DOES NOT match the size of the data_steering_files vector (" << dsfSize << ")";
 		throw SPXParseException(oss.str());
 	}
-	if(ysSize != dsfSize) {
+	if((ysSize > 1) && (ysSize != dsfSize)) {
 		std::ostringstream oss;
 		oss << "Size of y_scale vector (" << ysSize << ") DOES NOT match the size of the data_steering_files vector (" << dsfSize << ")";
 		throw SPXParseException(oss.str());
@@ -389,8 +389,10 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(pfcSize) pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
 			if(pmsSize) pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
 
-			if(xsSize) xsc.push_back(options["x_scale"][0]);				//Just one instance of x scale
-			if(ysSize) ysc.push_back(options["y_scale"][0]);				//Just one instance of y scale
+			if(xsSize) 	xsc.push_back(options["x_scale"][0]);				//Just one instance of x scale
+			else		xsc.push_back(1.0);
+			if(ysSize) 	ysc.push_back(options["y_scale"][0]);				//Just one instance of y scale
+			else		ysc.push_back(1.0);
 		}
 	}
 
@@ -425,8 +427,13 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(pfcSize) pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
 			if(pmsSize) pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
 
-			if(xsSize) xsc.push_back(options["x_scale"][i]);
-			if(ysSize) ysc.push_back(options["y_scale"][i]);
+			if(xsSize > 1) 			xsc.push_back(options["x_scale"][i]);
+			else if(xsSize == 1)	xsc.push_back(options["x_scale"][0]);
+			else					xsc.push_back(1.0);
+
+			if(ysSize > 1) 			ysc.push_back(options["y_scale"][i]);
+			else if(ysSize == 1)	ysc.push_back(options["y_scale"][0]);
+			else					ysc.push_back(1.0);
 		}
 	}
 
@@ -457,8 +464,11 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(pfcSize) pfc.push_back(options["pdf_fill_color"][i]);
 			if(pmsSize) pms.push_back(options["pdf_marker_style"][i]);
 
-			if(xsSize) xsc.push_back(options["x_scale"][0]);				//Just one instance of x scale
-			if(ysSize) ysc.push_back(options["y_scale"][0]);				//Just one instance of y scale
+			if(xsSize) 	xsc.push_back(options["x_scale"][0]);				//Just one instance of x scale
+			else		xsc.push_back(1.0);
+
+			if(ysSize) 	ysc.push_back(options["y_scale"][0]);				//Just one instance of y scale
+			else		ysc.push_back(1.0);
 		}
 	}
 
@@ -489,8 +499,11 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(pfcSize) pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
 			if(pmsSize) pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
 
-			if(xsSize) xsc.push_back(options["x_scale"][0]);				//Just one instance of x scale
-			if(ysSize) ysc.push_back(options["y_scale"][0]);				//Just one instance of y scale
+			if(xsSize) 	xsc.push_back(options["x_scale"][0]);				//Just one instance of x scale
+			else		xsc.push_back(1.0);
+
+			if(ysSize) 	ysc.push_back(options["y_scale"][0]);				//Just one instance of y scale
+			else		ysc.push_back(1.0);
 		}
 	}
 
