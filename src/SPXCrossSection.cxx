@@ -24,6 +24,7 @@ bool SPXCrossSection::debug;
 
 //Create the CrossSection
 void SPXCrossSection::Create(void) {
+	std::string m n = "Create: ";
 
 	//Attempt to create the Grid
 	try {
@@ -38,6 +39,37 @@ void SPXCrossSection::Create(void) {
 	} catch(const SPXException &e) {
 		throw;
 	}
+
+	//Set the name of the convolution graphs appropriately
+	//Create name strings
+	TString name;
+	TString pdfName;
+	TString alphaSName;
+	TString scaleName;
+
+	//Check if name exists
+	if(!pci.gridSteeringFile.GetName().empty()) {
+		name = TString(pci.gridSteeringFile.GetName());
+		pdfName = name + "_pdf";
+		alphaSName = name + "_alpha_s";
+		scaleName = name + "_scale";
+	}
+
+	//Grid steering file has no [DESC]:name
+	//Default to filename
+	else {
+		if(debug) std::cout << cn << mn << "Grid steering file has no name value: using filename instead" << std::endl;
+		name = pci.gridSteeringFile.GetFilename();
+		name.ReplaceAll(TString(".txt"), TString(""));
+		pdfName = name + "_pdf";
+		alphaSName = name + "_alpha_s";
+		scaleName = name + "_scale";
+	}
+
+	//Set the graph names
+	pdf.h_PDFBand_results->SetName(pdfName);
+	pdf.h_AlphaS_results->SetName(alphaSName);
+	pdf.h_Scale_results->SetName(scaleName);
 }
 
 void SPXCrossSection::ParseCorrections(void) {
