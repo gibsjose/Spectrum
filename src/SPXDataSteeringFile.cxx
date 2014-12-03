@@ -116,14 +116,14 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t Description [DESC]" << std::endl;
 	std::cout << "\t\t Name: " << name << std::endl;
 	std::cout << "\t\t Comments: " << comments << std::endl;
-	std::cout << "\t\t Reaction: " << reaction << std::endl << std::endl;
+	std::cout << "\t\t Reaction: " << reaction << std::endl;
 	std::cout << "\t\t Dataset Year: " << datasetYear << std::endl;
 	std::cout << "\t\t Dataset Luminosity: " << datasetLumi << std::endl;
 	std::cout << "\t\t Reference Journal Name: " << referenceJournalName << std::endl;
 	std::cout << "\t\t Reference Journal Year: " << referenceJournalYear << std::endl;
 	std::cout << "\t\t Reference arXiv Number: " << referenceArXivNumber << std::endl;
 	std::cout << "\t\t Reference arXiv Year: " << referenceArXivYear << std::endl;
-	std::cout << "\t\t Publication Status: " << publicationStatus << std::endl;
+	std::cout << "\t\t Publication Status: " << publicationStatus << std::endl << std::endl;
 	std::cout << "\t Graphing Options [GRAPH]" << std::endl;
 	std::cout << "\t\t Sqrt(s): " << sqrtS << std::endl;
 	std::cout << "\t\t X Label: " << xLabel << std::endl;
@@ -138,8 +138,8 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t\t Data File: " << dataFilepath << std::endl;
 	std::cout << "\t\t Data Divided by Bin Width? " << (dividedByBinWidth ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Data Normalized to Total Sigma? " << (normalizedToTotalSigma ? "YES" : "NO") << std::endl;
-	std::cout << "\t\t Errors given in percentages? " << (errorInPercent ? "YES" : "NO") << std::endl << std::endl;
-	std::cout << "\t\t Luminosity Scale Factor: " << lumiScaleFactor << std::endl;
+	std::cout << "\t\t Errors given in percentages? " << (errorInPercent ? "YES" : "NO") << std::endl;
+	std::cout << "\t\t Luminosity Scale Factor: " << lumiScaleFactor << std::endl << std::endl;
 }
 
 //@TODO Create Correlation Matrix Class and parse correlation matrix here if there is one (correlation_matrix = true)!
