@@ -24,7 +24,7 @@ bool SPXCrossSection::debug;
 
 //Create the CrossSection
 void SPXCrossSection::Create(void) {
-	std::string m n = "Create: ";
+	std::string mn = "Create: ";
 
 	//Attempt to create the Grid
 	try {
