@@ -181,6 +181,7 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
 
             //Exception if slave bin width is greater than master bin width
             if(s_bw > m_bw) {
+                if(debug) std::cout << std::endl;
                 if(debug) std::cout << cn << mn << "Slave bin width greater than master bin width: Printing debug info: " << std::endl;
                 if(debug) std::cout << cn << mn << "Slave point (index, x, y, exl, exh, eyl, eyh) = (" \
                     << j << ", " << s_x << ", " << s_y << ", " << s_exl << ", " << s_exh << ", " << s_eyl << ", " \
