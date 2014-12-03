@@ -163,6 +163,8 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
         double s_eyl_sum = 0;
         double s_eyh_sum = 0;
 
+        std::cout << "CHECKING MASTER BIN NUMBER " << i << std::endl;
+
         //Recompute number of slave bins
         s_bins = slave->GetN();
 
