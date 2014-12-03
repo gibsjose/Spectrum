@@ -769,7 +769,7 @@ void SPXPlot::DrawOverlay(void) {
 
 				if(cbins != dbins) {
 					std::cerr << cn << mn << "WARNING: The number of convolute bins (" << cbins << ") does not match the number of master data bins (" << dbins << ")" << std::endl;
-					std::cerr << "\t You can enable bin matching with the \"match_binning = true\" flag in the steering file, if you would like to do so" << std::endl;
+					std::cerr << "\t\t\t You can enable bin matching with the \"match_binning = true\" flag in the steering file, if you would like to do so" << std::endl;
 				}
 			}
 
