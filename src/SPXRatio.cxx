@@ -449,6 +449,8 @@ void SPXRatio::GetGraphs(void) {
     if(ratioStyle.IsConvoluteOverReference()) {
         StringPair_T convoluteKey = StringPair_T(numeratorConvoluteGridFile, numeratorConvolutePDFFile);
 
+        if(debug) std::cout << cn << mn << "Getting Graphs for convolute / reference" << std::endl;
+
         if(!os.ContainsConvolute()) {
             throw SPXGraphException(cn + mn + "Overlay Style does NOT contain \"convolute\", yet a ratio with convolute is specified: " + ratioStyle.ToString());
         }
@@ -491,10 +493,21 @@ void SPXRatio::GetGraphs(void) {
             oss << "TGraph pointer at referenceFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
             throw SPXGraphException(cn + mn + oss.str());
         }
+
+        //Print graphs (debug)
+        if(debug) {
+            std::cout << cn << mn << "Printing Numerator (convolute) Graph:" << std::endl;
+            numeratorGraph->Print();
+
+            std::cout << cn << mn << "Printing Denominator (reference) Graph: " << std::endl;
+            denominatorGraph->Print();
+        }
     }
 
     if(ratioStyle.IsConvoluteOverNominal()) {
         StringPair_T convoluteKey = StringPair_T(numeratorConvoluteGridFile, numeratorConvolutePDFFile);
+
+        if(debug) std::cout << cn << mn << "Getting Graphs for convolute / nominal" << std::endl;
 
         if(!os.ContainsConvolute()) {
             throw SPXGraphException(cn + mn + "Overlay Style does NOT contain \"convolute\", yet a ratio with convolute is specified: " + ratioStyle.ToString());
@@ -537,6 +550,15 @@ void SPXRatio::GetGraphs(void) {
             std::ostringstream oss;
             oss << "TGraph pointer at nominalFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
             throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        //Print graphs (debug)
+        if(debug) {
+            std::cout << cn << mn << "Printing Numerator (convolute) Graph:" << std::endl;
+            numeratorGraph->Print();
+
+            std::cout << cn << mn << "Printing Denominator (nominal) Graph: " << std::endl;
+            denominatorGraph->Print();
         }
     }
 
