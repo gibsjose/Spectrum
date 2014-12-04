@@ -65,7 +65,8 @@ public:
 	static void ScaleXErrors(TGraphAsymmErrors * g, double scale);
 	static void ScaleYErrors(TGraphAsymmErrors * g, double scale);
 
-	static TGraphAsymmErrors * HistogramToGraph(TH1 *h);
+	static void HistogramToGraph(TGraphAsymmErrors * g, TH1 *h);
+	static void ClearGraph(TGraphAsymmErrors * g);
 
 	static double GetYBinWidthUnitsScale(std::string master, std::string slave);
 	static double GetXUnitsScale(std::string master, std::string slave);
@@ -74,6 +75,10 @@ public:
 	static void Scale(TGraphAsymmErrors *graph, double xScale, double yScale);
 
 	static void Normalize(TGraphAsymmErrors *graph, double yBinWidthScale, bool normalizeToTotalSigma, bool divideByBinWidth);
+
+	static double GetTotalSigma(TGraphAsymmErrors * g);
+	static void NormalizeToTotalSigma(TGraphAsymmErrors * g, bool dividedByBinWidth);
+	static void NormalizeToBinWidth(TGraphAsymmErrors * g, double yBinWidthScale);
 };
 
 #endif

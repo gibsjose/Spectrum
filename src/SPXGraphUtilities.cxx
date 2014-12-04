@@ -498,7 +498,7 @@ void SPXGraphUtilities::ScaleYErrors(TGraphAsymmErrors * g, double scale) {
     }
 }
 
-TGraphAsymmErrors * SPXGraphUtilities::HistogramToGraph(TH1 *h) {
+void SPXGraphUtilities::HistogramToGraph(TGraphAsymmErrors * g, TH1 *h) {
     std::string mn = "HistogramToGraph: ";
 
     //Make sure histogram is valid
@@ -506,22 +506,27 @@ TGraphAsymmErrors * SPXGraphUtilities::HistogramToGraph(TH1 *h) {
         throw SPXGraphException(cn + mn + "Histogram provided was invalid");
     }
 
-    //@TODO Don't call 'new' in a function call...
-    TGraphAsymmErrors *graph = new TGraphAsymmErrors();
-
     double x, y, ex, ey;
 
+    //Clear the graph first
+    ClearGraph(g);
+
+    //The 'i + 1' is to skip the underflow bin, since TH1's start their binning at i = 1
     for(int i = 0; i < h->GetNbinsX(); i++) {
         y =  h->GetBinContent(i + 1);
         ey = h->GetBinError(i + 1);
         x =  h->GetBinCenter(i + 1);
         ex = h->GetBinWidth(i + 1) / 2.0;
 
-        graph->SetPoint(i, x, y);
-        graph->SetPointError(i, ex, ex, ey, ey);
+        g->SetPoint(i, x, y);
+        g->SetPointError(i, ex, ex, ey, ey);
     }
+}
 
-    return graph;
+void SPXGraphUtilities::ClearGraph(TGraphAsymmErrors * g) {
+    for(int i = 0; i < g->GetN(); i++) {
+        g->RemovePoint(i);
+    }
 }
 
 double SPXGraphUtilities::GetYBinWidthUnitsScale(std::string master, std::string slave) {
@@ -684,9 +689,10 @@ void SPXGraphUtilities::Normalize(TGraphAsymmErrors *graph, double yBinWidthScal
 
         double binWidth = 1;
 
-        if(divideByBinWidth) {
+        //@TODO Make sure this is correct...
+        //if(divideByBinWidth) {
             binWidth = pEXlow[i] + pEXhigh[i];
-        }
+        //}
 
         if(debug) std::cout << "Bin[" << i << "]: binWidth = " << binWidth << std::endl;
 
