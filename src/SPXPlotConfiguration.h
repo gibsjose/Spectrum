@@ -40,6 +40,7 @@
 #include "SPXGridSteeringFile.h"
 #include "SPXPDFSteeringFile.h"
 
+#include "SPXUtilities.h"
 #include "SPXException.h"
 
 const int PC_EMPTY_STYLE = -1;
