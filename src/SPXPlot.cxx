@@ -267,7 +267,9 @@ void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin
 
 	//Do nothing if ratio is specified but there are no ratios to plot
 	if(!ratios.size()) {
-		xMin = xMax = yMin = yMax = 0;
+		xMin = xMax = 0;
+		yMin = -1.1;
+		yMax = 1.1;
 		return;
 	}
 
