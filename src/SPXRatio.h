@@ -36,8 +36,8 @@ public:
 
     void Parse(std::string &s);
     void AddDataFileGraphMap(StringGraphMap_T &);
-    void AddReferenceFileGraphMap(StringGraphMap_T &);
-    void AddNominalFileGraphMap(StringGraphMap_T &);
+    void AddReferenceFileGraphMap(StringPairGraphMap_T &);
+    void AddNominalFileGraphMap(StringPairGraphMap_T &);
     void AddConvoluteFileGraphMap(StringPairGraphMap_T &);
     void GetGraphs(void);
     void Print(void);
@@ -326,8 +326,8 @@ private:
     TGraphAsymmErrors *ratioGraph;                  //TGraph: numeratorGraph / denominatorGraph
 
     StringGraphMap_T * dataFileGraphMap;            //Map of data files to their data TGraph
-    StringGraphMap_T * referenceFileGraphMap;       //Map of grid files to their reference TGraph
-    StringGraphMap_T * nominalFileGraphMap;         //Map of grid files to their nominal TGraph
+    StringPairGraphMap_T * referenceFileGraphMap;   //Map of grid/pdf file pairs to their grid reference TGraph
+    StringPairGraphMap_T * nominalFileGraphMap;     //Map of grid/pdf file pairs to their pdf nominal TGraph
     StringPairGraphMap_T * convoluteFileGraphMap;   //Map of grid/pdf file pairs to their convolute TGraph
 
     bool MatchesConvoluteString(std::string &s);

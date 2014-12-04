@@ -396,11 +396,11 @@ void SPXRatio::AddDataFileGraphMap(StringGraphMap_T &dataFileGraphMap) {
     this->dataFileGraphMap = &dataFileGraphMap;
 }
 
-void SPXRatio::AddReferenceFileGraphMap(StringGraphMap_T &referenceFileGraphMap) {
+void SPXRatio::AddReferenceFileGraphMap(StringPairGraphMap_T &referenceFileGraphMap) {
     this->referenceFileGraphMap = &referenceFileGraphMap;
 }
 
-void SPXRatio::AddNominalFileGraphMap(StringGraphMap_T &nominalFileGraphMap) {
+void SPXRatio::AddNominalFileGraphMap(StringPairGraphMap_T &nominalFileGraphMap) {
     this->nominalFileGraphMap = &nominalFileGraphMap;
 }
 
