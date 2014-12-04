@@ -1206,8 +1206,8 @@ void SPXPlot::NormalizeCrossSections(void) {
 
 			//Set the yBinWidthScale, which is the scaling of the data's Y Bin Width Units to the data's X Units
 			double yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), pci->dataSteeringFile.GetYBinWidthUnits());
-			if(debug) std::cout << cn << mn << "Scaling by the Y Bin Width Scale: " << yBinWidthScale << std::endl;
-			SPXGraphUtilities::Scale(g, 1.0, yBinWidthScale);
+			if(debug) std::cout << cn << mn << "Scaling by 1 / Y Bin Width Scale: " << (1.0 / yBinWidthScale) << std::endl;
+			SPXGraphUtilities::Scale(g, 1.0, (1.0 / yBinWidthScale));
 
 			if(normalizeToTotalSigma) {
 				if(totalSigma == 0) throw SPXGeneralException(cn + mn + "Divide by zero error: Total Sigma is zero");

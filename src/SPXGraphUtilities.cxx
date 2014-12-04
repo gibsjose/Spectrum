@@ -639,11 +639,11 @@ double SPXGraphUtilities::GetTotalSigma(TGraphAsymmErrors *g, bool dividedByBinW
         throw SPXGraphException(cn + mn + "Graph is Invalid");
     }
 
-    std::cout << cn << mn << "Graph is Valid" << std::endl;
-
-    std::cout << cn << mn << "Printing graph" << std::endl;
-    g->Print();
-    std::cout << std::endl;
+    // std::cout << cn << mn << "Graph is Valid" << std::endl;
+    //
+    // std::cout << cn << mn << "Printing graph" << std::endl;
+    // g->Print();
+    // std::cout << std::endl;
 
     double totalSigma = 0;
 
@@ -654,8 +654,8 @@ double SPXGraphUtilities::GetTotalSigma(TGraphAsymmErrors *g, bool dividedByBinW
     for(int i = 0; i < g->GetN(); i++) {
         double binWidth = exh[i] + exl[i];
 
-        std::cout << cn << mn << "binWidth [" << i << "] = " << binWidth << std::endl;
-        std::cout << cn << mn << "y [" << i << "] = " << y[i] << std::endl;
+        // std::cout << cn << mn << "binWidth [" << i << "] = " << binWidth << std::endl;
+        // std::cout << cn << mn << "y [" << i << "] = " << y[i] << std::endl;
 
         if(dividedByBinWidth) {
             totalSigma += y[i] * binWidth;
@@ -663,7 +663,7 @@ double SPXGraphUtilities::GetTotalSigma(TGraphAsymmErrors *g, bool dividedByBinW
             totalSigma += y[i];
         }
 
-        std::cout << cn << mn << "totalSigma = " << totalSigma << std::endl;
+        // std::cout << cn << mn << "totalSigma = " << totalSigma << std::endl;
     }
 
     return totalSigma;
