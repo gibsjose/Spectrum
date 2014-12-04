@@ -7,6 +7,9 @@ PDFsets
 # Ctags folder
 tags
 
+# Root files
+*.root
+
 # Spectrum project
 *.sublime-project
 *.sublime-workspace
