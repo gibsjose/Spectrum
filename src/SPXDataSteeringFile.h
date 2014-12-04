@@ -23,6 +23,8 @@
 
 #include "SPXDataFormat.h"
 
+#include "SPXUtilities.h"
+
 class SPXDataSteeringFile {
 
 private:
