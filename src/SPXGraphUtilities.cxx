@@ -660,7 +660,7 @@ double SPXGraphUtilities::GetTotalSigma(TGraphAsymmErrors *g, bool dividedByBinW
 
 
 //Normalized the graph by the bin width for each bin
-void DivideByBinWidth(TGraphAsymmErrors *g) {
+void SPXGraphUtilities::DivideByBinWidth(TGraphAsymmErrors *g) {
     std::string mn = "DivideByBinWidth: ";
 
     if(!g) {
