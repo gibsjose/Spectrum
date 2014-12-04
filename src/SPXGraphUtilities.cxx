@@ -652,7 +652,7 @@ double SPXGraphUtilities::GetTotalSigma(TGraphAsymmErrors *g, bool dividedByBinW
     double *exl = g->GetEXlow();
 
     for(int i = 0; i < g->GetN(); i++) {
-        double binWidth = exh[i] - exl[i];
+        double binWidth = exh[i] + exl[i];
 
         std::cout << cn << mn << "binWidth [" << i << "] = " << binWidth << std::endl;
         std::cout << cn << mn << "y [" << i << "] = " << y[i] << std::endl;
