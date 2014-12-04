@@ -1210,6 +1210,8 @@ void SPXPlot::NormalizeCrossSections(void) {
 			SPXGraphUtilities::Scale(g, 1.0, yBinWidthScale);
 
 			if(normalizeToTotalSigma) {
+				if(totalSigma == 0) throw SPXGeneralException(cn + mn + "Divide by zero error: Total Sigma is zero");
+
 				if(debug) std::cout << cn << mn << "Scaling by 1 / total sigma: " << (1.0 / totalSigma) << std::endl;
 				SPXGraphUtilities::Scale(g, 1.0, (1.0 / totalSigma));
 			}
