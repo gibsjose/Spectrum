@@ -34,11 +34,14 @@ typedef std::map<std::string, DoubleMatrix_T >  StringDoubleMatrixMap_T;
 typedef std::pair<std::string, DoubleMatrix_T >  StringDoubleMatrixPair_T;
 typedef StringDoubleMatrixMap_T::iterator StringDoubleMatrixMapIterator_T;
 
-static void PrintMethodHeader(std::string &className, std::string &methodName) {
-    std::cout << std::endl;
-    std::cout << "================================================================" << std::endl;
-    std::cout << className << methodName << " <<<< Entering method: " << methodName << std::endl;
-    std::cout << "================================================================" << std::endl;
+class SPXUtilities {
+public:
+    static void PrintMethodHeader(std::string &className, std::string &methodName) {
+        std::cout << std::endl;
+        std::cout << "================================================================" << std::endl;
+        std::cout << className << methodName << " <<<< Entering method: " << methodName << std::endl;
+        std::cout << "================================================================" << std::endl;
+    }
 }
 
 #endif
