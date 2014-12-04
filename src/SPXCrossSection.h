@@ -36,7 +36,8 @@ public:
 		gridReference = new TGraphAsymmErrors();
 		nominal = new TGraphAsymmErrors();
 
-		dividedByBinWidth = this->pci->gridSteeringFile.IsDividedByBinWidth();
+		//@TODO What to do when the grid IS divided but the reference is NOT?
+		dividedByBinWidth = this->pci->gridSteeringFile.IsGridDividedByBinWidth();
 	}
 
 	~SPXCrossSection(void) {
