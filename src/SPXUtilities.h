@@ -42,6 +42,6 @@ public:
         std::cout << className << methodName << " <<<< Entering method: " << methodName << std::endl;
         std::cout << "================================================================" << std::endl;
     }
-}
+};
 
 #endif
