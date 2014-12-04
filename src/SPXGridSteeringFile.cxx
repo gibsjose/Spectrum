@@ -61,8 +61,11 @@ void SPXGridSteeringFile::SetDefaults(void) {
 	yUnits.clear();
 	if(debug) std::cout << cn << mn << "yUnits set to default: \" \"" << std::endl;
 
-	dividedByBinWidth = false;
-	if(debug) std::cout << cn << mn << "dividedByBinWidth set to default: \"false\"" << std::endl;
+	gridDividedByBinWidth = true;
+	if(debug) std::cout << cn << mn << "gridDividedByBinWidth set to default: \"true\"" << std::endl;
+
+	referenceDividedByBinWidth = false;
+	if(debug) std::cout << cn << mn << "referenceDividedByBinWidth set to default: \"false\"" << std::endl;
 
 	yScale = 1.0;
 	if(debug) std::cout << cn << mn << "yScale set to default: \"1.0\"" << std::endl;
@@ -100,7 +103,8 @@ void SPXGridSteeringFile::Print(void) {
 	std::cout << "\t\t X Units: " << xUnits << std::endl;
 	std::cout << "\t\t Y Units: " << yUnits << std::endl;
 	std::cout << "\t\t Y Scale: " << yScale << std::endl;
-	std::cout << "\t\t Reference Histogram Divided by Bin Width? " << (dividedByBinWidth ? "YES" : "NO") << std::endl << std::endl;
+	std::cout << "\t\t Grid Divided by Bin Width? " << (gridDividedByBinWidth ? "YES" : "NO") << std::endl;
+	std::cout << "\t\t Reference Divided by Bin Width? " << (referenceDividedByBinWidth ? "YES" : "NO") << std::endl << std::endl;
 	std::cout << "\t Grid Options [GRID]" << std::endl;
 	std::cout << "\t\t Grid File: " << gridFilepath << std::endl;
 	std::cout << "\t\t Correction Files: " << std::endl;
@@ -235,8 +239,11 @@ void SPXGridSteeringFile::Parse(void) {
 
 	yScale = reader->GetReal("GRAPH", "y_scale", yScale);
 
-	dividedByBinWidth = reader->GetBoolean("GRAPH", "divided_by_bin_width", false);
-	if(debug) std::cout << cn << mn << "Divided By Bin Width set to: " << (dividedByBinWidth ? "ON" : "OFF") << std::endl;
+	gridDividedByBinWidth = reader->GetBoolean("GRAPH", "grid_divided_by_bin_width", gridDividedByBinWidth);
+	if(debug) std::cout << cn << mn << "Grid Divided By Bin Width set to: " << (gridDividedByBinWidth ? "ON" : "OFF") << std::endl;
+
+	referenceDividedByBinWidth = reader->GetBoolean("GRAPH", "reference_divided_by_bin_width", referenceDividedByBinWidth);
+	if(debug) std::cout << cn << mn << "Reference Divided By Bin Width set to: " << (referenceDividedByBinWidth ? "ON" : "OFF") << std::endl;
 
 	//Grid Options [GRID]
 	gridFilepath = reader->Get("GRID", "grid_file", "EMPTY");

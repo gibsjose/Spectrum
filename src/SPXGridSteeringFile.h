@@ -53,7 +53,8 @@ private:
 	//[GRAPH]
 	std::string xUnits;
 	std::string yUnits;
-	bool dividedByBinWidth;
+	bool gridDividedByBinWidth;
+	bool referenceDividedByBinWidth;
 	double yScale;
 
 	//[GRID]
@@ -136,8 +137,12 @@ public:
 		return this->yUnits;
 	}
 
-	bool IsDividedByBinWidth(void) const {
-		return this->dividedByBinWidth;
+	bool IsGridDividedByBinWidth(void) const {
+		return this->gridDividedByBinWidth;
+	}
+
+	bool IsReferenceDividedByBinWidth(void) const {
+		return this->referenceDividedByBinWidth;
 	}
 
 	double GetYScale(void) const {
