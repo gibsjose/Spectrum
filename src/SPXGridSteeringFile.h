@@ -60,8 +60,6 @@ private:
 	//[GRID]
 	std::string gridFilepath;
 	std::vector<std::string> correctionFiles;
-	std::string generatorID;
-	std::string nTupleID;
 	unsigned int lowestOrder;
 
 	void SetDefaults(void);
@@ -173,14 +171,6 @@ public:
 		}
 
 		return correctionFiles.at(index);
-	}
-
-	const std::string & GetGeneratorID(void) const {
-		return this->generatorID;
-	}
-
-	const std::string & GetNTupleID(void) const {
-		return this->nTupleID;
 	}
 
 	unsigned int GetLowestOrder(void) const {

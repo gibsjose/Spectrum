@@ -73,12 +73,6 @@ void SPXGridSteeringFile::SetDefaults(void) {
 	gridFilepath.clear();
 	if(debug) std::cout << cn << mn << "gridFilepath set to default: \" \"" << std::endl;
 
-	generatorID.clear();
-	if(debug) std::cout << cn << mn << "generatorID set to default: \" \"" << std::endl;
-
-	nTupleID.clear();
-	if(debug) std::cout << cn << mn << "nTupleID set to default: \" \"" << std::endl;
-
 	lowestOrder = 1;
 	if(debug) std::cout << cn << mn << "lowestOrder set to default: \"NLO\" (1)" << std::endl;
 }
@@ -111,8 +105,6 @@ void SPXGridSteeringFile::Print(void) {
 	for(int i = 0; i < correctionFiles.size(); i++) {
 		std::cout << "\t\t\t " << correctionFiles.at(i) << std::endl;
 	}
-	std::cout << "\t\t Generator ID: " << generatorID << std::endl;
-	std::cout << "\t\t NTuple ID: " << nTupleID << std::endl;
 	std::cout << "\t\t Lowest Order: " << lowestOrder << std::endl << std::endl;
 }
 
@@ -267,30 +259,6 @@ void SPXGridSteeringFile::Parse(void) {
 				std::cout << "\t " << correctionFiles.at(i);
 			}
 		}
-	}
-
-	generatorID = reader->Get("GRID", "generator_id", "EMPTY");
-	if(!generatorID.compare("EMPTY")) {
-		if(debug) std::cout << cn << mn << "Generator ID was not specified" << std::endl;
-		name.clear();
-	} else {
-		if(debug) std::cout << cn << mn << "Successfully read Generator ID: " << generatorID << std::endl;
-	}
-
-	generatorID = reader->Get("GRID", "generator_id", "EMPTY");
-	if(!generatorID.compare("EMPTY")) {
-		if(debug) std::cout << cn << mn << "Generator ID was not specified" << std::endl;
-		generatorID.clear();
-	} else {
-		if(debug) std::cout << cn << mn << "Successfully read Generator ID: " << generatorID << std::endl;
-	}
-
-	nTupleID = reader->Get("GRID", "ntuple_id", "EMPTY");
-	if(!nTupleID.compare("EMPTY")) {
-		if(debug) std::cout << cn << mn << "NTuple ID was not specified" << std::endl;
-		nTupleID.clear();
-	} else {
-		if(debug) std::cout << cn << mn << "Successfully read NTuple ID: " << nTupleID << std::endl;
 	}
 
 	lowestOrder = (unsigned int)reader->GetInteger("GRID", "lowest_order", lowestOrder);
