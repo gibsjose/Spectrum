@@ -62,6 +62,4 @@ divided_by_bin_width = true
 ;==============================================================
 [GRID]
 grid_file = Grids/top/mcfm/grid--TTbar_mttatlas.root
-; generator_id =
-ntuple_id = MCFM
 lowest_order = 2

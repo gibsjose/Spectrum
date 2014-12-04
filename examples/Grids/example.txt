@@ -62,6 +62,4 @@ divided_by_bin_width = true										;[Optional] Note if grid's reference histog
 ;==============================================================
 [GRID]
 grid_file = MyGrids/top/mcfm/grid-TTbar_mttatlas.root			;[REQUIRED] Path to the grid's root file
-generator_id = 													;[Optional] Specify who generated the grid, for informational purposes
-ntuple_id = MCFM												;[Optional] Specify who generated the NTuple (could be used to determine units)
 lowest_order = "NNLO"											;[Optional] Set the lowest order of what is in this grid
