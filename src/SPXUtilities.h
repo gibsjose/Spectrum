@@ -36,7 +36,7 @@ typedef StringDoubleMatrixMap_T::iterator StringDoubleMatrixMapIterator_T;
 
 class SPXUtilities {
 public:
-    static void PrintMethodHeader(std::string &className, std::string &methodName) {
+    static void PrintMethodHeader(const std::string &className, const std::string &methodName) {
         std::cout << std::endl;
         std::cout << "================================================================" << std::endl;
         std::cout << className << methodName << " <<<< Entering method: " << methodName << std::endl;
