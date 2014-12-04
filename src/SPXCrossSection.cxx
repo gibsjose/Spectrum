@@ -68,8 +68,9 @@ void SPXCrossSection::Create(void) {
 
 	//Set the graph names
 	if(pdf->h_PDFBand_results) pdf->h_PDFBand_results->SetName(pdfName);
-	if(pdf->h_AlphaS_results) pdf->h_AlphaS_results->SetName(alphaSName);
-	if(pdf->h_Scale_results) pdf->h_Scale_results->SetName(scaleName);
+	//@TODO I get a seg fault here if I try to set the Alpha S or Scale band names...
+	// if(pdf->h_AlphaS_results) pdf->h_AlphaS_results->SetName(alphaSName);
+	// if(pdf->h_Scale_results) pdf->h_Scale_results->SetName(scaleName);
 }
 
 void SPXCrossSection::ParseCorrections(void) {
