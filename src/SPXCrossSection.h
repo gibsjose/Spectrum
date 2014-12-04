@@ -32,6 +32,10 @@ public:
 		this->psf = psf;
 		this->pci = pci;
 
+		//Create graphs for grid reference and nominal
+		gridReference = new TGraphAsymmErrors();
+		nominal = new TGraphAsymmErrors();
+
 		dividedByBinWidth = this->pci->gridSteeringFile.IsDividedByBinWidth();
 	}
 
@@ -93,11 +97,15 @@ public:
 		return pdf;
 	}
 
-	/*
-	TGraphAsymmErrors *GetReference(void) const {
-		return SPXGraphUtilities::HistogramToGraph(grid->GetReference())
+	TGraphAsymmErrors * GetGridReference(void) {
+		SPXGraphUtilities::HistogramToGraph(gridReference, grid->getReference());
+		return gridReference;
 	}
-	*/
+
+	TGraphAsymmErrors * GetNominal(void) {
+		SPXGraphUtilities::HistogramToGraph(nominal, pdf->getPdfdefault());
+		return nominal;
+	}
 
 private:
 	static bool debug;							//Flag indicating debug mode
@@ -108,6 +116,9 @@ private:
 	SPXPDF *pdf;								//PDF
 	SPXGridCorrections *corrections;			//Grid corrections
 	bool dividedByBinWidth;						//Flag indicating that the grid was already divided by the bin width
+
+	TGraphAsymmErrors *gridReference;			//Reference Graph from Grid
+	TGraphAsymmErrors *nominal;					//Nominal (default) graph from PDF
 };
 
 #endif

@@ -37,6 +37,7 @@ public:
     void Parse(std::string &s);
     void AddDataFileGraphMap(StringGraphMap_T &);
     void AddReferenceFileGraphMap(StringGraphMap_T &);
+    void AddNominalFileGraphMap(StringGraphMap_T &);
     void AddConvoluteFileGraphMap(StringPairGraphMap_T &);
     void GetGraphs(void);
     void Print(void);
@@ -118,6 +119,16 @@ public:
         out << "\t Key Format: [Grid]" << std::endl;
         out << "\t ============ KNOWN KEYS ============" << std::endl;
         for(StringGraphMap_T::iterator it = referenceFileGraphMap->begin(); it != referenceFileGraphMap->end(); ++it) {
+            out << "\t [" << it->first << "]" << std::endl;
+        }
+        out << "\t ====================================" << std::endl << std::endl;
+    }
+
+    void PrintNominalFileGraphMapKeys(std::ostream &out = std::cout) {
+        out << "SPXRatio::PrintNominalFileGraphMapKeys: " << std::endl;
+        out << "\t Key Format: [Grid]" << std::endl;
+        out << "\t ============ KNOWN KEYS ============" << std::endl;
+        for(StringGraphMap_T::iterator it = nominalFileGraphMap->begin(); it != nominalFileGraphMap->end(); ++it) {
             out << "\t [" << it->first << "]" << std::endl;
         }
         out << "\t ====================================" << std::endl << std::endl;
@@ -307,6 +318,7 @@ private:
     std::string denominatorConvoluteGridFile;		//Grid file if denominator contains convolute
     std::string denominatorConvolutePDFFile;		//PDF file if denomintator contains convolute
     std::string denominatorReferenceGridFile;		//Grid file if denominator contains reference
+    std::string denominatorNominalGridFile;         //Grid file if denominator contains nominal
     std::string denominatorDataFile;				//Data file if denominator contains data
 
     TGraphAsymmErrors *numeratorGraph;              //TGraph of the numerator
@@ -315,6 +327,7 @@ private:
 
     StringGraphMap_T * dataFileGraphMap;            //Map of data files to their data TGraph
     StringGraphMap_T * referenceFileGraphMap;       //Map of grid files to their reference TGraph
+    StringGraphMap_T * nominalFileGraphMap;         //Map of grid files to their nominal TGraph
     StringPairGraphMap_T * convoluteFileGraphMap;   //Map of grid/pdf file pairs to their convolute TGraph
 
     bool MatchesConvoluteString(std::string &s);

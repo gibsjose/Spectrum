@@ -99,6 +99,7 @@ private:
 	//
 	StringGraphMap_T dataFileGraphMap;
 	StringGraphMap_T referenceFileGraphMap;
+	StringGraphMap_T nominalFileGraphMap;
 	StringPairGraphMap_T convoluteFileGraphMap;
 
 	//Sets used for eliminating duplicate data/cross section plots, since

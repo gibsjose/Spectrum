@@ -1013,10 +1013,8 @@ void SPXPlot::InitializeRatios(void) {
 			SPXRatio ratioInstance = SPXRatio(pc, ratioStyle);
 			ratioInstance.AddDataFileGraphMap(dataFileGraphMap);
 			ratioInstance.AddReferenceFileGraphMap(referenceFileGraphMap);
+			ratioInstance.AddNominalFileGraphMap(nominalFileGraphMap);
 			ratioInstance.AddConvoluteFileGraphMap(convoluteFileGraphMap);
-			// ratioInstance.SetDataDirectory(steeringFile->GetDataDirectory());
-			// ratioInstance.SetGridDirectory(steeringFile->GetGridDirectory());
-			// ratioInstance.SetPDFDirectory(steeringFile->GetPDFDirectory());
 			ratioInstance.Parse(ratioString);
 			ratioInstance.GetGraphs();
 			ratioInstance.Divide();
@@ -1087,13 +1085,35 @@ void SPXPlot::InitializeCrossSections(void) {
 		TGraphAsymmErrors *graph = crossSections[i].GetPDFBandResults();
 		convoluteFileGraphMap.insert(StringPairGraphPair_T(convolutePair, graph));
 
-		//Style convolute graph
+		//Update the Reference File Map
+		TGraphAsymmErrors *refGraph = crossSections[i].GetGridReference();
+		referenceFileGraphMap.insert(StringPairGraphPair_T(convolutePair, refGraph));
+
+		//Update the Nominal File Map
+		TGraphAsymmErrors *nomGraph = crossSections[i].GetNominal();
+		nominalFileGraphMap.insert(StringPairGraphPair_T(convolutePair, nomGraph));
+
+		//Style convolute/reference/nominal graph
 		graph->SetMarkerSize(1.2);
 		graph->SetMarkerStyle(pci.pdfMarkerStyle);
 		graph->SetMarkerColor(pci.pdfFillColor);
 		graph->SetLineColor(pci.pdfFillColor);
 		graph->SetFillStyle(pci.pdfFillStyle);
 		graph->SetFillColor(pci.pdfFillColor);
+
+		refGraph->SetMarkerSize(1.2);
+		refGraph->SetMarkerStyle(pci.pdfMarkerStyle);
+		refGraph->SetMarkerColor(pci.pdfFillColor);
+		refGraph->SetLineColor(pci.pdfFillColor);
+		refGraph->SetFillStyle(pci.pdfFillStyle);
+		refGraph->SetFillColor(pci.pdfFillColor);
+
+		nomGraph->SetMarkerSize(1.2);
+		nomGraph->SetMarkerStyle(pci.pdfMarkerStyle);
+		nomGraph->SetMarkerColor(pci.pdfFillColor);
+		nomGraph->SetLineColor(pci.pdfFillColor);
+		nomGraph->SetFillStyle(pci.pdfFillStyle);
+		nomGraph->SetFillColor(pci.pdfFillColor);
 
 		if(convoluteFileGraphMap.count(convolutePair)) {
 			if(debug) {
@@ -1104,17 +1124,6 @@ void SPXPlot::InitializeCrossSections(void) {
 		}
 	}
 }
-
-//@TODO See MyCrossSection.cxx:287-298
-/*
-void SPXPlot::ChangeDefaultPDFHistogramNames(void) {
-	std::string mn = "ChangeDefaultPDFHistogramNames: ";
-
-	for(int i = 0; i < crossSections.size(); i++) {
-		;
-	}
-}
-*/
 
 void SPXPlot::NormalizeCrossSections(void) {
 	std::string mn = "NormalizeCrossSections: ";
@@ -1158,25 +1167,29 @@ void SPXPlot::NormalizeCrossSections(void) {
 			yScale *= pci->yScale;
 			SPXGraphUtilities::Scale(crossSections[i].GetPDFBandResults(), xScale, yScale);
 
-			//Also scale by the arficicial grid scale from the grid steering file
-			xScale = 1.0;
-			yScale = pci->gridSteeringFile.GetYScale();
-			SPXGraphUtilities::Scale(crossSections[i].GetPDFBandResults(), xScale, yScale);
-
 			if(debug) {
 				std::cout << cn << mn << "Additional artificial scale for Cross Section: " << std::endl;
 				std::cout << "\t X Scale: " << pci->xScale << std::endl;
 				std::cout << "\t Y Scale: " << pci->yScale << std::endl << std::endl;
 			}
 
+			//Also scale by the arficicial grid scale from the grid steering file
+			xScale = 1.0;
+			yScale = pci->gridSteeringFile.GetYScale();
+			SPXGraphUtilities::Scale(crossSections[i].GetPDFBandResults(), xScale, yScale);
+
+			if(debug) {
+				std::cout << cn << mn << "Additional artificial Grid Y Scale: " << std::endl;
+				std::cout << "\t X Scale: " << xScale << std::endl;
+				std::cout << "\t Y Scale: " << yScale << std::endl << std::endl;
+			}
 
 			//Normalized to total sigma from the DATA steering file
 			bool normalizeToTotalSigma = pci->dataSteeringFile.IsNormalizedToTotalSigma();
 			bool dataDividedByBinWidth = pci->dataSteeringFile.IsDividedByBinWidth();
 			bool gridDividedByBinWidth = pci->gridSteeringFile.IsDividedByBinWidth();
 
-			//@TODO Change back to being initialized as false: Why does this not work???
-			bool divideByBinWidth = true;
+			bool divideByBinWidth = false;
 
 			if(dataDividedByBinWidth && !gridDividedByBinWidth) {
 				if(debug) std::cout << cn << mn << "Data IS divided by bin width but the grid IS NOT. Will call Normalize "\

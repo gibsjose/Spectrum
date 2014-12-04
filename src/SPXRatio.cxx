@@ -92,6 +92,57 @@ void SPXRatio::Parse(std::string &s) {
         return;
     }
 
+    if(ratioStyle.IsConvoluteOverReference() || ratioStyle.IsConvoluteOverNominal()) {
+        std::string convoluteBlob = s;
+
+        //Make sure the convolute blob matches the correct format
+        if(!MatchesConvoluteString(convoluteBlob)) {
+            throw SPXParseException(cn + mn + "Convolute blob should have a \"convolute\" style, but does not: " + convoluteBlob);
+        }
+
+        //Remove the '()' and '[]' from the string
+        convoluteBlob = SPXStringUtilities::RemoveCharacters(convoluteBlob, "()");
+        convoluteBlob = SPXStringUtilities::RemoveCharacters(convoluteBlob, "[]");
+
+        //Delimit with ',' to get the grid and pdf file
+        std::vector<std::string> v = SPXStringUtilities::SplitString(convoluteBlob, ",");
+
+        if(v.size() != 2) {
+            throw SPXParseException(cn + mn + "Convolute blob is NOT of the form \"[grid_file, pdf_file]\": " + convoluteBlob);
+        }
+
+        numeratorConvoluteGridFile = v.at(0);
+        numeratorConvolutePDFFile = v.at(1);
+
+        //Check for alias
+        std::string numeratorDataAlias = CheckForAlias(numeratorDataFile, "data");
+        std::string denominatorGridAlias = CheckForAlias(denominatorConvoluteGridFile, "grid");
+        std::string denominatorPDFAlias = CheckForAlias(denominatorConvolutePDFFile, "pdf");
+
+        std::string numeratorGridAlias = CheckForAlias(numeratorConvoluteGridFile, "grid");
+        std::string numeratorPDFAlias = CheckForAlias(numeratorConvolutePDFFile, "grid");
+
+        //Use alias, if there is one, otherwise prepend directories
+        if(!numeratorConvoluteGridFile.compare(numeratorGridAlias)) {
+            numeratorConvoluteGridFile = gridDirectory + "/" + numeratorConvoluteGridFile;
+        } else {
+            numeratorConvoluteGridFile = numeratorGridAlias;
+        }
+        if(!numeratorConvolutePDFFile.compare(numeratorPDFAlias)) {
+            numeratorConvolutePDFFile = pdfDirectory + "/" + numeratorConvolutePDFFile;
+        } else {
+            numeratorConvolutePDFFile = numeratorPDFAlias;
+        }
+
+        if(debug) {
+            std::cout << cn << mn << "Successfully parsed convolute blob: " << std::endl;
+            std::ostringstream oss;
+            oss << "[" << numeratorConvoluteGridFile << ", " << numeratorConvolutePDFFile << "]";
+            ratioString = oss.str();
+            std::cout << "\t " << ratioString << std::endl;
+        }
+    }
+
     //Parse the string into numerator and denominator (delimit with ' / ')
     std::vector<std::string> v = SPXStringUtilities::SplitString(s, " / ");
 
@@ -240,69 +291,6 @@ void SPXRatio::Parse(std::string &s) {
         }
     }
 
-    else if(ratioStyle.IsConvoluteOverReference()) {
-        if(debug) std::cout << cn << mn << "Convolute over reference" << std::endl;
-
-        //Error if numBlob does NOT match a convolute string
-        if(!MatchesConvoluteString(numBlob)) {
-            throw SPXParseException(cn + mn + "Numerator blob should have a \"convolute\" style, but does not");
-        }
-
-        //Error if denBlob matches a convolute string
-        if(MatchesConvoluteString(denBlob)) {
-            throw SPXParseException(cn + mn + "Denominator blob should have a \"reference\" style, but has \"convolute\" style");
-        }
-
-        //Get the grid/pdf steering files from the numerator
-        numBlob = SPXStringUtilities::RemoveCharacters(numBlob, "()");
-        numBlob = SPXStringUtilities::RemoveCharacters(numBlob, "[]");
-        std::vector<std::string> v_num = SPXStringUtilities::CommaSeparatedListToVector(numBlob);
-        if(v_num.size() != 2) {
-            throw SPXParseException(cn + mn + "Numerator blob is NOT of the form \"[grid_file, pdf_file]\"");
-        }
-        numeratorConvoluteGridFile = v_num.at(0);
-        numeratorConvolutePDFFile = v_num.at(1);
-
-        //Get the reference grid steering file from the denominator
-        denominatorReferenceGridFile = SPXStringUtilities::RemoveCharacters(denBlob, "()");
-
-        //Check for alias
-        std::string numeratorGridAlias = CheckForAlias(numeratorConvoluteGridFile, "grid");
-        std::string numeratorPDFAlias = CheckForAlias(numeratorConvolutePDFFile, "pdf");
-        std::string denominatorGridAlias = CheckForAlias(denominatorReferenceGridFile, "grid");
-
-        //Error if reference grid steering file does NOT match the convolute grid file
-        if(numeratorConvoluteGridFile.compare(denominatorReferenceGridFile) != 0) {
-            throw SPXParseException(cn + mn + "Numerator's convolute grid file \"" + numeratorConvoluteGridFile + \
-                "\" MUST match the denominator's refererence grid file: \"" + denominatorReferenceGridFile + "\"");
-        }
-
-        //Use alias, if there is one, otherwise prepend directories
-        if(!numeratorConvoluteGridFile.compare(numeratorGridAlias)) {
-            numeratorConvoluteGridFile = gridDirectory + "/" + numeratorConvoluteGridFile;
-        } else {
-            numeratorConvoluteGridFile = numeratorGridAlias;
-        }
-        if(!numeratorConvolutePDFFile.compare(numeratorPDFAlias)) {
-            numeratorConvolutePDFFile = pdfDirectory + "/" + numeratorConvolutePDFFile;
-        } else {
-            numeratorConvolutePDFFile = numeratorPDFAlias;
-        }
-        if(!denominatorReferenceGridFile.compare(denominatorGridAlias)) {
-            denominatorReferenceGridFile = dataDirectory + "/" + denominatorReferenceGridFile;
-        } else {
-            denominatorReferenceGridFile = denominatorGridAlias;
-        }
-
-        if(debug) {
-            std::cout << cn << mn << "Successfully parsed convolute / reference string: " << std::endl;
-            std::ostringstream oss;
-            oss << "[" << numeratorConvoluteGridFile << ", " << numeratorConvolutePDFFile << "]" << " / " << denominatorReferenceGridFile;
-            ratioString = oss.str();
-            std::cout << "\t " << ratioString << std::endl;
-        }
-    }
-
     else if(ratioStyle.IsDataOverData()) {
         if(debug) std::cout << cn << mn << "Data Over Data" << std::endl;
 
@@ -412,6 +400,10 @@ void SPXRatio::AddReferenceFileGraphMap(StringGraphMap_T &referenceFileGraphMap)
     this->referenceFileGraphMap = &referenceFileGraphMap;
 }
 
+void SPXRatio::AddNominalFileGraphMap(StringGraphMap_T &nominalFileGraphMap) {
+    this->nominalFileGraphMap = &nominalFileGraphMap;
+}
+
 void SPXRatio::AddConvoluteFileGraphMap(StringPairGraphMap_T &convoluteFileGraphMap) {
     this->convoluteFileGraphMap = &convoluteFileGraphMap;
 }
@@ -446,6 +438,100 @@ void SPXRatio::GetGraphs(void) {
         if(!numeratorGraph || !denominatorGraph) {
             std::ostringstream oss;
             oss << "TGraph pointer at dataFileGraphMap[" << key << "] is NULL";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+    }
+
+    if(ratioStyle.IsConvoluteOverReference()) {
+        StringPair_T convoluteKey = StringPair_T(numeratorConvoluteGridFile, numeratorConvolutePDFFile);
+
+        if(!os.ContainsConvolute()) {
+            throw SPXGraphException(cn + mn + "Overlay Style does NOT contain \"convolute\", yet a ratio with convolute is specified: " + ratioStyle.ToString());
+        }
+
+        if(debug) {
+            std::cout << cn << mn << "Convolute Key = [" << convoluteKey.first << ", " << convoluteKey.second << "]" << std::endl;
+        }
+
+        //Check for existence of convolute key in convolute graph map
+        if(convoluteFileGraphMap->count(convoluteKey) == 0) {
+            PrintConvoluteFileGraphMapKeys(std::cerr);
+
+            std::ostringstream oss;
+            oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        //Check for existence of convolute key in reference graph map
+        if(referenceFileGraphMap->count(convoluteKey) == 0) {
+            PrintReferenceFileGraphMapKeys(std::cerr);
+
+            std::ostringstream oss;
+            oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        //Keys exist, grab graphs
+        numeratorGraph = (*convoluteFileGraphMap)[convoluteKey];
+        denominatorGraph = (*referenceFileGraphMap)[convoluteKey];
+
+        //Make sure graphs are valid
+        if(!numeratorGraph) {
+            std::ostringstream oss;
+            oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        if(!denominatorGraph) {
+            std::ostringstream oss;
+            oss << "TGraph pointer at referenceFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+    }
+
+    if(ratioStyle.IsConvoluteOverNominal()) {
+        StringPair_T convoluteKey = StringPair_T(numeratorConvoluteGridFile, numeratorConvolutePDFFile);
+
+        if(!os.ContainsConvolute()) {
+            throw SPXGraphException(cn + mn + "Overlay Style does NOT contain \"convolute\", yet a ratio with convolute is specified: " + ratioStyle.ToString());
+        }
+
+        if(debug) {
+            std::cout << cn << mn << "Convolute Key = [" << convoluteKey.first << ", " << convoluteKey.second << "]" << std::endl;
+        }
+
+        //Check for existence of convolute key in convolute graph map
+        if(convoluteFileGraphMap->count(convoluteKey) == 0) {
+            PrintConvoluteFileGraphMapKeys(std::cerr);
+
+            std::ostringstream oss;
+            oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        //Check for existence of convolute key in nominal graph map
+        if(nominalFileGraphMap->count(convoluteKey) == 0) {
+            PrintReferenceFileGraphMapKeys(std::cerr);
+
+            std::ostringstream oss;
+            oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        //Keys exist, grab graphs
+        numeratorGraph = (*convoluteFileGraphMap)[convoluteKey];
+        denominatorGraph = (*nominalFileGraphMap)[convoluteKey];
+
+        //Make sure graphs are valid
+        if(!numeratorGraph) {
+            std::ostringstream oss;
+            oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
+            throw SPXGraphException(cn + mn + oss.str());
+        }
+
+        if(!denominatorGraph) {
+            std::ostringstream oss;
+            oss << "TGraph pointer at nominalFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
             throw SPXGraphException(cn + mn + oss.str());
         }
     }
@@ -558,60 +644,6 @@ void SPXRatio::GetGraphs(void) {
         }
     }
 
-    else if(ratioStyle.IsConvoluteOverReference()) {
-        //Create keys
-        StringPair_T convoluteKey = StringPair_T(numeratorConvoluteGridFile, numeratorConvolutePDFFile);
-        std::string referenceKey = denominatorReferenceGridFile;
-
-        if(!os.ContainsConvolute()) {
-            throw SPXGraphException(cn + mn + "Overlay Style does NOT contain \"convolute\", yet a ratio with convolute is specified: " + ratioStyle.ToString());
-        }
-
-        if(!os.ContainsReference()) {
-            throw SPXGraphException(cn + mn + "Overlay Style does NOT contain \"reference\", yet a ratio with reference is specified: " + ratioStyle.ToString());
-        }
-
-        if(debug) {
-            std::cout << cn << mn << "Convolute Key = [" << convoluteKey.first << ", " << convoluteKey.second << "]" << std::endl;
-            std::cout << cn << mn << "Reference Key = [" << referenceKey << "]" << std::endl;
-        }
-
-        //Check for existence of convolute key
-        if(convoluteFileGraphMap->count(convoluteKey) == 0) {
-            PrintConvoluteFileGraphMapKeys(std::cerr);
-
-            std::ostringstream oss;
-            oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
-            throw SPXGraphException(cn + mn + oss.str());
-        }
-
-        //Check for existence of reference key
-        if(referenceFileGraphMap->count(referenceKey) == 0) {
-            PrintReferenceFileGraphMapKeys(std::cerr);
-
-            std::ostringstream oss;
-            oss << "referenceFileGraphMap[" << referenceKey << "] was not found: Invalid key";
-            throw SPXGraphException(cn + mn + oss.str());
-        }
-
-        //Keys exist, grab graphs
-        numeratorGraph = (*convoluteFileGraphMap)[convoluteKey];
-        denominatorGraph = (*referenceFileGraphMap)[referenceKey];
-
-        //Make sure graphs are valid
-        if(!numeratorGraph) {
-            std::ostringstream oss;
-            oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
-            throw SPXGraphException(cn + mn + oss.str());
-        }
-
-        if(!denominatorGraph) {
-            std::ostringstream oss;
-            oss << "TGraph pointer at referenceFileGraphMap[" << referenceKey << "] is NULL";
-            throw SPXGraphException(cn + mn + oss.str());
-        }
-    }
-
     else if(ratioStyle.IsDataOverData()) {
         //Create keys
         std::string numDataKey = numeratorDataFile;
@@ -661,17 +693,6 @@ void SPXRatio::GetGraphs(void) {
             throw SPXGraphException(cn + mn + oss.str());
         }
     }
-
-    //Print graph numerator/denominator
-    // if(debug) {
-    //     std::cout << cn << mn << "Printing ratio numerator/denominator graphs: " << std::endl;
-    //     std::cout << "Numerator: " << std::endl;
-    //     numeratorGraph->Print();
-    //     std::cout << std::endl;
-    //     std::cout << "Denominator: " << std::endl;
-    //     denominatorGraph->Print();
-    //     std::cout << std::endl;
-    // }
 }
 
 bool SPXRatio::MatchesConvoluteString(std::string &s) {
