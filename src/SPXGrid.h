@@ -52,7 +52,7 @@ public:
 	}
 
 	//Creates the Grid and return the reference histogram
-	TH1D * SPXGrid::CreateGrid(void);
+	TH1D * CreateGrid(void);
 
 	//Returns the Grid Reference histogram
 	TH1D * GetReference(void);
