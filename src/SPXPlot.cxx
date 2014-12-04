@@ -259,9 +259,17 @@ void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
 
-	//Do nothing if overlay is not plotted
+	//Do nothing if ratio is not plotted
 	if(!ds.ContainsRatio()) {
 		xMin = xMax = yMin = yMax = 0;
+		return;
+	}
+
+	//Do nothing if ratio is specified but there are no ratios to plot
+	if(!ratios.size()) {
+		xMin = xMax = 0;
+		yMin = 0.5;
+		yMax = 1.5;
 		return;
 	}
 
