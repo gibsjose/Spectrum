@@ -45,7 +45,7 @@ TH1D * SPXGrid::CreateGrid(void) {
 	referenceHistogram->Scale(1.0 / nTot);
 
 	std::cout << "==============================================" << std::endl;
-	referenceHistogram->Print();
+	referenceHistogram->Print("all");
 
 	return referenceHistogram;
 }
