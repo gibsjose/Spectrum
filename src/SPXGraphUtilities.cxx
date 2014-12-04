@@ -641,6 +641,10 @@ double SPXGraphUtilities::GetTotalSigma(TGraphAsymmErrors *g, bool dividedByBinW
 
     std::cout << cn << mn << "Graph is Valid" << std::endl;
 
+    std::cout << cn << mn << "Printing graph" << std::endl;
+    g->Print();
+    std::cout << std::endl;
+
     double totalSigma = 0;
 
     double *y = g->GetY();
