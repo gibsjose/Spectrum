@@ -39,7 +39,7 @@ public:
     static void PrintMethodHeader(const std::string &className, const std::string &methodName) {
         std::cout << std::endl;
         std::cout << "================================================================" << std::endl;
-        std::cout << className << methodName << " <<<< Entering method: " << methodName << std::endl;
+        std::cout << className << methodName << std::endl;
         std::cout << "================================================================" << std::endl;
     }
 };

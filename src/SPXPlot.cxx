@@ -26,6 +26,9 @@ bool SPXPlot::debug;
 
 //Initialize all plots
 void SPXPlot::Initialize(void) {
+	std::string mn = "Initialize: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
 	try {
 		InitializeData();
 		InitializeCrossSections();
@@ -40,6 +43,7 @@ void SPXPlot::Initialize(void) {
 
 void SPXPlot::Plot(void) {
 	std::string mn = "Plot:: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	//Perform plotting
 	CreateCanvas();
@@ -60,10 +64,7 @@ void SPXPlot::Plot(void) {
 
 void SPXPlot::SetAxisLabels(void) {
 	std::string mn = "SetAxisLabels: ";
-
-	if(debug) {
-		SPXUtilities::PrintMethodHeader(cn, mn);
-	}
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
@@ -105,6 +106,7 @@ void SPXPlot::SetAxisLabels(void) {
 
 void SPXPlot::ScaleAxes(void) {
 	std::string mn = "ScaleAxes: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
@@ -176,6 +178,7 @@ void SPXPlot::ScaleAxes(void) {
 
 void SPXPlot::CreateCanvas(void) {
 	std::string mn = "CreateCanvas: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 
@@ -206,6 +209,7 @@ void SPXPlot::CreateCanvas(void) {
 //Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
 void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax) {
 	std::string mn = "DetermineOverlayFrameBounds: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	//Get the plot configuration and display style from steering file
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
@@ -258,6 +262,7 @@ void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yM
 //Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
 void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax) {
 	std::string mn = "DetermineRatioFrameBounds: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	//Get the plot configuration and display style from steering file
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
@@ -305,6 +310,7 @@ void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin
 
 void SPXPlot::DivideCanvasIntoPads(void) {
 	std::string mn = "DivideCanvasIntoPads: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(!canvas) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::CreateCanvas before creating the pads");
@@ -323,6 +329,7 @@ void SPXPlot::DivideCanvasIntoPads(void) {
 
 void SPXPlot::ConfigurePads(void) {
 	std::string mn = "ConfigurePads: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(!overlayPad || !ratioPad) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DivideCanvasIntoPads before configuring the pads");
@@ -440,6 +447,7 @@ void SPXPlot::ConfigurePads(void) {
 
 void SPXPlot::DrawOverlayPadFrame(void) {
 	std::string mn = "DrawOverlayPadFrame: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(!overlayPad) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::ConfigurePads before drawing the pad frame");
@@ -491,6 +499,7 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 
 void SPXPlot::DrawRatioPadFrame(void) {
 	std::string mn = "DrawRatioPadFrame: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(!ratioPad) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::ConfigurePads before drawing the pad frame");
@@ -544,6 +553,8 @@ void SPXPlot::DrawRatioPadFrame(void) {
 }
 
 void SPXPlot::StaggerConvoluteOverlay(void) {
+	std::string mn = "StaggerConvoluteOverlay: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	//Change this to alter the fraction of the error range in which the point is staggered
 	const int FRAC_RANGE = 4;
@@ -577,6 +588,7 @@ void SPXPlot::StaggerConvoluteOverlay(void) {
 
 void SPXPlot::StaggerConvoluteRatio(void) {
 	std::string mn = "StaggerConvoluteRatio: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	//Change this to alter the fraction of the error range in which the point is staggered
 	const int FRAC_RANGE = 4;
@@ -628,7 +640,8 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 //NOTE: Ratios are automatically matched, since they must align in order
 //		to use the SPXGraphUtilities::Divide function
 void SPXPlot::MatchOverlayBinning(void) {
-	std::string mn = "MatchBinning: ";
+	std::string mn = "MatchOverlayBinning: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXPlotType &pt = pc.GetPlotType();
@@ -713,6 +726,8 @@ void SPXPlot::MatchOverlayBinning(void) {
 }
 
 void SPXPlot::ApplyGridCorrections(void) {
+	std::string mn = "ApplyGridCorrections: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(steeringFile->GetGridCorr()) {
 		for(int i = 0; i < crossSections.size(); i++) {
@@ -723,6 +738,7 @@ void SPXPlot::ApplyGridCorrections(void) {
 
 void SPXPlot::DrawOverlay(void) {
 	std::string mn = "DrawOverlay: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(!overlayPad) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DrawOverlayPadFrame before drawing the overlay graphs");
@@ -860,6 +876,7 @@ void SPXPlot::DrawOverlay(void) {
 
 void SPXPlot::DrawRatio(void) {
 	std::string mn = "DrawRatio: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(!ratioPad) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DrawRatioPadFrame before drawing the ratio graphs");
@@ -961,11 +978,15 @@ void SPXPlot::DrawRatio(void) {
 }
 
 void SPXPlot::DrawLegend(void) {
+	std::string mn = "DrawLegend: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
 	return;
 }
 
 void SPXPlot::UpdateCanvas(void) {
 	std::string mn = "UpdateCanvas: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(!canvas) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::CreateCanvas before updating the canvas");
@@ -977,6 +998,7 @@ void SPXPlot::UpdateCanvas(void) {
 
 void SPXPlot::CanvasToPNG(void) {
 	std::string mn = "CanvasToPNG: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(!canvas) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::CreateCanvas before printing the canvas as a PNG");
@@ -995,6 +1017,7 @@ void SPXPlot::CanvasToPNG(void) {
 
 std::string SPXPlot::GetPNGFilename(std::string desc) {
 	std::string mn = "GetPNGFilename: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	std::string filename;
 
@@ -1012,6 +1035,7 @@ std::string SPXPlot::GetPNGFilename(std::string desc) {
 
 void SPXPlot::InitializeRatios(void) {
 	std::string mn = "InitializeRatios: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	//Create a ratio for each ratio instance
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
@@ -1041,6 +1065,7 @@ void SPXPlot::InitializeRatios(void) {
 
 void SPXPlot::InitializeCrossSections(void) {
 	std::string mn = "InitializeCrossSections: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXOverlayStyle &os = pc.GetOverlayStyle();
@@ -1139,6 +1164,7 @@ void SPXPlot::InitializeCrossSections(void) {
 
 void SPXPlot::NormalizeCrossSections(void) {
 	std::string mn = "NormalizeCrossSections: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXOverlayStyle &os = pc.GetOverlayStyle();
@@ -1246,6 +1272,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 
 void SPXPlot::InitializeData(void) {
 	std::string mn = "InitializeData: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXOverlayStyle &os = pc.GetOverlayStyle();
