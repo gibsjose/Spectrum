@@ -145,6 +145,10 @@ public:
     }
 
     void Divide(void) {
+        std::string cn = "SPXRatio::";
+        std::string mn = "Divide: ";
+        if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+        
         //Grab the plot configuration instance
         SPXPlotConfigurationInstance pci;
 

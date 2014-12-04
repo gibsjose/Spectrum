@@ -55,7 +55,9 @@ public:
 	TH1D * CreateGrid(void);
 
 	//Returns the Grid Reference histogram
-	TH1D * GetReference(void);
+	TH1D * GetReference(void) {
+		return (TH1D *)grid->getReference();
+	}
 
 
 private:

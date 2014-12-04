@@ -45,6 +45,7 @@ bool SPXRatio::debug;
 //
 void SPXRatio::Parse(std::string &s) {
     std::string mn = "Parse: ";
+    if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	std::string numBlob;
 	std::string denBlob;
@@ -339,6 +340,7 @@ void SPXRatio::Parse(std::string &s) {
 // resolve that alias based on the alias type
 std::string SPXRatio::CheckForAlias(std::string &original, const std::string alias_type) {
     std::string mn = "CheckForAlias: ";
+    if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
     std::string tmp;
     std::string s_index;
@@ -414,6 +416,7 @@ void SPXRatio::AddConvoluteFileGraphMap(StringPairGraphMap_T &convoluteFileGraph
 
 void SPXRatio::GetGraphs(void) {
     std::string mn = "GetGraphs: ";
+    if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
     SPXOverlayStyle &os = plotConfiguration.GetOverlayStyle();
 
@@ -723,7 +726,7 @@ void SPXRatio::GetGraphs(void) {
 
 bool SPXRatio::MatchesConvoluteString(std::string &s) {
     std::string mn = "MatchesConvoluteString: ";
-
+    
     s = SPXStringUtilities::RemoveCharacters(s, "()");
 
     if(debug) std::cout << cn << mn << "Checking \"" << s << "\" against convolute pattern" << std::endl;

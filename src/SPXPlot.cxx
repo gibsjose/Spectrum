@@ -29,6 +29,8 @@ void SPXPlot::Initialize(void) {
 	std::string mn = "Initialize: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
+	if(debug) std::cout << cn << mn << "Initializing Plot with ID " << id << std::endl;
+
 	try {
 		InitializeData();
 		InitializeCrossSections();
@@ -42,8 +44,10 @@ void SPXPlot::Initialize(void) {
 }
 
 void SPXPlot::Plot(void) {
-	std::string mn = "Plot:: ";
+	std::string mn = "Plot: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+	if(debug) std::cout << cn << mn << "Plotting Plot with ID " << id << std::endl;
 
 	//Perform plotting
 	CreateCanvas();

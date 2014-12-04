@@ -21,6 +21,9 @@ const std::string cn = "SPXGrid::";
 bool SPXGrid::debug;
 
 TH1D * SPXGrid::CreateGrid(void) {
+	std::string mn = "CreateGrid: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
 	std::string gridFile = pci->gridSteeringFile.GetGridFilepath();
 
 	if(!SPXFileUtilities::FileExists(gridFile)) {
@@ -48,8 +51,4 @@ TH1D * SPXGrid::CreateGrid(void) {
 	referenceHistogram->Print("all");
 
 	return referenceHistogram;
-}
-
-TH1D * SPXGrid::GetReference(void) {
-	return (TH1D *)grid->getReference();
 }

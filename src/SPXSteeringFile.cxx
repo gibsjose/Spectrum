@@ -24,6 +24,7 @@ const int DEFAULT_DATA_MARKER_COLOR = 1;	//Black
 
 void SPXSteeringFile::SetDefaults(void) {
 	std::string mn = "SetDefaults: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(debug) std::cout << cn << mn << "Setting default Steering File data" << std::endl;
 
@@ -75,8 +76,11 @@ void SPXSteeringFile::PrintAll(void) {
 }
 
 void SPXSteeringFile::ParseAll(bool print) {
+	std::string mn = "ParseAll: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	try {
+		if(debug) std::cout << cn << mn << "Parsing Steering File" << std::endl;
 		this->Parse();
 		if(print) this->Print();
 	} catch(const SPXException &e) {
@@ -85,6 +89,7 @@ void SPXSteeringFile::ParseAll(bool print) {
 	}
 
 	try {
+		if(debug) std::cout << cn << mn << "Parsing PDF Steering Files" << std::endl;
 		this->ParsePDFSteeringFiles();
 		if(print) this->PrintPDFSteeringFiles();
 	} catch(const SPXException &e) {
@@ -93,6 +98,7 @@ void SPXSteeringFile::ParseAll(bool print) {
 	}
 
 	try {
+		if(debug) std::cout << cn << mn << "Parsing Data Steering Files" << std::endl;
 		this->ParseDataSteeringFiles();
 		if(print) this->PrintDataSteeringFiles();
 	} catch(const SPXException &e) {
@@ -101,6 +107,7 @@ void SPXSteeringFile::ParseAll(bool print) {
 	}
 
 	try {
+		if(debug) std::cout << cn << mn << "Parsing Grid Steering Files" << std::endl;
 		this->ParseGridSteeringFiles();
 		if(print) this->PrintGridSteeringFiles();
 	} catch(const SPXException &e) {
@@ -173,6 +180,7 @@ void SPXSteeringFile::Print(void) {
 
 unsigned int SPXSteeringFile::ParseNumberOfPlots(void) {
 	std::string mn = "ParseNumberOfPlots: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	unsigned int plotNumber = 0;
 	bool noMorePlots = false;
@@ -208,6 +216,7 @@ unsigned int SPXSteeringFile::ParseNumberOfPlots(void) {
 
 unsigned int SPXSteeringFile::ParseNumberOfRatios(unsigned int plotNumber) {
 	std::string mn = "ParseNumberOfRatios: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	unsigned int ratioNumber = 0;
 	bool noMoreRatios = false;
@@ -255,6 +264,7 @@ unsigned int SPXSteeringFile::ParseNumberOfRatios(unsigned int plotNumber) {
 
 void SPXSteeringFile::ParsePlotConfigurations(void) {
 	std::string mn = "ParsePlotConfigurations: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	std::string tmp;
 	bool xLog = false;
@@ -742,6 +752,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 
 void SPXSteeringFile::Parse(void) {
 	std::string mn = "Parse: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(filename.empty()) {
 		throw SPXFileIOException(filename, "Empty file string \"\" was given");
@@ -814,6 +825,7 @@ void SPXSteeringFile::PrintDataSteeringFiles(void) {
 
 void SPXSteeringFile::ParseDataSteeringFiles(void) {
 	std::string mn = "ParseDataSteeringFiles: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	//Loop through all plot configurations instances for each plot option
 	for(int i = 0; i < plotConfigurations.size(); i++) {
@@ -871,6 +883,7 @@ void SPXSteeringFile::PrintGridSteeringFiles(void) {
 
 void SPXSteeringFile::ParseGridSteeringFiles(void) {
 	std::string mn = "ParseGridSteeringFiles: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	//Loop through all plot configurations instances for each plot option
 	for(int i = 0; i < plotConfigurations.size(); i++) {
@@ -908,7 +921,8 @@ void SPXSteeringFile::PrintPDFSteeringFiles(void) {
 
 void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 	std::string mn = "ParsePDFSteeringFiles: ";
-
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+	
 	//Loop through all plot configurations instances for each plot option
 	for(int i = 0; i < plotConfigurations.size(); i++) {
 		for(int j = 0; j < plotConfigurations.at(i).GetNumberOfConfigurationInstances(); j++) {

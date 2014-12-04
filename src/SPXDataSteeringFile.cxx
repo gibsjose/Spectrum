@@ -26,6 +26,7 @@ const std::string cn = "SPXDataSteeringFile::";
 
 void SPXDataSteeringFile::SetDefaults(void) {
 	std::string mn = "SetDefaults: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(debug) std::cout << cn << mn << "Setting default Data Steering File data" << std::endl;
 
@@ -146,7 +147,8 @@ void SPXDataSteeringFile::Print(void) {
 //@TODO Update documentation with correlation matrix syntax and behavior
 void SPXDataSteeringFile::Parse(void) {
 	std::string mn = "Parse: ";
-
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+	
 	if(filename.empty()) {
 		throw SPXFileIOException(filename, "Empty file string \"\" was given");
 	}

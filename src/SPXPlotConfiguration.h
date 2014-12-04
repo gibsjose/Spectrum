@@ -177,6 +177,7 @@ public:
 	//Add an configuration instance to the configurationInstances vector
 	void AddConfigurationInstance(SPXPlotConfigurationInstance & instance) {
 		std::string mn = "AddConfigurationInstance: ";
+		if(debug) SPXUtilities::PrintMethodHeader(focn, mn);
 
 		if(instance.IsEmpty()) {
 			throw SPXParseException("SPXPlotConfiguration::AddConfigurationInstance: Could not add configuration instance: Instance is empty");
