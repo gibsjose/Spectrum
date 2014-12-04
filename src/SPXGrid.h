@@ -29,6 +29,7 @@ public:
 
 	explicit SPXGrid(SPXPlotConfigurationInstance *pci) {
 		this->pci = pci;
+		CreateGrid();
 	}
 
 	//@TODO Delete here: Could be a source of errors
@@ -50,8 +51,12 @@ public:
 		return pci->gridSteeringFile.GetGridFilepath();
 	}
 
+	//Creates the Grid and return the reference histogram
+	TH1D * CreateGrid(void);
+
 	//Returns the Grid Reference histogram
-	TH1D *GetReference(void);
+	TH1D * GetReference(void);
+
 
 private:
 	static bool debug;						//Flag indicating debug mode

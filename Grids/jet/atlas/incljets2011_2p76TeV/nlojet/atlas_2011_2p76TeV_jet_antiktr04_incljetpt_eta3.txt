@@ -1,0 +1,46 @@
+;==============================================================
+;
+; Description:		
+;	ATLAS 2010 inclusive jets sqrt(s)=2.76 TeV
+;
+; Date:
+;	03.12.2014
+; Comment:
+;       Grids units are nb and they are not divided by the y-binwidth
+;       They are divided by the pt-binwidth
+;
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = true
+;==============================================================
+; Description
+;==============================================================
+[DESC]
+name = atlas_2011_2p76TeV_jet_antiktr04_incljetpt_eta3
+author = Shima Shimizu
+lumi_config_file = NONE                      
+scale = Ptjet                                
+reference_journal_name=EPJ C73 (2013) 2509   
+reference_link_to_arxiv=http://arxiv.org/abs/1304.4739 
+nlo_program_name = nlojet++                    
+grid_program_name=jetmod                       
+observable_definition_link_to_code = unknown   
+;
+;==============================================================
+; Graphing Options
+;==============================================================
+[GRAPH]
+x_units = GeV	
+y_units = nb	
+grid_divided_by_bin_width = true 
+;
+;==============================================================
+; Grid Options
+;==============================================================
+[GRID]								 
+grid_file = atlas-incljets-R04-eta3.root
+generator_id =nlojet++ 		
+ntuple_id =jetmod		
+lowest_order = 2		

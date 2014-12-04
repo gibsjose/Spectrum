@@ -248,6 +248,11 @@ void SPXData::ParseSpectrum(void) {
 		}
 	}
 
+	//Check for no bin count...
+	if(!bin_count) {
+		throw SPXParseException("No data bins found in data file: Make sure it is not empty");
+	}
+
 	//Check positive/negative individual systematic count
 	if(pos_count != neg_count) {
 		std::cerr << cn << mn << "WARNING: Different number of positive/negative systematic errors: Data errors could be skewed" << std::endl;

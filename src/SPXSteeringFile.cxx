@@ -19,6 +19,9 @@
 //Class name for debug statements
 const std::string cn = "SPXSteeringFile::";
 
+const int DEFAULT_DATA_MARKER_STYLE = 20;	//Circle
+const int DEFAULT_DATA_MARKER_COLOR = 1;	//Black
+
 void SPXSteeringFile::SetDefaults(void) {
 	std::string mn = "SetDefaults: ";
 
@@ -51,17 +54,17 @@ void SPXSteeringFile::SetDefaults(void) {
 	yLegend = 0.9;
 	if(debug) std::cout << cn << mn << "yLegend set to default: \"0.9\"" << std::endl;
 
-	yOverlayMin = 0;
-	if(debug) std::cout << cn << mn << "yOverlayMin set to default: \"0\"" << std::endl;
+	yOverlayMin = MIN_EMPTY;
+	if(debug) std::cout << cn << mn << "yOverlayMin set to default: \"" << MIN_EMPTY << "\"" << std::endl;
 
-	yOverlayMax = 0;
-	if(debug) std::cout << cn << mn << "yOverlayMax set to default: \"0\"" << std::endl;
+	yOverlayMax = MAX_EMPTY;
+	if(debug) std::cout << cn << mn << "yOverlayMax set to default: \"" << MAX_EMPTY << "\"" << std::endl;
 
-	yRatioMin = 0;
-	if(debug) std::cout << cn << mn << "yRatioMin set to default: \"0\"" << std::endl;
+	yRatioMin = MIN_EMPTY;
+	if(debug) std::cout << cn << mn << "yRatioMin set to default: \"" << MIN_EMPTY << "\"" << std::endl;
 
-	yRatioMax = 0;
-	if(debug) std::cout << cn << mn << "yRatioMax set to default: \"0\"" << std::endl;
+	yRatioMax = MAX_EMPTY;
+	if(debug) std::cout << cn << mn << "yRatioMax set to default: \"" << MAX_EMPTY << "\"" << std::endl;
 }
 
 void SPXSteeringFile::PrintAll(void) {
@@ -429,7 +432,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		//Get the data_marker_style
 		tmp = reader->Get(plotSection, "data_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			throw SPXINIParseException(plotSection, "data_marker_style", "You MUST specify the data_marker_style");
+			std::cout << cn << mn << "WARNING: No plot option for data_marker_color found: Defaulting to pre-defined settings (" << DEFAULT_DATA_MARKER_STYLE << ")" << std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -449,7 +452,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		//Get the data_marker_color
 		tmp = reader->Get(plotSection, "data_marker_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			throw SPXINIParseException(plotSection, "data_marker_color", "You MUST specify the data_marker_color");
+			std::cout << cn << mn << "WARNING: No plot option for data_marker_color found: Defaulting to pre-defined settings (" << DEFAULT_DATA_MARKER_COLOR << ")" << std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -470,7 +473,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmp = reader->Get(plotSection, "pdf_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(plotBand) {
-				std::cerr << cn << mn << "WARNING: No plot option for pdf_fill_style found, but plot_band = true. Defaulting to pdf steering file settings" << std::endl;
+				std::cout << cn << mn << "WARNING: No plot option for pdf_fill_style found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
 			} else {
 				if(debug) std::cout << cn << mn << "No plot option for pdf_fill_style found" << std::endl;
 			}
@@ -494,7 +497,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmp = reader->Get(plotSection, "pdf_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(plotBand) {
-				std::cerr << cn << mn << "WARNING: No plot option for pdf_fill_color found, but plot_band = true. Defaulting to pdf steering file settings" << std::endl;
+				std::cout << cn << mn << "WARNING: No plot option for pdf_fill_color found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
 			} else {
 				if(debug) std::cout << cn << mn << "No plot options for pdf_fill_color found" << std::endl;
 			}
@@ -518,7 +521,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmp = reader->Get(plotSection, "pdf_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(plotMarker) {
-				std::cerr << cn << mn << "WARNING: No plot option for pdf_marker_style found, but plot_marker = true. Defaulting to pdf steering file settings" << std::endl;
+				std::cout << cn << mn << "WARNING: No plot option for pdf_marker_style found, but plot_marker = true: Defaulting to pdf steering file settings" << std::endl;
 			} else {
 				if(debug) std::cout << cn << mn << "No plot option for pdf_marker_style found" << std::endl;
 			}
@@ -816,11 +819,36 @@ void SPXSteeringFile::ParseDataSteeringFiles(void) {
 	for(int i = 0; i < plotConfigurations.size(); i++) {
 		for(int j = 0; j < plotConfigurations.at(i).GetNumberOfConfigurationInstances(); j++) {
 
-			SPXDataSteeringFile &dataSteeringFile = plotConfigurations.at(i).GetPlotConfigurationInstance(j).dataSteeringFile;
+			SPXPlotConfigurationInstance &pci = plotConfigurations.at(i).GetPlotConfigurationInstance(j);
+			SPXDataSteeringFile &dataSteeringFile = pci.dataSteeringFile;
 
 			//Attempt to parse the Data Steering File
 			try {
 				dataSteeringFile.Parse();
+
+				//Prepend the data directory onto the steering file's data path
+				dataSteeringFile.PrependDataFile(pci.dataDirectory);
+				if(debug) std::cout << cn << mn << "Successfully prepended directory \"" << pci.dataDirectory << "\" onto data file" << std::endl;
+				if(debug) std::cout << cn << mn << "Resulting data filepath: \"" << dataSteeringFile.GetDataFile() << "\"" << std::endl;
+
+				//Use default marker style or marker color if currently empty
+				if(pci.dataMarkerStyle == PC_EMPTY_STYLE) {
+					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
+						" Data Marker Style was empty: Defaulting to Circle (20)" << std::endl;
+					pci.dataMarkerStyle = DEFAULT_DATA_MARKER_STYLE;	//DEFAULT TO 20 (circle)
+				}
+
+				if(pci.dataMarkerColor == PC_EMPTY_COLOR) {
+					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
+						" Data Marker Color was empty: Defaulting to Blac (1)" << std::endl;
+					pci.dataMarkerColor = DEFAULT_DATA_MARKER_COLOR;	//DEFAULT TO BLACK
+				}
+
+			//Update PCI with new data
+			SPXPlotConfigurationInstance &pcim = plotConfigurations.at(i).GetPlotConfigurationInstance(dataSteeringFile.GetFilename());
+			pcim.dataMarkerStyle = pci.dataMarkerStyle;
+			pcim.dataMarkerColor = pci.dataMarkerColor;
+
 			} catch(const SPXException &e) {
 				std::cerr << e.what() << std::endl;
 
@@ -848,11 +876,16 @@ void SPXSteeringFile::ParseGridSteeringFiles(void) {
 	for(int i = 0; i < plotConfigurations.size(); i++) {
 		for(int j = 0; j < plotConfigurations.at(i).GetNumberOfConfigurationInstances(); j++) {
 
-			SPXGridSteeringFile &gridSteeringFile = plotConfigurations.at(i).GetPlotConfigurationInstance(j).gridSteeringFile;
+			SPXPlotConfigurationInstance &pci = plotConfigurations.at(i).GetPlotConfigurationInstance(j);
+			SPXGridSteeringFile &gridSteeringFile = pci.gridSteeringFile;
 
 			//Attempt to parse the Grid Steering File
 			try {
 				gridSteeringFile.Parse();
+
+				gridSteeringFile.PrependGridFilepath(pci.gridDirectory);
+				if(debug) std::cout << cn << mn << "Successfully prepended directory \"" << pci.gridDirectory << "\" onto grid file" << std::endl;
+				if(debug) std::cout << cn << mn << "Resulting grid filepath: \"" << gridSteeringFile.GetGridFilepath() << "\"" << std::endl;
 			} catch(const SPXException &e) {
 				std::cerr << e.what() << std::endl;
 
@@ -906,7 +939,7 @@ void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 					pci.pdfMarkerStyle = pdfSteeringFile.GetMarkerStyle();
 				}
 
-				//Update PCI in PDF Filemap with new data
+				//Update PCI with new data
 				SPXPlotConfigurationInstance &pcim = plotConfigurations.at(i).GetPlotConfigurationInstance(pdfSteeringFile.GetFilename());
 				pcim.pdfFillStyle = pci.pdfFillStyle;
 				pcim.pdfFillColor = pci.pdfFillColor;

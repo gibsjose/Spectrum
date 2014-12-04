@@ -118,9 +118,9 @@ public:
 	const char * what() const throw() {
 		std::string tmp;
 		if(!filename.empty()) {
-			tmp = "---> SPXFileIOException: Unable to process file: " + filename + ": " + message;
+			tmp = "---> SPXFileIOException: Make sure file \"" + filename + "\" exists and has read permissions: " + message;
 		} else {
-			tmp = "---> SPXFileIOException: " + message;
+			tmp = "---> SPXFileIOException: Make sure file exists and has read permissions: " + message;
 		}
 
 		return tmp.c_str();

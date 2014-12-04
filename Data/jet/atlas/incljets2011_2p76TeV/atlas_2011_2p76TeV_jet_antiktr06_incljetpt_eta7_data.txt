@@ -1,0 +1,49 @@
+; Data taken from arxiv1410.8857 
+; systematics
+
+syst_gamma6+ +26 +21 +0.2
+syst_gamma6- -16 -14 -3.3
+syst_gamma12+ +19 +29 +39
+syst_gamma12- -15 -20 -22
+syst_gamma18+ +31 +26 +15
+syst_gamma18- -19 -19 -21
+syst_gamma24+ +5.7 +8.2 +2.7
+syst_gamma24- -3.9 -5.3 -3.0
+syst_gamma30+ +9.2 +8.8 +5.3
+syst_gamma30- -6.2 -6.1 -8.2
+syst_gamma88+ +93 +159 +109
+syst_gamma88- -54 -56 -55
+syst_gamma37+ +4.9 +10.0 +7.1
+syst_gamma37- -3.4 -6.8 -12.
+syst_gamma43+ +8.5 +9.8 +4.5
+syst_gamma43- -5.9 -7.6 -7.2
+syst_gamma49+ +8.9 +14 +13
+syst_gamma49- -6.7 -11 -17
+syst_gamma55+ -0.0 +0.0 -0.0
+syst_gamma55- +0.0 -0.0 -0.8
+syst_gamma61+ -0.0 -0.0 -0.0
+syst_gamma61- -0.0 +0.0 +0.0
+syst_gamma67+ +5.9 +11. +5.7
+syst_gamma67- -4.3 -8.2 -7.5
+syst_gamma73+ -0.0 +0.0 +2.8
+syst_gamma73- +0.0 -0.0 -4.1
+syst_gamma89+ +15 +28 +38
+syst_gamma89- -12 -18 -23
+syst_gamma81+ +25. +14. +26.
+syst_gamma81- -25. -14. -26.
+syst_gamma82+ -2.5 -2.4 -12.7
+syst_gamma82- +2.5 +2.4 +12.7
+syst_gamma74+ +1.4 +5.4 +2.2
+syst_gamma74- -1.4 -5.4 -2.2
+syst_gamma75+ +0.6 +1.5 +0.4
+syst_gamma75- -0.6 -1.5 -0.4
+syst_gamma86+ +2.0 +1.0 +1.0
+syst_gamma86- -2.0 -1.0 -1.0
+syst_u_1+ +2.0 +1.0 +1.0
+syst_u_1- -2.0 -1.0 -1.0
+syst_u_2+ +0.5 +0.5 +0.5
+syst_u_2- -0.5 -0.5 -0.5
+;mean xmin xmax cross staterr   +syst    -syst 
+25.0 20 30 8.729e+01 4.6 108.91 68.76
+37.5 30 45 2.220e+00 5.0 170.12 70.96
+52.5 45 60 1.433e-02 16. 128.40 78.90

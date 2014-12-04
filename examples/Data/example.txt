@@ -42,9 +42,15 @@ debug = true													;[Optional] Turn on/off debug statements - [default = f
 ;==============================================================
 [DESC]
 name = ATLAS_2012_diffcross_mtt									;[Optional] Data name
-year = 2013														;[Optional] Year of data measurements
 experiment = ATLAS												;[Optional] Which experiment
 reaction = P P --> top top										;[Optional] Reaction type
+data_set_year = 2013											;[Optional] Year of data measurements
+data_set_lumi = 4.5	[Units]										;[Optional] Dataset luminosity
+reference_journal_name = Some Journal							;[Optional] Journal name
+reference_journal_year = 2014									;[Optional] Journal year
+reference_arxiv_number = arXiv:12345678							;[Optional] ArXiv number
+reference_arxiv_year = 2014										;[Optional] ArXiv year
+publication_status = published									;[Optional] Publication status
 
 ;==============================================================
 ; Graphing Options
@@ -86,3 +92,4 @@ divided_by_bin_width = true										;[Optional] Specify if data is already divi
 normalized_to_total_sigma = true								;[Optional] Specify if the cross-section data (sigma) has been
 																;			normalized to the total sigma
 error_in_percent = true											;[Optional] Specify that errors are reported in percents
+lumi_scale_factor = 1.0											;[Optional] Luminosity scale factor [default = 1.0]

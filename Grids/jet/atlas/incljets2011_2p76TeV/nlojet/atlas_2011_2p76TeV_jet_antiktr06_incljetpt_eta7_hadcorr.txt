@@ -1,0 +1,5 @@
+; hadronisation corrections
+;  mean  xmin  xmax  npc  npc_up npc_down 
+15.0 20.0 30.0 0.994964 0.19 0.06
+37.5 30.0 45.0 0.953034 0.13 0.08
+52.5 45.0 60.0 0.916334 0.13 0.12
