@@ -61,6 +61,10 @@ void SPXPlot::Plot(void) {
 void SPXPlot::SetAxisLabels(void) {
 	std::string mn = "SetAxisLabels: ";
 
+	if(debug) {
+		SPXUtilities::PrintMethodHeader(cn, mn);
+	}
+
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
 
