@@ -95,6 +95,12 @@ void SPXRatio::Parse(std::string &s) {
     if(ratioStyle.IsConvoluteOverReference() || ratioStyle.IsConvoluteOverNominal()) {
         std::string convoluteBlob = s;
 
+        if(ratioStyle.IsConvoluteOverReference()) {
+            if(debug) std::cout << cn << mn << "Ratio Style is Convolute / Reference" << std::endl;
+        } else {
+            if(debug) std::cout << cn << mn << "Ratio Style is Convolute / Nominal" << std::endl;
+        }
+
         //Make sure the convolute blob matches the correct format
         if(!MatchesConvoluteString(convoluteBlob)) {
             throw SPXParseException(cn + mn + "Convolute blob should have a \"convolute\" style, but does not: " + convoluteBlob);
@@ -115,12 +121,8 @@ void SPXRatio::Parse(std::string &s) {
         numeratorConvolutePDFFile = v.at(1);
 
         //Check for alias
-        std::string numeratorDataAlias = CheckForAlias(numeratorDataFile, "data");
-        std::string denominatorGridAlias = CheckForAlias(denominatorConvoluteGridFile, "grid");
-        std::string denominatorPDFAlias = CheckForAlias(denominatorConvolutePDFFile, "pdf");
-
         std::string numeratorGridAlias = CheckForAlias(numeratorConvoluteGridFile, "grid");
-        std::string numeratorPDFAlias = CheckForAlias(numeratorConvolutePDFFile, "grid");
+        std::string numeratorPDFAlias = CheckForAlias(numeratorConvolutePDFFile, "pdf");
 
         //Use alias, if there is one, otherwise prepend directories
         if(!numeratorConvoluteGridFile.compare(numeratorGridAlias)) {
@@ -141,6 +143,8 @@ void SPXRatio::Parse(std::string &s) {
             ratioString = oss.str();
             std::cout << "\t " << ratioString << std::endl;
         }
+
+        return;
     }
 
     //Parse the string into numerator and denominator (delimit with ' / ')
