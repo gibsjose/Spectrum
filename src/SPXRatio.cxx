@@ -111,7 +111,7 @@ void SPXRatio::Parse(std::string &s) {
         convoluteBlob = SPXStringUtilities::RemoveCharacters(convoluteBlob, "[]");
 
         //Delimit with ',' to get the grid and pdf file
-        std::vector<std::string> v = SPXStringUtilities::SplitString(convoluteBlob, ",");
+        std::vector<std::string> v = SPXStringUtilities::CommaSeparatedListToVector(convoluteBlob);
 
         if(v.size() != 2) {
             throw SPXParseException(cn + mn + "Convolute blob is NOT of the form \"[grid_file, pdf_file]\": " + convoluteBlob);
