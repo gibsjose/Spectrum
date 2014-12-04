@@ -74,11 +74,10 @@ public:
 
 	static void Scale(TGraphAsymmErrors *graph, double xScale, double yScale);
 
-	static void Normalize(TGraphAsymmErrors *graph, double yBinWidthScale, bool normalizeToTotalSigma, bool divideByBinWidth);
+	//static void Normalize(TGraphAsymmErrors *graph, double yBinWidthScale, bool normalizeToTotalSigma, bool divideByBinWidth);
 
-	static double GetTotalSigma(TGraphAsymmErrors * g);
-	static void NormalizeToTotalSigma(TGraphAsymmErrors * g, bool dividedByBinWidth);
-	static void NormalizeToBinWidth(TGraphAsymmErrors * g, double yBinWidthScale);
+	static double GetTotalSigma(TGraphAsymmErrors * g, bool dividedByBinWidth);
+	static void DivideByBinWidth(TGraphAsymmErrors * g);
 };
 
 #endif

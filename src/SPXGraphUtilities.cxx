@@ -630,94 +630,58 @@ void SPXGraphUtilities::Scale(TGraphAsymmErrors *graph, double xScale, double yS
     }
 }
 
-//Normalizes the TGraph and handles bin width division
-void SPXGraphUtilities::Normalize(TGraphAsymmErrors *graph, double yBinWidthScale, bool normalizeToTotalSigma, bool divideByBinWidth) {
+//In this case, dividedByBinWidth tells whether the Y values of the graph g HAVE ALREADY been
+//  divided by the bin width
+double SPXGraphUtilities::GetTotalSigma(TGraphAsymmErrors *g, bool dividedByBinWidth) {
+    std::string mn = "GetTotalSigma: ";
 
-    //TEMPORARY DEBUG
-    bool debug = false;
-
-    //NOTE:
-    //Y Bin Width Scale is the scale needed to convert the Y Bin Width Units to the X Units, i.e. If Y Units are [1/TeV] and X Units
-    //	are in GeV, yBinWidthScale would = 1e-3
-    //normalizeToTotalSigma indicates that the graph should be normalized to the total sigma
-    //divideByBinWidth indicates that the graph should be divided by the bin width
+    if(!g) {
+        throw SPXGraphException(cn + mn + "Graph is Invalid");
+    }
 
     double totalSigma = 0;
 
-    double *pX = graph->GetX();
-    double *pY = graph->GetY();
-    double *pEXhigh = graph->GetEXhigh();
-    double *pEXlow = graph->GetEXlow();
-    double *pEYhigh = graph->GetEYhigh();
-    double *pEYlow = graph->GetEYlow();
+    double *y = g->GetY();
+    double *exh = g->GetEXhigh();
+    double *exl = g->GetEXlow();
 
-    unsigned int numberOfBins = graph->GetN();
+    for(int i = 0; i < g->GetN(); i++) {
+        double binWidth = exh[i] - exl[i];
 
-    double sigma = 0;
-
-    //Compute total sigma
-    for(int i = 0; i < numberOfBins; i++) {
-        sigma = pY[i];
-        double binWidth = pEXlow[i] + pEXhigh[i];
-
-        if(debug) std::cout << "Bin[" << i << "]: sigma = " << sigma << std::endl;
-
-        if(debug) std::cout << "Bin[" << i << "]: binWidth = " << binWidth << std::endl;
-
-        if(divideByBinWidth) {
-            totalSigma += sigma * binWidth;
+        if(dividedByBinWidth) {
+            totalSigma += y[i] * binWidth;
         } else {
-            totalSigma += sigma;
+            totalSigma += y[i];
         }
-
-        //@TODO Check normalization and use of double += sigma here
-        //totalSigma += sigma;
-
-        if(debug) std::cout << "Bin[" << i << "]: totalSigma = " << totalSigma << std::endl;
     }
 
-    double scale = 1.0;
+    return totalSigma;
+}
 
-    if(normalizeToTotalSigma) {
-        scale = 1.0 / totalSigma;
+
+//Normalized the graph by the bin width for each bin
+void DivideByBinWidth(TGraphAsymmErrors *g) {
+    std::string mn = "DivideByBinWidth: ";
+
+    if(!g) {
+        throw SPXGraphException(cn + mn + "Graph is Invalid");
     }
 
-    //Normalize
-    for(int i = 0; i < numberOfBins; i++) {
+    double * y = g->GetY();
+    double * exl = g->GetEXlow();
+    double * exh = g->GetEXhigh();
+    double * eyl = g->GetEYlow();
+    double * eyh = g->GetEYhigh();
 
-        if(debug) std::cout << "Bin[" << i << "]: scale = "  << scale << std::endl;
+    //Loop over graph and divided by the bin width
+    for(int i = 0; i < g->GetN(); i++) {
+        double binWidth = exh[i] - exl[i];
 
-        double binWidth = 1;
-
-        //@TODO Make sure this is correct...
-        //if(divideByBinWidth) {
-            binWidth = pEXlow[i] + pEXhigh[i];
-        //}
-
-        if(debug) std::cout << "Bin[" << i << "]: binWidth = " << binWidth << std::endl;
-
-        double y = pY[i] * scale * binWidth;
-        double eyl = pEYlow[i] * scale * binWidth;
-        double eyh = pEYhigh[i] * scale * binWidth;
-
-        if(divideByBinWidth) {
-            binWidth *= yBinWidthScale;
-            eyl /= binWidth;
-            eyh /= binWidth;
-            y /= binWidth;
-        }
-
-        if(debug) {
-            std::cout << "Bin[" << i << "]:" << std::endl;
-            std::cout << std::scientific << "\t x = " << pX[i] << std::endl;
-            std::cout << std::scientific << "\t y = " << y << std::endl;
-            std::cout << std::scientific << "\t exl = " << pEXlow[i] << std::endl;
-            std::cout << std::scientific << "\t exh = " << pEXhigh[i] << std::endl;
-            std::cout << std::scientific << "\t eyl = " << eyl << std::endl;
-            std::cout << std::scientific << "\t eyh = " << eyh << std::endl;
-        }
-
-        graph->SetPoint(i, pX[i], y);
-        graph->SetPointError(i, pEXlow[i], pEXhigh[i], eyl, eyh);
+        //Scale y, eyl, and eyh by 1 / bin width
+        y[i] /= binWidth;
+        eyl[i] /= binWidth;
+        eyh[i] /= binWidth;
     }
+
+    return;
 }

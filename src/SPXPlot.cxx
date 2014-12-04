@@ -1184,34 +1184,35 @@ void SPXPlot::NormalizeCrossSections(void) {
 				std::cout << "\t Y Scale: " << yScale << std::endl << std::endl;
 			}
 
-			//Normalized to total sigma from the DATA steering file
+			//Check if data/grid are/are not normalized by total sigma or bin width
 			bool normalizeToTotalSigma = pci->dataSteeringFile.IsNormalizedToTotalSigma();
 			bool dataDividedByBinWidth = pci->dataSteeringFile.IsDividedByBinWidth();
-			bool gridDividedByBinWidth = pci->gridSteeringFile.IsDividedByBinWidth();
+			bool gridDividedByBinWidth = pci->gridSteeringFile.IsGridDividedByBinWidth();
 
-			bool divideByBinWidth = false;
+			TGraphAsymmErrors * g = crossSections[i].GetPDFBandResults();
 
+			if(!dataDividedByBinWidth && gridDividedByBinWidth) {
+				throw SPXGraphException(cn + mn + "Grid IS divided by the bin with but the data IS NOT: Not supported");
+			}
+
+			double totalSigma = SPXGraphUtilities::GetTotalSigma(g, gridDividedByBinWidth);
+
+			//First divide the cross section by the bin width if it needs to be
+			//@TODO Do I need to do this also for the Alpha S and Scale Uncertainty bands?
 			if(dataDividedByBinWidth && !gridDividedByBinWidth) {
-				if(debug) std::cout << cn << mn << "Data IS divided by bin width but the grid IS NOT. Will call Normalize "\
-					"with divideByBinWidth = true" << std::endl;
-				divideByBinWidth = true;
+				if(debug) std::cout << cn << mn << "Dividing Cross Section by the Bin Width" << std::endl;
+				SPXGraphUtilities::DivideByBinWidth(g);
 			}
 
-			double yBinWidthScale = 1.0;
+			//Set the yBinWidthScale, which is the scaling of the data's Y Bin Width Units to the data's X Units
+			double yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), pci->dataSteeringFile.GetYBinWidthUnits());
+			if(debug) std::cout << cn << mn << "Scaling by the Y Bin Width Scale: " << yBinWidthScale << std::endl;
+			SPXGraphUtilities::Scale(g, 1.0, yBinWidthScale);
 
-			//If the data is divided by the bin width, then set the yBinWidthScale, which is the scaling of the
-			// Data's Y Bin Width Units to the Data's X Units
-			if(dataDividedByBinWidth) {
-				yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), \
-					pci->dataSteeringFile.GetYBinWidthUnits());
+			if(normalizeToTotalSigma) {
+				if(debug) std::cout << cn << mn << "Scaling by 1 / total sigma: " << (1.0 / totalSigma) << std::endl;
+				SPXGraphUtilities::Scale(g, 1.0, (1.0 / totalSigma));
 			}
-
-			if(debug) std::cout << cn << mn << "Y Bin Width Scale = " << yBinWidthScale << std::endl;
-			if(debug) std::cout << cn << mn << "Normalize to Total Sigma is " << (normalizeToTotalSigma ? "ON" : "OFF") << std::endl;
-			if(debug) std::cout << cn << mn << "Divide by Bin Width is " << (divideByBinWidth ? "ON" : "OFF") << std::endl;
-
-			//Normalize the cross section
-			SPXGraphUtilities::Normalize(crossSections[i].GetPDFBandResults(), yBinWidthScale, normalizeToTotalSigma, divideByBinWidth);
 
 			if(debug) std::cout << cn << mn << "Sucessfully normalized Cross Section " << i << std::endl;
 
