@@ -116,20 +116,20 @@ public:
 
     void PrintReferenceFileGraphMapKeys(std::ostream &out = std::cout) {
         out << "SPXRatio::PrintReferenceFileGraphMapKeys: " << std::endl;
-        out << "\t Key Format: [Grid]" << std::endl;
+        out << "\t Key Format: [Grid, PDF]" << std::endl;
         out << "\t ============ KNOWN KEYS ============" << std::endl;
-        for(StringPairGraphMap_T::iterator it = referenceFileGraphMap->begin(); it != referenceFileGraphMap->end(); ++it) {
-            out << "\t [" << it->first << "]" << std::endl;
+        for(StringPairGraphMap_T::iterator it = convoluteFileGraphMap->begin(); it != convoluteFileGraphMap->end(); ++it) {
+            out << "\t [" << it->first.first << ", " << it->first.second << "]" << std::endl;
         }
         out << "\t ====================================" << std::endl << std::endl;
     }
 
     void PrintNominalFileGraphMapKeys(std::ostream &out = std::cout) {
         out << "SPXRatio::PrintNominalFileGraphMapKeys: " << std::endl;
-        out << "\t Key Format: [Grid]" << std::endl;
+        out << "\t Key Format: [Grid, PDF]" << std::endl;
         out << "\t ============ KNOWN KEYS ============" << std::endl;
-        for(StringPairGraphMap_T::iterator it = nominalFileGraphMap->begin(); it != nominalFileGraphMap->end(); ++it) {
-            out << "\t [" << it->first << "]" << std::endl;
+        for(StringPairGraphMap_T::iterator it = convoluteFileGraphMap->begin(); it != convoluteFileGraphMap->end(); ++it) {
+            out << "\t [" << it->first.first << ", " << it->first.second << "]" << std::endl;
         }
         out << "\t ====================================" << std::endl << std::endl;
     }
