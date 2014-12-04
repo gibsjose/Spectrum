@@ -1,0 +1,29 @@
+[GEN]
+debug = true
+
+[DESC]
+;reference_journal_year=
+reference_arxiv_year=2014
+data_set_year=2011
+data_set_lumi=4.5
+publication_status=published
+reference_arxiv_number=arXiv:1410.8857
+reference_journal_name=none
+
+[GRAPH]
+sqrt_s = 7000.0
+legend_label = ATLAS 2011
+x_label = p_{T,jet} [GeV]
+y_label = d#sigma/dp_{T,jet} dy [pb/GeV]
+x_units = GeV
+y_units = pb
+y_bin_width_units= GeV
+jet_algorithm_label = Anti_k{t}
+jet_algorithm_number = 6
+
+[DATA]
+data_format = spectrum
+data_file =atlas_2011_jet_antiktr06_incljetpt_eta3_data.txt
+divided_by_bin_width = true
+error_in_percent = true
+;YRAP 1.0 1.5

@@ -1,7 +1,7 @@
 ;==============================================================
 ;
 ; Description:		
-; ATLAS inclusive jet cross sections
+; ATLAS inclusive jet cross sections 2010 sqrt(s)=2.76 TeV
 ;--------------------------------------------------------------
 
 ;==============================================================
@@ -32,32 +32,26 @@ y_legend = 0.9
 ; Plot 0 Options
 ;==============================================================
 [PLOT_0]
-;plot_type = data[], grid[], pdf
 plot_type = data, grid, pdf
 pdf_directory = PDF
-data_directory = Data/jet/atlas/incljets2011
-grid_directory = Grids/jet/atlas/incljets2011/nlojet
-;data_steering_files = atlas_2011_jet_antiktr04_incljetpt_eta1.txt,atlas_2011_jet_antiktr04_incljetpt_eta6.txt
-;grid_steering_files = atlas_2011_incljet_eta1_r04.txt,atlas_2011_incljet_eta6_r04.txt
-data_steering_files = atlas_2011_jet_antiktr04_incljetpt_eta1.txt
-grid_steering_files = atlas_2011_incljet_eta1_r04.txt
+data_directory = Data/jet/atlas/incljets2011_2p76TeV
+grid_directory = Grids/jet/atlas/incljets2011_2p76TeV/nlojet
+data_steering_files = atlas_2011_2p76TeV_jet_antiktr04_incljetpt_eta1.txt
+grid_steering_files = atlas_2011_2p76TeV_jet_antiktr04_incljetpt_eta1.txt
 pdf_steering_files = CT10.txt
 ;
 x_scale = 1.0
 y_scale = 1.0
-x_log = true
+x_log=true
 y_log=true
-;
-data_marker_style = 20
-data_marker_color = 1
 ; 
-desc = atlas_inclusive_jet
-display_style = overlay
-;
+desc = atlas_inclusive_jet_eta1
+display_style = overlay,ratio
 overlay_style = data, convolute
 ;
 ratio_title =NLO QCD/Data
-ratio_style_0 = convolute / data
-; 
+ratio_style_0 = convolute / data 
 ratio_0 = ([grid_0, pdf_0]) / (data_0)
 ;
+;
+

@@ -1,0 +1,116 @@
+; Data taken from arxiv1407.0371 
+; systematics
+
+syst_JES_bquark_jets+ -0.32 +0.25 +0.44 +0.40 +0.35
+syst_JES_bquark_jets+ +0.53 -0.33 -0.78 -0.80 -0.93
+syst_JES_Closeby_jets+ -0.44 +0.12 +0.68 +1.19 +1.46
+syst_JES_Closeby_jets- +0.45 -0.17 -0.55 -1.29 -2.03
+syst_JES_Effective_detector_NP_set1+ -0.75 +0.44 +1.00 +1.49 +1.87
+syst_JES_Effective_detector_NP_set1- +0.47 -0.31 -0.40 -1.27 -1.61
+syst_JES_Effective_detector_NP_set2+ -0.11 +0.08 +0.11 +0.24 +0.34
+syst_JES_Effective_detector_NP_set2- -0.05 +0.02 +0.05 +0.18 +0.19
+syst_JES_Effective_mixed_NP_set1+ -0.03 -0.05 +0.06 +0.30 +0.23
+syst_JES_Effective_mixed_NP_set1+ -0.04 -0.04 +0.29 -0.13 -0.25
+syst_JES_Effective_mixed_NP_set2+ -0.03 +0.03 +0.01 +0.07 +0.14
+syst_JES_Effective_mixed_NP_set2- -0.10 +0.04 +0.21 +0.08 +0.13
+syst_JES_Effective_model_NP_set1+ -0.22 +0.28 +0.48 -0.43 -1.00
+syst_JES_Effective_model_NP_set1- +0.04 -0.19 +0.18 +0.11 +0.13
+syst_JES_Effective_model_NP_set2+ -0.37 +0.24 +0.54 +0.53 +0.59
+syst_JES_Effective_model_NP_set2- +0.13 -0.07 -0.13 -0.37 -0.49
+syst_JES_Effective_model_NP_set3+  +0.15 -0.03 -0.18 -0.57 -0.48
+syst_JES_Effective_model_NP_set3-  -0.30 +0.15 +0.44 +0.67 +0.66
+syst_JES_Effective_model_NP_set4+  -0.10 +0.04 +0.21 +0.15 +0.02
+syst_JES_Effective_model_NP_set4-  +0.04 -0.12 +0.13 -0.09 -0.22
+syst_JES_Effective_statistical_NP_set1+ +0.24 -0.20 -0.27 -0.31 -0.42
+syst_JES_Effective_statistical_NP_set1- -0.27 +0.05 +0.62 +0.44 +0.63
+syst_JES_Effective_statistical_NP_set2+ -0.09 +0.03 +0.27 -0.04 -0.12
+syst_JES_Effective_statistical_NP_set2- -0.02 +0.03 -0.00 -0.02 +0.20
+syst_JES_Effective_statistical_NP_set3+  -0.11 -0.01 +0.21 +0.35 +0.32
+syst_JES_Effective_statistical_NP_set3-  +0.10 -0.09 -0.01 -0.37 -0.52
+syst_JES_etaintercalibration+ -0.84 +0.37 +1.27 +1.85 +2.11
+syst_JES_etaintercalibration+ +0.79 -0.42 -0.95 -1.87 -2.67
+syst_JES_etaintercalibration_statistics+ -0.17 +0.15 +0.28 +0.07 +0.10
+syst_JES_etaintercalibration_statistics- -0.01 -0.02 +0.10 -0.02 -0.15
+syst_JES_Flavor_composition+ -0.03 -0.11 +0.13 +0.37 +0.40
+syst_JES_Flavor_composition+ +0.07 -0.08 +0.14 -0.46 -0.78
+syst_JES_Flavor_response+ +0.05 -0.13 -0.01 +0.15 +0.27
+syst_JES_Flavor_response- -0.09 -0.08 +0.33 +0.26 +0.28
+syst_JES_Pileup_offset_mu+ -0.08 +0.00 +0.33 -0.08 -0.35
+syst_JES_Pileup_offset_mu- +0.03 +0.07 -0.01 -0.42 -0.95
+syst_JES_pileup_offset_NPV+ +0.08 -0.07 -0.02 -0.23 -0.44
+syst_JES_pileup_offset_NPV- -0.03 -0.08 +0.00 +0.48 +0.55
+syst_JES_Relative_nonclosureMC+ -0.18 +0.04 +0.41 +0.28 +0.15
+syst_JES_Relative_nonclosureMC- +0.03 +0.04 -0.02 -0.29 -0.46
+syst_JES_Single_particle_highpT+ -0.01 +0.01 +0.02 -0.05 -0.09
+syst_JES_Single_particle_highpT- -0.01 +0.01 +0.02 -0.04 -0.06
+syst_JES_uncertainty_in_background+ +0.16 -0.28 -0.12 +0.19 +0.44
+syst_JES_uncertainty_in_background- -0.08 +0.13 +0.28 -0.46 -0.94
+syst_Jet_energy_resolution+ -0.57 +0.90 +0.16 +0.24 -0.03
+syst_Jet_energy_resolution- +0.58 -0.91 -0.17 -0.24 +0.03
+syst_Jet_reconstruction_efficiency+ -0.03 +0.09 -0.10 +0.05 +0.23
+syst_Jet_reconstruction_efficiency- +0.03 -0.09 +0.10 -0.05 -0.24
+syst_bquark_taggingefficiency+ -0.99 +0.42 +1.62 +1.99 +2.21
+syst_bquark_taggingefficiency- +0.77 -0.39 -1.27 -1.33 -1.23
+syst_cquark_tagging_efficiency +0.07 -0.04 -0.18 +0.06 +0.12
+syst_cquark_tagging_efficiency -0.07 +0.04 +0.17 -0.05 -0.10
+syst_Light-jet_tagging_efficiency +0.06 -0.12 +0.03 -0.03 -0.14
+syst_Light-jet_tagging_efficiency -0.06 +0.12 -0.04 +0.03 +0.13
+syst_electron_energy_resolution+ -0.01 +0.02 +0.13 -0.23 -0.39
+syst_electron_energy_resolution+ +0.01 -0.02 +0.04 -0.07 -0.11
+syst_electron_energy_scale+ +0.07 -0.11 -0.03 +0.01 -0.08
+syst_electron_energy_scale- -0.10 +0.15 +0.24 -0.37 -0.30
+syst_muon_ID_momentum_resolution+ +0.01 -0.05 +0.07 -0.01 -0.01
+syst_muon_ID_momentum_resolution- +0.11 -0.11 -0.20 +0.06 +0.10
+syst_muon_MS_momentum_resolution+ +0.11 +0.01 -0.32 -0.15 -0.10
+syst_muon_MS_momentum_resolution- +0.07 +0.03 -0.25 -0.09 -0.06
+syst_muon_momentum_scale+ -0.03 -0.05 +0.12 +0.18 +0.20
+syst_muon_momentum_scale- +0.03 +0.05 -0.12 -0.18 -0.20
+syst_ID_efficiency+ +0.40 -0.69 -0.73 +1.42 +1.61
+syst_ID_efficiency- -0.38 +0.66 +0.70 -1.36 -1.54
+syst_lepton_reconstruction_efficiency+ +0.15 -0.26 -0.24 +0.45 +0.46
+syst_lepton_reconstruction_efficiency- -0.15 +0.26 +0.23 -0.44 -0.46
+syst_lepton_trigger_efficiency+ -0.15 +0.32 +0.27 -0.74 -0.81
+syst_trigger_efficiency- +0.15 -0.32 -0.27 +0.73 +0.80
+syst_ETmiss_unassociatedcells+ -0.03 +0.02 +0.02 +0.02 +0.50
+syst_ETmiss_unassociatedcells- -0.04 +0.14 -0.02 -0.21 -0.37
+syst_ETmiss_pile-up+ -0.10 +0.04 +0.15 +0.19 +0.64
+syst_ETmiss_pile-up- -0.05 -0.02 +0.19 +0.11 -0.29
+syst_MC_generator+ -2.19 +1.88 +2.57 +2.97 +2.51
+syst_MC_generator+ +2.73 -2.34 -3.20 -3.71 -3.13
+syst_Fragmentation+ +0.20 -0.21 +0.54 -1.75 -2.21
+syst_Fragmentation- -0.20 +0.20 -0.52 +1.69 +2.14
+syst_IFSR+ +0.55 -0.18 -0.92 -1.50 -0.40
+syst_IFSR- -0.54 +0.18 +0.89 +1.45 +0.38
+syst_PDF+ -0.07 -0.07 -0.02 +0.54 +2.20
+syst_PDF- +0.07 +0.08 +0.02 -0.56 -2.26
+syst_MC_statistics+ +0.41 +0.41 +0.63 +1.04 +1.60
+syst_MC_statistics- -0.41 -0.41 -0.63 -1.04 -1.60
+syst_W+jets_bb4+ -0.08 -0.06 +0.14 +0.48 +0.80
+syst_W+jets_bb4- +0.01 +0.02 -0.04 -0.04 -0.15
+syst_Wjets_bb5+ -0.08 -0.06 +0.14 +0.48 +0.80
+syst_Wjets_bb5- +0.07 +0.03 -0.10 -0.41 -0.61
+syst_Wjets_bbcc+ -0.17 -0.09 +0.45 +0.60 +0.96
+syst_Wjets_bbcc- +0.16 +0.09 -0.41 -0.58 -0.91
+syst_Wjets_bbccc+ +0.03 -0.13 -0.16 +0.57 +1.03
+syst_Wjets_bbccc- +0.01 +0.06 +0.07 -0.39 -0.82
+syst_Wjets_c4+ -0.05 +0.13 +0.01 -0.21 -0.17
+syst_Wjets_c4- -0.03 -0.03 +0.07 +0.17 +0.17
+syst_Wjets_c5+ -0.05 +0.13 +0.01 -0.21 -0.17
+syst_Wjets_c5- +0.09 -0.12 -0.09 +0.07 +0.03
+syst_Wjets_charge_asymmetry+ -0.05 -0.02 +0.04 +0.34 +0.63
+syst_Wjets_charge_asymmetry- +0.06 +0.05 -0.00 -0.52 -0.90
+syst_Multijet_normalization+ +0.26 -0.67 -0.76 +2.11 +4.17
+syst_Multijet_normalization- -0.27 +0.67 +0.75 -2.02 -3.96
+syst_Multijet_shape+ +0.04 -0.18 -0.25 +0.82 +1.45
+syst_Multijet_shape- +0.07 +0.18 +0.31 -1.52 -3.65
+syst_Z+jets_background_normalization+ +0.14 -0.25 -0.17 +0.32 +0.49
+syst_Z+jets_background_normalization- -0.14 +0.25 +0.17 -0.32 -0.48
+syst_Dilepton_background_normalization+ +0.14 -0.06 -0.22 -0.30 -0.34 
+syst_Dilepton_background_normalization- -0.13 +0.06 +0.21 +0.29 +0.33
+;
+; xm xlow xhigh sigma  stat syst+ syst-
+ 350. 250. 450.  2.52   1.2  3.1   3.1
+ 500. 450. 550.  2.76   1.5  2.8   2.8
+ 625. 550. 700.  1.01   2.7  4.2   4.2
+ 825. 700. 950.  0.23   3.2  6.3   6.3
+1825. 950. 2700. 0.0071 5.5  8.5   8.5
