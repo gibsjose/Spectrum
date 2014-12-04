@@ -98,12 +98,12 @@ public:
 	}
 
 	TGraphAsymmErrors * GetGridReference(void) {
-		SPXGraphUtilities::HistogramToGraph(gridReference, grid->getReference());
+		SPXGraphUtilities::HistogramToGraph(gridReference, grid->GetReference());
 		return gridReference;
 	}
 
 	TGraphAsymmErrors * GetNominal(void) {
-		SPXGraphUtilities::HistogramToGraph(nominal, pdf->getPdfdefault());
+		SPXGraphUtilities::HistogramToGraph(nominal, pdf->GetPDFNominal());
 		return nominal;
 	}
 
