@@ -118,7 +118,7 @@ public:
         out << "SPXRatio::PrintReferenceFileGraphMapKeys: " << std::endl;
         out << "\t Key Format: [Grid]" << std::endl;
         out << "\t ============ KNOWN KEYS ============" << std::endl;
-        for(StringGraphMap_T::iterator it = referenceFileGraphMap->begin(); it != referenceFileGraphMap->end(); ++it) {
+        for(StringPairGraphMap_T::iterator it = referenceFileGraphMap->begin(); it != referenceFileGraphMap->end(); ++it) {
             out << "\t [" << it->first << "]" << std::endl;
         }
         out << "\t ====================================" << std::endl << std::endl;
@@ -128,7 +128,7 @@ public:
         out << "SPXRatio::PrintNominalFileGraphMapKeys: " << std::endl;
         out << "\t Key Format: [Grid]" << std::endl;
         out << "\t ============ KNOWN KEYS ============" << std::endl;
-        for(StringGraphMap_T::iterator it = nominalFileGraphMap->begin(); it != nominalFileGraphMap->end(); ++it) {
+        for(StringPairGraphMap_T::iterator it = nominalFileGraphMap->begin(); it != nominalFileGraphMap->end(); ++it) {
             out << "\t [" << it->first << "]" << std::endl;
         }
         out << "\t ====================================" << std::endl << std::endl;
