@@ -1,0 +1,68 @@
+ % Example SHERPA run card for MCgrid analysis
+
+(run){
+  % general settings	
+  EVENTS 10M
+  FILE_SIZE 100000
+  ERROR 0.05;
+  RANDOM_SEED 1374 2119 
+  SF:=1
+
+  %tags and settings for ME generator
+  ME_SIGNAL_GENERATOR Comix, Internal;
+  EVENT_GENERATION_MODE Weighted;
+  SCALES VAR{SF*8315.18};
+  RESULT_DIRECTORY Results_NLO;	
+  ANALYSIS Rivet
+  ANALYSIS_OUTPUT Analysis/1;
+
+  % Tevatron collider setup
+  BEAM_1  2212; BEAM_ENERGY_1 3500;
+  BEAM_2  2212; BEAM_ENERGY_2 3500;
+}(run);
+
+(model){
+  MASS[6] = 1e20
+}(model)
+
+(processes){
+
+  ### The Born, virtual, integrated and real-subtracted pieces
+  Process 93 93 -> 13 -13;
+  NLO_QCD_Mode Fixed_Order; 
+  NLO_QCD_Part B;
+  Order_EW 2;
+  End process;
+
+  Process 93 93 -> 13 -13;
+  NLO_QCD_Mode Fixed_Order; 
+  NLO_QCD_Part I;
+  Order_EW 2;
+  End process;
+
+  Process 93 93 -> 13 -13;
+  NLO_QCD_Mode Fixed_Order;
+  NLO_QCD_Part V;
+  Order_EW 2;
+  End process;
+
+  Process 93 93 -> 13 -13;
+  NLO_QCD_Mode Fixed_Order; 
+  NLO_QCD_Part RS;
+  Order_EW 2;
+  End process;
+
+}(processes);
+
+(selector){
+  Mass 13 -13 66. 116.
+}(selector)
+
+
+(analysis){
+  BEGIN_RIVET {
+    -a MCgrid_ATLAS_2011_S9131140
+    USE_HEPMC_SHORT 1;
+    IGNOREBEAMS 1;
+  } END_RIVET;
+}(analysis);

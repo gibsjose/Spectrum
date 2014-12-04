@@ -186,9 +186,7 @@ private:
 				throw SPXFileIOException(filepath, "Unable to open data file");
 			}
 		} catch(const std::exception &e) {
-			std::cerr << e.what() << std::endl;
-
-			throw SPXFileIOException(filepath, "Unable to open data file");
+			throw;
 		}
 	}
 

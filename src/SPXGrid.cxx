@@ -20,8 +20,7 @@ const std::string cn = "SPXGrid::";
 //Must define the static debug variable in the implementation
 bool SPXGrid::debug;
 
-TH1D *SPXGrid::GetReference(void) {
-	
+TH1D * SPXGrid::CreateGrid(void) {
 	std::string gridFile = pci->gridSteeringFile.GetGridFilepath();
 
 	if(!SPXFileUtilities::FileExists(gridFile)) {
@@ -46,4 +45,8 @@ TH1D *SPXGrid::GetReference(void) {
 	referenceHistogram->Scale(1.0 / nTot);
 
 	return referenceHistogram;
+}
+
+TH1D * SPXGrid::GetReference(void) {
+	return (TH1D *)grid->getReference();
 }

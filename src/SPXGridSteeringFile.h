@@ -39,6 +39,7 @@ private:
 
 	//[DESC]
 	std::string name;									//Grid name
+	std::string comments;								//Grid comments
 	std::string author;									//Grid author
 	std::string lumiConfigFile;							//Sub-process configuration file for the grid program (APPLgrid)
 	std::string scale;									//Choice of renormalization scale (Q^2)
@@ -52,14 +53,13 @@ private:
 	//[GRAPH]
 	std::string xUnits;
 	std::string yUnits;
-	bool dividedByBinWidth;
+	bool gridDividedByBinWidth;
+	bool referenceDividedByBinWidth;
 	double yScale;
 
 	//[GRID]
 	std::string gridFilepath;
 	std::vector<std::string> correctionFiles;
-	std::string generatorID;
-	std::string nTupleID;
 	unsigned int lowestOrder;
 
 	void SetDefaults(void);
@@ -89,6 +89,10 @@ public:
 
 	const std::string & GetName(void) const {
 		return this->name;
+	}
+
+	const std::string & GetComments(void) const {
+		return this->comments;
 	}
 
 	const std::string & GetAuthor(void) const {
@@ -131,8 +135,12 @@ public:
 		return this->yUnits;
 	}
 
-	bool IsDividedByBinWidth(void) const {
-		return this->dividedByBinWidth;
+	bool IsGridDividedByBinWidth(void) const {
+		return this->gridDividedByBinWidth;
+	}
+
+	bool IsReferenceDividedByBinWidth(void) const {
+		return this->referenceDividedByBinWidth;
 	}
 
 	double GetYScale(void) const {
@@ -141,6 +149,14 @@ public:
 
 	const std::string & GetGridFilepath(void) const {
 		return this->gridFilepath;
+	}
+
+	void SetGridFilepath(std::string &filepath) {
+		this->gridFilepath = filepath;
+	}
+
+	void PrependGridFilepath(std::string &path) {
+		this->gridFilepath = path + "/" + this->gridFilepath;
 	}
 
 	unsigned int GetNumberOfCorrectionFiles(void) const {
@@ -155,14 +171,6 @@ public:
 		}
 
 		return correctionFiles.at(index);
-	}
-
-	const std::string & GetGeneratorID(void) const {
-		return this->generatorID;
-	}
-
-	const std::string & GetNTupleID(void) const {
-		return this->nTupleID;
 	}
 
 	unsigned int GetLowestOrder(void) const {

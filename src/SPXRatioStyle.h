@@ -3,10 +3,7 @@
 //	Ratio Style Header
 //
 //	Outlines the SPXRatioStyle class, which describes the type of
-//	ratio to be plotted in the ratio section. Ratio styles can
-//	include: [data AND/OR reference AND/OR convolute] in the
-//	numerator, and [data XOR reference XOR convolute] in the
-//	demominator.
+//	ratio to be plotted in the ratio section.
 //
 //	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
 //	@Date:		25.09.2014
@@ -24,6 +21,7 @@ const int RS_INVALID =		-1;
 const int RS_DATA = 		(1 << 0);	//0b00000001
 const int RS_REFERENCE = 	(1 << 1);	//0b00000010
 const int RS_CONVOLUTE = 	(1 << 2);	//0b00000100
+const int RS_NOMINAL = 		(1 << 3);	//0b00001000
 
 class SPXRatioStyle {
 
@@ -115,6 +113,14 @@ public:
 		}
 	}
 
+	bool IsConvoluteOverNominal(void) {
+		if(NumeratorIsConvolute() && DenominatorIsNominal()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	bool IsDataOverData(void) {
 		if(NumeratorIsData() && DenominatorIsData()) {
 			return true;
@@ -139,6 +145,10 @@ public:
 
 	bool DenominatorIsReference(void) {
 		return DenominatorIs(RS_REFERENCE);
+	}
+
+	bool DenominatorIsNominal(void) {
+		return DenominatorIs(RS_NOMINAL);
 	}
 
 	bool DenominatorIsData(void) {

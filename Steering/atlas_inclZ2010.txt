@@ -1,0 +1,63 @@
+;==============================================================
+;
+; Description:		
+; ATLAS inclusive Z-boson pt cross sections
+; 2010 data
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = true
+;==============================================================
+; Graphing Options
+;==============================================================
+[GRAPH]
+; plot_band = 
+; plot_error_ticks = 
+plot_marker = true
+plot_staggered = true
+match_binning = false
+label_sqrt_s = 7000.
+x_legend = 0.9
+y_legend = 0.9
+;y_overlay_min = 
+;y_overlay_max = 
+;y_ratio_min =	
+;y_ratio_max = 
+;==============================================================
+;==============================================================
+; Plot 0 Options
+;==============================================================
+[PLOT_0] 
+plot_type = data[], grid[], pdf
+data_directory = Data/Zincl/atlas/
+grid_directory = Grids/Zincl/atlas/sherpa/
+data_steering_files = atlas_2010_inclZpt_ee_born.txt,atlas_2010_inclZpt_mm_born.txt
+grid_steering_files = atlas_2010_inclZpt_ee.txt,atlas_2010_inclZpt_mm.txt
+;
+pdf_directory = PDF
+pdf_steering_files = CT10.txt
+; 
+x_scale = 1.0,1.0
+y_scale = 1.0,1.0
+y_log=true
+;
+data_marker_style=20,21
+data_marker_color=1,1
+;
+;pdf_fill_style = 3005
+;pdf_fill_color = 600
+;pdf_marker_style = 21
+;
+desc = atlas_inclusive_Zptmm
+display_style = overlay,ratio
+;
+overlay_style = convolute,data
+;
+ratio_title =NLO QCD/Data
+ratio_style_0 = convolute / data
+;  
+ratio_0 = ([grid_0, pdf_0]) / (data_0)
+;

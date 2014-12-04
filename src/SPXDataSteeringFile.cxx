@@ -32,14 +32,35 @@ void SPXDataSteeringFile::SetDefaults(void) {
 	name.clear();
 	if(debug) std::cout << cn << mn << "name set to default: \" \"" << std::endl;
 
-	year = 0;
-	if(debug) std::cout << cn << mn << "year set to default: \" \"" << std::endl;
+	comments.clear();
+	if(debug) std::cout << cn << mn << "comments set to default: \" \"" << std::endl;
 
 	experiment.clear();
 	if(debug) std::cout << cn << mn << "experiment set to default: \" \"" << std::endl;
 
 	reaction.clear();
 	if(debug) std::cout << cn << mn << "reaction set to default: \" \"" << std::endl;
+
+	datasetYear.clear();
+	if(debug) std::cout << cn << mn << "datasetYear set to default: \" \"" << std::endl;
+
+	datasetLumi.clear();
+	if(debug) std::cout << cn << mn << "datasetLumi set to default: \" \"" << std::endl;
+
+	referenceJournalName.clear();
+	if(debug) std::cout << cn << mn << "referenceJournalName set to default: \" \"" << std::endl;
+
+	referenceJournalYear.clear();
+	if(debug) std::cout << cn << mn << "referenceJournalYear set to default: \" \"" << std::endl;
+
+	referenceArXivNumber.clear();
+	if(debug) std::cout << cn << mn << "referenceArXivNumber set to default: \" \"" << std::endl;
+
+	referenceArXivYear.clear();
+	if(debug) std::cout << cn << mn << "referenceArXivYear set to default: \" \"" << std::endl;
+
+	publicationStatus.clear();
+	if(debug) std::cout << cn << mn << "publicationStatus set to default: \" \"" << std::endl;
 
 	sqrtS = 0;
 	if(debug) std::cout << cn << mn << "sqrtS set to default: \" \"" << std::endl;
@@ -82,6 +103,9 @@ void SPXDataSteeringFile::SetDefaults(void) {
 
 	errorInPercent = false;
 	if(debug) std::cout << cn << mn << "errorInPercent set to default: \"false\"" << std::endl;
+
+	lumiScaleFactor = 1.0;
+	if(debug) std::cout << cn << mn << "lumiScaleFactor set to default: \"1.0\"" << std::endl;
 }
 
 //Print the Data Steering File Data in a nice format
@@ -91,8 +115,15 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t\t Debug is " << (debug ? "ON" : "OFF") << std::endl << std::endl;
 	std::cout << "\t Description [DESC]" << std::endl;
 	std::cout << "\t\t Name: " << name << std::endl;
-	std::cout << "\t\t Year: " << year << std::endl;
-	std::cout << "\t\t Reaction: " << reaction << std::endl << std::endl;
+	std::cout << "\t\t Comments: " << comments << std::endl;
+	std::cout << "\t\t Reaction: " << reaction << std::endl;
+	std::cout << "\t\t Dataset Year: " << datasetYear << std::endl;
+	std::cout << "\t\t Dataset Luminosity: " << datasetLumi << std::endl;
+	std::cout << "\t\t Reference Journal Name: " << referenceJournalName << std::endl;
+	std::cout << "\t\t Reference Journal Year: " << referenceJournalYear << std::endl;
+	std::cout << "\t\t Reference arXiv Number: " << referenceArXivNumber << std::endl;
+	std::cout << "\t\t Reference arXiv Year: " << referenceArXivYear << std::endl;
+	std::cout << "\t\t Publication Status: " << publicationStatus << std::endl << std::endl;
 	std::cout << "\t Graphing Options [GRAPH]" << std::endl;
 	std::cout << "\t\t Sqrt(s): " << sqrtS << std::endl;
 	std::cout << "\t\t X Label: " << xLabel << std::endl;
@@ -107,7 +138,8 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t\t Data File: " << dataFilepath << std::endl;
 	std::cout << "\t\t Data Divided by Bin Width? " << (dividedByBinWidth ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Data Normalized to Total Sigma? " << (normalizedToTotalSigma ? "YES" : "NO") << std::endl;
-	std::cout << "\t\t Errors given in percentages? " << (errorInPercent ? "YES" : "NO") << std::endl << std::endl;
+	std::cout << "\t\t Errors given in percentages? " << (errorInPercent ? "YES" : "NO") << std::endl;
+	std::cout << "\t\t Luminosity Scale Factor: " << lumiScaleFactor << std::endl << std::endl;
 }
 
 //@TODO Create Correlation Matrix Class and parse correlation matrix here if there is one (correlation_matrix = true)!
@@ -146,7 +178,13 @@ void SPXDataSteeringFile::Parse(void) {
 		if(debug) std::cout << cn << mn << "Successfully read Data Name: " << name << std::endl;
 	}
 
-	year = reader->GetInteger("DESC", "year", year);
+	tmp = reader->Get("DESC", "comments", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Comments were not specified" << std::endl;
+	} else {
+		comments = tmp;
+		if(debug) std::cout << cn << mn << "Successfully read Comments: " << comments << std::endl;
+	}
 
 	tmp = reader->Get("DESC", "experiment", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
@@ -162,6 +200,62 @@ void SPXDataSteeringFile::Parse(void) {
 	} else {
 		reaction = tmp;
 		if(debug) std::cout << cn << mn << "Successfully read Reaction: " << reaction << std::endl;
+	}
+
+	tmp = reader->Get("DESC", "data_set_year", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Dataset Year was not specified" << std::endl;
+	} else {
+		datasetYear = tmp;
+		if(debug) std::cout << cn << mn << "Successfully read Dataset Year: " << datasetYear << std::endl;
+	}
+
+	tmp = reader->Get("DESC", "data_set_lumi", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Dataset Luminosity was not specified" << std::endl;
+	} else {
+		datasetLumi = tmp;
+		if(debug) std::cout << cn << mn << "Successfully read Dataset Luminosity: " << datasetLumi << std::endl;
+	}
+
+	tmp = reader->Get("DESC", "reference_journal_name", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Reference Journal Name was not specified" << std::endl;
+	} else {
+		referenceJournalName = tmp;
+		if(debug) std::cout << cn << mn << "Successfully read Reference Journal Name: " << referenceJournalName << std::endl;
+	}
+
+	tmp = reader->Get("DESC", "reference_journal_year", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Reference Journal Year was not specified" << std::endl;
+	} else {
+		referenceJournalYear = tmp;
+		if(debug) std::cout << cn << mn << "Successfully read Reference Journal Year: " << referenceJournalYear << std::endl;
+	}
+
+	tmp = reader->Get("DESC", "reference_arxiv_number", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Reference arXiv Number was not specified" << std::endl;
+	} else {
+		referenceArXivNumber = tmp;
+		if(debug) std::cout << cn << mn << "Successfully read Reference arXiv Number: " << referenceArXivNumber << std::endl;
+	}
+
+	tmp = reader->Get("DESC", "reference_arxiv_year", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Reference arXiv Year was not specified" << std::endl;
+	} else {
+		referenceArXivYear = tmp;
+		if(debug) std::cout << cn << mn << "Successfully read Reference arXiv Year: " << referenceArXivYear << std::endl;
+	}
+
+	tmp = reader->Get("DESC", "publication_status", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Publication Status was not specified" << std::endl;
+	} else {
+		publicationStatus = tmp;
+		if(debug) std::cout << cn << mn << "Successfully read Publication Status: " << publicationStatus << std::endl;
 	}
 
 	//Graping Options [GRAPH]
@@ -261,4 +355,9 @@ void SPXDataSteeringFile::Parse(void) {
 
 	errorInPercent = reader->GetBoolean("DATA", "error_in_percent", false);
 	if(debug) std::cout << cn << mn << "Error in Percent set to: " << (errorInPercent ? "ON" : "OFF") << std::endl;
+
+	lumiScaleFactor = reader->GetReal("DATA", "lumi_scale_factor", lumiScaleFactor);
+	if(lumiScaleFactor == 0) {
+		std::cerr << cn << mn << "WARNING: Luminosity Scale Factor read as \"0.0\", data/convolute may be scaled to zero" << std::endl;
+	}
 }

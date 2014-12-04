@@ -28,6 +28,9 @@ void SPXGridSteeringFile::SetDefaults(void) {
 	name.clear();
 	if(debug) std::cout << cn << mn << "name set to default: \" \"" << std::endl;
 
+	comments.clear();
+	if(debug) std::cout << cn << mn << "comments set to default: \" \"" << std::endl;
+
 	author.clear();
 	if(debug) std::cout << cn << mn << "author set to default: \" \"" << std::endl;
 
@@ -58,20 +61,17 @@ void SPXGridSteeringFile::SetDefaults(void) {
 	yUnits.clear();
 	if(debug) std::cout << cn << mn << "yUnits set to default: \" \"" << std::endl;
 
-	dividedByBinWidth = false;
-	if(debug) std::cout << cn << mn << "dividedByBinWidth set to default: \"false\"" << std::endl;
+	gridDividedByBinWidth = true;
+	if(debug) std::cout << cn << mn << "gridDividedByBinWidth set to default: \"true\"" << std::endl;
+
+	referenceDividedByBinWidth = false;
+	if(debug) std::cout << cn << mn << "referenceDividedByBinWidth set to default: \"false\"" << std::endl;
 
 	yScale = 1.0;
 	if(debug) std::cout << cn << mn << "yScale set to default: \"1.0\"" << std::endl;
 
 	gridFilepath.clear();
 	if(debug) std::cout << cn << mn << "gridFilepath set to default: \" \"" << std::endl;
-
-	generatorID.clear();
-	if(debug) std::cout << cn << mn << "generatorID set to default: \" \"" << std::endl;
-
-	nTupleID.clear();
-	if(debug) std::cout << cn << mn << "nTupleID set to default: \" \"" << std::endl;
 
 	lowestOrder = 1;
 	if(debug) std::cout << cn << mn << "lowestOrder set to default: \"NLO\" (1)" << std::endl;
@@ -84,6 +84,7 @@ void SPXGridSteeringFile::Print(void) {
 	std::cout << "\t\t Debug is " << (debug ? "ON" : "OFF") << std::endl << std::endl;
 	std::cout << "\t Description [DESC]" << std::endl;
 	std::cout << "\t\t Name: " << name << std::endl;
+	std::cout << "\t\t Comments: " << comments << std::endl;
 	std::cout << "\t\t Author: " << author << std::endl;
 	std::cout << "\t\t Lumi Config File: " << lumiConfigFile << std::endl;
 	std::cout << "\t\t Scale: " << scale << std::endl;
@@ -96,15 +97,14 @@ void SPXGridSteeringFile::Print(void) {
 	std::cout << "\t\t X Units: " << xUnits << std::endl;
 	std::cout << "\t\t Y Units: " << yUnits << std::endl;
 	std::cout << "\t\t Y Scale: " << yScale << std::endl;
-	std::cout << "\t\t Reference Histogram Divided by Bin Width? " << (dividedByBinWidth ? "YES" : "NO") << std::endl << std::endl;
+	std::cout << "\t\t Grid Divided by Bin Width? " << (gridDividedByBinWidth ? "YES" : "NO") << std::endl;
+	std::cout << "\t\t Reference Divided by Bin Width? " << (referenceDividedByBinWidth ? "YES" : "NO") << std::endl << std::endl;
 	std::cout << "\t Grid Options [GRID]" << std::endl;
 	std::cout << "\t\t Grid File: " << gridFilepath << std::endl;
 	std::cout << "\t\t Correction Files: " << std::endl;
 	for(int i = 0; i < correctionFiles.size(); i++) {
 		std::cout << "\t\t\t " << correctionFiles.at(i) << std::endl;
 	}
-	std::cout << "\t\t Generator ID: " << generatorID << std::endl;
-	std::cout << "\t\t NTuple ID: " << nTupleID << std::endl;
 	std::cout << "\t\t Lowest Order: " << lowestOrder << std::endl << std::endl;
 }
 
@@ -140,6 +140,14 @@ void SPXGridSteeringFile::Parse(void) {
 		name.clear();
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Grid Name: " << name << std::endl;
+	}
+
+	tmp = reader->Get("DESC", "comments", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Comments were not specified" << std::endl;
+	} else {
+		comments = tmp;
+		if(debug) std::cout << cn << mn << "Successfully read Comments: " << comments << std::endl;
 	}
 
 	author = reader->Get("DESC", "author", "EMPTY");
@@ -223,8 +231,11 @@ void SPXGridSteeringFile::Parse(void) {
 
 	yScale = reader->GetReal("GRAPH", "y_scale", yScale);
 
-	dividedByBinWidth = reader->GetBoolean("GRAPH", "divided_by_bin_width", false);
-	if(debug) std::cout << cn << mn << "Divided By Bin Width set to: " << (dividedByBinWidth ? "ON" : "OFF") << std::endl;
+	gridDividedByBinWidth = reader->GetBoolean("GRAPH", "grid_divided_by_bin_width", gridDividedByBinWidth);
+	if(debug) std::cout << cn << mn << "Grid Divided By Bin Width set to: " << (gridDividedByBinWidth ? "ON" : "OFF") << std::endl;
+
+	referenceDividedByBinWidth = reader->GetBoolean("GRAPH", "reference_divided_by_bin_width", referenceDividedByBinWidth);
+	if(debug) std::cout << cn << mn << "Reference Divided By Bin Width set to: " << (referenceDividedByBinWidth ? "ON" : "OFF") << std::endl;
 
 	//Grid Options [GRID]
 	gridFilepath = reader->Get("GRID", "grid_file", "EMPTY");
@@ -248,30 +259,6 @@ void SPXGridSteeringFile::Parse(void) {
 				std::cout << "\t " << correctionFiles.at(i);
 			}
 		}
-	}
-
-	generatorID = reader->Get("GRID", "generator_id", "EMPTY");
-	if(!generatorID.compare("EMPTY")) {
-		if(debug) std::cout << cn << mn << "Generator ID was not specified" << std::endl;
-		name.clear();
-	} else {
-		if(debug) std::cout << cn << mn << "Successfully read Generator ID: " << generatorID << std::endl;
-	}
-
-	generatorID = reader->Get("GRID", "generator_id", "EMPTY");
-	if(!generatorID.compare("EMPTY")) {
-		if(debug) std::cout << cn << mn << "Generator ID was not specified" << std::endl;
-		generatorID.clear();
-	} else {
-		if(debug) std::cout << cn << mn << "Successfully read Generator ID: " << generatorID << std::endl;
-	}
-
-	nTupleID = reader->Get("GRID", "ntuple_id", "EMPTY");
-	if(!nTupleID.compare("EMPTY")) {
-		if(debug) std::cout << cn << mn << "NTuple ID was not specified" << std::endl;
-		nTupleID.clear();
-	} else {
-		if(debug) std::cout << cn << mn << "Successfully read NTuple ID: " << nTupleID << std::endl;
 	}
 
 	lowestOrder = (unsigned int)reader->GetInteger("GRID", "lowest_order", lowestOrder);

@@ -1,0 +1,205 @@
+;==============================================================
+;
+; Description:		
+; ATLAS ttbar+njets cross sections
+; 2011 data
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = true
+pdf_directory = PDF
+data_directory = Data/top/atlas/ttbarnjets
+grid_directory = Grids/top/sherpa/ttbarnjets/applgridsherpa
+
+;==============================================================
+; Graphing Options
+;==============================================================
+[GRAPH]
+sqrt_s = 7000.0
+legend_label = ATLAS 2011
+;x_label = p_{T,jet}
+;y_label = d#sigma/dp_{T,jet}
+;x_units = GeV
+;y_units = pb
+;y_bin_width_units= GeV
+;jet_algorithm_label = Anti_k{t}
+;jet_algorithm_number = 4
+
+;plot_band = true
+; plot_error_ticks = 
+plot_marker = true
+plot_staggered = true
+label_sqrt_s = 7000.
+;x_legend = 0.9
+;y_legend = 0.9
+;ratio_title =
+ratio_style = convolute/data
+;overlay_style = convolute, data
+display_style = overlay, ratio
+;y_overlay_min = 
+;y_overlay_max = 
+;y_ratio_min =	
+;y_ratio_max = 
+
+;==============================================================
+; PDF Options
+;==============================================================
+[PDF]
+pdf_steering_files = CT10.txt
+;--------------------------------------------------------------
+; NOTE:
+;	
+; The following options will OVERRIDE the corresponding
+; options in ALL the chosen PDF Steering Files above
+;--------------------------------------------------------------
+pdf_fill_style = 3005
+pdf_fill_color = 600
+pdf_marker_style = 20
+pdf_band_type = use_alpha_s
+pdf_error_type = pdf_band
+pdf_error_size = one_sigma
+
+;--------------------------------------------------------------
+; NOTE:
+;
+; Below is where you define the options for each plot.
+; To define a new plot, create a section with the format:
+;		[PLOT_n]	where n starts at 0
+;
+; If a plot has more than one data file, it MUST also have a
+; corresponding grid file, marker style, and marker color
+;
+; To give a plot more than one data file, etc., just use a comma
+; separated list:
+;
+;		data_steering_files = file1.txt, file2.txt
+;		...
+;		marker_style = 20, 21
+;		...
+;
+; Each plot is plotted on it's own ROOT canvas
+;--------------------------------------------------------------
+
+;==============================================================
+; Plot 0 Options
+;==============================================================
+[PLOT_0]
+plot_type = data, grid, pdf
+data_steering_files =  atlas2014_top_jetpt1_ljet.txt
+grid_steering_files =  atlas2014_top_jetpt1.txt
+;
+pdf_steering_files = CT10.txt
+;
+x_scale = 1
+y_scale = 1.0
+x_log = true                       ;[Optional] Plot the X Axis logarithmically
+y_log = true                       ;[Optional] Plot the Y Axis logarithmically
+data_marker_style = 20
+data_marker_color = 1
+;
+desc = atlas_ttbarnjets_pt5
+display_style = overlay,ratio
+overlay_style = convolute,data
+;
+ratio_title =NLO QCD/Data
+ratio_style_0 = convolute / data
+ratio_0 = ([grid_0, pdf_0]) / (data_0)
+;
+[PLOT_1]
+plot_type = data, grid, pdf
+data_steering_files =  atlas2014_top_jetpt2_ljet.txt
+grid_steering_files =  atlas2014_top_jetpt2.txt
+;
+pdf_steering_files = CT10.txt
+;
+x_scale = 1
+y_scale = 1.0
+x_log = true                       ;[Optional] Plot the X Axis logarithmically
+y_log = true                       ;[Optional] Plot the Y Axis logarithmically
+data_marker_style = 20
+data_marker_color = 1
+;
+desc = atlas_ttbarnjets_pt5
+display_style = overlay,ratio
+overlay_style = convolute,data
+;
+ratio_title =NLO QCD/Data
+ratio_style_0 = convolute / data
+ratio_0 = ([grid_0, pdf_0]) / (data_0)
+;
+[PLOT_2]
+plot_type = data, grid, pdf
+data_steering_files =  atlas2014_top_jetpt3_ljet.txt
+grid_steering_files =  atlas2014_top_jetpt3.txt
+;
+pdf_steering_files = CT10.txt
+;
+x_scale = 1
+y_scale = 1.0
+x_log = true                       ;[Optional] Plot the X Axis logarithmically
+y_log = true                       ;[Optional] Plot the Y Axis logarithmically
+data_marker_style = 20
+data_marker_color = 1
+;
+desc = atlas_ttbarnjets_pt2
+display_style = overlay,ratio
+overlay_style = convolute,data
+;
+ratio_title =NLO QCD/Data
+ratio_style_0 = convolute / data
+ratio_0 = ([grid_0, pdf_0]) / (data_0)
+;
+[PLOT_3]
+plot_type = data, grid, pdf
+data_steering_files =  atlas2014_top_jetpt4_ljet.txt
+grid_steering_files =  atlas2014_top_jetpt4.txt
+;
+pdf_steering_files = CT10.txt
+;
+x_scale = 1
+y_scale = 1.0
+x_log = true                       ;[Optional] Plot the X Axis logarithmically
+y_log = true                       ;[Optional] Plot the Y Axis logarithmically
+data_marker_style = 20
+data_marker_color = 1
+;
+desc = atlas_ttbarnjets_pt5
+display_style = overlay,ratio
+overlay_style = convolute,data
+;
+ratio_title =NLO QCD/Data
+ratio_style_0 = convolute / data
+ratio_0 = ([grid_0, pdf_0]) / (data_0)
+;
+[PLOT_4]
+plot_type = data, grid, pdf
+data_steering_files =  atlas2014_top_jetpt5_ljet.txt
+grid_steering_files =  atlas2014_top_jetpt5.txt
+;
+pdf_steering_files = CT10.txt
+;
+x_scale = 1
+y_scale = 1.0
+x_log = true                       ;[Optional] Plot the X Axis logarithmically
+y_log = true                       ;[Optional] Plot the Y Axis logarithmically
+data_marker_style = 20
+data_marker_color = 1
+;
+desc = atlas_ttbarnjets_pt5
+display_style = overlay,ratio
+overlay_style = convolute,data
+;
+ratio_title =NLO QCD/Data
+ratio_style_0 = convolute / data
+ratio_0 = ([grid_0, pdf_0]) / (data_0)
+;
+;;;
+;marker_style = 20
+;pdf_fill_style = 3005
+;pdf_fill_color = 600
+;pdf_marker_style = 21
+;ref_line_style = 
+;ref_line_color = 

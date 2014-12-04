@@ -259,9 +259,17 @@ void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
 
-	//Do nothing if overlay is not plotted
+	//Do nothing if ratio is not plotted
 	if(!ds.ContainsRatio()) {
 		xMin = xMax = yMin = yMax = 0;
+		return;
+	}
+
+	//Do nothing if ratio is specified but there are no ratios to plot
+	if(!ratios.size()) {
+		xMin = xMax = 0;
+		yMin = 0.5;
+		yMax = 1.5;
 		return;
 	}
 
@@ -439,6 +447,30 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 
 	DetermineOverlayFrameBounds(xMinOverlay, xMaxOverlay, yMinOverlay, yMaxOverlay);
 
+	//Force to steering file Y bounds if set
+	if(steeringFile->GetYOverlayMin() != MIN_EMPTY) {
+		yMinOverlay = steeringFile->GetYOverlayMin();
+		if(debug) std::cout << cn << mn << "Forcing Overlay Y Axis Minimum to " << yMinOverlay << std::endl;
+	}
+	if(steeringFile->GetYOverlayMax() != MAX_EMPTY) {
+		yMaxOverlay = steeringFile->GetYOverlayMax();
+		if(debug) std::cout << cn << mn << "Forcing Overlay Y Axis Maxmimum to " << yMaxOverlay << std::endl;
+	}
+
+	//Force to non-negative if plotting logarithmic axis
+	if(pc.IsXLog()) {
+		if(xMinOverlay < 0) {
+			xMinOverlay = 1e-10;
+			if(debug) std::cerr << cn << mn << "WARNING: Forcing non-negative Overlay X Axis since it was specified as Logarithmic" << std::endl;
+		}
+	}
+	if(pc.IsYLog()) {
+		if(yMinOverlay < 0) {
+			yMinOverlay = 1e-10;
+			if(debug) std::cerr << cn << mn << "WARNING: Forcing non-negative Overlay Y Axis since it was specified as Logarithmic" << std::endl;
+		}
+	}
+
 	overlayPad->cd();
 	overlayFrameHisto = overlayPad->DrawFrame(xMinOverlay, yMinOverlay, xMaxOverlay, yMaxOverlay);
 	xAxisOverlay = overlayFrameHisto->GetXaxis();
@@ -466,10 +498,31 @@ void SPXPlot::DrawRatioPadFrame(void) {
 
 	DetermineRatioFrameBounds(xMinRatio, xMaxRatio, yMinRatio, yMaxRatio);
 
+	//Force to steering file Y bounds if set
+	if(steeringFile->GetYRatioMin() != MIN_EMPTY) {
+		yMinRatio = steeringFile->GetYRatioMin();
+		if(debug) std::cout << cn << mn << "Forcing Ratio Y Axis Minimum to " << yMinRatio << std::endl;
+	}
+	if(steeringFile->GetYRatioMax() != MAX_EMPTY) {
+		yMaxRatio = steeringFile->GetYRatioMax();
+		if(debug) std::cout << cn << mn << "Forcing Ratio Y Axis Maxmimum to " << yMaxRatio << std::endl;
+	}
+
 	//Force Ratio X Min/Max to match Overlay, if plotted (should alread match anyway...)
 	if(ds.ContainsOverlay()) {
 		xMinRatio = xMinOverlay;
 		xMaxRatio = xMaxOverlay;
+	}
+
+	//@TODO What to do here for forcing Y axis within logarithmic limits like I do for overlay? It doesn't matter now, since
+	//			only overlay Y is logarithmic, and the X follows the overlay exactly (if it's plotted)
+
+	//Force to non-negative if plotting logarithmic axis
+	if(pc.IsXLog()) {
+		if(xMinRatio < 0) {
+			xMinRatio = 1e-10;
+			if(debug) std::cerr << cn << mn << "WARNING: Forcing non-negative Ratio X Axis since it was specified as Logarithmic" << std::endl;
+		}
 	}
 
 	ratioPad->cd();
@@ -619,20 +672,37 @@ void SPXPlot::MatchOverlayBinning(void) {
 
 			if(os.ContainsData()) {
 				master = data.at(0).GetTotalErrorGraph();
-			} else {
-				master = crossSections.at(0).GetPDFBandResults();
-			}
 
-			for(int i = 1; i < crossSections.size(); i++) {
-				bool dividedByBinWidth = false;
+				if(debug) std::cout << cn << mn << "Matching overlay convolutes to data master" << std::endl;
 
-				//Check if data master is divided by bin width
-				if(data.at(0).IsDividedByBinWidth()) {
-					dividedByBinWidth = true;
+				for(int i = 0; i < crossSections.size(); i++) {
+					bool dividedByBinWidth = false;
+
+					//Check if data master is divided by bin width
+					if(data.at(0).IsDividedByBinWidth()) {
+						dividedByBinWidth = true;
+					}
+
+					TGraphAsymmErrors *slave = crossSections.at(i).GetPDFBandResults();
+					SPXGraphUtilities::MatchBinning(master, slave, dividedByBinWidth);
 				}
 
-				TGraphAsymmErrors *slave = crossSections.at(i).GetPDFBandResults();
-				SPXGraphUtilities::MatchBinning(master, slave, dividedByBinWidth);
+			} else {
+				master = crossSections.at(0).GetPDFBandResults();
+
+				if(debug) std::cout << cn << mn << "Matching overlay convolutes to convolute master" << std::endl;
+
+				for(int i = 1; i < crossSections.size(); i++) {
+					bool dividedByBinWidth = false;
+
+					//Check if convolute master is divided by bin width
+					if(crossSections.at(0).IsDividedByBinWidth()) {
+						dividedByBinWidth = true;
+					}
+
+					TGraphAsymmErrors *slave = crossSections.at(i).GetPDFBandResults();
+					SPXGraphUtilities::MatchBinning(master, slave, dividedByBinWidth);
+				}
 			}
 		}
 	}
@@ -700,8 +770,19 @@ void SPXPlot::DrawOverlay(void) {
 				SPXGraphUtilities::ClearXErrors(crossSections[i].GetPDFBandResults());
 			}
 
+			//Warn user that the number of bins in data does not match the number in convolute, if that's the case
+			if(os.ContainsData()) {
+				unsigned int cbins = crossSections.at(i).GetPDFBandResults()->GetN();
+				unsigned int dbins = data.at(0).GetTotalErrorGraph()->GetN();
+
+				if(cbins != dbins) {
+					std::cerr << cn << mn << "WARNING: The number of convolute bins (" << cbins << ") does not match the number of master data bins (" << dbins << ")" << std::endl;
+					std::cerr << "\t\t\t You can enable bin matching with the \"match_binning = true\" flag in the steering file, if you would like to do so" << std::endl;
+				}
+			}
+
 			//Draw PDF Band
-			crossSections[i].GetPDFBandResults()->Draw(csOptions.c_str());
+			crossSections.at(i).GetPDFBandResults()->Draw(csOptions.c_str());
 
 			//Draw Alpha S Band and Scale Band if necessary
 			//@TODO Fix steering file: Allow for either plotting only the PDF band or the PDF band + uncertainties and check here
@@ -940,10 +1021,8 @@ void SPXPlot::InitializeRatios(void) {
 			SPXRatio ratioInstance = SPXRatio(pc, ratioStyle);
 			ratioInstance.AddDataFileGraphMap(dataFileGraphMap);
 			ratioInstance.AddReferenceFileGraphMap(referenceFileGraphMap);
+			ratioInstance.AddNominalFileGraphMap(nominalFileGraphMap);
 			ratioInstance.AddConvoluteFileGraphMap(convoluteFileGraphMap);
-			// ratioInstance.SetDataDirectory(steeringFile->GetDataDirectory());
-			// ratioInstance.SetGridDirectory(steeringFile->GetGridDirectory());
-			// ratioInstance.SetPDFDirectory(steeringFile->GetPDFDirectory());
 			ratioInstance.Parse(ratioString);
 			ratioInstance.GetGraphs();
 			ratioInstance.Divide();
@@ -1014,13 +1093,35 @@ void SPXPlot::InitializeCrossSections(void) {
 		TGraphAsymmErrors *graph = crossSections[i].GetPDFBandResults();
 		convoluteFileGraphMap.insert(StringPairGraphPair_T(convolutePair, graph));
 
-		//Style convolute graph
+		//Update the Reference File Map
+		TGraphAsymmErrors *refGraph = crossSections[i].GetGridReference();
+		referenceFileGraphMap.insert(StringPairGraphPair_T(convolutePair, refGraph));
+
+		//Update the Nominal File Map
+		TGraphAsymmErrors *nomGraph = crossSections[i].GetNominal();
+		nominalFileGraphMap.insert(StringPairGraphPair_T(convolutePair, nomGraph));
+
+		//Style convolute/reference/nominal graph
 		graph->SetMarkerSize(1.2);
 		graph->SetMarkerStyle(pci.pdfMarkerStyle);
 		graph->SetMarkerColor(pci.pdfFillColor);
 		graph->SetLineColor(pci.pdfFillColor);
 		graph->SetFillStyle(pci.pdfFillStyle);
 		graph->SetFillColor(pci.pdfFillColor);
+
+		refGraph->SetMarkerSize(1.2);
+		refGraph->SetMarkerStyle(pci.pdfMarkerStyle);
+		refGraph->SetMarkerColor(pci.pdfFillColor);
+		refGraph->SetLineColor(pci.pdfFillColor);
+		refGraph->SetFillStyle(pci.pdfFillStyle);
+		refGraph->SetFillColor(pci.pdfFillColor);
+
+		nomGraph->SetMarkerSize(1.2);
+		nomGraph->SetMarkerStyle(pci.pdfMarkerStyle);
+		nomGraph->SetMarkerColor(pci.pdfFillColor);
+		nomGraph->SetLineColor(pci.pdfFillColor);
+		nomGraph->SetFillStyle(pci.pdfFillStyle);
+		nomGraph->SetFillColor(pci.pdfFillColor);
 
 		if(convoluteFileGraphMap.count(convolutePair)) {
 			if(debug) {
@@ -1031,17 +1132,6 @@ void SPXPlot::InitializeCrossSections(void) {
 		}
 	}
 }
-
-//@TODO See MyCrossSection.cxx:287-298
-/*
-void SPXPlot::ChangeDefaultPDFHistogramNames(void) {
-	std::string mn = "ChangeDefaultPDFHistogramNames: ";
-
-	for(int i = 0; i < crossSections.size(); i++) {
-		;
-	}
-}
-*/
 
 void SPXPlot::NormalizeCrossSections(void) {
 	std::string mn = "NormalizeCrossSections: ";
@@ -1085,47 +1175,54 @@ void SPXPlot::NormalizeCrossSections(void) {
 			yScale *= pci->yScale;
 			SPXGraphUtilities::Scale(crossSections[i].GetPDFBandResults(), xScale, yScale);
 
-			//Also scale by the arficicial grid scale from the grid steering file
-			xScale = 1.0;
-			yScale = pci->gridSteeringFile.GetYScale();
-			SPXGraphUtilities::Scale(crossSections[i].GetPDFBandResults(), xScale, yScale);
-
 			if(debug) {
 				std::cout << cn << mn << "Additional artificial scale for Cross Section: " << std::endl;
 				std::cout << "\t X Scale: " << pci->xScale << std::endl;
 				std::cout << "\t Y Scale: " << pci->yScale << std::endl << std::endl;
 			}
 
+			//Also scale by the arficicial grid scale from the grid steering file
+			xScale = 1.0;
+			yScale = pci->gridSteeringFile.GetYScale();
+			SPXGraphUtilities::Scale(crossSections[i].GetPDFBandResults(), xScale, yScale);
 
-			//Normalized to total sigma from the DATA steering file
+			if(debug) {
+				std::cout << cn << mn << "Additional artificial Grid Y Scale: " << std::endl;
+				std::cout << "\t X Scale: " << xScale << std::endl;
+				std::cout << "\t Y Scale: " << yScale << std::endl << std::endl;
+			}
+
+			//Check if data/grid are/are not normalized by total sigma or bin width
 			bool normalizeToTotalSigma = pci->dataSteeringFile.IsNormalizedToTotalSigma();
 			bool dataDividedByBinWidth = pci->dataSteeringFile.IsDividedByBinWidth();
-			bool gridDividedByBinWidth = pci->gridSteeringFile.IsDividedByBinWidth();
+			bool gridDividedByBinWidth = pci->gridSteeringFile.IsGridDividedByBinWidth();
 
-			//@TODO Change back to being initialized as false: Why does this not work???
-			bool divideByBinWidth = true;
+			TGraphAsymmErrors * g = crossSections[i].GetPDFBandResults();
 
+			if(!dataDividedByBinWidth && gridDividedByBinWidth) {
+				throw SPXGraphException(cn + mn + "Grid IS divided by the bin with but the data IS NOT: Not supported");
+			}
+
+			double totalSigma = SPXGraphUtilities::GetTotalSigma(g, gridDividedByBinWidth);
+
+			//First divide the cross section by the bin width if it needs to be
+			//@TODO Do I need to do this also for the Alpha S and Scale Uncertainty bands?
 			if(dataDividedByBinWidth && !gridDividedByBinWidth) {
-				if(debug) std::cout << cn << mn << "Data IS divided by bin width but the grid IS NOT. Will call Normalize "\
-					"with divideByBinWidth = true" << std::endl;
-				divideByBinWidth = true;
+				if(debug) std::cout << cn << mn << "Dividing Cross Section by the Bin Width" << std::endl;
+				SPXGraphUtilities::DivideByBinWidth(g);
 			}
 
-			double yBinWidthScale = 1.0;
+			//Set the yBinWidthScale, which is the scaling of the data's Y Bin Width Units to the data's X Units
+			double yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), pci->dataSteeringFile.GetYBinWidthUnits());
+			if(debug) std::cout << cn << mn << "Scaling by 1 / Y Bin Width Scale: " << (1.0 / yBinWidthScale) << std::endl;
+			SPXGraphUtilities::Scale(g, 1.0, (1.0 / yBinWidthScale));
 
-			//If the data is divided by the bin width, then set the yBinWidthScale, which is the scaling of the
-			// Data's Y Bin Width Units to the Data's X Units
-			if(dataDividedByBinWidth) {
-				yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), \
-					pci->dataSteeringFile.GetYBinWidthUnits());
+			if(normalizeToTotalSigma) {
+				if(totalSigma == 0) throw SPXGeneralException(cn + mn + "Divide by zero error: Total Sigma is zero");
+
+				if(debug) std::cout << cn << mn << "Scaling by 1 / total sigma: " << (1.0 / totalSigma) << std::endl;
+				SPXGraphUtilities::Scale(g, 1.0, (1.0 / totalSigma));
 			}
-
-			if(debug) std::cout << cn << mn << "Y Bin Width Scale = " << yBinWidthScale << std::endl;
-			if(debug) std::cout << cn << mn << "Normalize to Total Sigma is " << (normalizeToTotalSigma ? "ON" : "OFF") << std::endl;
-			if(debug) std::cout << cn << mn << "Divide by Bin Width is " << (divideByBinWidth ? "ON" : "OFF") << std::endl;
-
-			//Normalize the cross section
-			SPXGraphUtilities::Normalize(crossSections[i].GetPDFBandResults(), yBinWidthScale, normalizeToTotalSigma, divideByBinWidth);
 
 			if(debug) std::cout << cn << mn << "Sucessfully normalized Cross Section " << i << std::endl;
 
@@ -1177,6 +1274,10 @@ void SPXPlot::InitializeData(void) {
 		if(debug) std::cout << cn << mn << "Added data with key = [" << key << "] to dataSet" << std::endl;
 
 		SPXData dataInstance = SPXData(pci);
+
+		//@DEBUG
+		std::cout << pci.dataDirectory << std::endl;
+		std::cout << pci.dataSteeringFile.GetFilename() << std::endl;
 
 		try {
 			dataInstance.Parse();

@@ -98,7 +98,8 @@ private:
 	//NOTE: typedefs are in SPXGraphUtilities.h
 	//
 	StringGraphMap_T dataFileGraphMap;
-	StringGraphMap_T referenceFileGraphMap;
+	StringPairGraphMap_T referenceFileGraphMap;
+	StringPairGraphMap_T nominalFileGraphMap;
 	StringPairGraphMap_T convoluteFileGraphMap;
 
 	//Sets used for eliminating duplicate data/cross section plots, since

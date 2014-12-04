@@ -1,0 +1,56 @@
+;==============================================================
+;
+; Description:		
+; ATLAS inclusive jet cross sections
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = true
+pdf_directory = PDF
+data_directory = Data/jet/atlas/incljets2011
+grid_directory = Grids/jet/atlas/incljets2011/nlojet 
+
+;==============================================================
+; Graphing Options
+;==============================================================
+[GRAPH]
+plot_band = false 
+plot_error_ticks = false
+plot_marker = true
+plot_staggered = true
+match_binning = true
+label_sqrt_s = true
+x_legend = 0.9
+y_legend = 0.9
+; y_overlay_min = 
+; y_overlay_max = 
+; y_ratio_min =	
+; y_ratio_max = 
+
+;==============================================================
+; Plot 0 Options
+;==============================================================
+[PLOT_0]
+plot_type = data, grid, pdf[]
+data_steering_files = atlas_2011_jet_antiktr04_incljetpt_eta6.txt
+grid_steering_files = atlas_2011_incljet_25_30_r04.txt
+pdf_steering_files = CT10.txt, HERAPDF15NLO.txt
+; x_scale = 1.0
+; y_scale = 1.0
+x_log = false
+y_log = false
+marker_style = 20
+data_marker_style = 20
+data_marker_color = 1
+pdf_fill_style = 3005, 3001
+pdf_fill_color = 600, 800
+pdf_marker_style = 21, 23
+desc = atlas_inclusive_jet
+display_style = overlay, ratio
+overlay_style = data, convolute
+ratio_title =NLO QCD/Data
+ratio_style_0 = convolute / data
+ratio_0 = ([grid_0, pdf_0]) / (data_0)

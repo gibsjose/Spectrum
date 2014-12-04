@@ -1,0 +1,67 @@
+;==============================================================
+;
+; Description:		
+;	Example Grid Steering File
+;
+; Authors:
+;	Jon Doe
+;	Jean Pierre Larousse
+;	...
+;
+; Date:
+;	17.09.2014
+;
+; Other:
+;	Other information...
+;
+;==============================================================
+
+;--------------------------------------------------------------
+; NOTE: 
+;
+; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
+;
+;	"  some_thing = "  <--- BAD
+;	"; some_thing = "  <--- OKAY
+;
+; If you forget to do this, some trailing comments could
+; be included in the option's value
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = true									
+
+;==============================================================
+; Description
+;==============================================================
+[DESC]
+name = atlas_2011_jet_antiktr06_incljetpt_eta3	
+author = Esteban Fullana                       
+lumi_config_file = NONE                        
+scale = Ptjet                                  
+reference_journal_name = NONE                  
+reference_link_to_arxiv=http://arxiv.org/abs/1410.8857 
+nlo_program_name = nlojet++                    
+grid_program_name=jetmod                       
+observable_definition_link_to_code = unknown   
+
+;==============================================================
+; Graphing Options
+;==============================================================
+[GRAPH]
+x_units = GeV													
+y_units = pb													
+grid_divided_by_bin_width = true											
+
+;==============================================================
+; Grid Options
+;==============================================================
+[GRID]								
+grid_file = incljets_rapidity_10_15_R06_P2.root		
+
+generator_id =nlojet++ 		
+ntuple_id = 						
+lowest_order = 2								

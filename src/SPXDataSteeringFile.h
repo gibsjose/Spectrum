@@ -37,10 +37,17 @@ private:
 	bool debug;
 
 	//[DESC]
-	std::string name;				//Name of Steering Data
-	unsigned long year;				//Year
-	std::string experiment;			//Experiment
-	std::string reaction;			//Reaction name
+	std::string name;					//Name of Steering Data
+	std::string comments;				//Data comments
+	std::string experiment;				//Experiment
+	std::string reaction;				//Reaction name
+	std::string datasetYear;			//Year of dataset
+	std::string datasetLumi;			//Dataset luminosity string
+	std::string referenceJournalName;	//Name of journal
+	std::string referenceJournalYear;	//Year of publication in journal
+	std::string referenceArXivNumber;	//ID number of arXiv
+	std::string referenceArXivYear;		//Year of arXiv
+	std::string publicationStatus;		//Status of publication
 
 	//[GRAPH]
 	double sqrtS;					//Sqrt(s) value for dataset
@@ -61,6 +68,7 @@ private:
 	bool dividedByBinWidth;			//Flag to indicate that data has been divided by the bin width
 	bool normalizedToTotalSigma;	//Flag to indicate that cross section data is normalized to the total cross section
 	bool errorInPercent;			//Flag to indicate the errors in the data file are given in percents
+	double lumiScaleFactor;			//Luminosity scale factor: Default to 1.0
 
 	void SetDefaults(void);
 
@@ -83,12 +91,40 @@ public:
 		return name;
 	}
 
-	unsigned long GetYear(void) const {
-		return year;
+	const std::string & GetComments(void) const {
+		return comments;
 	}
 
 	const std::string & GetReaction(void) const {
 		return reaction;
+	}
+
+	const std::string & GetDatasetYear(void) const {
+		return datasetYear;
+	}
+
+	const std::string & GetDatasetLumi(void) const {
+		return datasetLumi;
+	}
+
+	const std::string & GetReferenceJournalName(void) const {
+		return referenceJournalName;
+	}
+
+	const std::string & GetReferenceJournalYear(void) const {
+		return referenceJournalYear;
+	}
+
+	const std::string & GetReferenceArXivNumber(void) const {
+		return referenceArXivNumber;
+	}
+
+	const std::string & GetReferenceArXivYear(void) const {
+		return referenceArXivYear;
+	}
+
+	const std::string & GetPublicationStatus(void) const {
+		return publicationStatus;
 	}
 
 	double GetSqrtS(void) const {
@@ -119,16 +155,6 @@ public:
 		return yBinWidthUnits;
 	}
 
-	/*
-	double GetFrameXMin(void) const {
-		return frameXMin;
-	}
-
-	double GetFrameYMin(void) const {
-		return frameYMin;
-	}
-	*/
-
 	const std::string & GetJetAlgorithmLabel(void) const {
 		return jetAlgorithmLabel;
 	}
@@ -141,8 +167,16 @@ public:
 		return dataFormat;
 	}
 
-	const std::string GetDataFile(void) const {
+	const std::string & GetDataFile(void) const {
 		return dataFilepath;
+	}
+
+	void SetDataFile(std::string & filepath) {
+		dataFilepath = filepath;
+	}
+
+	void PrependDataFile(std::string & path) {
+		dataFilepath = path + "/" + dataFilepath;
 	}
 
 	bool IsDividedByBinWidth(void) const {
@@ -155,6 +189,10 @@ public:
 
 	bool IsErrorInPercent(void) const {
 		return errorInPercent;
+	}
+
+	double GetLumiScaleFactor(void) const {
+		return lumiScaleFactor;
 	}
 };
 

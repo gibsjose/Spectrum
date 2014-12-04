@@ -142,7 +142,9 @@ class SPXPDF {
         void SetAlphaSPDFSetHistNameDown(string _name);
         void SetAlphaSPDFSetHistNameUp(string _name);
 
-        TH1D * GetPdfdefault(){ return hpdfdefault;};
+        TH1D * GetPdfdefault() { return hpdfdefault;};
+
+        TH1D * GetPDFNominal() { return hpdfdefault; };
 
     private:
         //VARIABLES
