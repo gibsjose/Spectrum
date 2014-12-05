@@ -44,10 +44,13 @@ TH1D * SPXGrid::CreateGrid(void) {
 		throw SPXGeneralException("Reference histogram from appl::grid::getReference() for grid file " + gridFile + " was unsuccessful");
 	}
 
+	std::cout << "==============================================" << std::endl;
+	referenceHistogram->Print("all");
+
 	int nTot = grid->run();
 	referenceHistogram->Scale(1.0 / nTot);
 
-	std::cout << "==============================================" << std::endl;
+	std::cout << "==================AFTER NORMALIZING=====================" << std::endl;
 	referenceHistogram->Print("all");
 
 	return referenceHistogram;
