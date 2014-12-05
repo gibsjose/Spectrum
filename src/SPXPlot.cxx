@@ -1281,7 +1281,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 			double yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), pci->dataSteeringFile.GetYBinWidthUnits());
 			if(debug) std::cout << cn << mn << "Scaling by 1 / Y Bin Width Scale: " << (1.0 / yBinWidthScale) << std::endl;
 			SPXGraphUtilities::Scale(g, 1.0, (1.0 / yBinWidthScale));
-			SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / yBinWidthScale));
+			//SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / yBinWidthScale));
 
 			std::cout << "REFERENCE GRAPH AFTER SCALING BY 1 / Y BIN WIDTH SCALE: " << std::endl;
 			gRef->Print();
