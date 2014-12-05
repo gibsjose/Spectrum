@@ -250,6 +250,11 @@ public:
                 ratioGraph->SetLineColor(pci.pdfFillColor);
                 ratioGraph->SetMarkerSize(1.2);
 
+                //NOTE: ROOT Color Transparencies are only supported in ROOT v6.0.0+ via the method
+                //          SetFillColorAlpha(ci, alpha_percentage)
+                //          SetMarkerColorAlpha(ci, alpha_percentage)
+                //          etc...
+
                 //@TODO How to determine style?
                 //If it is a convolute / reference graph, darken the fill color and change the style
                 if(ratioStyle.IsConvoluteOverReference()) {

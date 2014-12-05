@@ -1191,6 +1191,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 			std::string slaveYUnits = pci->gridSteeringFile.GetYUnits();
 
 			TGraphAsymmErrors * g = crossSections[i].GetPDFBandResults();
+			TGraphAsymmErrors * gNom = crossSections[i].GetNominal();
 			TGraphAsymmErrors * gRef = crossSections[i].GetGridReference();
 
 			//Determine the scale from the unit difference between data and grid
@@ -1211,6 +1212,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 			xScale *= pci->xScale;
 			yScale *= pci->yScale;
 			SPXGraphUtilities::Scale(g, xScale, yScale);
+			SPXGraphUtilities::Scale(gNom, xScale, yScale);
 			SPXGraphUtilities::Scale(gRef, xScale, yScale);
 
 			if(debug) {
@@ -1223,6 +1225,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 			xScale = 1.0;
 			yScale = pci->gridSteeringFile.GetYScale();
 			SPXGraphUtilities::Scale(g, xScale, yScale);
+			SPXGraphUtilities::Scale(gNom, xScale, yScale);
 			SPXGraphUtilities::Scale(gRef, xScale, yScale);
 
 			if(debug) {
@@ -1249,6 +1252,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 			}
 
 			double totalSigma = SPXGraphUtilities::GetTotalSigma(g, gridDividedByBinWidth);
+			double totalSigmaNom = SPXGraphUtilities::GetTotalSimga(gNom, gridDividedByBinWidth);
 			double totalSigmaRef = SPXGraphUtilities::GetTotalSigma(gRef, referenceDividedByBinWidth);
 
 			if(debug) {
@@ -1261,6 +1265,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 			if(dataDividedByBinWidth && !gridDividedByBinWidth) {
 				if(debug) std::cout << cn << mn << "Dividing Cross Section by the Bin Width" << std::endl;
 				SPXGraphUtilities::DivideByBinWidth(g);
+				SPXGraphUtilities::DivideByBinWidth(gNom);
 			}
 
 			if(dataDividedByBinWidth && !referenceDividedByBinWidth) {
@@ -1272,6 +1277,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 			double yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), pci->dataSteeringFile.GetYBinWidthUnits());
 			if(debug) std::cout << cn << mn << "Scaling by 1 / Y Bin Width Scale: " << (1.0 / yBinWidthScale) << std::endl;
 			SPXGraphUtilities::Scale(g, 1.0, (1.0 / yBinWidthScale));
+			SPXGraphUtilities::Scale(gNom, 1.0, (1.0 / yBinWidthScale));
 			SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / yBinWidthScale));
 
 			if(normalizeToTotalSigma) {
@@ -1279,6 +1285,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 
 				if(debug) std::cout << cn << mn << "Scaling by 1 / total sigma: " << std::scientific << (1.0 / totalSigma) << std::endl;
 				SPXGraphUtilities::Scale(g, 1.0, (1.0 / totalSigma));
+				SPXGraphUtilities::Scale(gNom, 1.0, (1.0 / yBinWidthScale));
 				SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / totalSigma));
 			}
 
@@ -1291,6 +1298,14 @@ void SPXPlot::NormalizeCrossSections(void) {
 				std::cout << std::endl;
 			}
 
+			//Print PDF nominal
+			if(debug) {
+				std::cout << cn << mn << "Printing PDF Nominal " << i << std::endl;
+				gNom->Print();
+				std::cout << std::endl;
+			}
+
+			//Print Grid Reference
 			if(debug) {
 				std::cout << cn << mn << "Printing Grid Reference " << i << std::endl;
 				gRef->Print();
