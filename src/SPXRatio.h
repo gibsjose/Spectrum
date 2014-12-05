@@ -253,15 +253,15 @@ public:
                 //@TODO How to determine style?
                 //If it is a convolute / reference graph, darken the fill color and change the style
                 if(ratioStyle.IsConvoluteOverReference()) {
-                    ratioGraph->SetFillStyle(3015); //Set fill style for reference to dots
-                    ratioGraph->SetFillColor(pci.pdfFillColor + 1);
+                    ratioGraph->SetFillStyle(1001); //Solid fill style for reference
+                    ratioGraph->SetFillColorAlpha(pci.pdfFillColor + 1, .50);   //50% transparency
                     ratioGraph->SetMarkerColor(pci.pdfFillColor + 1);
                     ratioGraph->SetLineStyle(3);    //Set line style for reference to dots
                 }
 
                 if(ratioStyle.IsConvoluteOverNominal()) {
-                    ratioGraph->SetFillStyle(3017); //Set fill style for nominal to dashes
-                    ratioGraph->SetFillColor(pci.pdfFillColor + 2);
+                    ratioGraph->SetFillStyle(1001); //Solid fill style for nominal
+                    ratioGraph->SetFillColorAlpha(pci.pdfFillColor + 2, .50);   //50% transparency
                     ratioGraph->SetMarkerColor(pci.pdfFillColor + 2);
                     ratioGraph->SetLineStyle(2);    //Set line style for nominal to dashes
                 }
