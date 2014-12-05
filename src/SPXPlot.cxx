@@ -1232,10 +1232,19 @@ void SPXPlot::NormalizeCrossSections(void) {
 			bool gridDividedByBinWidth = pci->gridSteeringFile.IsGridDividedByBinWidth();
 			bool referenceDividedByBinWidth = pci->gridSteeringFile.IsReferenceDividedByBinWidth();
 
+			if(debug) {
+				std::cout << "normalizeToTotalSigma is " << (normalizeToTotalSigma ? "ON" : "OFF") << std::endl;
+				std::cout << "dataDividedByBinWidth is " << (dataDividedByBinWidth ? "ON" : "OFF") << std::endl;
+				std::cout << "gridDividedByBinWidth is " << (gridDividedByBinWidth ? "ON" : "OFF") << std::endl;
+				std::cout << "referenceDividedByBinWidth is " << (referenceDividedByBinWidth ? "ON" : "OFF") << std::endl;
+			}
+
 			TGraphAsymmErrors * g = crossSections[i].GetPDFBandResults();
 			TGraphAsymmErrors * gRef = crossSections[i].GetGridReference();
 
+			std::cout << "REFERENCE GRAPH BEFORE MODIFICATIONS: " << std::endl;
 			gRef->Print();
+			std::cout << std::endl;
 
 			if(!dataDividedByBinWidth && gridDividedByBinWidth) {
 				throw SPXGraphException(cn + mn + "Grid IS divided by the bin with but the data IS NOT: Not supported");
@@ -1243,6 +1252,11 @@ void SPXPlot::NormalizeCrossSections(void) {
 
 			double totalSigma = SPXGraphUtilities::GetTotalSigma(g, gridDividedByBinWidth);
 			double totalSigmaRef = SPXGraphUtilities::GetTotalSigma(gRef, referenceDividedByBinWidth);
+
+			if(debug) {
+				std::cout << "Cross Section Total Sigma = " << totalSigma << std::endl;
+				std::cout << "Grid Reference Total Sigma = " << totalSigma << std::endl;
+			}
 
 			//First divide the cross section by the bin width if it needs to be
 			//@TODO Do I need to do this also for the Alpha S and Scale Uncertainty bands?
@@ -1254,10 +1268,11 @@ void SPXPlot::NormalizeCrossSections(void) {
 			if(dataDividedByBinWidth && !referenceDividedByBinWidth) {
 				if(debug) std::cout << cn << mn << "Dividing Grid Reference by the Bin Width" << std::endl;
 				SPXGraphUtilities::DivideByBinWidth(gRef);
-			}
 
-			std::cout << cn << mn << "After dividing reference by BW... totalSigmaRef = " << totalSigmaRef << std::endl;
-			gRef->Print();
+				std::cout << "REFERENCE GRAPH AFTER DIVIDING BY BIN WIDTH: " << std::endl;
+				gRef->Print();
+				std::cout << std::endl;
+			}
 
 			//Set the yBinWidthScale, which is the scaling of the data's Y Bin Width Units to the data's X Units
 			double yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), pci->dataSteeringFile.GetYBinWidthUnits());
@@ -1265,12 +1280,20 @@ void SPXPlot::NormalizeCrossSections(void) {
 			SPXGraphUtilities::Scale(g, 1.0, (1.0 / yBinWidthScale));
 			SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / yBinWidthScale));
 
+			std::cout << "REFERENCE GRAPH AFTER SCALING BY 1 / Y BIN WIDTH SCALE: " << std::endl;
+			gRef->Print();
+			std::cout << std::endl;
+
 			if(normalizeToTotalSigma) {
 				if(totalSigma == 0) throw SPXGeneralException(cn + mn + "Divide by zero error: Total Sigma is zero");
 
 				if(debug) std::cout << cn << mn << "Scaling by 1 / total sigma: " << std::scientific << (1.0 / totalSigma) << std::endl;
 				SPXGraphUtilities::Scale(g, 1.0, (1.0 / totalSigma));
 				SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / totalSigma));
+
+				std::cout << "REFERENCE GRAPH AFTER NORMALIZING TO TOTAL SIGMA: " << std::endl;
+				gRef->Print();
+				std::cout << std::endl;
 			}
 
 			if(debug) std::cout << cn << mn << "Sucessfully normalized Cross Section " << i << std::endl;

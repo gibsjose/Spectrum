@@ -690,8 +690,6 @@ void SPXGraphUtilities::DivideByBinWidth(TGraphAsymmErrors *g) {
     for(int i = 0; i < g->GetN(); i++) {
         double binWidth = exh[i] + exl[i];
 
-        //std::cout << "binWidth[" << i << "] = " << binWidth << std::endl;
-
         //Scale y, eyl, and eyh by 1 / bin width
         y[i] /= binWidth;
         eyl[i] /= binWidth;
