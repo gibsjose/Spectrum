@@ -148,7 +148,7 @@ public:
         std::string cn = "SPXRatio::";
         std::string mn = "Divide: ";
         if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
-        
+
         //Grab the plot configuration instance
         SPXPlotConfigurationInstance pci;
 
@@ -156,7 +156,7 @@ public:
             try {
                 ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroDenGraphErrors);
                 ratioGraph->SetFillStyle(1001);
-                ratioGraph->SetFillColor(kGray); //@TODO How to determine colors???
+                ratioGraph->SetFillColor(kGray);
                 if(debug) std::cout << "SPXRatio::Divide: Successfully divided data stat graph with options: " << std::endl;
                 if(debug) std::cout << "\t Fill Style = " << 1001 << std::endl;
                 if(debug) std::cout << "\t Fill Color = " << kGray << std::endl;
@@ -172,7 +172,7 @@ public:
             try {
                 ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroDenGraphErrors);
                 ratioGraph->SetFillStyle(1001);
-                ratioGraph->SetFillColor(kGray); //@TODO How to determine colors???
+                ratioGraph->SetFillColor(kGray);
                 if(debug) std::cout << "SPXRatio::Divide: Successfully divided data tot graph with options: " << std::endl;
                 if(debug) std::cout << "\t Fill Style = " << 1001 << std::endl;
                 if(debug) std::cout << "\t Fill Color = " << kGray << std::endl;
@@ -249,6 +249,20 @@ public:
                 ratioGraph->SetMarkerColor(pci.pdfFillColor);
                 ratioGraph->SetLineColor(pci.pdfFillColor);
                 ratioGraph->SetMarkerSize(1.2);
+
+                //@TODO How to determine style?
+                //If it is a convolute / reference graph, darken the fill color and change the style
+                if(ratioStyle.IsConvoluteOverReference()) {
+                    ratioGraph->SetFillColor(pci.pdfFillColor + 1);
+                    ratioGraph->SetMarkerColor(pci.pdfFillColor + 1);
+                    ratioGraph->SetLineStyle(3);    //Set line style for reference to dots
+                }
+
+                if(ratioStyle.IsConvoluteOverNominal()) {
+                    ratioGraph->SetFillColor(pci.pdfFillColor + 2);
+                    ratioGraph->SetMarkerColor(pci.pdfFillColor + 2);
+                    ratioGraph->SetLineStyle(2);    //Set line style for nominal to dashes
+                }
 
                 if(debug) std::cout << "SPXRatio::Divide: Set PDF Fill Options:" << std::endl;
                 if(debug) std::cout << "\t Fill Style = " << pci.pdfFillStyle << std::endl;
