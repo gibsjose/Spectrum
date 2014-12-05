@@ -17,7 +17,7 @@ debug = true
 ; Description
 ;==============================================================
 [DESC]
-name = atlas_2011_top_partons_mtt	
+name = atlas_2011_top_partons_ytt
 author = Tancredi Carli
 lumi_config_file = top.config                      
 scale = Mtop                
@@ -34,14 +34,10 @@ observable_definition_link_to_code = unknown
 x_units = GeV	
 y_units = fb	
 grid_divided_by_bin_width = true 
-reference_divided_by_bin_width = true
-
 ;
 ;==============================================================
 ; Grid Options
 ;==============================================================
 [GRID]								 
-grid_file = grid--TTbar_mttatlas.root
-generator_id =mcfm
-ntuple_id =mcfm-bridge		
+grid_file = grid--TTbar_yttatlas.root
 lowest_order = 2		

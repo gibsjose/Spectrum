@@ -42,7 +42,8 @@ SPXOverlayStyle::SPXOverlayStyle(std::string s) {
 // Sets the style based on the input string
 void SPXOverlayStyle::Parse(std::string s) {
 	std::string mn = "Parse: ";
-
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+	
 	if(debug) std::cout << cn << mn << "Parsing configuration string: " << s << std::endl;
 
 	//Clear the style each time it is parsed

@@ -3,7 +3,7 @@
 //	PDF Band Type Implementation
 //
 //	Implements the SPXPDFBandType class, which describes the PDF
-//	band type. The options are 'use_alpha_s' or 'use_error_band' 
+//	band type. The options are 'use_alpha_s' or 'use_error_band'
 //
 //	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
 //	@Date:		29.09.2014
@@ -36,12 +36,13 @@ SPXPDFBandType::SPXPDFBandType(std::string s) {
 // Sets the type based on the input string
 void SPXPDFBandType::Parse(std::string s) {
 	std::string mn = "Parse: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 	
 	if(debug) std::cout << cn << mn << "Parsing configuration string: " << s << std::endl;
-	
+
 	//Clear the type each time it is parsed
 	this->Clear();
-	
+
 	if(!s.compare("use_alpha_s")) {
 		if(debug) std::cout << cn << mn << "Successfully matched type string: \"use_alpha_s\"" << std::endl;
 		type = BT_ALPHA_S;
@@ -54,7 +55,7 @@ void SPXPDFBandType::Parse(std::string s) {
 	}
 	else {
 		type = BT_INVALID;
-		
+
 		std::ostringstream oss;
 		oss << "Incorrect PDF Band Type: Unrecognized type option: \"" << s << "\" is invalid";
 		throw SPXINIParseException("PDF", "pdf_band_type", oss.str());
@@ -71,54 +72,53 @@ void SPXPDFBandType::Print(void) {
 // the object's type data
 std::string SPXPDFBandType::ToString(void) {
 	std::string mn = "ToString: ";
-	
+
 	//Empty style
 	if(this->IsEmpty()) {
 		return "";
 	}
-	
+
 	//Check for validity
 	if(!this->IsValid()) {
 		return "INVALID_PDF_BAND_TYPE";
 	}
-	
+
 	if(type == BT_ALPHA_S) {
 		return "UseAlphaS";
 	}
 	if(type == BT_ERROR_BAND) {
 		return "UseErrorBand";
 	}
-	
+
 	return "INVALID_PDF_BAND_TYPE";
 }
 
 //Determines whether the band type is empty or not
 bool SPXPDFBandType::IsEmpty(void) {
 	std::string mn = "IsEmpty: ";
-	
+
 	return !(bool)type;
 }
 
 //Determines the validity of the band type
 bool SPXPDFBandType::IsValid(void) {
 	std::string mn = "IsValid: ";
-	
+
 	//Empty style: valid, but empty
 	if(this->IsEmpty()){
 		if(debug) std::cout << cn << mn << "PDF Band Type is empty" << std::endl;
 		return true;
 	}
-	
+
 	if(type == BT_INVALID) {
 		if(debug) std::cout << cn << mn << "PDF Band Type is invalid: Set to BT_INVALID (-1)" << std::endl;
 		return false;
 	}
-	
+
 	if(type >= (BT_ALPHA_S | BT_ERROR_BAND)) {
 		if(debug) std::cout << cn << mn << "PDF Band Type is invalid: Type is set to unknown value: " << type << std::endl;
 		return false;
 	}
-	
+
 	return true;
 }
-

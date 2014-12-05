@@ -25,6 +25,7 @@ bool SPXCrossSection::debug;
 //Create the CrossSection
 void SPXCrossSection::Create(void) {
 	std::string mn = "Create: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	//Attempt to create the Grid
 	try {
@@ -74,6 +75,9 @@ void SPXCrossSection::Create(void) {
 }
 
 void SPXCrossSection::ParseCorrections(void) {
+	std::string mn = "ParseCorrections: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
 	//Check if grid contains corrections
 	if(pci->gridSteeringFile.GetNumberOfCorrectionFiles() != 0) {
 		try {
@@ -88,6 +92,7 @@ void SPXCrossSection::ParseCorrections(void) {
 
 void SPXCrossSection::ApplyCorrections(void) {
 	std::string mn = "ApplyCorrections: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(pci->gridSteeringFile.GetNumberOfCorrectionFiles() == 0) {
 		return;

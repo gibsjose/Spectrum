@@ -42,7 +42,8 @@ SPXDataFormat::SPXDataFormat(std::string s) {
 // Sets the format based on the input string
 void SPXDataFormat::Parse(std::string s) {
 	std::string mn = "Parse: ";
-
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+	
 	if(debug) std::cout << cn << mn << "Parsing configuration string: " << s << std::endl;
 
 	//Clear the format each time it is parsed

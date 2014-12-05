@@ -78,7 +78,8 @@ SPXPlotConfiguration::SPXPlotConfiguration(std::map<std::string, std::vector<std
 //	adding it to the vector (call AddOptionsInstance(), which checks IsEmpty and IsValid)
 void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> > &options) {
 	std::string mn = "Parse: ";
-
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+	
 	//Vectors for creating the actual instances
 	std::vector<std::string> ddr;	//Data directories
 	std::vector<std::string> gdr;	//Grid directories

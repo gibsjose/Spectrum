@@ -100,7 +100,7 @@ double SPXGraphUtilities::GetYMax(std::vector<TGraphAsymmErrors *> graphs) {
 void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmErrors *slave, bool dividedByBinWidth) {
     std::string mn = "MatchBinning: ";
 
-    bool debug = true;
+    bool debug = false;
 
     //Make sure graphs are valid
     if(!master || !slave) {
@@ -163,8 +163,10 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
         double s_eyl_sum = 0;
         double s_eyh_sum = 0;
 
-        std::cout << std::endl;
-        std::cout << cn << mn << "Checking master bin number " << i << std::endl;
+        if(debug) {
+            std::cout << std::endl;
+            std::cout << cn << mn << "Checking master bin number " << i << std::endl;
+        }
 
         //Recompute number of slave bins
         s_bins = slave->GetN();
@@ -686,7 +688,7 @@ void SPXGraphUtilities::DivideByBinWidth(TGraphAsymmErrors *g) {
 
     //Loop over graph and divided by the bin width
     for(int i = 0; i < g->GetN(); i++) {
-        double binWidth = exh[i] - exl[i];
+        double binWidth = exh[i] + exl[i];
 
         //Scale y, eyl, and eyh by 1 / bin width
         y[i] /= binWidth;
