@@ -1257,7 +1257,8 @@ void SPXPlot::NormalizeCrossSections(void) {
 
 			if(debug) {
 				std::cout << "Cross Section Total Sigma = " << totalSigma << std::endl;
-				std::cout << "Grid Reference Total Sigma = " << totalSigma << std::endl;
+				std::cout << "PDF Nominal Total Sigma = " << totalSigmaNom << std::endl;
+				std::cout << "Grid Reference Total Sigma = " << totalSigmaRef << std::endl;
 			}
 
 			//First divide the cross section by the bin width if it needs to be
@@ -1285,7 +1286,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 
 				if(debug) std::cout << cn << mn << "Scaling by 1 / total sigma: " << std::scientific << (1.0 / totalSigma) << std::endl;
 				SPXGraphUtilities::Scale(g, 1.0, (1.0 / totalSigma));
-				SPXGraphUtilities::Scale(gNom, 1.0, (1.0 / yBinWidthScale));
+				SPXGraphUtilities::Scale(gNom, 1.0, (1.0 / totalSigma));
 				SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / totalSigma));
 			}
 
