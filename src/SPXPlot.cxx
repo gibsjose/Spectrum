@@ -1272,7 +1272,13 @@ void SPXPlot::NormalizeCrossSections(void) {
 			//Print cross section
 			if(debug) {
 				std::cout << cn << mn << "Printing Cross Section " << i << std::endl;
-				crossSections[i].GetPDFBandResults()->Print();
+				g->Print();
+				std::cout << std::endl;
+			}
+
+			if(debug) {
+				std::cout << cn << mn << "Printing Grid Reference" << i << std::endl;
+				gRef->Print();
 				std::cout << std::endl;
 			}
 
