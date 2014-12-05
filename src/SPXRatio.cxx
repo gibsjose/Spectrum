@@ -458,7 +458,7 @@ void SPXRatio::Divide(void) {
             //Same for nominal
             if(ratioStyle.IsConvoluteOverNominal()) {
                 ratioGraph->SetFillStyle(1001); //Solid fill style for nominal
-                ratioGraph->SetFillColorAlpha(pci.pdfFillColor + 2);
+                ratioGraph->SetFillColor(pci.pdfFillColor + 2);
                 ratioGraph->SetMarkerColor(pci.pdfFillColor + 2);
                 ratioGraph->SetLineStyle(2);    //Set line style for nominal to dashes
             }
