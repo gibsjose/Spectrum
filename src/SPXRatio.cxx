@@ -449,24 +449,24 @@ void SPXRatio::Divide(void) {
 
             //If it is a convolute / reference graph, darken the fill color and change the style
             if(ratioStyle.IsConvoluteOverReference()) {
-                ratioGraph->SetFillStyle(3002); //Solid fill style for reference
+                ratioGraph->SetFillStyle(3002);
                 ratioGraph->SetFillColor(pci.pdfFillColor + 1);
                 ratioGraph->SetMarkerColor(pci.pdfFillColor + 1);
-                ratioGraph->SetLineStyle(3);    //Set line style for reference to dots
+                ratioGraph->SetLineStyle(3);
             }
 
             //Same for nominal
             if(ratioStyle.IsConvoluteOverNominal()) {
-                ratioGraph->SetFillStyle(3017); //Solid fill style for nominal
+                ratioGraph->SetFillStyle(3017);
                 ratioGraph->SetFillColor(pci.pdfFillColor + 2);
                 ratioGraph->SetMarkerColor(pci.pdfFillColor + 2);
-                ratioGraph->SetLineStyle(2);    //Set line style for nominal to dashes
+                ratioGraph->SetLineStyle(2);
             }
 
             if(debug) std::cout << "SPXRatio::Divide: Set PDF Fill Options:" << std::endl;
-            if(debug) std::cout << "\t Fill Style = " << pci.pdfFillStyle << std::endl;
-            if(debug) std::cout << "\t Fill Color = " << pci.pdfFillColor << std::endl;
-            if(debug) std::cout << "\t Marker Style = " << pci.pdfMarkerStyle << std::endl;
+            if(debug) std::cout << "\t Fill Style = " << ratioGraph->GetFillStyle() << std::endl;
+            if(debug) std::cout << "\t Fill Color = " << ratioGraph->GetFillColor() << std::endl;
+            if(debug) std::cout << "\t Marker Style = " << ratioGraph->GetMarkerStyle() << std::endl;
         }
     } catch(const SPXException &e) {
         std::cerr << e.what() << std::endl;
