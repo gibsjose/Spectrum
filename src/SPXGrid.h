@@ -56,7 +56,11 @@ public:
 
 	//Returns the Grid Reference histogram
 	TH1D * GetReference(void) {
-		return (TH1D *)grid->getReference();
+		return referenceHistogram;
+	}
+
+	bool IsReferenceHistogramCorrupted(void) {
+		return referenceHistogramCorrupted;
 	}
 
 
@@ -64,6 +68,8 @@ private:
 	static bool debug;						//Flag indicating debug mode
 	SPXPlotConfigurationInstance *pci;		//Plot configuration instance
 	appl::grid *grid;						//APPLGrid Grid
+	bool referenceHistogramCorrupted;		//Flag indicating that the reference histogram has been corrupted
+	TH1D * referenceHistogram;				//Reference histogram
 };
 
 #endif

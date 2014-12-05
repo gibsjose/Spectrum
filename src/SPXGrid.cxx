@@ -42,17 +42,17 @@ TH1D * SPXGrid::CreateGrid(void) {
 
 	if(!referenceHistogram) {
 		throw SPXGeneralException("Reference histogram from appl::grid::getReference() for grid file " + gridFile + " was unsuccessful");
+		referenceHistogramCorrupted = true;
 	}
-
-	std::cout << "==============================================" << std::endl;
-	referenceHistogram->Print("all");
 
 	int nTot = grid->run();
 	referenceHistogram->Scale(1.0 / nTot);
 
-	std::cout << "==================AFTER NORMALIZING=====================" << std::endl;
-	std::cout << "nTot = " << nTot << std::endl;
-	referenceHistogram->Print("all");
+	if(nTot < 0) {
+		referenceHistogramCorrupted = true;
+	}
+
+	this->referenceHistogram = referenceHistogram;
 
 	return referenceHistogram;
 }

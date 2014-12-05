@@ -264,7 +264,6 @@ unsigned int SPXSteeringFile::ParseNumberOfRatios(unsigned int plotNumber) {
 
 void SPXSteeringFile::ParsePlotConfigurations(void) {
 	std::string mn = "ParsePlotConfigurations: ";
-	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	std::string tmp;
 	bool xLog = false;
@@ -275,6 +274,8 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 	std::map<std::string, std::vector<std::string> > configurations;
 
 	unsigned int numPlots = ParseNumberOfPlots();
+
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	//Create plot configurations object for all plots found
 	for(int i = 0; i < numPlots; i++) {
@@ -922,7 +923,7 @@ void SPXSteeringFile::PrintPDFSteeringFiles(void) {
 void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 	std::string mn = "ParsePDFSteeringFiles: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
-	
+
 	//Loop through all plot configurations instances for each plot option
 	for(int i = 0; i < plotConfigurations.size(); i++) {
 		for(int j = 0; j < plotConfigurations.at(i).GetNumberOfConfigurationInstances(); j++) {

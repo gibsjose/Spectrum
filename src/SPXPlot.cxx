@@ -1230,8 +1230,10 @@ void SPXPlot::NormalizeCrossSections(void) {
 			bool normalizeToTotalSigma = pci->dataSteeringFile.IsNormalizedToTotalSigma();
 			bool dataDividedByBinWidth = pci->dataSteeringFile.IsDividedByBinWidth();
 			bool gridDividedByBinWidth = pci->gridSteeringFile.IsGridDividedByBinWidth();
+			bool referenceDividedByBinWidth = pci->gridSteeringFile.IsReferenceDividedByBinWidth();
 
 			TGraphAsymmErrors * g = crossSections[i].GetPDFBandResults();
+			TGraphAsymmErrors * gRef = crossSections[i].GetGridReference();
 
 			if(!dataDividedByBinWidth && gridDividedByBinWidth) {
 				throw SPXGraphException(cn + mn + "Grid IS divided by the bin with but the data IS NOT: Not supported");
@@ -1246,16 +1248,23 @@ void SPXPlot::NormalizeCrossSections(void) {
 				SPXGraphUtilities::DivideByBinWidth(g);
 			}
 
+			if(dataDividedByBinWidth && !referenceDividedByBinWidth) {
+				if(debug) std::cout << cn << mn << "Dividing Grid Reference by the Bin Width" << std::endl;
+				SPXGraphUtilities::DivideByBinWidth(gRef);
+			}
+
 			//Set the yBinWidthScale, which is the scaling of the data's Y Bin Width Units to the data's X Units
 			double yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), pci->dataSteeringFile.GetYBinWidthUnits());
 			if(debug) std::cout << cn << mn << "Scaling by 1 / Y Bin Width Scale: " << (1.0 / yBinWidthScale) << std::endl;
 			SPXGraphUtilities::Scale(g, 1.0, (1.0 / yBinWidthScale));
+			SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / yBinWidthScale));
 
 			if(normalizeToTotalSigma) {
 				if(totalSigma == 0) throw SPXGeneralException(cn + mn + "Divide by zero error: Total Sigma is zero");
 
 				if(debug) std::cout << cn << mn << "Scaling by 1 / total sigma: " << (1.0 / totalSigma) << std::endl;
 				SPXGraphUtilities::Scale(g, 1.0, (1.0 / totalSigma));
+				SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / totalSigma));
 			}
 
 			if(debug) std::cout << cn << mn << "Sucessfully normalized Cross Section " << i << std::endl;
