@@ -21,6 +21,7 @@ bool SPXGridCorrections::debug;
 
 void SPXGridCorrections::Parse(void) {
     std::string mn = "Parse: ";
+    if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
     unsigned int numberOfCorrectionFiles = pci.gridSteeringFile.GetNumberOfCorrectionFiles();
     numberOfBins = 0;
@@ -198,8 +199,10 @@ void SPXGridCorrections::Parse(void) {
     if(debug) std::cout << cn << mn << "Successfully added all corrections to map" << std::endl;
 }
 
+//@TODO Move this to some sort of utilities library? SPXStandardUtilities/SPXGeneralUtilities???
 void SPXGridCorrections::PrintMap(std::string &s, StringDoubleVectorMap_T &m) {
     std::string mn = "PrintMap: ";
+    if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
     std::cout << cn << mn << "Printing " << s << " map: " << std::endl;
     std::cout << "===============================================================================" << std::endl;
@@ -234,6 +237,9 @@ void SPXGridCorrections::PrintMap(std::string &s, StringDoubleVectorMap_T &m) {
 
 //Print all individual corrections plus the total corrections
 void SPXGridCorrections::Print(void) {
+    std::string mn = "Print: ";
+    if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
     unsigned int numberOfCorrectionFiles = pci.gridSteeringFile.GetNumberOfCorrectionFiles();
 
     for(int i = 0; i < numberOfCorrectionFiles; i++) {

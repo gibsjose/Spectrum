@@ -14,6 +14,13 @@
 #
 #./Spectrum Steering/atlas_topnjets.txt
 #
+#
+./Spectrum Steering/atlas_incljet2011_2p76TeV.txt
+#
+./Spectrum Steering/atlas_topparton_mtt.txt
+./Spectrum Steering/atlas_topparton_ptttop.txt
+./Spectrum Steering/atlas_topparton_ttbarpt.txt
+./Spectrum Steering/atlas_topparton_ttbary.txt
 
 
 #

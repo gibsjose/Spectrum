@@ -21,6 +21,9 @@ const std::string cn = "SPXGrid::";
 bool SPXGrid::debug;
 
 TH1D * SPXGrid::CreateGrid(void) {
+	std::string mn = "CreateGrid: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
 	std::string gridFile = pci->gridSteeringFile.GetGridFilepath();
 
 	if(!SPXFileUtilities::FileExists(gridFile)) {
@@ -39,14 +42,20 @@ TH1D * SPXGrid::CreateGrid(void) {
 
 	if(!referenceHistogram) {
 		throw SPXGeneralException("Reference histogram from appl::grid::getReference() for grid file " + gridFile + " was unsuccessful");
+		referenceHistogramCorrupted = true;
 	}
 
 	int nTot = grid->run();
 	referenceHistogram->Scale(1.0 / nTot);
 
-	return referenceHistogram;
-}
+	if(nTot < 0) {
+		referenceHistogramCorrupted = true;
+	}
 
-TH1D * SPXGrid::GetReference(void) {
-	return (TH1D *)grid->getReference();
+	this->referenceHistogram = referenceHistogram;
+
+	std::cout << "Printing reference histogram: " << std::endl;
+	this->referenceHistogram->Print("all");
+
+	return referenceHistogram;
 }

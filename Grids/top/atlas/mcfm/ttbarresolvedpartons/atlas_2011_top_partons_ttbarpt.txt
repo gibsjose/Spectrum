@@ -5,8 +5,8 @@
 
 ; Date:
 ;	04.12.2014
-; Comment:
 ;
+; Comment:
 ;
 ;==============================================================
 ; General Options
@@ -17,7 +17,7 @@ debug = true
 ; Description
 ;==============================================================
 [DESC]
-name = atlas_2011_top_partons_mtt	
+name = atlas_2011_top_partons_ttbarpt
 author = Tancredi Carli
 lumi_config_file = top.config                      
 scale = Mtop                
@@ -25,7 +25,7 @@ reference_journal_name= Phys.Rev. D90 (2014) 072004
 reference_link_to_arxiv=http://arxiv.org/abs/arXiv:1407.0371
 nlo_program_name = mcfm
 grid_program_name= mcfm-bridge                       
-observable_definition_link_to_code = unknown   
+observable_definition_link_to_code = grid_wrap.cxx
 ;
 ;==============================================================
 ; Graphing Options
@@ -34,14 +34,10 @@ observable_definition_link_to_code = unknown
 x_units = GeV	
 y_units = fb	
 grid_divided_by_bin_width = true 
-reference_divided_by_bin_width = true
-
 ;
 ;==============================================================
 ; Grid Options
 ;==============================================================
 [GRID]								 
-grid_file = grid--TTbar_mttatlas.root
-generator_id =mcfm
-ntuple_id =mcfm-bridge		
+grid_file = grid--TTbar_ptttatlas5fb.root
 lowest_order = 2		

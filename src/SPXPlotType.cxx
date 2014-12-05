@@ -4,7 +4,7 @@
 //
 //	Implements the SPXPlotType class, which defines the four
 //	supported plot types:
-//		
+//
 //		1)	data, grid, pdf
 //
 //			ONE data file
@@ -58,23 +58,24 @@ SPXPlotType::SPXPlotType(std::string s) {
 //Sets the type based on the input string
 void SPXPlotType::Parse(std::string s) {
 	std::string mn = "Parse: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 	
 	if(debug) std::cout << cn << mn << "Parsing configuration string: " << s << std::endl;
-	
+
 	//Clear the type each time it is parsed
 	this->Clear();
-	
+
 	//Parse the string into type options
 	std::vector<std::string> v = SPXStringUtilities::CommaSeparatedListToVector(s);
-	
+
 	if(debug) {
 		std::cout << cn << mn << "Configuration string: " << s << " was parsed into:" << std::endl;
 		for(int i = 0; i < v.size(); i++) {
 			std::cout << "\t" << v[i] << std::endl;
-		}	
+		}
 		std::cout << std::endl;
 	}
-	
+
 	//Check the parsed type options vector for size errors
 	if(v.size() != 3) {
 		type = PT_INVALID;
@@ -84,7 +85,7 @@ void SPXPlotType::Parse(std::string s) {
 	std::string data = v.at(0);
 	std::string grid = v.at(1);
 	std::string pdf = v.at(2);
-	
+
 	//Parse data
 	if(!data.compare("data")) {
 		if(debug) std::cout << cn << mn << "Successfully matched \"data\"" << std::endl;
@@ -141,15 +142,15 @@ void SPXPlotType::Print(void) {
 // the object's type data
 std::string SPXPlotType::ToString(void) {
 	std::string mn = "ToString: ";
-	
+
 	//Check for validity
 	if(!this->IsValid()) {
 		return "INVALID_PLOT_TYPE";
 	}
-	
+
 	//Build syle option vector
 	std::vector<std::string> v;
-	
+
 	if(type & PT_DATA) {
 		v.push_back("data[]");
 	} else {
@@ -174,17 +175,16 @@ std::string SPXPlotType::ToString(void) {
 //Determines the validity of the display type
 bool SPXPlotType::IsValid(void) {
 	std::string mn = "IsValid: ";
-	
+
 	if(type == PT_INVALID) {
 		if(debug) std::cout << cn << mn << "Plot type is invalid: Set to PT_INVALID (-1)" << std::endl;
 		return false;
 	}
-	
+
 	if(!IsType1() && !IsType2() && !IsType3() && !IsType4()) {
 		if(debug) std::cout << cn << mn << "Plot type is invalid: Not a known combination: " << type << std::endl;
 		return false;
 	}
-	
+
 	return true;
 }
-

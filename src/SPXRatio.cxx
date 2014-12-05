@@ -45,6 +45,7 @@ bool SPXRatio::debug;
 //
 void SPXRatio::Parse(std::string &s) {
     std::string mn = "Parse: ";
+    if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	std::string numBlob;
 	std::string denBlob;
@@ -335,10 +336,149 @@ void SPXRatio::Parse(std::string &s) {
     }
 }
 
+
+void SPXRatio::Divide(void) {
+    std::string mn = "Divide: ";
+    if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+    //Grab the plot configuration instance
+    SPXPlotConfigurationInstance pci;
+
+    if(ratioStyle.IsDataStat()) {
+        try {
+            ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroDenGraphErrors);
+            ratioGraph->SetFillStyle(1001);
+            ratioGraph->SetFillColor(kGray);
+            if(debug) std::cout << "SPXRatio::Divide: Successfully divided data stat graph with options: " << std::endl;
+            if(debug) std::cout << "\t Fill Style = " << 1001 << std::endl;
+            if(debug) std::cout << "\t Fill Color = " << kGray << std::endl;
+        } catch(const SPXException &e) {
+            std::cerr << e.what() << std::endl;
+            throw SPXGraphException("SPXRatio::Divide: Unable to divide data stat graphs");
+        }
+
+        return;
+    }
+
+    else if(ratioStyle.IsDataTot()) {
+        try {
+            ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroDenGraphErrors);
+            ratioGraph->SetFillStyle(1001);
+            ratioGraph->SetFillColor(kGray);
+            if(debug) std::cout << "SPXRatio::Divide: Successfully divided data tot graph with options: " << std::endl;
+            if(debug) std::cout << "\t Fill Style = " << 1001 << std::endl;
+            if(debug) std::cout << "\t Fill Color = " << kGray << std::endl;
+        } catch(const SPXException &e) {
+            std::cerr << e.what() << std::endl;
+            throw SPXGraphException("SPXRatio::Divide: Unable to divide data tot graphs");
+        }
+
+        return;
+    }
+
+    if(ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverReference() || ratioStyle.IsConvoluteOverNominal()) {
+        pci = plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
+        if(debug) {
+            pci.Print();
+        }
+
+        //Match the convolute binning to the data binning
+        if(ratioStyle.IsConvoluteOverData()) {
+            try {
+                SPXGraphUtilities::MatchBinning(denominatorGraph, numeratorGraph, true);
+            } catch(const SPXException &e) {
+                std::cerr << e.what() << std::endl;
+                throw SPXGraphException("SPXRatio::Divide: Unable to match convolute binning to data binning");
+            }
+        }
+    }
+
+    else if(ratioStyle.IsDataOverConvolute()) {
+        pci = plotConfiguration.GetPlotConfigurationInstance(denominatorConvolutePDFFile);
+        if(debug) {
+            pci.Print();
+        }
+
+        //Match the convolute binning to the data binning
+        try {
+            SPXGraphUtilities::MatchBinning(numeratorGraph, denominatorGraph, true);
+        } catch(const SPXException &e) {
+            std::cerr << e.what() << std::endl;
+            throw SPXGraphException("SPXRatio::Divide: Unable to match convolute binning to data binning");
+        }
+    }
+
+    //@TODO What if it's Data/Data???
+    else if(ratioStyle.IsDataOverData()) {
+        if(debug) std::cout << "SPXRatio::Divide: Data/Data: Could not get pci" << std::endl;
+
+        //@TODO Match binning here? Who is the master?
+    }
+
+    try {
+        //Determine how to divide based on ratioStyle: zeroNumErrors/zeroDenErrors set with '!'
+        DivideErrorType_t divideType;
+
+        if(ratioStyle.GetZeroNumeratorErrors() && ratioStyle.GetZeroDenominatorErrors()) {
+            divideType = ZeroAllErrors;
+        } else if(ratioStyle.GetZeroNumeratorErrors()) {
+            divideType = ZeroNumGraphErrors;
+        } else if(ratioStyle.GetZeroDenominatorErrors()) {
+            divideType = ZeroDenGraphErrors;
+        } else {
+            divideType = AddErrors;
+        }
+
+        //Divide graphs
+        ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, divideType);
+
+        //Style ratio graph
+        if(true) {
+            if(debug) std::cout << "SPXRatio::Divide: Obtaining PDF Fill Options..." << std::endl;
+            ratioGraph->SetFillStyle(pci.pdfFillStyle);
+            ratioGraph->SetFillColor(pci.pdfFillColor);
+            ratioGraph->SetMarkerStyle(pci.pdfMarkerStyle);
+            ratioGraph->SetMarkerColor(pci.pdfFillColor);
+            ratioGraph->SetLineColor(pci.pdfFillColor);
+            ratioGraph->SetMarkerSize(1.2);
+
+            //NOTE: ROOT Color Transparencies are only supported in ROOT v6.0.0+ via the method
+            //          SetFillColorAlpha(ci, alpha_percentage)
+            //          SetMarkerColorAlpha(ci, alpha_percentage)
+            //          etc...
+
+            //If it is a convolute / reference graph, darken the fill color and change the style
+            if(ratioStyle.IsConvoluteOverReference()) {
+                ratioGraph->SetFillStyle(3002);
+                ratioGraph->SetFillColor(pci.pdfFillColor + 1);
+                ratioGraph->SetMarkerColor(pci.pdfFillColor + 1);
+                ratioGraph->SetLineStyle(3);
+            }
+
+            //Same for nominal
+            if(ratioStyle.IsConvoluteOverNominal()) {
+                ratioGraph->SetFillStyle(3017);
+                ratioGraph->SetFillColor(pci.pdfFillColor + 2);
+                ratioGraph->SetMarkerColor(pci.pdfFillColor + 2);
+                ratioGraph->SetLineStyle(2);
+            }
+
+            if(debug) std::cout << "SPXRatio::Divide: Set PDF Fill Options:" << std::endl;
+            if(debug) std::cout << "\t Fill Style = " << ratioGraph->GetFillStyle() << std::endl;
+            if(debug) std::cout << "\t Fill Color = " << ratioGraph->GetFillColor() << std::endl;
+            if(debug) std::cout << "\t Marker Style = " << ratioGraph->GetMarkerStyle() << std::endl;
+        }
+    } catch(const SPXException &e) {
+        std::cerr << e.what() << std::endl;
+        throw SPXGraphException("SPXRatio::Divide: Unable to divide numerator and denominator to calculate ratio");
+    }
+}
+
 //Checks the 'original' string to see whether it contains an alias, and attempts to
 // resolve that alias based on the alias type
 std::string SPXRatio::CheckForAlias(std::string &original, const std::string alias_type) {
     std::string mn = "CheckForAlias: ";
+    if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
     std::string tmp;
     std::string s_index;
@@ -414,6 +554,7 @@ void SPXRatio::AddConvoluteFileGraphMap(StringPairGraphMap_T &convoluteFileGraph
 
 void SPXRatio::GetGraphs(void) {
     std::string mn = "GetGraphs: ";
+    if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
     SPXOverlayStyle &os = plotConfiguration.GetOverlayStyle();
 

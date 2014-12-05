@@ -16,6 +16,8 @@
 
 #include <string>
 
+#include "SPXUtilities.h"
+
 //Bitfields for determining error type
 const int ET_INVALID =		-1;
 const int ET_ALPHA_S = 		(1 << 0);	//0b00000001

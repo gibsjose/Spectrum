@@ -48,7 +48,8 @@ SPXRatioStyle::SPXRatioStyle(std::string &s, unsigned int pn, unsigned int rsn) 
 // Sets the numerator and denominator bitfields based on the input string
 void SPXRatioStyle::Parse(std::string &s) {
 	std::string mn = "Parse: ";
-
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+	
 	//Clear the numerator/denominator and dataStat/Tot flags each time it is parsed
 	this->Clear();
 

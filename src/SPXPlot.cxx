@@ -26,6 +26,11 @@ bool SPXPlot::debug;
 
 //Initialize all plots
 void SPXPlot::Initialize(void) {
+	std::string mn = "Initialize: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+	if(debug) std::cout << cn << mn << "Initializing Plot with ID " << id << std::endl;
+
 	try {
 		InitializeData();
 		InitializeCrossSections();
@@ -39,7 +44,10 @@ void SPXPlot::Initialize(void) {
 }
 
 void SPXPlot::Plot(void) {
-	std::string mn = "Plot:: ";
+	std::string mn = "Plot: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+	if(debug) std::cout << cn << mn << "Plotting Plot with ID " << id << std::endl;
 
 	//Perform plotting
 	CreateCanvas();
@@ -60,6 +68,7 @@ void SPXPlot::Plot(void) {
 
 void SPXPlot::SetAxisLabels(void) {
 	std::string mn = "SetAxisLabels: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
@@ -101,6 +110,7 @@ void SPXPlot::SetAxisLabels(void) {
 
 void SPXPlot::ScaleAxes(void) {
 	std::string mn = "ScaleAxes: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXDisplayStyle &ds = pc.GetDisplayStyle();
@@ -172,6 +182,7 @@ void SPXPlot::ScaleAxes(void) {
 
 void SPXPlot::CreateCanvas(void) {
 	std::string mn = "CreateCanvas: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 
@@ -202,6 +213,7 @@ void SPXPlot::CreateCanvas(void) {
 //Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
 void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax) {
 	std::string mn = "DetermineOverlayFrameBounds: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	//Get the plot configuration and display style from steering file
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
@@ -254,6 +266,7 @@ void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yM
 //Determine frame bounds by calculating the xmin, xmax, ymin, ymax from ALL graphs being drawn
 void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax) {
 	std::string mn = "DetermineRatioFrameBounds: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	//Get the plot configuration and display style from steering file
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
@@ -301,6 +314,7 @@ void SPXPlot::DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin
 
 void SPXPlot::DivideCanvasIntoPads(void) {
 	std::string mn = "DivideCanvasIntoPads: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(!canvas) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::CreateCanvas before creating the pads");
@@ -319,6 +333,7 @@ void SPXPlot::DivideCanvasIntoPads(void) {
 
 void SPXPlot::ConfigurePads(void) {
 	std::string mn = "ConfigurePads: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(!overlayPad || !ratioPad) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DivideCanvasIntoPads before configuring the pads");
@@ -436,6 +451,7 @@ void SPXPlot::ConfigurePads(void) {
 
 void SPXPlot::DrawOverlayPadFrame(void) {
 	std::string mn = "DrawOverlayPadFrame: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(!overlayPad) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::ConfigurePads before drawing the pad frame");
@@ -487,6 +503,7 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 
 void SPXPlot::DrawRatioPadFrame(void) {
 	std::string mn = "DrawRatioPadFrame: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(!ratioPad) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::ConfigurePads before drawing the pad frame");
@@ -540,6 +557,8 @@ void SPXPlot::DrawRatioPadFrame(void) {
 }
 
 void SPXPlot::StaggerConvoluteOverlay(void) {
+	std::string mn = "StaggerConvoluteOverlay: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	//Change this to alter the fraction of the error range in which the point is staggered
 	const int FRAC_RANGE = 4;
@@ -573,6 +592,7 @@ void SPXPlot::StaggerConvoluteOverlay(void) {
 
 void SPXPlot::StaggerConvoluteRatio(void) {
 	std::string mn = "StaggerConvoluteRatio: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	//Change this to alter the fraction of the error range in which the point is staggered
 	const int FRAC_RANGE = 4;
@@ -624,7 +644,8 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 //NOTE: Ratios are automatically matched, since they must align in order
 //		to use the SPXGraphUtilities::Divide function
 void SPXPlot::MatchOverlayBinning(void) {
-	std::string mn = "MatchBinning: ";
+	std::string mn = "MatchOverlayBinning: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXPlotType &pt = pc.GetPlotType();
@@ -709,6 +730,8 @@ void SPXPlot::MatchOverlayBinning(void) {
 }
 
 void SPXPlot::ApplyGridCorrections(void) {
+	std::string mn = "ApplyGridCorrections: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(steeringFile->GetGridCorr()) {
 		for(int i = 0; i < crossSections.size(); i++) {
@@ -719,6 +742,7 @@ void SPXPlot::ApplyGridCorrections(void) {
 
 void SPXPlot::DrawOverlay(void) {
 	std::string mn = "DrawOverlay: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(!overlayPad) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DrawOverlayPadFrame before drawing the overlay graphs");
@@ -856,6 +880,7 @@ void SPXPlot::DrawOverlay(void) {
 
 void SPXPlot::DrawRatio(void) {
 	std::string mn = "DrawRatio: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(!ratioPad) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DrawRatioPadFrame before drawing the ratio graphs");
@@ -957,11 +982,15 @@ void SPXPlot::DrawRatio(void) {
 }
 
 void SPXPlot::DrawLegend(void) {
+	std::string mn = "DrawLegend: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
 	return;
 }
 
 void SPXPlot::UpdateCanvas(void) {
 	std::string mn = "UpdateCanvas: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(!canvas) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::CreateCanvas before updating the canvas");
@@ -973,6 +1002,7 @@ void SPXPlot::UpdateCanvas(void) {
 
 void SPXPlot::CanvasToPNG(void) {
 	std::string mn = "CanvasToPNG: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(!canvas) {
 		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::CreateCanvas before printing the canvas as a PNG");
@@ -991,6 +1021,7 @@ void SPXPlot::CanvasToPNG(void) {
 
 std::string SPXPlot::GetPNGFilename(std::string desc) {
 	std::string mn = "GetPNGFilename: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	std::string filename;
 
@@ -1008,6 +1039,7 @@ std::string SPXPlot::GetPNGFilename(std::string desc) {
 
 void SPXPlot::InitializeRatios(void) {
 	std::string mn = "InitializeRatios: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	//Create a ratio for each ratio instance
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
@@ -1037,6 +1069,7 @@ void SPXPlot::InitializeRatios(void) {
 
 void SPXPlot::InitializeCrossSections(void) {
 	std::string mn = "InitializeCrossSections: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXOverlayStyle &os = pc.GetOverlayStyle();
@@ -1135,6 +1168,7 @@ void SPXPlot::InitializeCrossSections(void) {
 
 void SPXPlot::NormalizeCrossSections(void) {
 	std::string mn = "NormalizeCrossSections: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXOverlayStyle &os = pc.GetOverlayStyle();
@@ -1156,6 +1190,10 @@ void SPXPlot::NormalizeCrossSections(void) {
 			std::string masterYUnits = pci->dataSteeringFile.GetYUnits();
 			std::string slaveYUnits = pci->gridSteeringFile.GetYUnits();
 
+			TGraphAsymmErrors * g = crossSections[i].GetPDFBandResults();
+			TGraphAsymmErrors * gNom = crossSections[i].GetNominal();
+			TGraphAsymmErrors * gRef = crossSections[i].GetGridReference();
+
 			//Determine the scale from the unit difference between data and grid
 			double xScale = SPXGraphUtilities::GetXUnitsScale(masterXUnits, slaveXUnits);
 			double yScale = SPXGraphUtilities::GetYUnitsScale(masterYUnits, slaveYUnits);
@@ -1173,10 +1211,12 @@ void SPXPlot::NormalizeCrossSections(void) {
 			//Also scale by the artificial scale from the plot configuration instance
 			xScale *= pci->xScale;
 			yScale *= pci->yScale;
-			SPXGraphUtilities::Scale(crossSections[i].GetPDFBandResults(), xScale, yScale);
+			SPXGraphUtilities::Scale(g, xScale, yScale);
+			SPXGraphUtilities::Scale(gNom, xScale, yScale);
+			SPXGraphUtilities::Scale(gRef, xScale, yScale);
 
 			if(debug) {
-				std::cout << cn << mn << "Additional artificial scale for Cross Section: " << std::endl;
+				std::cout << cn << mn << "Additional artificial scale for Cross Section/Reference: " << std::endl;
 				std::cout << "\t X Scale: " << pci->xScale << std::endl;
 				std::cout << "\t Y Scale: " << pci->yScale << std::endl << std::endl;
 			}
@@ -1184,10 +1224,12 @@ void SPXPlot::NormalizeCrossSections(void) {
 			//Also scale by the arficicial grid scale from the grid steering file
 			xScale = 1.0;
 			yScale = pci->gridSteeringFile.GetYScale();
-			SPXGraphUtilities::Scale(crossSections[i].GetPDFBandResults(), xScale, yScale);
+			SPXGraphUtilities::Scale(g, xScale, yScale);
+			SPXGraphUtilities::Scale(gNom, xScale, yScale);
+			SPXGraphUtilities::Scale(gRef, xScale, yScale);
 
 			if(debug) {
-				std::cout << cn << mn << "Additional artificial Grid Y Scale: " << std::endl;
+				std::cout << cn << mn << "Additional artificial Grid Y Scale for Cross Section/Reference: " << std::endl;
 				std::cout << "\t X Scale: " << xScale << std::endl;
 				std::cout << "\t Y Scale: " << yScale << std::endl << std::endl;
 			}
@@ -1196,32 +1238,56 @@ void SPXPlot::NormalizeCrossSections(void) {
 			bool normalizeToTotalSigma = pci->dataSteeringFile.IsNormalizedToTotalSigma();
 			bool dataDividedByBinWidth = pci->dataSteeringFile.IsDividedByBinWidth();
 			bool gridDividedByBinWidth = pci->gridSteeringFile.IsGridDividedByBinWidth();
+			bool referenceDividedByBinWidth = pci->gridSteeringFile.IsReferenceDividedByBinWidth();
 
-			TGraphAsymmErrors * g = crossSections[i].GetPDFBandResults();
+			if(debug) {
+				std::cout << cn << mn << "normalizeToTotalSigma is " << (normalizeToTotalSigma ? "ON" : "OFF") << std::endl;
+				std::cout << cn << mn << "dataDividedByBinWidth is " << (dataDividedByBinWidth ? "ON" : "OFF") << std::endl;
+				std::cout << cn << mn << "gridDividedByBinWidth is " << (gridDividedByBinWidth ? "ON" : "OFF") << std::endl;
+				std::cout << cn << mn << "referenceDividedByBinWidth is " << (referenceDividedByBinWidth ? "ON" : "OFF") << std::endl;
+			}
 
 			if(!dataDividedByBinWidth && gridDividedByBinWidth) {
 				throw SPXGraphException(cn + mn + "Grid IS divided by the bin with but the data IS NOT: Not supported");
 			}
 
 			double totalSigma = SPXGraphUtilities::GetTotalSigma(g, gridDividedByBinWidth);
+			double totalSigmaNom = SPXGraphUtilities::GetTotalSigma(gNom, gridDividedByBinWidth);
+			double totalSigmaRef = SPXGraphUtilities::GetTotalSigma(gRef, referenceDividedByBinWidth);
+
+			if(debug) {
+				std::cout << "Cross Section Total Sigma = " << totalSigma << std::endl;
+				std::cout << "PDF Nominal Total Sigma = " << totalSigmaNom << std::endl;
+				std::cout << "Grid Reference Total Sigma = " << totalSigmaRef << std::endl;
+			}
 
 			//First divide the cross section by the bin width if it needs to be
 			//@TODO Do I need to do this also for the Alpha S and Scale Uncertainty bands?
 			if(dataDividedByBinWidth && !gridDividedByBinWidth) {
 				if(debug) std::cout << cn << mn << "Dividing Cross Section by the Bin Width" << std::endl;
 				SPXGraphUtilities::DivideByBinWidth(g);
+				SPXGraphUtilities::DivideByBinWidth(gNom);
+			}
+
+			if(dataDividedByBinWidth && !referenceDividedByBinWidth) {
+				if(debug) std::cout << cn << mn << "Dividing Grid Reference by the Bin Width" << std::endl;
+				SPXGraphUtilities::DivideByBinWidth(gRef);
 			}
 
 			//Set the yBinWidthScale, which is the scaling of the data's Y Bin Width Units to the data's X Units
 			double yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), pci->dataSteeringFile.GetYBinWidthUnits());
 			if(debug) std::cout << cn << mn << "Scaling by 1 / Y Bin Width Scale: " << (1.0 / yBinWidthScale) << std::endl;
 			SPXGraphUtilities::Scale(g, 1.0, (1.0 / yBinWidthScale));
+			SPXGraphUtilities::Scale(gNom, 1.0, (1.0 / yBinWidthScale));
+			SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / yBinWidthScale));
 
 			if(normalizeToTotalSigma) {
 				if(totalSigma == 0) throw SPXGeneralException(cn + mn + "Divide by zero error: Total Sigma is zero");
 
-				if(debug) std::cout << cn << mn << "Scaling by 1 / total sigma: " << (1.0 / totalSigma) << std::endl;
+				if(debug) std::cout << cn << mn << "Scaling by 1 / total sigma: " << std::scientific << (1.0 / totalSigma) << std::endl;
 				SPXGraphUtilities::Scale(g, 1.0, (1.0 / totalSigma));
+				SPXGraphUtilities::Scale(gNom, 1.0, (1.0 / totalSigma));
+				SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / totalSigma));
 			}
 
 			if(debug) std::cout << cn << mn << "Sucessfully normalized Cross Section " << i << std::endl;
@@ -1229,7 +1295,21 @@ void SPXPlot::NormalizeCrossSections(void) {
 			//Print cross section
 			if(debug) {
 				std::cout << cn << mn << "Printing Cross Section " << i << std::endl;
-				crossSections[i].GetPDFBandResults()->Print();
+				g->Print();
+				std::cout << std::endl;
+			}
+
+			//Print PDF nominal
+			if(debug) {
+				std::cout << cn << mn << "Printing PDF Nominal " << i << std::endl;
+				gNom->Print();
+				std::cout << std::endl;
+			}
+
+			//Print Grid Reference
+			if(debug) {
+				std::cout << cn << mn << "Printing Grid Reference " << i << std::endl;
+				gRef->Print();
 				std::cout << std::endl;
 			}
 
@@ -1242,6 +1322,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 
 void SPXPlot::InitializeData(void) {
 	std::string mn = "InitializeData: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 	SPXOverlayStyle &os = pc.GetOverlayStyle();

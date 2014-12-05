@@ -16,6 +16,8 @@
 
 #include <string>
 
+#include "SPXUtilities.h"
+
 //Bitfields for determining error size type
 const int ES_INVALID =		-1;
 const int ES_ONE_SIGMA = 	(1 << 0);	//0b00000001
