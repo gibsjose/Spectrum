@@ -1240,6 +1240,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 			}
 
 			double totalSigma = SPXGraphUtilities::GetTotalSigma(g, gridDividedByBinWidth);
+			double totalSigmaRef = SPXGraphUtilities::GetTotalSigma(gRef, referenceDividedByBinWidth);
 
 			//First divide the cross section by the bin width if it needs to be
 			//@TODO Do I need to do this also for the Alpha S and Scale Uncertainty bands?
@@ -1253,6 +1254,9 @@ void SPXPlot::NormalizeCrossSections(void) {
 				SPXGraphUtilities::DivideByBinWidth(gRef);
 			}
 
+			std::cout << cn << mn << "After dividing reference by BW... totalSigmaRef = " << totalSigmaRef << std::endl;
+			gRef->Print();
+
 			//Set the yBinWidthScale, which is the scaling of the data's Y Bin Width Units to the data's X Units
 			double yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), pci->dataSteeringFile.GetYBinWidthUnits());
 			if(debug) std::cout << cn << mn << "Scaling by 1 / Y Bin Width Scale: " << (1.0 / yBinWidthScale) << std::endl;
@@ -1262,7 +1266,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 			if(normalizeToTotalSigma) {
 				if(totalSigma == 0) throw SPXGeneralException(cn + mn + "Divide by zero error: Total Sigma is zero");
 
-				if(debug) std::cout << cn << mn << "Scaling by 1 / total sigma: " << (1.0 / totalSigma) << std::endl;
+				if(debug) std::cout << cn << mn << "Scaling by 1 / total sigma: " << std::scientific << (1.0 / totalSigma) << std::endl;
 				SPXGraphUtilities::Scale(g, 1.0, (1.0 / totalSigma));
 				SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / totalSigma));
 			}
