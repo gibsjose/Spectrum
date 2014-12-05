@@ -700,7 +700,7 @@ void SPXPlot::MatchOverlayBinning(void) {
 					bool dividedByBinWidth = false;
 
 					//Check if data master is divided by bin width
-					if(data.at(0).IsDividedByBinWidth() && !crossSection.at(i).IsDividedByBinWidth()) {
+					if(data.at(0).IsDividedByBinWidth() && !crossSections.at(i).IsDividedByBinWidth()) {
 						dividedByBinWidth = true;
 					}
 
@@ -739,7 +739,7 @@ void SPXPlot::MatchOverlayBinning(void) {
 					bool dividedByBinWidth = false;
 
 					//Check if data master is divided by bin width
-					if(data.at(0).IsDividedByBinWidth() && !crossSection.at(i).IsDividedByBinWidth()) {
+					if(data.at(0).IsDividedByBinWidth() && !crossSections.at(i).IsDividedByBinWidth()) {
 						dividedByBinWidth = true;
 					}
 
