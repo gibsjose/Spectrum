@@ -51,6 +51,7 @@ TH1D * SPXGrid::CreateGrid(void) {
 	referenceHistogram->Scale(1.0 / nTot);
 
 	std::cout << "==================AFTER NORMALIZING=====================" << std::endl;
+	std::cout << "nTot = " << nTot << std::endl;
 	referenceHistogram->Print("all");
 
 	return referenceHistogram;
