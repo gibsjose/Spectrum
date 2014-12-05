@@ -1,18 +1,18 @@
-# Spectrum v0.7
-### 04 December, 2014
+# Spectrum v0.7.1
+### 05 December, 2014
 
 ## Authors
 @gibsjose @csembree Dr. Tancredi Carli
 
 ## Change Log
+* Fixed ratio types: convolute / reference & convolute / nominal
+
 * Added Grid Steering Files to Git
 * Added Data Steering Files to Git
 * Added 'test_all' script to Git
 * Added Data Steering File Meta-Data
 * Removed 'generatorID' and 'nTupleID' from Grid Meta-Data
 * Added 'comments' field for Data and Grid Steering Files to enter in any comments
-* Created a new ratio type: convolute / nominal
-* Still testing convolute / reference... there are bugs still
 * Re-designed the normalization of the cross sections in SPXPlot::NormalizeCrossSections:
     * Now dividing by the total sigma separately from dividing by the bin width, and only if specified
     * Always scaling by the y bin units, regardless of the bin width status
