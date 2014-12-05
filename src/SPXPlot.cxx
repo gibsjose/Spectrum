@@ -1252,7 +1252,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 			}
 
 			double totalSigma = SPXGraphUtilities::GetTotalSigma(g, gridDividedByBinWidth);
-			double totalSigmaNom = SPXGraphUtilities::GetTotalSimga(gNom, gridDividedByBinWidth);
+			double totalSigmaNom = SPXGraphUtilities::GetTotalSigma(gNom, gridDividedByBinWidth);
 			double totalSigmaRef = SPXGraphUtilities::GetTotalSigma(gRef, referenceDividedByBinWidth);
 
 			if(debug) {
