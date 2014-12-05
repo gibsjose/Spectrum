@@ -1235,6 +1235,8 @@ void SPXPlot::NormalizeCrossSections(void) {
 			TGraphAsymmErrors * g = crossSections[i].GetPDFBandResults();
 			TGraphAsymmErrors * gRef = crossSections[i].GetGridReference();
 
+			gRef->Print();
+
 			if(!dataDividedByBinWidth && gridDividedByBinWidth) {
 				throw SPXGraphException(cn + mn + "Grid IS divided by the bin with but the data IS NOT: Not supported");
 			}
