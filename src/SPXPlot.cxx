@@ -1190,6 +1190,9 @@ void SPXPlot::NormalizeCrossSections(void) {
 			std::string masterYUnits = pci->dataSteeringFile.GetYUnits();
 			std::string slaveYUnits = pci->gridSteeringFile.GetYUnits();
 
+			TGraphAsymmErrors * g = crossSections[i].GetPDFBandResults();
+			TGraphAsymmErrors * gRef = crossSections[i].GetGridReference();
+
 			//Determine the scale from the unit difference between data and grid
 			double xScale = SPXGraphUtilities::GetXUnitsScale(masterXUnits, slaveXUnits);
 			double yScale = SPXGraphUtilities::GetYUnitsScale(masterYUnits, slaveYUnits);
@@ -1207,10 +1210,11 @@ void SPXPlot::NormalizeCrossSections(void) {
 			//Also scale by the artificial scale from the plot configuration instance
 			xScale *= pci->xScale;
 			yScale *= pci->yScale;
-			SPXGraphUtilities::Scale(crossSections[i].GetPDFBandResults(), xScale, yScale);
+			SPXGraphUtilities::Scale(g, xScale, yScale);
+			SPXGraphUtilities::Scale(gRef, xScale, yScale);
 
 			if(debug) {
-				std::cout << cn << mn << "Additional artificial scale for Cross Section: " << std::endl;
+				std::cout << cn << mn << "Additional artificial scale for Cross Section/Reference: " << std::endl;
 				std::cout << "\t X Scale: " << pci->xScale << std::endl;
 				std::cout << "\t Y Scale: " << pci->yScale << std::endl << std::endl;
 			}
@@ -1218,10 +1222,11 @@ void SPXPlot::NormalizeCrossSections(void) {
 			//Also scale by the arficicial grid scale from the grid steering file
 			xScale = 1.0;
 			yScale = pci->gridSteeringFile.GetYScale();
-			SPXGraphUtilities::Scale(crossSections[i].GetPDFBandResults(), xScale, yScale);
+			SPXGraphUtilities::Scale(g, xScale, yScale);
+			SPXGraphUtilities::Scale(gRef, xScale, yScale);
 
 			if(debug) {
-				std::cout << cn << mn << "Additional artificial Grid Y Scale: " << std::endl;
+				std::cout << cn << mn << "Additional artificial Grid Y Scale for Cross Section/Reference: " << std::endl;
 				std::cout << "\t X Scale: " << xScale << std::endl;
 				std::cout << "\t Y Scale: " << yScale << std::endl << std::endl;
 			}
@@ -1233,25 +1238,15 @@ void SPXPlot::NormalizeCrossSections(void) {
 			bool referenceDividedByBinWidth = pci->gridSteeringFile.IsReferenceDividedByBinWidth();
 
 			if(debug) {
-				std::cout << "normalizeToTotalSigma is " << (normalizeToTotalSigma ? "ON" : "OFF") << std::endl;
-				std::cout << "dataDividedByBinWidth is " << (dataDividedByBinWidth ? "ON" : "OFF") << std::endl;
-				std::cout << "gridDividedByBinWidth is " << (gridDividedByBinWidth ? "ON" : "OFF") << std::endl;
-				std::cout << "referenceDividedByBinWidth is " << (referenceDividedByBinWidth ? "ON" : "OFF") << std::endl;
+				std::cout << cn << mn << "normalizeToTotalSigma is " << (normalizeToTotalSigma ? "ON" : "OFF") << std::endl;
+				std::cout << cn << mn << "dataDividedByBinWidth is " << (dataDividedByBinWidth ? "ON" : "OFF") << std::endl;
+				std::cout << cn << mn << "gridDividedByBinWidth is " << (gridDividedByBinWidth ? "ON" : "OFF") << std::endl;
+				std::cout << cn << mn << "referenceDividedByBinWidth is " << (referenceDividedByBinWidth ? "ON" : "OFF") << std::endl;
 			}
-
-			TGraphAsymmErrors * g = crossSections[i].GetPDFBandResults();
-			TGraphAsymmErrors * gRef = crossSections[i].GetGridReference();
-
-			std::cout << "REFERENCE GRAPH BEFORE MODIFICATIONS: " << std::endl;
-			gRef->Print();
-			std::cout << std::endl;
 
 			if(!dataDividedByBinWidth && gridDividedByBinWidth) {
 				throw SPXGraphException(cn + mn + "Grid IS divided by the bin with but the data IS NOT: Not supported");
 			}
-
-			//DEBUG
-			referenceDividedByBinWidth = true;
 
 			double totalSigma = SPXGraphUtilities::GetTotalSigma(g, gridDividedByBinWidth);
 			double totalSigmaRef = SPXGraphUtilities::GetTotalSigma(gRef, referenceDividedByBinWidth);
@@ -1271,10 +1266,6 @@ void SPXPlot::NormalizeCrossSections(void) {
 			if(dataDividedByBinWidth && !referenceDividedByBinWidth) {
 				if(debug) std::cout << cn << mn << "Dividing Grid Reference by the Bin Width" << std::endl;
 				SPXGraphUtilities::DivideByBinWidth(gRef);
-
-				std::cout << "REFERENCE GRAPH AFTER DIVIDING BY BIN WIDTH: " << std::endl;
-				gRef->Print();
-				std::cout << std::endl;
 			}
 
 			//Set the yBinWidthScale, which is the scaling of the data's Y Bin Width Units to the data's X Units
@@ -1283,23 +1274,12 @@ void SPXPlot::NormalizeCrossSections(void) {
 			SPXGraphUtilities::Scale(g, 1.0, (1.0 / yBinWidthScale));
 			SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / yBinWidthScale));
 
-			//DEBUG
-			SPXGraphUtilities::Scale(gRef, 1.0, 1000);
-
-			std::cout << "REFERENCE GRAPH AFTER SCALING BY 1 / Y BIN WIDTH SCALE: " << std::endl;
-			gRef->Print();
-			std::cout << std::endl;
-
 			if(normalizeToTotalSigma) {
 				if(totalSigma == 0) throw SPXGeneralException(cn + mn + "Divide by zero error: Total Sigma is zero");
 
 				if(debug) std::cout << cn << mn << "Scaling by 1 / total sigma: " << std::scientific << (1.0 / totalSigma) << std::endl;
 				SPXGraphUtilities::Scale(g, 1.0, (1.0 / totalSigma));
 				SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / totalSigma));
-
-				std::cout << "REFERENCE GRAPH AFTER NORMALIZING TO TOTAL SIGMA: " << std::endl;
-				gRef->Print();
-				std::cout << std::endl;
 			}
 
 			if(debug) std::cout << cn << mn << "Sucessfully normalized Cross Section " << i << std::endl;
@@ -1312,7 +1292,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 			}
 
 			if(debug) {
-				std::cout << cn << mn << "Printing Grid Reference" << i << std::endl;
+				std::cout << cn << mn << "Printing Grid Reference " << i << std::endl;
 				gRef->Print();
 				std::cout << std::endl;
 			}
