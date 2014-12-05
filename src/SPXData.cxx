@@ -26,6 +26,7 @@ bool SPXData::debug;
 //Public helper method to parse the data file based on the type
 void SPXData::Parse(void) {
 	std::string mn = "Parse: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(debug) std::cout << cn << mn << "Parsing data file: " << pci.dataSteeringFile.GetDataFile() << std::endl;
 
@@ -62,6 +63,7 @@ void SPXData::Parse(void) {
 
 void SPXData::ParseSpectrum(void) {
 	std::string mn = "ParseSpectrum: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(debug) std::cout << cn << mn << "Beginning to parse data file: " << pci.dataSteeringFile.GetDataFile() << std::endl;
 
@@ -386,6 +388,7 @@ void SPXData::ParseSpectrum(void) {
 
 void SPXData::ParseHERAFitter(void) {
 	std::string mn = "ParseHERAFitter: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	//Fixed column indices (starting at Column 0)
 	const unsigned int XLOW_COL = 1;
@@ -663,6 +666,8 @@ void SPXData::Print(void) {
 }
 
 void SPXData::PrintSpectrum(void) {
+	std::string mn = "PrintSpectrum: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	std::cout << std::endl << "Spectrum Data File: " << pci.dataSteeringFile.GetDataFile() << std::endl << std::endl;
 
@@ -717,7 +722,9 @@ void SPXData::PrintSpectrum(void) {
 }
 
 void SPXData::PrintHERAFitter(void) {
-
+	std::string mn = "PrintHERAFitter: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+	
 	std::cout << std::endl << "HERAFitter Data File: " << pci.dataSteeringFile.GetDataFile() << std::endl << std::endl;
 
 	std::cout << "============================================================================================" << std::endl;
@@ -774,6 +781,7 @@ void SPXData::PrintHERAFitter(void) {
 
 void SPXData::CreateGraphs(void) {
 	std::string mn = "CreateGraphs: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	//Create name strings
 	TString name;

@@ -16,6 +16,8 @@
 
 #include <string>
 
+#include "SPXUtilities.h"
+
 //Bitfields for determining band type
 const int BT_INVALID =		-1;
 const int BT_ALPHA_S = 		(1 << 0);	//0b00000001

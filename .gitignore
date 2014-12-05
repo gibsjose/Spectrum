@@ -1,6 +1,9 @@
 # Actual executable
 Spectrum
 
+# Steering tests
+Steering/test
+
 # PDFSets folder
 PDFsets
 

@@ -22,6 +22,7 @@ const std::string cn = "SPXPDFSteeringFile::";
 
 void SPXPDFSteeringFile::SetDefaults(void) {
 	std::string mn = "SetDefaults: ";
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(debug) std::cout << cn << mn << "Setting default PDF Steering File data" << std::endl;
 
@@ -154,7 +155,8 @@ void SPXPDFSteeringFile::Print(void) {
 
 void SPXPDFSteeringFile::Parse(void) {
 	std::string mn = "Parse: ";
-
+	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+	
 	if(filename.empty()) {
 		throw SPXFileIOException(filename, "Empty file string \"\" was given");
 	}
