@@ -1250,6 +1250,9 @@ void SPXPlot::NormalizeCrossSections(void) {
 				throw SPXGraphException(cn + mn + "Grid IS divided by the bin with but the data IS NOT: Not supported");
 			}
 
+			//DEBUG
+			referenceDividedByBinWidth = true;
+
 			double totalSigma = SPXGraphUtilities::GetTotalSigma(g, gridDividedByBinWidth);
 			double totalSigmaRef = SPXGraphUtilities::GetTotalSigma(gRef, referenceDividedByBinWidth);
 
@@ -1278,7 +1281,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 			double yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), pci->dataSteeringFile.GetYBinWidthUnits());
 			if(debug) std::cout << cn << mn << "Scaling by 1 / Y Bin Width Scale: " << (1.0 / yBinWidthScale) << std::endl;
 			SPXGraphUtilities::Scale(g, 1.0, (1.0 / yBinWidthScale));
-			//SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / yBinWidthScale));
+			SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / yBinWidthScale));
 
 			std::cout << "REFERENCE GRAPH AFTER SCALING BY 1 / Y BIN WIDTH SCALE: " << std::endl;
 			gRef->Print();
@@ -1289,7 +1292,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 
 				if(debug) std::cout << cn << mn << "Scaling by 1 / total sigma: " << std::scientific << (1.0 / totalSigma) << std::endl;
 				SPXGraphUtilities::Scale(g, 1.0, (1.0 / totalSigma));
-				//SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / totalSigma));
+				SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / totalSigma));
 
 				std::cout << "REFERENCE GRAPH AFTER NORMALIZING TO TOTAL SIGMA: " << std::endl;
 				gRef->Print();
