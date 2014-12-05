@@ -41,6 +41,10 @@ void SPXCrossSection::Create(void) {
 		throw;
 	}
 
+	//Convert reference and nominal histograms to graphs and save them
+	SPXGraphUtilities::HistogramToGraph(gridReference, grid->GetReference());
+	SPXGraphUtilities::HistogramToGraph(nominal, pdf->GetPDFNominal());
+
 	//Set the name of the convolution graphs appropriately
 	//Create name strings
 	TString name;

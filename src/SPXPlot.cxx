@@ -700,7 +700,7 @@ void SPXPlot::MatchOverlayBinning(void) {
 					bool dividedByBinWidth = false;
 
 					//Check if data master is divided by bin width
-					if(data.at(0).IsDividedByBinWidth()) {
+					if(data.at(0).IsDividedByBinWidth() && !crossSection.at(i).IsDividedByBinWidth()) {
 						dividedByBinWidth = true;
 					}
 
@@ -717,11 +717,50 @@ void SPXPlot::MatchOverlayBinning(void) {
 					bool dividedByBinWidth = false;
 
 					//Check if convolute master is divided by bin width
-					if(crossSections.at(0).IsDividedByBinWidth()) {
+					if(crossSections.at(0).IsDividedByBinWidth() && !crossSections.at(i).IsDividedByBinWidth()) {
 						dividedByBinWidth = true;
 					}
 
 					TGraphAsymmErrors *slave = crossSections.at(i).GetPDFBandResults();
+					SPXGraphUtilities::MatchBinning(master, slave, dividedByBinWidth);
+				}
+			}
+		}
+
+		//Match all PDFs to the data master (if data is plotted) or to the master PDF
+		if(os.ContainsPDF()) {
+
+			if(os.ContainsData()) {
+				master = data.at(0).GetTotalErrorGraph();
+
+				if(debug) std::cout << cn << mn << "Matching overlay PDFs to data master" << std::endl;
+
+				for(int i = 0; i < crossSections.size(); i++) {
+					bool dividedByBinWidth = false;
+
+					//Check if data master is divided by bin width
+					if(data.at(0).IsDividedByBinWidth() && !crossSection.at(i).IsDividedByBinWidth()) {
+						dividedByBinWidth = true;
+					}
+
+					TGraphAsymmErrors *slave = crossSections.at(i).GetNominal();
+					SPXGraphUtilities::MatchBinning(master, slave, dividedByBinWidth);
+				}
+
+			} else {
+				master = crossSections.at(0).GetPDFBandResults();
+
+				if(debug) std::cout << cn << mn << "Matching overlay PDFs to PDF master" << std::endl;
+
+				for(int i = 1; i < crossSections.size(); i++) {
+					bool dividedByBinWidth = false;
+
+					//Check if convolute master is divided by bin width
+					if(crossSections.at(0).IsDividedByBinWidth() && !crossSections.at(i).IsDividedByBinWidth()) {
+						dividedByBinWidth = true;
+					}
+
+					TGraphAsymmErrors *slave = crossSections.at(i).GetNominal();
 					SPXGraphUtilities::MatchBinning(master, slave, dividedByBinWidth);
 				}
 			}
@@ -761,10 +800,8 @@ void SPXPlot::DrawOverlay(void) {
 	//Change to the overlay pad
 	overlayPad->cd();
 
-	//@TODO Reference Overlay
-
 	//Check if convolute is to be plotted in the overlay section
-	if(os.ContainsConvolute()) {
+	if(os.ContainsConvolute() || os.ContainsPDF()) {
 
 		//Stagger overlay convolute points if requested
 		if(steeringFile->GetPlotStaggered() && !steeringFile->GetPlotBand()) {
@@ -791,7 +828,8 @@ void SPXPlot::DrawOverlay(void) {
 
 			//Set cross section X errors to 0 if not plotting band
 			if(!steeringFile->GetPlotBand()) {
-				SPXGraphUtilities::ClearXErrors(crossSections[i].GetPDFBandResults());
+				SPXGraphUtilities::ClearXErrors(crossSections.at(i).GetPDFBandResults());
+				SPXGraphUtilities::ClearXErrors(crossSections.at(i).GetNominal());
 			}
 
 			//Warn user that the number of bins in data does not match the number in convolute, if that's the case
@@ -803,10 +841,36 @@ void SPXPlot::DrawOverlay(void) {
 					std::cerr << cn << mn << "WARNING: The number of convolute bins (" << cbins << ") does not match the number of master data bins (" << dbins << ")" << std::endl;
 					std::cerr << "\t\t\t You can enable bin matching with the \"match_binning = true\" flag in the steering file, if you would like to do so" << std::endl;
 				}
+
+				//Same for PDF
+				unsigned int pbins = crossSections.at(i).GetNominal()->GetN();
+
+				if(pbins != dbins) {
+					std::cerr << cn << mn << "WARNING: The number of PDF bins (" << pbins << ") does not match the number of master data bins (" << dbins << ")" << std::endl;
+					std::cerr << "\t\t\t You can enable bin matching with the \"match_binning = true\" flag in the steering file, if you would like to do so" << std::endl;
+				}
 			}
 
-			//Draw PDF Band
-			crossSections.at(i).GetPDFBandResults()->Draw(csOptions.c_str());
+			//Draw Cross Section (PDF Band)
+			if(os.ContainsConvolute()) {
+				crossSections.at(i).GetPDFBandResults()->Draw(csOptions.c_str());
+			}
+
+			//Draw PDF Nominal, if requested
+			if(os.ContainsPDF()) {
+
+				//Modify style for PDF, if both convolute and PDF are drawn
+				if(os.ContainsConvolute()) {
+					TGraphAsymmErrors *cs = crossSections.at(i).GetPDFBandResults();
+					TGraphAsymmErrors *nom = crossSections.at(i).GetNominal();
+					nom->SetFillStyle(3017);
+					nom->SetLineStyle(2);
+					nom->SetFillColor(cs->GetFillColor() + 2);
+					nom->SetMarkerColor(cs->GetMarkerColor() + 2);
+				}
+
+				crossSections.at(i).GetNominal()->Draw(csOptions.c_str());
+			}
 
 			//Draw Alpha S Band and Scale Band if necessary
 			//@TODO Fix steering file: Allow for either plotting only the PDF band or the PDF band + uncertainties and check here
