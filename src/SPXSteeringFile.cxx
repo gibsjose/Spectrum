@@ -942,6 +942,10 @@ void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 					pci.pdfFillStyle = pdfSteeringFile.GetFillStyle();
 				}
 
+				// if(!pci.pdfErrorType.IsValid()) {
+				// 	//User did not specify PDF Error Type in Top-Level Steering, use default from PDF Steering File
+				// }
+
 				if(pci.pdfFillColor == PC_EMPTY_COLOR) {
 					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
 						" PDF Fill Color was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetFillColor() << std::endl;

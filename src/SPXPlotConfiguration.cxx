@@ -79,7 +79,7 @@ SPXPlotConfiguration::SPXPlotConfiguration(std::map<std::string, std::vector<std
 void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> > &options) {
 	std::string mn = "Parse: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
-	
+
 	//Vectors for creating the actual instances
 	std::vector<std::string> ddr;	//Data directories
 	std::vector<std::string> gdr;	//Grid directories
@@ -389,6 +389,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(pfsSize) pfs.push_back(options["pdf_fill_style"][0]);		//Just one instance of pdf fill style
 			if(pfcSize) pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
 			if(pmsSize) pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
+			// if(pdfErrorTypeVectorSize) pet.push_back(options["pdf_error_type"][0]);
 
 			if(xsSize) 	xsc.push_back(options["x_scale"][0]);				//Just one instance of x scale
 			else		xsc.push_back("1.0");
@@ -616,6 +617,9 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		if(dmsSize) pci.dataMarkerStyle = atoi(dms[i].c_str());
 		else 		pci.dataMarkerStyle = PC_EMPTY_STYLE;
+
+		//if(pdfErrorTypeVectorSize != 0) .... use what they gave you
+		//else 		pci.pdfErrorType = new SPXPDFErrorType(-1);
 
 		if(dmcSize) pci.dataMarkerColor = atoi(dmc[i].c_str());
 		else	 	pci.dataMarkerColor = PC_EMPTY_COLOR;
