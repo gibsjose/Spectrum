@@ -163,6 +163,7 @@ void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
   fillColorCode = psf->GetFillColor();
   markerStyle = psf->GetMarkerStyle();
   ErrorPropagationType= psf->GetErrorPropagationType();
+  if (debug) std::cout<<cn<<mn<<"ErrorPropagationType= "<<ErrorPropagationType<<std::endl;
 
   PDFBandType = psf->GetBandType().ToString();
 
@@ -178,7 +179,12 @@ void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
    do_Scale = true;
   }
 
-  PDFErrorSize = psf->GetErrorSize().ToString();
+  //PDFErrorSize = psf->GetErrorSize().ToString();
+  f_PDFErrorSize90Percent=psf->GetIs90Percent();
+  if (debug) {
+   if (f_PDFErrorSize90Percent) std::cout<<cn<<mn<<"is90Percent ON "<< std::endl;
+   else                         std::cout<<cn<<mn<<"is90Percent OFF "<< std::endl;
+  }
 
   if(!psf->GetPDFSetPath().empty()) {
    pdfSetPath = psf->GetPDFSetPath();
@@ -190,6 +196,11 @@ void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
   AlphaSPDFSetNameUp = psf->GetAlphaSPDFNameUp();
   AlphaSPDFSetHistNameDown = psf->GetAlphaSPDFHistogramNameDown();
   AlphaSPDFSetHistNameUp = psf->GetAlphaSPDFHistogramNameUp();
+
+  if (debug) {
+   std::cout<<cn<<mn<<"finished"<< std::endl;
+  }
+  return;
 }
 
 // perform any additional work after constructors but before the object is available for use
@@ -314,7 +325,6 @@ void SPXPDF::Initialize()
 
  if (do_Scale) {
   if (applgridok) {
-    //h_errors_Scale.push_back(temp_hist);  // first element is the default histogram with scale used in the grid!
    if (RenScales.size()!=0 || FacScales.size()!=0){
     if (debug) {
      std::cout<<cn<<mn<<"Number of ren scale variations= "<<RenScales.size()<<std::endl;
@@ -660,8 +670,6 @@ void SPXPDF::CalcPDFBandErrors()
  // needs some more checking for uncertainty bands
  // calculate uncertainty bands
  //
- // to be done: write generic methods
- // Hessian: symetric, asymetric, RMS etc
  std::string mn = "CalcPDFBandErrors: ";
 
  if (debug) std::cout<<cn<<mn<<"Start calc of PDFBandErrors for: "<<PDFtype<<std::endl;
@@ -681,8 +689,7 @@ void SPXPDF::CalcPDFBandErrors()
   std::cout<<cn<<mn<<"Cross section for defaultpdf: "<<std::endl;
   hpdfdefault->Print("all");
 
-  std::cout<<cn<<mn<<"Error PropagationType= "<<ErrorPropagationType<<std::endl;
-
+  std::cout<<cn<<mn<<"ErrorPropagationType= "<<ErrorPropagationType<<std::endl;
  }
 
  for (int bi = 1; bi <= h_errors_PDFBand.at(0)->GetNbinsX(); bi++) { // loop over bins
@@ -725,8 +732,8 @@ void SPXPDF::CalcPDFBandErrors()
    }
    // here errors are symmetrized
    this_err_up = 0.5*TMath::Sqrt(this_err_up);
-   if (debug)
-    std::cout<<cn<<mn<<"this_err_up= "<<this_err_up<<" PDFErrorSize= "<<PDFErrorSize.c_str()<<std::endl;
+   //if (debug)
+   //std::cout<<cn<<mn<<"this_err_up= "<<this_err_up<<" PDFErrorSize= "<<PDFErrorSize.c_str()<<std::endl;
    //if (PDFErrorSize.compare("OneSigma")==0) {
    // if (debug) std::cout<<cn<<mn<<" put to one sigma "<<std::endl;
    // this_err_up /= 1.645;
@@ -854,6 +861,12 @@ void SPXPDF::CalcPDFBandErrors()
 
   if (debug) std::cout<<cn<<mn<<"this_err_up= "  <<this_err_up  <<std::endl;
   if (debug) std::cout<<cn<<mn<<"this_err_down= "<<this_err_down<<std::endl;
+
+  if (f_PDFErrorSize90Percent){
+   if (debug) std::cout<<cn<<mn<<" PDF has 90Percent error -> change to 68% "<<std::endl;
+   this_err_up  /= 1.645;
+   this_err_down/= 1.645;
+  }
 
   //if (TString(PDFtype).Contains("NNPDF") ) { // 
   if (ErrorPropagationType==StyleNNPDF) {
@@ -1278,6 +1291,8 @@ void SPXPDF::Print()
 		 <<"\n"<<setw(w)<<"first component to find maximum"  <<setw(w)<<(firstmaxvar!=DEFAULT?patch::to_string(firstmaxvar):empty)
 		 <<"\n"<<setw(w)<<"last component to find maximum"  <<setw(w)<<(lastmaxvar!=DEFAULT?patch::to_string(lastmaxvar):empty)
 		 //<<"\n"<<setw(w)<<"**PDF ERROR TYPE(s) ACTIVE:"
+                 <<"\n"<<setw(w)<<"f_PDFErrorSize90Percent"         <<setw(w)<<(f_PDFErrorSize90Percent? ON:OFF)
+
 		 <<"\n"<<setw(w)<<"PDFBand:"              <<setw(w)<<(do_PDFBand? ON:OFF)
 		 <<"\n"<<setw(w)<<"AlphaS:"               <<setw(w)<<(do_AlphaS? ON:OFF)
 		 <<"\n"<<setw(w)<<"Scale:" <<setw(w)<<(do_Scale? ON:OFF)
@@ -1285,7 +1300,7 @@ void SPXPDF::Print()
 		 <<"\n"<<setw(w)<<"includeEIG:"           <<setw(w)<<(includeEIG? ON:OFF)
 		 <<"\n"<<setw(w)<<"includeQUAD:"          <<setw(w)<<(includeQUAD? ON:OFF)
 		 <<"\n"<<setw(w)<<"includeMAX:"           <<setw(w)<<(includeMAX? ON:OFF)
-		 <<"\n"<<setw(w)<<"PDFErrorSize:"         <<setw(w)<<(PDFErrorSize.size()>0? PDFErrorSize:empty)
+   //<<"\n"<<setw(w)<<"PDFErrorSize:"         <<setw(w)<<(PDFErrorSize.size()>0? PDFErrorSize:empty)
 		 <<"\n SPXPDF::Print:<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"<<endl;
 }
 
@@ -1308,7 +1323,7 @@ void SPXPDF::SetVariablesDefault()
  ErrorPropagationType=-1;
  PDFBandType=defaultString;
  PDFErrorType=defaultString;
- PDFErrorSize="OneSigma";
+ //PDFErrorSize="OneSigma";
 
  defaultpdfid=0;
  defaultpdfidvar=-1;
@@ -1376,9 +1391,9 @@ void SPXPDF::SetPDFBandType(string _PDFBandType) {
 void SPXPDF::SetPDFErrorType(string _PDFErrorType) {
  PDFErrorType=_PDFErrorType;
 }
-void SPXPDF::SetPDFErrorSize(string _PDFErrorSize) {
- PDFErrorSize=_PDFErrorSize;
-}
+//void SPXPDF::SetPDFErrorSize(string _PDFErrorSize) {
+// PDFErrorSize=_PDFErrorSize;
+//}
 
 void SPXPDF::SetDoPDFBand(bool _doit) {
  do_PDFBand = _doit;

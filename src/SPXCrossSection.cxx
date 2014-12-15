@@ -43,9 +43,6 @@ void SPXCrossSection::Create(void) {
 		throw;
 	}
 
-	//Convert reference and nominal histograms to graphs and save them
-	SPXGraphUtilities::HistogramToGraph(gridReference, grid->GetReference());
-	SPXGraphUtilities::HistogramToGraph(nominal, pdf->GetPDFNominal());
 
 	if (debug) std::cout<<cn<<mn<<"Created the PDF-class "<<endl;
         pdf->SetDoPDFBand(true);
@@ -69,6 +66,13 @@ void SPXCrossSection::Create(void) {
         pdf->SetScales(RenScales,FacScales);
 
         pdf->Initialize();
+
+	//Convert reference and nominal histograms to graphs and save them
+        if (!pdf->GetPDFNominal()) std::cout<<cn<<mn<<"nominal PDF not found ! "<<endl;
+        if (!grid->GetReference()) std::cout<<cn<<mn<<"reference histogram not found ! "<<endl;
+
+	SPXGraphUtilities::HistogramToGraph(gridReference, grid->GetReference());
+	SPXGraphUtilities::HistogramToGraph(nominal, pdf->GetPDFNominal());
 
 	//Set the name of the convolution graphs appropriately
 	//Create name strings

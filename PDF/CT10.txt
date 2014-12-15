@@ -4,12 +4,9 @@
 ;	Example PDF Steering File
 ;
 ; Authors:
-;	Jon Doe
-;	Jean Pierre Larousse
-;	...
+
 ;
 ; Date:
-;	17.09.2014
 ;
 ; Other:
 ;	Other information...
@@ -33,16 +30,14 @@
 ;==============================================================
 [GEN]
 debug = true
-
 ;==============================================================
 ; Description
 ;==============================================================
 [DESC]
-name = CT10
-name_var = CT10_R04
-type = CT10
-order = 1
-num_members = 53
+name = CT10 ; name of LHGrid-file
+type = CT10 ; general name used for printing etc
+order = 1   ; 1=NLO 2=NNLO
+num_members = 53 ; number of Eigenvectors
 ; pdf_set_path =
 
 ;==============================================================
@@ -59,18 +54,10 @@ marker_style = 22
 [PDF]
 default_id = 0
 default_id_var = 0
-first_eig = 1
-last_eig = 0
-first_quad = 1
-last_quad = 25
-first_max = 1
-last_max = 6
-include_eig = false
-include_quad = false
-include_max = false
+is90Percent = true
 band_type = use_error_band
 ;
-ErrorPropagationType=0
+;ErrorPropagationType = 1
 ;error_type = scale_band
 error_type = pdf_band
 ;error_type = alphas_band

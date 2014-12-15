@@ -98,8 +98,10 @@ class SPXPDF {
 	int GetMarkerStyle() const{return markerStyle;};
 	int GetMarkerColor() const{return fillColorCode;}; //should be marker color, using fill color as default
         string GetPDFBandType() const{return PDFBandType;};
-        string GetPDFErrorType() const{return PDFErrorType;};
-        string GetPDFErrorSize() const{return PDFErrorSize;};
+        //string GetPDFErrorType() const{return PDFErrorType;};
+        //string GetPDFErrorSize() const{return PDFErrorSize;};
+
+        bool Is90PercentErrorSize()const{return f_PDFErrorSize90Percent;}; 
 
         bool GetDoPDFBand() const{return do_PDFBand;};
         bool GetDoAlphaS() const{return do_AlphaS;};
@@ -126,7 +128,7 @@ class SPXPDF {
         void SetFillColorCode(int _fillColorCode);
         void SetPDFBandType(string _PDFBandType);
         void SetPDFErrorType(string _PDFErrorType);
-        void SetPDFErrorSize(string _PDFErrorSize);
+        //void SetPDFErrorSize(string _PDFErrorSize);
 
         void SetDoPDFBand(bool _doit);
         void SetDoAlphaS(bool _doit);
@@ -177,10 +179,10 @@ class SPXPDF {
 		int markerStyle;            //optional marker style
         string PDFBandType;
         string PDFErrorType;
-        string PDFErrorSize;
+        //string PDFErrorSize;
 
         bool f_PDFBandType;
-        bool f_PDFErrorSize;
+        bool f_PDFErrorSize90Percent;
         string pdfSetPath;
 
         //PDFErrorPropagation_t ErrorPropagationType;

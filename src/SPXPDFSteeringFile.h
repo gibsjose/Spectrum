@@ -78,10 +78,11 @@ private:
 	bool includeEig;
 	bool includeQuad;
 	bool includeMax;
+        bool is90Percent;
         int ErrorPropagationType;
 	SPXPDFBandType bandType;
 	SPXPDFErrorType errorType;
-	SPXPDFErrorSize errorSize;
+	//SPXPDFErrorSize errorSize;
 	int alphaSErrorNumberUp;
 	int alphaSErrorNumberDown;
 	std::string alphaSPDFNameUp;
@@ -198,8 +199,13 @@ public:
 		return this->includeMax;
 	}
 
-        PDFErrorPropagation_t GetErrorPropagationType(void) const {
-         this->ErrorPropagationType;
+	bool GetIs90Percent(void) const {
+		return this->is90Percent;
+	}
+
+
+        int GetErrorPropagationType(void) const {
+         return this->ErrorPropagationType;
         }
 
 	SPXPDFBandType & GetBandType(void) {
@@ -210,9 +216,9 @@ public:
 		return this->errorType;
 	}
 
-	SPXPDFErrorSize & GetErrorSize(void) {
-		return this->errorSize;
-	}
+	//SPXPDFErrorSize & GetErrorSize(void) {
+	//	return this->errorSize;
+	//}
 
 	int GetAlphaSErrorNumberUp(void) const {
 		return this->alphaSErrorNumberUp;

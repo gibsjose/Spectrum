@@ -1208,7 +1208,7 @@ void SPXPlot::InitializeCrossSections(void) {
 
     	        if(debug) std::cout << cn << mn << i<<" Get graphScale" <<std::endl;
 		TGraphAsymmErrors *graphScale = crossSections[i].GetScaleBandResults();
-                if (!graphScale) std::cout << cn << mn << i<<"graphScale not found !" <<std::endl;
+                if (!graphScale) std::cout << cn << mn << i<<" graphScale not found !" <<std::endl;
 
 		//Update the Convolute File Map
 		StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
