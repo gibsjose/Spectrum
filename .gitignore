@@ -13,6 +13,13 @@ tags
 # Root files
 *.root
 
+# original data files
+*.dat
+
+# Tar files
+*.tgz
+*.tar
+
 # Spectrum project
 *.sublime-project
 *.sublime-workspace

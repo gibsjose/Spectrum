@@ -32,7 +32,7 @@
 ; General Options
 ;==============================================================
 [GEN]
-debug = false
+debug = true
 
 ;==============================================================
 ; Description
@@ -65,15 +65,21 @@ first_quad = 1
 last_quad = 25
 first_max = 1
 last_max = 6
-include_eig = true
-include_quad = true
+include_eig = false
+include_quad = false
 include_max = false
-band_type =	use_error_band
+band_type = use_error_band
+;
+ErrorPropagationType=0
+;error_type = scale_band
 error_type = pdf_band
+;error_type = alphas_band
+;
 error_size = one_sigma
+; PDF set member number
 alpha_s_error_number_up = 7
 alpha_s_error_number_down = 3
-alpha_s_pdf_name_up = none
+alpha_s_pdf_name_up = CT10as
 alpha_s_pdf_name_down = CT10as
 alpha_s_pdf_histogram_name_up = CT10as120_prenorm
 alpha_s_pdf_histogram_name_down = CT10as116_prenorm

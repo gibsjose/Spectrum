@@ -92,6 +92,9 @@ void SPXPDFSteeringFile::SetDefaults(void) {
 	errorType = SPXPDFErrorType();
 	if(debug) std::cout << cn << mn << "errorType set to default: \" \"" << std::endl;
 
+        ErrorPropagationType=EigenvectorSymmetricHessian;
+	if(debug) std::cout << cn << mn << "ErrorPropagationType set to default: "<< EigenvectorSymmetricHessian << std::endl;
+
 	errorSize = SPXPDFErrorSize();
 	if(debug) std::cout << cn << mn << "errorSize set to default: \" \"" << std::endl;
 
@@ -142,6 +145,19 @@ void SPXPDFSteeringFile::Print(void) {
 	std::cout << "\t\t Include Eigenvectors? " << (includeEig ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Include Quadrature? " << (includeQuad ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Include Max? " << (includeMax ? "YES" : "NO") << std::endl;
+
+	std::cout << "\t\t ErrorPropagationType " << ErrorPropagationType<< std::endl;
+        if (ErrorPropagationType==EigenvectorSymmetricHessian) 
+  	 std::cout << "\t add in quadrature and symmetrize"<< std::endl;
+        else if (ErrorPropagationType==EigenvectorAsymmetricHessian)
+  	 std::cout << "\t add in quadrature, keep asymetic uncertainties"<< std::endl;
+        else if (ErrorPropagationType==StyleHeraPDF)  
+  	 std::cout << "\t HERAPDF type Eigenvector, QUAD. Max "<< std::endl;
+        else if (ErrorPropagationType==StyleNNPDF)  
+  	 std::cout << "\t NNPDF type  "<< std::endl;
+        else
+  	 std::cout << "\t UNKNOWN !! "<< std::endl;
+
 	std::cout << "\t\t Band Type: " << bandType.ToString() << std::endl;
 	std::cout << "\t\t Error Type: " << errorType.ToString() << std::endl;
 	std::cout << "\t\t Error Size: " << errorSize.ToString() << std::endl;
@@ -311,10 +327,16 @@ void SPXPDFSteeringFile::Parse(void) {
 		if(debug) std::cout << cn << mn << "Successfully read Last Max: " << lastMax << std::endl;
 	}
 
-	includeEig = reader->GetBoolean("PDF", "include_eig", includeEig);
+	includeEig  = reader->GetBoolean("PDF", "include_eig", includeEig);
 	includeQuad = reader->GetBoolean("PDF", "include_quad", includeQuad);
-	includeMax = reader->GetBoolean("PDF", "include_max", includeMax);
+	includeMax  = reader->GetBoolean("PDF", "include_max", includeMax);
 
+        ErrorPropagationType=reader->GetInteger("PDF", "ErrorPropagationType", ErrorPropagationType);
+	if (debug) std::cout<<cn<<mn<<" Read in ErrorPropagationType= "<<ErrorPropagationType<<std::endl;
+        if (ErrorPropagationType>StyleNNPDF) {
+	  std::cout<<cn<<mn<<"ERROR UNKNOWN Error Propagation type ! "<<ErrorPropagationType<<std::endl;
+          exit (0);
+        }
 	//Parse Band Type
 	tmp = reader->Get("PDF", "band_type", "EMPTY");
 	if(!tmp.compare("EMPTY")) {

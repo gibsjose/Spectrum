@@ -41,16 +41,13 @@ class SPXPDF {
         //VARIABLES
 
         TGraphAsymmErrors *h_PDFBand_results;
-        TGraphAsymmErrors *h_PDFBand_results_ratio_to_ref;
         TGraphAsymmErrors *h_AlphaS_results;
-        TGraphAsymmErrors *h_AlphaS_results_ratio_to_ref;
         TGraphAsymmErrors *h_Scale_results;
-        TGraphAsymmErrors *h_Scale_results_ratio_to_ref;
+        TGraphAsymmErrors *h_Total_results;
 
         string calc_desc;
 
         bool applgridok;
-
 
         //METHODS
         SPXPDF() {};
@@ -67,14 +64,16 @@ class SPXPDF {
         void Initialize();
         void Print();
         void ReadPDFSteeringFile(SPXPDFSteeringFile *psf);
-       // void ReadSteering(const string _fileName);
 
         void InitializeErrorGraphs();
+
         void CalcSystErrors();
         void CalcPDFBandErrors();
         void CalcAlphaSErrors();
-        //void CalcTotErrors();
-        void GetRatioToTH1(TH1D* href);
+        void CalcScaleErrors();
+        void CalcTotalErrors();
+
+	// void GetRatioToTH1(TH1D* href);
         TH1D* GetPDFRatio(int iset1, int iset2=0);
         void DrawPDFRatio(int iset1, int iset2=0);
         void DrawPDFBand();
@@ -96,14 +95,16 @@ class SPXPDF {
         int GetNumPDFMembers() const{return n_PDFMembers;};
         int GetFillStyleCode() const{return fillStyleCode;};
         int GetFillColorCode() const{return fillColorCode;};
-		int GetMarkerStyle() const{return markerStyle;};
-		int GetMarkerColor() const{return fillColorCode;}; //should be marker color, using fill color as default
+	int GetMarkerStyle() const{return markerStyle;};
+	int GetMarkerColor() const{return fillColorCode;}; //should be marker color, using fill color as default
         string GetPDFBandType() const{return PDFBandType;};
         string GetPDFErrorType() const{return PDFErrorType;};
         string GetPDFErrorSize() const{return PDFErrorSize;};
 
         bool GetDoPDFBand() const{return do_PDFBand;};
         bool GetDoAlphaS() const{return do_AlphaS;};
+        bool GetDoScale() const{return do_Scale;};
+        bool GetDoTotal() const{return do_Total;};
 
         int GetAlphaSmemberNumDown() const{return AlphaSmemberNumDown;};
         int GetAlphaSmemberNumUp() const{return AlphaSmemberNumUp;};
@@ -111,8 +112,6 @@ class SPXPDF {
         string GetAlphaSPDFSetNameUp() const{return AlphaSPDFSetNameUp;};
         string GetAlphaSPDFSetHistNameDown() const{return AlphaSPDFSetHistNameDown;};
         string GetAlphaSPDFSetHistNameUp() const{return AlphaSPDFSetHistNameUp;};
-
-        TGraphAsymmErrors *GetScaleDependence(double renscale, double facscale, int pdfset);
 
         //mutator methods
         void SetDebug(bool _debug);
@@ -130,9 +129,8 @@ class SPXPDF {
         void SetPDFErrorSize(string _PDFErrorSize);
 
         void SetDoPDFBand(bool _doit);
-        void SetDoAplphaS(bool _doit);
-        //void SetDoRenormalizationScale(bool _doit);
-        //void SetDoFactorizationScale(bool _doit);
+        void SetDoAlphaS(bool _doit);
+        void SetDoScale(bool _doit);
         void SetDoTotError(bool _doit);
 
         void SetAlphaSmemberNumDown(int _memberNum);
@@ -141,6 +139,12 @@ class SPXPDF {
         void SetAlphaSPDFSetNameUp(string _name);
         void SetAlphaSPDFSetHistNameDown(string _name);
         void SetAlphaSPDFSetHistNameUp(string _name);
+
+        void SetAlphaS_value_worldAverage(double setalpha) {alphaS_value_worldAverage=setalpha;};
+        void SetAlphaS_absUnc_worldAverage(double setalpha){alphaS_absUnc_worldAverage=setalpha;};
+        void SetAlphaS_scale_worldAverage(double setalpha) {alphaS_scale_worldAverage=setalpha;};
+
+        void SetScales(std::vector<double> aRenScales,std::vector<double> aFacScales);
 
         TH1D * GetPdfdefault() { return hpdfdefault;};
 
@@ -179,6 +183,9 @@ class SPXPDF {
         bool f_PDFErrorSize;
         string pdfSetPath;
 
+        //PDFErrorPropagation_t ErrorPropagationType;
+        int ErrorPropagationType;
+
         // for HERA type PDFS
         bool includeEIG;  // include experimental eigenvectors
         bool includeQUAD; // include model variations added in quadrature
@@ -196,21 +203,20 @@ class SPXPDF {
 
         std::vector<TH1D*> h_errors_AlphaS;
         std::vector<TH1D*> h_errors_PDFBand;
+        std::vector<TH1D*> h_errors_Scale;
 
         TH1D *hpdfdefault;
 
-	/*
-        std::vector<TH1D*> h_errors_RenormalizationScale;
-        std::vector<TH1D*> h_errors_FactorizationScale;
-        */
+        std::vector<double> alphaS_variations;  // the values of alphaS variations corresponding to the histograms stored in h_errors_AlphaS
+
+
         string gridName;
 
         //double xscale;
         bool do_PDFBand;
         bool do_AlphaS;
-        //bool do_RenormalizationScale;
-        //bool do_FactorizationScale;
-        //bool do_TotError;
+        bool do_Scale;
+        bool do_Total;
 
         //METHODS
         void SetVariablesDefault();
@@ -221,6 +227,14 @@ class SPXPDF {
         int ifl; // flavour as from LHAPDF
         double Q2; // Q2 value used in LHAPDF
         TH1D * hpdf; //histo to store PDS PDF vs x
+
+        std::vector<double> RenScales;
+        std::vector<double> FacScales;
+
+        double alphaS_value_worldAverage;
+        double alphaS_absUnc_worldAverage;
+        double alphaS_relUnc_worldAverage;
+        double alphaS_scale_worldAverage;
 
 };
 

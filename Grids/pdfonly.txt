@@ -2,7 +2,6 @@
 ;
 ; Description:		
 ;	ATLAS 2010 inclusive jets sqrt(s)=2.76 TeV
-;
 ; Date:
 ;	03.12.2014
 ; Comment:
@@ -18,14 +17,14 @@ debug = true
 ; Description
 ;==============================================================
 [DESC]
-name = atlas_2011_2p76TeV_jet_antiktr04_incljetpt_eta7
-author = Shima Shimizu
+name = pdfonly
+author = Tancredi Carli
 lumi_config_file = NONE                      
-scale = Ptjet                                
-reference_journal_name=EPJ C73 (2013) 2509   
-reference_link_to_arxiv=http://arxiv.org/abs/1304.4739 
-nlo_program_name = nlojet++                    
-grid_program_name=jetmod                       
+scale = Q^2                               
+reference_journal_name=none
+reference_link_to_arxiv=none
+nlo_program_name = none                   
+grid_program_name=none                       
 observable_definition_link_to_code = unknown   
 ;
 ;==============================================================
@@ -40,7 +39,7 @@ divided_by_bin_width = true
 ; Grid Options
 ;==============================================================
 [GRID]								 
-grid_file = atlas-incljets-R04-eta7.root
-generator_id =nlojet++ 		
-ntuple_id =jetmod		
+grid_file = none
+generator_id =none 		
+ntuple_id =none		
 lowest_order = 2		
