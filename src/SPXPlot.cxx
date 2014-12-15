@@ -1179,10 +1179,12 @@ void SPXPlot::InitializeCrossSections(void) {
 		if(debug) std::cout << cn << mn << "Added convolute with key = [" << key.first << ", " << key.second << "] to crossSectionsSet" << std::endl;
 
 		try {
-			SPXPDFSteeringFile &psf = pci.pdfSteeringFile;
-			SPXCrossSection crossSectionInstance = SPXCrossSection(&psf, &pci);
+                        // TC changed this grid steering is in plot configuration
+			//SPXPDFSteeringFile &psf = pci.pdfSteeringFile;
+			//SPXCrossSection crossSectionInstance = SPXCrossSection(&psf, &pci);
+ 		        SPXCrossSection crossSectionInstance = SPXCrossSection(&pci);
 			pcis.push_back(pci);
-			crossSectionInstance.Create();
+			crossSectionInstance.Create(steeringFile);
 
 			if(steeringFile->GetGridCorr()) {
 				crossSectionInstance.ParseCorrections();

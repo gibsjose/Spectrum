@@ -47,12 +47,6 @@ string SPXPDF::GetEnv( const string & var ) {
 		return s;
 }
 
-/*
-//currently declared in local directories LHAPDF.h file
-double alphasPDF(const double& Q) {
-		return alphaspdf_(Q);
-}
-*/
 
 /******************************************************************
  ** Method Implementations
@@ -98,6 +92,17 @@ SPXPDF::SPXPDF(SPXPDFSteeringFile *psf, const std::string &_gridName)
 
  RenScales.clear();
  FacScales.clear();
+
+ RenScales.push_back(2.0);
+ FacScales.push_back(2.0);
+ RenScales.push_back(1.0);
+ FacScales.push_back(1.0);
+ RenScales.push_back(0.5);
+ FacScales.push_back(0.5);
+ RenScales.push_back(1.0);
+ FacScales.push_back(0.5);
+ RenScales.push_back(0.5);
+ FacScales.push_back(1.0);
 
  ReadPDFSteeringFile(psf);
 
@@ -190,12 +195,12 @@ void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
    pdfSetPath = psf->GetPDFSetPath();
   }
 
-  AlphaSmemberNumDown = psf->GetAlphaSErrorNumberDown();
-  AlphaSmemberNumUp = psf->GetAlphaSErrorNumberUp();
+  AlphaSmemberNumDown  = psf->GetAlphaSErrorNumberDown();
+  AlphaSmemberNumUp    = psf->GetAlphaSErrorNumberUp();
   AlphaSPDFSetNameDown = psf->GetAlphaSPDFNameDown();
-  AlphaSPDFSetNameUp = psf->GetAlphaSPDFNameUp();
+  AlphaSPDFSetNameUp   = psf->GetAlphaSPDFNameUp();
   AlphaSPDFSetHistNameDown = psf->GetAlphaSPDFHistogramNameDown();
-  AlphaSPDFSetHistNameUp = psf->GetAlphaSPDFHistogramNameUp();
+  AlphaSPDFSetHistNameUp   = psf->GetAlphaSPDFHistogramNameUp();
 
   if (debug) {
    std::cout<<cn<<mn<<"finished"<< std::endl;
@@ -219,14 +224,18 @@ void SPXPDF::Initialize()
  if (do_Scale)
   calc_desc+="_Scale";
 
- if (do_PDFBand) std::cout<<cn<<mn<<"do_PDFBand ON"<<std::endl;
- if (do_AlphaS ) std::cout<<cn<<mn<<"do_AlphaS ON"<<std::endl;
- if (do_Scale)   std::cout<<cn<<mn<<"do_Scale  ON"<<std::endl;
- if (do_Total)   std::cout<<cn<<mn<<"do_Total  ON"<<std::endl;
+ if (do_PDFBand) std::cout<<cn<<mn<<"do_PDFBand ON" <<std::endl;
+ else            std::cout<<cn<<mn<<"do_PDFBand OFF"<<std::endl;
+ if (do_AlphaS ) std::cout<<cn<<mn<<"do_AlphaS ON" <<std::endl;
+ else            std::cout<<cn<<mn<<"do_AlphaS OFF"<<std::endl;
+ if (do_Scale)   std::cout<<cn<<mn<<"do_Scale  ON" <<std::endl;
+ else            std::cout<<cn<<mn<<"do_Scale  OFF"<<std::endl;
+ if (do_Total)   std::cout<<cn<<mn<<"do_Total  ON" <<std::endl;
+ else            std::cout<<cn<<mn<<"do_Total  OFF"<<std::endl;
 
  if (!do_PDFBand && !do_AlphaS && !do_Scale) {
   std::cout<<cn<<mn<<"ERROR: All theory uncertainties disabled. Possible steering file error? "<<std::endl;
-  std::cout<<cn<<mn<<"ERROR: Check file: "<<steeringFileName<<std::endl;
+  std::cout<<cn<<mn<<"ERROR: Check settings in steering file "<<std::endl;
   exit(0); 
  }
 
@@ -237,8 +246,7 @@ void SPXPDF::Initialize()
    exit(0); 
   }
   if (debug) {
-   std::cout<<cn<<mn<<" do_Scale ON"<<RenScales.size()<<std::endl;
-   std::cout<<cn<<mn<<"RenScales.size()"<<RenScales.size()<<std::endl;
+   std::cout<<cn<<mn<<"RenScales.size()="<<RenScales.size()<<std::endl;
    for (int i=0; i<RenScales.size(); i++) {	  
     std::cout<<cn<<mn<<"RenScales["<<i<<"]= "<<RenScales[i]<<std::endl;
    }
@@ -475,7 +483,7 @@ void SPXPDF::Initialize()
   } else {
    if (debug) std::cout<<cn<<mn<<" histogram from PDF not applgrid ! "<<std::endl;
    temp_hist=this->FillPdfHisto();
-   temp_hist->SetName((TString) ("h_pdf_"+AlphaSPDFSetHistNameDown));
+   temp_hist->SetName((TString) ("h_pdf_"+AlphaSPDFSetHistNameUp));
   }
 
   h_errors_AlphaS.push_back(temp_hist);

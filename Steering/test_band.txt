@@ -23,6 +23,15 @@ match_binning = false
 label_sqrt_s = true
 x_legend = 0.9
 y_legend = 0.9
+
+band_with_pdf = false
+band_with_alphas= false
+band_with_scale = true
+band_total = false
+
+ren_scales 5.0,1.0,0.5,1.0,0.5
+fac_scales 5.0,1.0,0.5,0.5,1.0
+
 ; y_overlay_min =
 ; y_overlay_max =
 ; y_ratio_min =
@@ -39,11 +48,11 @@ data_directory = Data/jet/atlas/incljets2011_2p76TeV
 grid_directory = Grids/jet/atlas/incljets2011_2p76TeV/nlojet
 data_steering_files = atlas_2011_2p76TeV_jet_antiktr06_incljetpt_eta1.txt
 grid_steering_files = atlas_2011_2p76TeV_jet_antiktr06_incljetpt_eta1.txt
-;pdf_steering_files = CT10.txt
+pdf_steering_files = CT10.txt
 ;pdf_steering_files = MRST2008nlo.txt
 ;pdf_steering_files = CTEQ6M.txt
 ;pdf_steering_files = NNPDF30nlo.txt
-pdf_steering_files = HERAPDF15NLO.txt
+;pdf_steering_files = HERAPDF15NLO.txt
 ;pdf_steering_files = NNPDF23nloNoLHC.txt
 
 

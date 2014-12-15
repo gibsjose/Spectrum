@@ -20,10 +20,10 @@
 const std::string cn = "SPXCrossSection::";
 
 //Must define the static debug variable in the implementation
-bool SPXCrossSection::debug=true;
+bool SPXCrossSection::debug;
 
 //Create the CrossSection
-void SPXCrossSection::Create(void) {
+void SPXCrossSection::Create(SPXSteeringFile *mainsteeringFile) {
 	std::string mn = "Create: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
@@ -44,24 +44,27 @@ void SPXCrossSection::Create(void) {
 	}
 
 
-	if (debug) std::cout<<cn<<mn<<"Created the PDF-class "<<endl;
-        pdf->SetDoPDFBand(true);
-        pdf->SetDoAlphaS(false);
-        pdf->SetDoScale(false);
-        pdf->SetDoTotError(false);
+        //@TODO What to do when the grid IS divided but the reference is NOT?
+	dividedByBinWidth = this->pci->gridSteeringFile.IsGridDividedByBinWidth();
 
-        std::vector<double> RenScales;
-        std::vector<double> FacScales;
-        RenScales.push_back(1.);
-        FacScales.push_back(1.);
-        RenScales.push_back(0.5);
-        FacScales.push_back(0.5);
-        RenScales.push_back(2.0);
-        FacScales.push_back(2.0);
-        RenScales.push_back(0.5);
-        FacScales.push_back(1.0);
-        RenScales.push_back(1.0);
-        FacScales.push_back(0.5);
+	if (debug) {
+         std::cout<<cn<<mn<<"Created the PDF-class "<<endl;
+	 std::cout<<cn<<mn<<" dividedByBinWidth= " <<dividedByBinWidth<<std::endl;
+
+	 std::cout<<cn<<mn<<" GetBandwithPDF= "   <<mainsteeringFile->GetBandwithPDF()<<std::endl;
+	 std::cout<<cn<<mn<<" GetBandwithAlphas= "<<mainsteeringFile->GetBandwithAlphaS()<<std::endl;
+	 std::cout<<cn<<mn<<" GetBandwithScales= "<<mainsteeringFile->GetBandwithScales()<<std::endl;
+	 std::cout<<cn<<mn<<" GetBandTotal= "     <<mainsteeringFile->GetBandTotal()<<std::endl;
+	}
+
+        // Set which uncertainty to calculate in PDF file
+        pdf->SetDoPDFBand (mainsteeringFile->GetBandwithPDF());
+        pdf->SetDoAlphaS  (mainsteeringFile->GetBandwithAlphaS());
+        pdf->SetDoScale   (mainsteeringFile->GetBandwithScales());
+        pdf->SetDoTotError(mainsteeringFile->GetBandTotal());
+
+        std::vector<double> RenScales=mainsteeringFile->GetRenScales();
+	std::vector<double> FacScales=mainsteeringFile->GetFacScales();
 
         pdf->SetScales(RenScales,FacScales);
 

@@ -22,22 +22,37 @@
 #include "SPXPDFSteeringFile.h"
 #include "SPXPlotConfiguration.h"
 #include "SPXGridCorrections.h"
-
+#include "SPXSteeringFile.h"
 #include "SPXUtilities.h"
 
 class SPXCrossSection {
 
 public:
-	explicit SPXCrossSection(SPXPDFSteeringFile *psf, SPXPlotConfigurationInstance *pci) {
-		this->psf = psf;
-		this->pci = pci;
+   // TC changed this grid steering is in plot configuration
+   //explicit SPXCrossSection(SPXPDFSteeringFile *psf, SPXPlotConfigurationInstance *pci) {
+     explicit SPXCrossSection(SPXPlotConfigurationInstance *pci) {
 
+              //this->psf = psf;
+                this->psf =&pci->pdfSteeringFile;
+		this->pci = pci;
+             
 		//Create graphs for grid reference and nominal
 		gridReference = new TGraphAsymmErrors();
 		nominal = new TGraphAsymmErrors();
 
-		//@TODO What to do when the grid IS divided but the reference is NOT?
-		dividedByBinWidth = this->pci->gridSteeringFile.IsGridDividedByBinWidth();
+                //RenScales.clear();
+                //FacScales.clear();
+                //RenScales.push_back(1.);
+                //FacScales.push_back(1.);
+                //RenScales.push_back(0.5);
+                //FacScales.push_back(0.5);
+                //RenScales.push_back(2.0);
+                //FacScales.push_back(2.0);
+                //RenScales.push_back(0.5);
+                //FacScales.push_back(1.0);
+                //RenScales.push_back(1.0);
+                //FacScales.push_back(0.5);
+
 	}
 
 	~SPXCrossSection(void) {
@@ -45,7 +60,7 @@ public:
 		//delete pdf;
 	}
 
-	void Create(void);
+	void Create(SPXSteeringFile *mainsteeringFile);
 	void ParseCorrections(void);
 	void ApplyCorrections(void);
 
@@ -108,17 +123,18 @@ public:
 	}
 
 private:
-	static bool debug;							//Flag indicating debug mode
-	unsigned int plotID;						//Plot ID
-	SPXPDFSteeringFile *psf;					//Fully parsed PDF Steering File
+	static bool debug;					 //Flag indicating debug mode
+	unsigned int plotID;					//Plot ID
+	SPXPDFSteeringFile *psf;				//Fully parsed PDF Steering File
 	SPXPlotConfigurationInstance *pci;			//Fully parsed Plot configuration instance (contains grid steering file)
-	SPXGrid *grid;								//Grid
-	SPXPDF *pdf;								//PDF
+	SPXGrid *grid;						//Grid
+	SPXPDF *pdf;						//PDF
 	SPXGridCorrections *corrections;			//Grid corrections
-	bool dividedByBinWidth;						//Flag indicating that the grid was already divided by the bin width
+	bool dividedByBinWidth;					//Flag indicating that the grid was already divided by the bin width
 
 	TGraphAsymmErrors *gridReference;			//Reference Graph from Grid
-	TGraphAsymmErrors *nominal;					//Nominal (default) graph from PDF
+	TGraphAsymmErrors *nominal;				//Nominal (default) graph from PDF
+
 };
 
 #endif

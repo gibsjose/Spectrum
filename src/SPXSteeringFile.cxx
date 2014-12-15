@@ -37,6 +37,21 @@ void SPXSteeringFile::SetDefaults(void) {
 	plotMarker = true;
 	if(debug) std::cout << cn << mn << "plotMarker set to default: \"true\"" << std::endl;
 
+	BandwithPDF    = false;
+	if(debug) std::cout << cn << mn << "BandwithPDF set to default: \"false\"" << std::endl;
+
+	BandwithAlphaS = false;
+	if(debug) std::cout << cn << mn << "BandwithAlphaS set to default: \"false\"" << std::endl;
+
+	BandwithScales = false;
+	if(debug) std::cout << cn << mn << "BandwithScales set to default: \"false\"" << std::endl;
+
+	BandTotal      = false;
+	if(debug) std::cout << cn << mn << "BandwithTotal set to default: \"false\"" << std::endl;
+
+        RenScales.clear();
+        FacScales.clear();
+
 	plotStaggered = false;
 	if(debug) std::cout << cn << mn << "plotStaggered set to default: \"false\"" << std::endl;
 
@@ -123,6 +138,9 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Debug is " << (debug ? "ON" : "OFF") << std::endl;
 	std::cout << "\t Graphing configurations [GRAPH]" << std::endl;
 	std::cout << "\t\t Plot Band is: " << (plotBand ? "ON" : "OFF") << std::endl;
+	std::cout << "\t\t Plot cross section Uncertainties with PDF uncertainties: " << (BandwithPDF ? "ON" : "OFF") << std::endl;
+	std::cout << "\t\t Plot cross section Uncertainty with AlphaS uncertainties: " << (BandwithAlphaS ? "ON" : "OFF") << std::endl;
+	std::cout << "\t\t Plot cross section Uncertainty with ren&fac scale uncertainties: " << (BandwithScales ? "ON" : "OFF") << std::endl;    std::cout << "\t\t Plot Cross section Uncertainties with total uncertainties: " << (BandTotal ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Error Ticks is: " << (plotErrorTicks ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Marker is: " << (plotMarker ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Staggered is: " << (plotStaggered ? "ON" : "OFF") << std::endl;
@@ -135,6 +153,19 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Y Overlay Max: " << yOverlayMax << std::endl;
 	std::cout << "\t\t Y Ratio Min: " << yRatioMin << std::endl;
 	std::cout << "\t\t Y Ratio Max: " << yRatioMax << std::endl << std::endl;
+
+        std::cout<<"Number of Scale variations:"<<RenScales.size()<<std::endl;
+        if (RenScales.size()!=FacScales.size()) {
+	 std::cout<<" Something is wrong #RenScales != #FacScales, Check steering "<<std::endl;
+         exit (0);
+        }
+        for (int i=0; i<RenScales.size(); i++) {	  
+         std::cout<<"RenScales["<<i<<"]= "<<RenScales[i]<<std::endl;
+        }
+        for (int i=0; i<FacScales.size(); i++) {	  
+         std::cout<<"FacScales["<<i<<"]= "<<FacScales[i]<<std::endl;
+        }
+      
 	std::cout << "\t Plot Configurations" << std::endl;
 	std::cout << "\t\t Number of Plots: " << GetNumberOfPlotConfigurations() << std::endl << std::endl;
 
@@ -944,6 +975,55 @@ void SPXSteeringFile::Parse(void) {
 
 	//Graphing configurations [GRAPH]
 	plotBand = reader->GetBoolean("GRAPH", "plot_band", plotBand);
+	BandwithPDF    = reader->GetBoolean("GRAPH", "band_with_pdf", BandwithPDF);
+	if (debug&& BandwithPDF) std::cout << cn << mn << "BandwithPDF is ON" << std::endl;
+
+	BandwithAlphaS = reader->GetBoolean("GRAPH", "band_with_alphas", BandwithAlphaS);
+	if (debug&& BandwithAlphaS) std::cout << cn << mn << "BandwithAlphaS is ON" << std::endl;
+
+	BandwithScales = reader->GetBoolean("GRAPH", "band_with_scale", BandwithScales);
+	if (debug&& BandwithScales) std::cout << cn << mn << "BandwithScales is ON" << std::endl;
+
+	BandTotal      = reader->GetBoolean("GRAPH", "band_total", BandTotal);
+	if (debug&& BandTotal) std::cout << cn << mn << "BandTotal is ON" << std::endl;
+        
+	//Get the renormalisation scale
+	tmp = reader->Get("GRAPH","ren_scales", "EMPTY");
+        cout<<" tmp= "<<tmp<<endl;
+	if(!tmp.compare("EMPTY")) {
+	 if(debug) std::cout << cn << mn << "No ren_scales given using defaults " << std::endl;
+	}else{
+	 //Parse into vector
+         RenScales.clear();
+         //std::vector<std::string> tmpRenScales;
+	 //tmpRenScales = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+         RenScales=SPXStringUtilities::ParseStringToDoubleVector(tmp,',');
+	 if(debug) {         
+	  std::cout << cn << mn << "RenScales: " << tmp << " parsed into:" << std::endl;
+	  for(int j = 0; j < RenScales.size(); j++) {
+	   std::cout << cn << mn << "\t" << RenScales[j] << std::endl;
+	  }
+	 }
+        }
+
+	tmp = reader->Get("GRAPH", "fac_scales", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+	 if(debug) std::cout << cn << mn << "No fac_scales given using defaults " << std::endl;
+	}else{
+	 //Parse into vector
+         FacScales.clear();
+         //std::vector<std::string> tmpFacScales;
+	 //tmpFacScales = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+         FacScales=SPXStringUtilities::ParseStringToDoubleVector(tmp,',');
+	 if(debug) {
+	  std::cout << cn << mn << "FacScales: " << tmp << " parsed into:" << std::endl;
+	  for(int j = 0; j < FacScales.size(); j++) {
+	   std::cout << cn << mn << "\t" << FacScales[j] << std::endl;
+	  }
+	 }
+        }
+
+
 	plotErrorTicks = reader->GetBoolean("GRAPH", "plot_error_ticks", plotErrorTicks);
 	plotMarker = reader->GetBoolean("GRAPH", "plot_marker", plotMarker);
 	plotStaggered = reader->GetBoolean("GRAPH", "plot_staggered", plotStaggered);
