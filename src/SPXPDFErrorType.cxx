@@ -21,7 +21,7 @@
 const std::string cn = "SPXPDFErrorType::";
 
 //Must define the static debug variable in the implementation
-bool SPXPDFErrorType::debug;
+bool SPXPDFErrorType::debug=true;
 
 //Constructs an SPXPDFErrorType object with a given string (effectively
 //	calls the Parse() method on the input string)
@@ -43,7 +43,7 @@ void SPXPDFErrorType::Parse(std::string s) {
 	//Clear the type each time it is parsed
 	this->Clear();
 
-	if(!s.compare("alpha_s")) {
+	if(!s.compare("alphas_band")) {
 		if(debug) std::cout << cn << mn << "Successfully matched type string: \"alpha_s\"" << std::endl;
 		type = ET_ALPHA_S;
 		if(debug) std::cout << cn << mn << "PDF Error Type successfully set to \"alpha_s\"" << std::endl;
@@ -52,8 +52,12 @@ void SPXPDFErrorType::Parse(std::string s) {
 		if(debug) std::cout << cn << mn << "Successfully matched type string: \"pdf_band\"" << std::endl;
 		type = ET_PDF_BAND;
 		if(debug) std::cout << cn << mn << "PDF Error Type successfully set to \"pdf_band\"" << std::endl;
-	}
-	else {
+	} else if(!s.compare("scale_band")) {
+		if(debug) std::cout << cn << mn << "Successfully matched type string: \"scale_band\"" << std::endl;
+		type = ET_SCALE_BAND;
+		if(debug) std::cout << cn << mn << "Scale Uncertainty successfully set to \"scale_band\"" << std::endl;
+
+	} else {
 		type = ET_INVALID;
 
 		std::ostringstream oss;
@@ -90,6 +94,10 @@ std::string SPXPDFErrorType::ToString(void) {
 		return "PDFBand";
 	}
 
+	if(type == ET_SCALE_BAND) {
+		return "SCALEBand";
+	}
+
 	return "INVALID_PDF_ERROR_TYPE";
 }
 
@@ -106,18 +114,18 @@ bool SPXPDFErrorType::IsValid(void) {
 
 	//Empty style: valid, but empty
 	if(this->IsEmpty()){
-		if(debug) std::cout << cn << mn << "PDF Error Type is empty" << std::endl;
-		return true;
+	 std::cout << cn << mn << "WARNING PDF Error Type is empty" << std::endl;
+	 return true;
 	}
 
 	if(type == ET_INVALID) {
-		if(debug) std::cout << cn << mn << "PDF Error Type is invalid: Set to ET_INVALID (-1)" << std::endl;
-		return false;
+	 std::cout << cn << mn << "ERROR PDF Error Type is invalid: Set to ET_INVALID (-1)" << std::endl;
+	 return false;
 	}
 
-	if(type >= (ET_ALPHA_S | ET_PDF_BAND)) {
-		if(debug) std::cout << cn << mn << "PDF Error Type is invalid: Type is set to unknown value: " << type << std::endl;
-		return false;
+	if(type >= (ET_ALPHA_S | ET_PDF_BAND | ET_SCALE_BAND)) {
+	 std::cout << cn << mn << "ERROR PDF Error Type is invalid: Type is set to unknown value: " << type << std::endl;
+	 return false;
 	}
 
 	return true;

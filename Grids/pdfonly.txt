@@ -1,0 +1,45 @@
+;==============================================================
+;
+; Description:		
+;	ATLAS 2010 inclusive jets sqrt(s)=2.76 TeV
+; Date:
+;	03.12.2014
+; Comment:
+;       Grids units are nb and they are not divided by the y-binwidth
+;       They are divided by the pt-binwidth; 
+;
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = true
+;==============================================================
+; Description
+;==============================================================
+[DESC]
+name = pdfonly
+author = Tancredi Carli
+lumi_config_file = NONE                      
+scale = Q^2                               
+reference_journal_name=none
+reference_link_to_arxiv=none
+nlo_program_name = none                   
+grid_program_name=none                       
+observable_definition_link_to_code = unknown   
+;
+;==============================================================
+; Graphing Options
+;==============================================================
+[GRAPH]
+x_units = GeV	
+y_units = nb	
+divided_by_bin_width = true 
+;
+;==============================================================
+; Grid Options
+;==============================================================
+[GRID]								 
+grid_file = none
+generator_id =none 		
+ntuple_id =none		
+lowest_order = 2		

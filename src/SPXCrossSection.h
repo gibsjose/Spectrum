@@ -67,19 +67,20 @@ public:
 
 	//Pseudo-Method for returning Alpha S results: (Just scales PDF errors by 1/3)
 	TGraphAsymmErrors *GetAlphaSBandResults(void) {
-		//return pdf->h_AlphaS_results;
-		static TGraphAsymmErrors as;
-		as = *(pdf->h_PDFBand_results);
-		SPXGraphUtilities::ScaleYErrors(&as, (1.0/3.0));
-		return &as;
+		return pdf->h_AlphaS_results;
+		//static TGraphAsymmErrors as;
+		//as = *(pdf->h_PDFBand_results);
+		//SPXGraphUtilities::ScaleYErrors(&as, (1.0/3.0));
+		//return &as;
 	}
 
 	//Pseudo-Method for returning Scale results: (Just scales PDF errors by 1/3)
 	TGraphAsymmErrors *GetScaleBandResults(void) {
-		static TGraphAsymmErrors sc;
-		sc = *(pdf->h_PDFBand_results);
-		SPXGraphUtilities::ScaleYErrors(&sc, (1.0/4.0));
-		return &sc;
+		return pdf->h_Scale_results;
+	        //static TGraphAsymmErrors sc;
+		//sc = *(pdf->h_PDFBand_results);
+		//SPXGraphUtilities::ScaleYErrors(&sc, (1.0/4.0));
+		//return &sc;
 	}
 
 	SPXPDFSteeringFile *GetPDFSteeringFile(void) {

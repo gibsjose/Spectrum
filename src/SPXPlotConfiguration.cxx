@@ -92,6 +92,12 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	std::vector<std::string> pfs;	//PDF fill style
 	std::vector<std::string> pfc;	//PDF fill color
 	std::vector<std::string> pms;	//PDF marker style
+	std::vector<std::string> sfs;	//Scale fill style
+	std::vector<std::string> sfc;	//Scale fill color
+	std::vector<std::string> sms;	//Scale marker style
+	std::vector<std::string> afs;	//AlphaS fill style
+	std::vector<std::string> afc;	//AlphaS fill color
+	std::vector<std::string> ams;	//AlphaS marker style
 	std::vector<std::string> xsc;	//X-Scale
 	std::vector<std::string> ysc;	//Y-Scale
 
@@ -237,6 +243,48 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(debug) std::cout << cn << mn << "No PDF marker style option specified" << std::endl;
 		}
 
+		if(options.count("alphas_fill_style")) {
+			tmpVector = options["alphas_fill_style"];
+			std::cout << "\talphas_fill_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No Alphas fill style option specified" << std::endl;
+		}
+
+		if(options.count("alphas_fill_color")) {
+			tmpVector = options["alphas_fill_color"];
+			std::cout << "\talphas_fill_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No Alphas fill color option specified" << std::endl;
+		}
+
+		if(options.count("alphas_marker_style")) {
+			tmpVector = options["alphas_marker_style"];
+			std::cout << "\talphas_marker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No Alphas marker style option specified" << std::endl;
+		}
+
+		if(options.count("scale_fill_style")) {
+			tmpVector = options["scaöe_fill_style"];
+			std::cout << "\tscale_fill_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No Scale fill style option specified" << std::endl;
+		}
+
+		if(options.count("scale_fill_color")) {
+			tmpVector = options["scale_fill_color"];
+			std::cout << "\tscale_fill_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No Scale fill color option specified" << std::endl;
+		}
+
+		if(options.count("scale_marker_style")) {
+			tmpVector = options["scale_marker_style"];
+			std::cout << "\tscale_marker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No Scale marker style option specified" << std::endl;
+		}
+
 		if(options.count("x_scale")) {
 			tmpVector = options["x_scale"];
 			std::cout << "\tx_scale = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
@@ -275,8 +323,14 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	unsigned int pfsSize = 0;
 	unsigned int pfcSize = 0;
 	unsigned int pmsSize = 0;
-	unsigned int xsSize = 0;
-	unsigned int ysSize = 0;
+	unsigned int sfsSize = 0;   
+	unsigned int sfcSize = 0;	
+	unsigned int smsSize = 0;   
+	unsigned int afsSize = 0;   
+	unsigned int afcSize = 0;   
+	unsigned int amsSize = 0;   
+	unsigned int xsSize  = 0;
+	unsigned int ysSize  = 0;
 	if(options.count("data_marker_style")) {
 		dmsSize = options["data_marker_style"].size();
 	}
@@ -288,10 +342,29 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	}
 	if(options.count("pdf_fill_color")) {
 		pfcSize = options["pdf_fill_color"].size();
-	}
+	}	
 	if(options.count("pdf_marker_style")) {
 		pmsSize = options["pdf_marker_style"].size();
 	}
+	if(options.count("scale_fill_style")) {
+		sfsSize = options["scale_marker_style"].size();
+	}
+	if(options.count("scale_fill_color")) {
+		sfcSize = options["scale_fill_color"].size();
+	}
+	if(options.count("scale_marker_style")) {
+		smsSize = options["scale_marker_style"].size();
+	}
+	if(options.count("alphas_fill_style")) {
+		afsSize = options["alphas_marker_style"].size();
+	}
+	if(options.count("alphas_fill_color")) {
+		afcSize = options["alphas_fill_color"].size();
+	}
+	if(options.count("alphas_marker_style")) {
+		amsSize = options["alphas_marker_style"].size();
+	}
+
 	if(options.count("x_scale")) {
 		xsSize = options["x_scale"].size();
 	}
@@ -340,6 +413,39 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		oss << "Size of pdf_marker_style vector (" << pmsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
 		throw SPXParseException(oss.str());
 	}
+
+	if((sfsSize != 0) && (sfsSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of scale_fill_style vector (" << pmsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+
+	if((sfcSize != 0) && (sfcSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of scale_fill_color vector (" << pmsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+	if((smsSize != 0) && (smsSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of scale_marker_style vector (" << pmsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+	if((afsSize != 0) && (afsSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of alphas_fill_style vector (" << pmsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+	if((afcSize != 0) && (afcSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of alphas_fill_color vector (" << pmsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+	if((amsSize != 0) && (amsSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of alphas_marker_style vector (" << pmsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+
 
 	//Check directory size: Could either be of length 1, in which case the directory is prepended to each steering file, or
 	//	the exact length of the steering file list
@@ -390,6 +496,13 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(pfcSize) pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
 			if(pmsSize) pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
 
+			if(sfsSize) sfs.push_back(options["scale_fill_style"][0]);		
+			if(sfcSize) sfc.push_back(options["scale_fill_color"][0]);		
+			if(smsSize) sms.push_back(options["scale_marker_style"][0]);		
+			if(afsSize) afs.push_back(options["alphas_fill_style"][0]);		
+			if(afcSize) afc.push_back(options["alphas_fill_color"][0]);		
+			if(amsSize) ams.push_back(options["alphas_marker_style"][0]);		
+
 			if(xsSize) 	xsc.push_back(options["x_scale"][0]);				//Just one instance of x scale
 			else		xsc.push_back("1.0");
 			if(ysSize) 	ysc.push_back(options["y_scale"][0]);				//Just one instance of y scale
@@ -428,6 +541,13 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(pfcSize) pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
 			if(pmsSize) pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
 
+			if(sfsSize) sfs.push_back(options["scale_fill_style"][0]);	   
+			if(sfcSize) sfc.push_back(options["scale_fill_color"][0]);	   
+			if(smsSize) sms.push_back(options["scale_marker_style"][0]);	   
+			if(afsSize) sfs.push_back(options["alphas_fill_style"][0]);	   
+			if(afcSize) sfc.push_back(options["alphas_fill_color"][0]);	   
+			if(amsSize) sms.push_back(options["alphas_marker_style"][0]);	   
+
 			if(xsSize > 1) 			xsc.push_back(options["x_scale"][i]);
 			else if(xsSize == 1)	xsc.push_back(options["x_scale"][0]);
 			else					xsc.push_back("1.0");
@@ -465,6 +585,15 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(pfcSize) pfc.push_back(options["pdf_fill_color"][i]);
 			if(pmsSize) pms.push_back(options["pdf_marker_style"][i]);
 
+			if(sfsSize) sfs.push_back(options["scale_fill_style"][i]);
+			if(sfcSize) sfc.push_back(options["scale_fill_color"][i]);
+			if(smsSize) sms.push_back(options["scale_marker_style"][i]);
+
+
+			if(afsSize) afs.push_back(options["alphas_fill_style"][i]);
+			if(afcSize) afc.push_back(options["alphas_fill_color"][i]);
+			if(amsSize) ams.push_back(options["alphas_marker_style"][i]);
+
 			if(xsSize) 	xsc.push_back(options["x_scale"][0]);				//Just one instance of x scale
 			else		xsc.push_back("1.0");
 
@@ -499,6 +628,15 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(pfsSize) pfs.push_back(options["pdf_fill_style"][0]);		//Just one instance of pdf fill style
 			if(pfcSize) pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
 			if(pmsSize) pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
+
+			if(sfsSize) sfs.push_back(options["scale_fill_style"][0]);
+			if(sfcSize) sfc.push_back(options["scale_fill_color"][0]);
+			if(smsSize) sms.push_back(options["scale_marker_style"][0]);
+
+			if(afsSize) afs.push_back(options["alphas_fill_style"][0]);
+			if(afcSize) afc.push_back(options["alphas_fill_color"][0]);
+			if(amsSize) ams.push_back(options["alphas_marker_style"][0]);
+
 
 			if(xsSize) 	xsc.push_back(options["x_scale"][0]);				//Just one instance of x scale
 			else		xsc.push_back("1.0");
@@ -609,10 +747,10 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		//Copy from vectors to pci
 		pci.dataDirectory = ddr[i];
 		pci.gridDirectory = gdr[i];
-		pci.pdfDirectory = pdr[i];
+		pci.pdfDirectory  = pdr[i];
 		pci.dataSteeringFile = SPXDataSteeringFile(ddr[i] + "/" + dsf[i]);
 		pci.gridSteeringFile = SPXGridSteeringFile(gdr[i] + "/" + gsf[i]);
-		pci.pdfSteeringFile = SPXPDFSteeringFile(pdr[i] + "/" + psf[i]);
+		pci.pdfSteeringFile  = SPXPDFSteeringFile(pdr[i]  + "/" + psf[i]);
 
 		if(dmsSize) pci.dataMarkerStyle = atoi(dms[i].c_str());
 		else 		pci.dataMarkerStyle = PC_EMPTY_STYLE;
@@ -628,6 +766,24 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		if(pmsSize) pci.pdfMarkerStyle = atoi(pms[i].c_str());
 		else		pci.pdfMarkerStyle = PC_EMPTY_STYLE;
+
+		if(sfsSize) pci.scaleFillStyle = atoi(sfs[i].c_str());
+		else 		pci.scaleFillStyle = PC_EMPTY_STYLE;
+
+		if(sfcSize) pci.scaleFillColor = atoi(sfc[i].c_str());
+		else 		pci.scaleFillColor = PC_EMPTY_COLOR;
+
+		if(smsSize) pci.scaleMarkerStyle = atoi(sms[i].c_str());
+		else		pci.scaleMarkerStyle = PC_EMPTY_STYLE;
+
+		if(afsSize) pci.alphasFillStyle = atoi(afs[i].c_str());
+		else 		pci.alphasFillStyle = PC_EMPTY_STYLE;
+
+		if(afcSize) pci.alphasFillColor = atoi(afc[i].c_str());
+		else 		pci.alphasFillColor = PC_EMPTY_COLOR;
+
+		if(amsSize) pci.alphasMarkerStyle = atoi(ams[i].c_str());
+		else		pci.alphasMarkerStyle = PC_EMPTY_STYLE;
 
 		if(xsSize)	pci.xScale = atof(xsc[i].c_str());
 		else		pci.xScale = 1.0;
