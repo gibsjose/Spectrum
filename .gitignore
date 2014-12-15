@@ -13,6 +13,9 @@ tags
 # Root files
 *.root
 
+# original data files
+*.dat
+
 # Spectrum project
 *.sublime-project
 *.sublime-workspace
