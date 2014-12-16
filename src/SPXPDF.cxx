@@ -202,6 +202,8 @@ void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
   AlphaSPDFSetHistNameDown = psf->GetAlphaSPDFHistogramNameDown();
   AlphaSPDFSetHistNameUp   = psf->GetAlphaSPDFHistogramNameUp();
 
+  std::cout << cn << mn << "do_PDFBand is " << (do_PDFBand ? "ON" : "OFF");
+
   if (debug) {
    std::cout<<cn<<mn<<"finished"<< std::endl;
   }
@@ -224,6 +226,8 @@ void SPXPDF::Initialize()
  if (do_Scale)
   calc_desc+="_Scale";
 
+  std::cout << cn << mn << "do_PDFBand is " << (do_PDFBand ? "ON" : "OFF");
+
  if (do_PDFBand) std::cout<<cn<<mn<<"do_PDFBand ON" <<std::endl;
  else            std::cout<<cn<<mn<<"do_PDFBand OFF"<<std::endl;
  if (do_AlphaS ) std::cout<<cn<<mn<<"do_AlphaS ON" <<std::endl;
@@ -234,9 +238,24 @@ void SPXPDF::Initialize()
  else            std::cout<<cn<<mn<<"do_Total  OFF"<<std::endl;
 
  if (!do_PDFBand && !do_AlphaS && !do_Scale) {
-  std::cout<<cn<<mn<<"ERROR: All theory uncertainties disabled. Possible steering file error? "<<std::endl;
-  std::cout<<cn<<mn<<"ERROR: Check settings in steering file "<<std::endl;
-  exit(0);
+  // std::cout<<cn<<mn<<"ERROR: All theory uncertainties disabled. Possible steering file error? "<<std::endl;
+  // std::cout<<cn<<mn<<"ERROR: Check settings in steering file "<<std::endl;
+  // exit(0);
+
+  //@JJG 16.12.14
+  //Here is an example of how to use the Exceptions instead of calling exit(0) and printint to std::cout
+  //    The advantages to this are:
+  //        - 'Stack' trace of errors is printed
+  //        - All exceptions are printed to std::cerr, which on the website shows up in the 'Spectrum Error Log'
+  //            - Printing an error to std::cout will force it to be in the normal log and NOT the Error Log
+  //
+  //    By using the std::ostringstream method, you can construct your error messages just like you were printing to std::cout
+  //    and can pass numbers, strings, etc. just the same way. oss.str() returns a std::string with the contents of the string stream.
+  //    One thing to note, however, is that string streams do not clear like you would think, so you should instantiate a new local copy
+  //    for each instance
+  std::ostringstream oss;
+  oss << cn << mn << "All theory uncertainties are disabled: Check settings in steering file";
+  throw SPXParseException(oss.str());
  }
 
  if (do_Scale) {
