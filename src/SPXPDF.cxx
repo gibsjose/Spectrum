@@ -202,8 +202,6 @@ void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
   AlphaSPDFSetHistNameDown = psf->GetAlphaSPDFHistogramNameDown();
   AlphaSPDFSetHistNameUp   = psf->GetAlphaSPDFHistogramNameUp();
 
-  std::cout << cn << mn << "do_PDFBand is " << (do_PDFBand ? "ON" : "OFF");
-
   if (debug) {
    std::cout<<cn<<mn<<"finished"<< std::endl;
   }
@@ -225,8 +223,6 @@ void SPXPDF::Initialize()
   calc_desc+="_AlphaS";
  if (do_Scale)
   calc_desc+="_Scale";
-
-  std::cout << cn << mn << "do_PDFBand is " << (do_PDFBand ? "ON" : "OFF");
 
  if (do_PDFBand) std::cout<<cn<<mn<<"do_PDFBand ON" <<std::endl;
  else            std::cout<<cn<<mn<<"do_PDFBand OFF"<<std::endl;

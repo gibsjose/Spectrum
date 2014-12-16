@@ -58,7 +58,16 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringFile) {
 	}
 
         // Set which uncertainty to calculate in PDF file
-        pdf->SetDoPDFBand (mainsteeringFile->GetBandwithPDF());
+		
+	//@JJG 16.12.14
+	//
+	//	These should only be called if the steeringFile actually sets them, right? Currently for old steering files
+	//	this causes them to have all the scales off, which then gives an error
+	//
+	//	Another option might be to just skip overriding the PDFBand from the top-level steering, since this is almost always wanted
+	//	and if it is not wanted they can modify the PDF steering file
+
+        //pdf->SetDoPDFBand (mainsteeringFile->GetBandwithPDF());
         pdf->SetDoAlphaS  (mainsteeringFile->GetBandwithAlphaS());
         pdf->SetDoScale   (mainsteeringFile->GetBandwithScales());
         pdf->SetDoTotError(mainsteeringFile->GetBandTotal());
