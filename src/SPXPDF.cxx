@@ -93,16 +93,16 @@ SPXPDF::SPXPDF(SPXPDFSteeringFile *psf, const std::string &_gridName)
  RenScales.clear();
  FacScales.clear();
 
- RenScales.push_back(2.0);
- FacScales.push_back(2.0);
- RenScales.push_back(1.0);
- FacScales.push_back(1.0);
- RenScales.push_back(0.5);
- FacScales.push_back(0.5);
- RenScales.push_back(1.0);
- FacScales.push_back(0.5);
- RenScales.push_back(0.5);
- FacScales.push_back(1.0);
+ // RenScales.push_back(2.0);
+ // FacScales.push_back(2.0);
+ // RenScales.push_back(1.0);
+ // FacScales.push_back(1.0);
+ // RenScales.push_back(0.5);
+ // FacScales.push_back(0.5);
+ // RenScales.push_back(1.0);
+ // FacScales.push_back(0.5);
+ // RenScales.push_back(0.5);
+ // FacScales.push_back(1.0);
 
  ReadPDFSteeringFile(psf);
 
@@ -236,21 +236,21 @@ void SPXPDF::Initialize()
  if (!do_PDFBand && !do_AlphaS && !do_Scale) {
   std::cout<<cn<<mn<<"ERROR: All theory uncertainties disabled. Possible steering file error? "<<std::endl;
   std::cout<<cn<<mn<<"ERROR: Check settings in steering file "<<std::endl;
-  exit(0); 
+  exit(0);
  }
 
  if (do_Scale) {
   if (RenScales.size()!=FacScales.size()){
    std::cout<<cn<<mn<<"ERROR Same number of renormalisation and factorisation scales are needed !"<<std::endl;
    std::cout<<cn<<mn<<"ERROR RenScales.size() = "<<RenScales.size()<<" FacScales.size() = "<<FacScales.size()<<std::endl;
-   exit(0); 
+   exit(0);
   }
   if (debug) {
    std::cout<<cn<<mn<<"RenScales.size()="<<RenScales.size()<<std::endl;
-   for (int i=0; i<RenScales.size(); i++) {	  
+   for (int i=0; i<RenScales.size(); i++) {
     std::cout<<cn<<mn<<"RenScales["<<i<<"]= "<<RenScales[i]<<std::endl;
    }
-   for (int i=0; i<FacScales.size(); i++) {	  
+   for (int i=0; i<FacScales.size(); i++) {
     std::cout<<cn<<mn<<"FacScales["<<i<<"]= "<<FacScales[i]<<std::endl;
    }
   }
@@ -317,7 +317,7 @@ void SPXPDF::Initialize()
  hpdfdefault=temp_hist;
  // set-up defaults
  if (do_AlphaS) {
-  h_errors_AlphaS.push_back(temp_hist); 
+  h_errors_AlphaS.push_back(temp_hist);
   h_AlphaS_results=TH1TOTGraphAsymm(temp_hist);
  }
  if (do_Scale)   h_Scale_results=TH1TOTGraphAsymm(temp_hist);
@@ -327,7 +327,7 @@ void SPXPDF::Initialize()
 
 
  // Now do the scale variations
- if (debug) 
+ if (debug)
   if (do_Scale) std::cout<<cn<<mn<<"do_Scale is ON "<<std::endl;
   else          std::cout<<cn<<mn<<"do_Scale is OFF "<<std::endl;
 
@@ -338,14 +338,14 @@ void SPXPDF::Initialize()
      std::cout<<cn<<mn<<"Number of ren scale variations= "<<RenScales.size()<<std::endl;
      std::cout<<cn<<mn<<"Number of fac scale variations= "<<FacScales.size()<<std::endl;
     }
-    if (RenScales.size()!=FacScales.size()) 
+    if (RenScales.size()!=FacScales.size())
      std::cout<<cn<<mn<<" Something is wrong #RenScales != #FacScales "
               <<" #RenScales= "<< RenScales.size() <<" #FacScale= "<<FacScales.size() << std::endl;
     for (int iscale=0; iscale<RenScales.size(); iscale++){
      TH1D* h_scale_temp= my_grid->convolute( getPDF, alphasPDF, nLoops,RenScales[iscale],FacScales[iscale]);
      char rs[100];
      sprintf(rs,"#xi_{R}=%3.1f   #xi_{F}=%3.1f",RenScales[iscale],FacScales[iscale]);
-     if (debug) cout<<cn<<mn<<iscale<<" "<<rs<<endl;	
+     if (debug) cout<<cn<<mn<<iscale<<" "<<rs<<endl;
      char rname[100];
      sprintf(rname,"muR%3.1f_muF%3.1f",RenScales[iscale],FacScales[iscale]);
      h_scale_temp->SetTitle(rs);
@@ -399,7 +399,7 @@ void SPXPDF::Initialize()
  if (debug) {
   if (do_AlphaS) std::cout<<cn<<mn<<"do_AlphaS is ON: calculate Alphas uncertainty "<<std::endl;
   else           std::cout<<cn<<mn<<"do_AlphaS is OFF "<<std::endl;
- } 
+ }
 
  if (do_AlphaS) {
   alphaS_relUnc_worldAverage=alphaS_absUnc_worldAverage/alphaS_value_worldAverage;
@@ -451,7 +451,7 @@ void SPXPDF::Initialize()
 
 // alphaS down
   if (debug) std::cout<<cn<<mn<<"Setting up alphas down PDF-name= "<<AlphaSPDFSetNameDown<<" member= "<<AlphaSmemberNumDown<<std::endl;
-  LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+AlphaSPDFSetNameDown+".LHgrid")).c_str(), AlphaSmemberNumDown);  
+  LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+AlphaSPDFSetNameDown+".LHgrid")).c_str(), AlphaSmemberNumDown);
 
   if (applgridok) {
    temp_hist= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
@@ -472,9 +472,9 @@ void SPXPDF::Initialize()
 // alphaS up
 
   if (debug) std::cout<<cn<<mn<<"Setting up alphas up PDF-name= "<<AlphaSPDFSetNameUp<<" member= "<<AlphaSmemberNumUp<<std::endl;
-  LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+AlphaSPDFSetNameUp+".LHgrid")).c_str(), AlphaSmemberNumUp);  
+  LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+AlphaSPDFSetNameUp+".LHgrid")).c_str(), AlphaSmemberNumUp);
   // Peter's comment: for LHAPDF v 6.1, this line has to be used
-  // LHAPDF::initPDFSet(((std::string) (AlphaSPDFSetNameUp+".LHgrid")).c_str(), AlphaSmemberNumUp);  
+  // LHAPDF::initPDFSet(((std::string) (AlphaSPDFSetNameUp+".LHgrid")).c_str(), AlphaSmemberNumUp);
   //}
 
   if (applgridok) {
@@ -490,7 +490,7 @@ void SPXPDF::Initialize()
   double value_alphaS_up=LHAPDF::alphasPDF(alphaS_scale_worldAverage);
   alphaS_variations.push_back(value_alphaS_up);
   if (debug) std::cout <<cn<<mn<<"Added up variation histogram with alphaS value: " << value_alphaS_up << std::endl ;
-  
+
   if (debug) {
    std::cout<<" alphaS_variations: "<<std::endl;
    for (int i=0; i<alphaS_variations.size(); i++){
@@ -509,7 +509,7 @@ void SPXPDF::Initialize()
   }
  }
 
- if (debug) 
+ if (debug)
   if (do_PDFBand) std::cout<<cn<<mn<<"do_PDFBand ON..."<<std::endl;
   else            std::cout<<cn<<mn<<"do_PDFBand OFF.."<<std::endl;
 
@@ -517,11 +517,11 @@ void SPXPDF::Initialize()
  if (do_PDFBand) {
   if (debug) cout<<cn<<mn<<"Calculate PDF errors"<<endl;
   std::cout<<cn<<mn<<"Calculate PDF errors for: "<<default_pdf_set_name
-	       <<" w/ defaultpdfid: "<<defaultpdfid<<std::endl; 
+	       <<" w/ defaultpdfid: "<<defaultpdfid<<std::endl;
 
   // LHAPDF::initPDFSet(default_pdf_set_name.c_str(), 0);
   LHAPDF::initPDFSet(default_pdf_set_name.c_str(), defaultpdfid);
-  if (debug) std::cout<<cn<<mn<<"...initPDFSet finished for PDFBand"<<std::endl; 
+  if (debug) std::cout<<cn<<mn<<"...initPDFSet finished for PDFBand"<<std::endl;
 
   // update this to put into steering
   TH1D *hdefault=0;
@@ -756,7 +756,7 @@ void SPXPDF::CalcPDFBandErrors()
    central_val = h_errors_PDFBand.at(defaultpdfid)->GetBinContent(bi);
    //https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/TopPdfUncertainty
    //>>>> modifications by P. Berta 28th August
-   // 
+   //
    //for (int pdferri = 1; pdferri < (int) h_errors_PDFBand.size(); pdferri ++) {
    // mod_val = h_errors_PDFBand.at(pdferri)->GetBinContent(bi);
    // if (mod_val > central_val ) this_err_up  += pow(mod_val-central_val, 2.);
@@ -864,7 +864,7 @@ void SPXPDF::CalcPDFBandErrors()
   } else {
     std::cout<<cn<<mn<<"ERROR: Unsupported pdfCode encountered ErrorPropagationType= "<<ErrorPropagationType
              <<" PDFtype= "<<PDFtype.c_str()<<std::endl;
-   exit(0); 
+   exit(0);
   }
 
   if (debug) std::cout<<cn<<mn<<"this_err_up= "  <<this_err_up  <<std::endl;
@@ -876,7 +876,7 @@ void SPXPDF::CalcPDFBandErrors()
    this_err_down/= 1.645;
   }
 
-  //if (TString(PDFtype).Contains("NNPDF") ) { // 
+  //if (TString(PDFtype).Contains("NNPDF") ) { //
   if (ErrorPropagationType==StyleNNPDF) {
    double x_val, y_val;
    h_PDFBand_results->GetPoint(bi-1, x_val, y_val);
@@ -954,7 +954,7 @@ void SPXPDF::CalcScaleErrors()
 {
  std::string mn = "CalcScaleErrors:";
  if (debug) std::cout<<cn<<mn<<" Starting calculation of ScaleErrors for: "<<PDFtype<<std::endl;
-  
+
  if (h_errors_Scale.size()==0){
   std::cout<<cn<<mn<<"h_errors_RenormalisationScale not filled! Not computing scale uncertainty. "<<std::endl; //Setting do_Total to false!"<<endl;
     //do_Total=false;
@@ -968,17 +968,17 @@ void SPXPDF::CalcScaleErrors()
 */
  for (int ibin=1;ibin<h_errors_Scale[0]->GetNbinsX()+1;++ibin){
   double central=h_errors_Scale[0]->GetBinContent(ibin);
- 
+
   double max=central;
   double min=central;
-  // not clear that we want the maximum here 
+  // not clear that we want the maximum here
   // could also implement other techniques
   for (int iscale=1;iscale<h_errors_Scale.size();++iscale){
    double content=h_errors_Scale[iscale]->GetBinContent(ibin);
    if (content>max) max=content;
    if (content<min) min=content;
   }
- 
+
   double init_x_val;
   double init_y_val;
   h_Scale_results->GetPoint(ibin-1, init_x_val, init_y_val);
@@ -986,7 +986,7 @@ void SPXPDF::CalcScaleErrors()
   h_Scale_results->SetPointEYhigh(ibin-1, max-central);
   h_Scale_results->SetPointEYlow(ibin-1, central-min);
  } /// ibin
-  
+
  if (debug) {
   cout<<cn<<mn<<" h_Scale_results "<<std::endl;
   h_Scale_results->Print("all");
@@ -1047,7 +1047,7 @@ void SPXPDF::CalcTotalErrors()
   h_Total_results->SetPointEYhigh(ibin,totalError_high);
   h_Total_results->SetPointEYlow(ibin,totalError_low);
  } /// ibin
-  
+
  if (debug) std::cout<<cn<<mn<<" End calc of TotalErrors for: "<<PDFtype<<std::endl;
 }
 
@@ -1347,7 +1347,7 @@ void SPXPDF::SetVariablesDefault()
  includeQUAD=false;
  includeMAX=false;
 
- do_PDFBand=false;
+ do_PDFBand=true;
  do_AlphaS=false;
  do_Scale=false;
  do_Total=false;
@@ -1419,10 +1419,10 @@ void SPXPDF::SetDoTotError(bool _doit) {
 }
 
 void SPXPDF::SetScales(std::vector<double> aRenScales,std::vector<double> aFacScales) {
- for (int i=0; i<aRenScales.size(); i++)	  
+ for (int i=0; i<aRenScales.size(); i++)
   RenScales.push_back(aRenScales[i]);
  for (int i=0; i<aFacScales.size(); i++)
-  FacScales.push_back(aFacScales[i]);	  
+  FacScales.push_back(aFacScales[i]);
  return;
 };
 
