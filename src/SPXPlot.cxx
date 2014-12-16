@@ -682,9 +682,9 @@ void SPXPlot::MatchOverlayBinning(void) {
 			for(int i = 0; i < steeringFile->GetNumberOfConfigurationInstances(id); i++) {
 				SPXPlotConfigurationInstance &pci = steeringFile->GetPlotConfigurationInstance(id, i);
 
-				std::string & dataKey = pci.dataSteeringFile.GetFilename();
-				std::string & gridKey = pci.gridSteeringFile.GetFilename();
-				std::string & pdfKey = pci.pdfSteeringFile.GetFilename();
+				std::string dataKey = pci.dataSteeringFile.GetFilename();
+				std::string gridKey = pci.gridSteeringFile.GetFilename();
+				std::string pdfKey = pci.pdfSteeringFile.GetFilename();
 
 				StringPair_T convoluteKey(gridKey, pdfKey);
 
@@ -693,7 +693,7 @@ void SPXPlot::MatchOverlayBinning(void) {
 
 				//Check if data master is divided by bin width
 				bool dividedByBinWidth = false;
-				if(pci.dataSteeringFile.IsDividedByBinWidth() && !pci.gridSteeringFile.GridIsDividedByBinWidth()) {
+				if(pci.dataSteeringFile.IsDividedByBinWidth() && !pci.gridSteeringFile.IsGridDividedByBinWidth()) {
 					dividedByBinWidth = true;
 				}
 
