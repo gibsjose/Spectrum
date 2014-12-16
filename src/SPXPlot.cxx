@@ -668,112 +668,36 @@ void SPXPlot::MatchOverlayBinning(void) {
 		return;
 	}
 
-	//@TODO SET DIVIDED_BY_BIN_WIDTH CORRECTLY!!!
-
 	//Match binning of all graphs within each PCI, if matchBinning set
 	if(steeringFile->GetMatchBinning()) {
 
 		TGraphAsymmErrors *master;
+		TGraphAsymmErrors *slave;
 
-		//Match all data bins if necessary
-		if(os.ContainsData()) {
-			//Master is index 0
-			master = data.at(0).GetTotalErrorGraph();
+		//Match all convolutes to it's data (if data is plotted)
+		if(os.ContainsConvolute() && os.ContainsData()) {
 
-			if(pt.ContainsMultipleData()) {
-				for(int i = 1; i < data.size(); i++) {
-					bool dividedByBinWidth = false;
+			if(debug) std::cout << cn << mn << "Matching overlay convolutes to data master" << std::endl;
 
-					//Check if data master is divided by bin width
-					if(data.at(i).IsDividedByBinWidth()) {
-						dividedByBinWidth = true;
-					}
+			for(int i = 0; i < steeringFile->GetNumberOfConfigurationInstances(id); i++) {
+				SPXPlotConfigurationInstance &pci = steeringFile->GetPlotConfigurationInstance(id, i);
 
-					TGraphAsymmErrors *slaveStat = data.at(i).GetStatisticalErrorGraph();
-					TGraphAsymmErrors *slaveSyst = data.at(i).GetSystematicErrorGraph();
-					TGraphAsymmErrors *slaveTot = data.at(i).GetTotalErrorGraph();
-					SPXGraphUtilities::MatchBinning(master, slaveStat, dividedByBinWidth);
-					SPXGraphUtilities::MatchBinning(master, slaveSyst, dividedByBinWidth);
-					SPXGraphUtilities::MatchBinning(master, slaveTot, dividedByBinWidth);
-				}
-			}
-		}
+				std::string & dataKey = pci.dataSteeringFile.GetFilename();
+				std::string & gridKey = pci.gridSteeringFile.GetFilename();
+				std::string & pdfKey = pci.pdfSteeringFile.GetFilename();
 
-		//Match all convolutes to the data master (if data is plotted) or to the master convolute
-		if(os.ContainsConvolute()) {
+				StringPair_T convoluteKey(gridKey, pdfKey);
 
-			if(os.ContainsData()) {
-				master = data.at(0).GetTotalErrorGraph();
+				master = dataFileGraphMap[dataKey];
+				slave = convoluteFileGraphMap[convoluteKey];
 
-				if(debug) std::cout << cn << mn << "Matching overlay convolutes to data master" << std::endl;
-
-				for(int i = 0; i < crossSections.size(); i++) {
-					bool dividedByBinWidth = false;
-
-					//Check if data master is divided by bin width
-					if(data.at(0).IsDividedByBinWidth() && !crossSections.at(i).IsDividedByBinWidth()) {
-						dividedByBinWidth = true;
-					}
-
-					TGraphAsymmErrors *slave = crossSections.at(i).GetPDFBandResults();
-					SPXGraphUtilities::MatchBinning(master, slave, dividedByBinWidth);
+				//Check if data master is divided by bin width
+				bool dividedByBinWidth = false;
+				if(pci.dataSteeringFile.IsDividedByBinWidth() && !pci.gridSteeringFile.GridIsDividedByBinWidth()) {
+					dividedByBinWidth = true;
 				}
 
-			} else {
-				master = crossSections.at(0).GetPDFBandResults();
-
-				if(debug) std::cout << cn << mn << "Matching overlay convolutes to convolute master" << std::endl;
-
-				for(int i = 1; i < crossSections.size(); i++) {
-					bool dividedByBinWidth = false;
-
-					//Check if convolute master is divided by bin width
-					if(crossSections.at(0).IsDividedByBinWidth() && !crossSections.at(i).IsDividedByBinWidth()) {
-						dividedByBinWidth = true;
-					}
-
-					TGraphAsymmErrors *slave = crossSections.at(i).GetPDFBandResults();
-					SPXGraphUtilities::MatchBinning(master, slave, dividedByBinWidth);
-				}
-			}
-		}
-
-		//Match all PDFs to the data master (if data is plotted) or to the master PDF
-		if(os.ContainsPDF()) {
-
-			if(os.ContainsData()) {
-				master = data.at(0).GetTotalErrorGraph();
-
-				if(debug) std::cout << cn << mn << "Matching overlay PDFs to data master" << std::endl;
-
-				for(int i = 0; i < crossSections.size(); i++) {
-					bool dividedByBinWidth = false;
-
-					//Check if data master is divided by bin width
-					if(data.at(0).IsDividedByBinWidth() && !crossSections.at(i).IsDividedByBinWidth()) {
-						dividedByBinWidth = true;
-					}
-
-					TGraphAsymmErrors *slave = crossSections.at(i).GetNominal();
-					SPXGraphUtilities::MatchBinning(master, slave, dividedByBinWidth);
-				}
-
-			} else {
-				master = crossSections.at(0).GetPDFBandResults();
-
-				if(debug) std::cout << cn << mn << "Matching overlay PDFs to PDF master" << std::endl;
-
-				for(int i = 1; i < crossSections.size(); i++) {
-					bool dividedByBinWidth = false;
-
-					//Check if convolute master is divided by bin width
-					if(crossSections.at(0).IsDividedByBinWidth() && !crossSections.at(i).IsDividedByBinWidth()) {
-						dividedByBinWidth = true;
-					}
-
-					TGraphAsymmErrors *slave = crossSections.at(i).GetNominal();
-					SPXGraphUtilities::MatchBinning(master, slave, dividedByBinWidth);
-				}
+				SPXGraphUtilities::MatchBinning(master, slave, dividedByBinWidth);
 			}
 		}
 	}
@@ -1352,7 +1276,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 			//Also scale by the artificial scale from the plot configuration instance
 			xScale *= pci->xScale;
 			yScale *= pci->yScale;
- 
+
 			if (gPDF)    SPXGraphUtilities::Scale(gPDF, xScale, yScale);
 			if (gAlphaS) SPXGraphUtilities::Scale(gAlphaS, xScale, yScale);
 			if (gScale)  SPXGraphUtilities::Scale(gScale, xScale, yScale);
@@ -1398,8 +1322,8 @@ void SPXPlot::NormalizeCrossSections(void) {
 				throw SPXGraphException(cn + mn + "Grid IS divided by the bin with but the data IS NOT: Not supported");
 			}
 
-			double totalSigmaPDF=0.;    
-			double totalSigmaAlphaS=0.;    
+			double totalSigmaPDF=0.;
+			double totalSigmaAlphaS=0.;
 			double totalSigmaScale=0.;
                         if (gPDF) totalSigmaPDF=SPXGraphUtilities::GetTotalSigma(gPDF, gridDividedByBinWidth);
                         if (gAlphaS) totalSigmaAlphaS=SPXGraphUtilities::GetTotalSigma(gAlphaS, gridDividedByBinWidth);
