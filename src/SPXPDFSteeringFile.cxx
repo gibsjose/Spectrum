@@ -86,14 +86,19 @@ void SPXPDFSteeringFile::SetDefaults(void) {
 	includeMax = false;
 	if(debug) std::cout << cn << mn << "includeMax set to default: \"false\"" << std::endl;
 
+	is90Percent = false;
+	if(debug) std::cout << cn << mn << "is90Percent set to default: \"false\"" << std::endl;
+
 	bandType = SPXPDFBandType();
 	if(debug) std::cout << cn << mn << "bandType set to default: \" \"" << std::endl;
 
 	errorType = SPXPDFErrorType();
 	if(debug) std::cout << cn << mn << "errorType set to default: \" \"" << std::endl;
 
-	errorSize = SPXPDFErrorSize();
-	if(debug) std::cout << cn << mn << "errorSize set to default: \" \"" << std::endl;
+        ErrorPropagationType=EigenvectorSymmetricHessian;
+	if(debug) std::cout << cn << mn << "ErrorPropagationType set to default: "<< EigenvectorSymmetricHessian << std::endl;
+	//errorSize = SPXPDFErrorSize();
+	//if(debug) std::cout << cn << mn << "errorSize set to default: \" \"" << std::endl;
 
 	alphaSErrorNumberUp = ALPHA_S_ERROR_NUM_EMPTY;
 	if(debug) std::cout << cn << mn << "alphaSErrorNumberUp set to default: \"-1\"" << std::endl;
@@ -142,9 +147,23 @@ void SPXPDFSteeringFile::Print(void) {
 	std::cout << "\t\t Include Eigenvectors? " << (includeEig ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Include Quadrature? " << (includeQuad ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Include Max? " << (includeMax ? "YES" : "NO") << std::endl;
+
+	std::cout << "\t\t is90Percent? " << (is90Percent ? "YES" : "NO") << std::endl;
+	std::cout << "\t\t ErrorPropagationType " << ErrorPropagationType<< std::endl;
+        if (ErrorPropagationType==EigenvectorSymmetricHessian) 
+  	 std::cout << "\t\t add in quadrature and symmetrize"<< std::endl;
+        else if (ErrorPropagationType==EigenvectorAsymmetricHessian)
+  	 std::cout << "\t\t add in quadrature, keep asymetic uncertainties"<< std::endl;
+        else if (ErrorPropagationType==StyleHeraPDF)  
+  	 std::cout << "\t\t HERAPDF type Eigenvector, QUAD. Max "<< std::endl;
+        else if (ErrorPropagationType==StyleNNPDF)  
+  	 std::cout << "\t\t NNPDF type  "<< std::endl;
+        else
+  	 std::cout << "\t\tn UNKNOWN !! "<< std::endl;
+
 	std::cout << "\t\t Band Type: " << bandType.ToString() << std::endl;
 	std::cout << "\t\t Error Type: " << errorType.ToString() << std::endl;
-	std::cout << "\t\t Error Size: " << errorSize.ToString() << std::endl;
+	// std::cout << "\t\t Error Size: " << errorSize.ToString() << std::endl;
 	std::cout << "\t\t Alpha S Error Number Up: " << alphaSErrorNumberUp << std::endl;
 	std::cout << "\t\t Alpha S Error Number Down: " << alphaSErrorNumberDown << std::endl;
 	std::cout << "\t\t Alpha S PDF Name Up: " << alphaSPDFNameUp << std::endl;
@@ -183,7 +202,7 @@ void SPXPDFSteeringFile::Parse(void) {
 		std::cout << cn << mn << "Debug is ON" << std::endl;
 		SPXPDFBandType::SetDebug(true);
 		SPXPDFErrorType::SetDebug(true);
-		SPXPDFErrorSize::SetDebug(true);
+		//SPXPDFErrorSize::SetDebug(true);
 	}
 
 	//Description [DESC]
@@ -270,51 +289,61 @@ void SPXPDFSteeringFile::Parse(void) {
 	}
 
 	firstEig = reader->GetInteger("PDF", "first_eig", -1);
-	if(firstEig == -1) {
-		throw SPXINIParseException("PDF", "first_eig", "You MUST specify the first_eig");
-	} else {
-		if(debug) std::cout << cn << mn << "Successfully read First Eigenvector: " << firstEig << std::endl;
-	}
+	//if(firstEig == -1) {
+	//	throw SPXINIParseException("PDF", "first_eig", "You MUST specify the first_eig");
+	//} else {
+	if(debug) std::cout << cn << mn << "Successfully read First Eigenvector: " << firstEig << std::endl;
+	//}
 
 	lastEig = reader->GetInteger("PDF", "last_eig", -1);
-	if(lastEig == -1) {
-		throw SPXINIParseException("PDF", "last_eig", "You MUST specify the last_eig");
-	} else {
-		if(debug) std::cout << cn << mn << "Successfully read Last Eigenvector: " << lastEig << std::endl;
-	}
+	//if(lastEig == -1) {
+	//	throw SPXINIParseException("PDF", "last_eig", "You MUST specify the last_eig");
+	//} else {
+	if(debug) std::cout << cn << mn << "Successfully read Last Eigenvector: " << lastEig << std::endl;
+	//}
 
 	firstQuad = reader->GetInteger("PDF", "first_quad", -1);
-	if(firstQuad == -1) {
-		throw SPXINIParseException("PDF", "first_quad", "You MUST specify the first_quad");
-	} else {
-		if(debug) std::cout << cn << mn << "Successfully read First Quadrature: " << firstQuad << std::endl;
-	}
+	//if(firstQuad == -1) {
+	//	throw SPXINIParseException("PDF", "first_quad", "You MUST specify the first_quad");
+	//} else {
+	if(debug) std::cout << cn << mn << "Successfully read First Quadrature: " << firstQuad << std::endl;
+	//}
 
 	lastQuad = reader->GetInteger("PDF", "last_quad", -1);
-	if(lastQuad == -1) {
-		throw SPXINIParseException("PDF", "last_quad", "You MUST specify the last_quad");
-	} else {
-		if(debug) std::cout << cn << mn << "Successfully read Last Quadrature: " << lastQuad << std::endl;
-	}
+	//if(lastQuad == -1) {
+	//	throw SPXINIParseException("PDF", "last_quad", "You MUST specify the last_quad");
+	//} else {
+	if(debug) std::cout << cn << mn << "Successfully read Last Quadrature: " << lastQuad << std::endl;
+	//}
 
 	firstMax = reader->GetInteger("PDF", "first_max", -1);
-	if(firstMax == -1) {
-		throw SPXINIParseException("PDF", "first_max", "You MUST specify the first_max");
-	} else {
-		if(debug) std::cout << cn << mn << "Successfully read First Max: " << firstMax << std::endl;
-	}
+	//if(firstMax == -1) {
+	//	throw SPXINIParseException("PDF", "first_max", "You MUST specify the first_max");
+	//} else {
+	if(debug) std::cout << cn << mn << "Successfully read First Max: " << firstMax << std::endl;
+	//}
 
 	lastMax = reader->GetInteger("PDF", "last_max", -1);
-	if(lastMax == -1) {
-		throw SPXINIParseException("PDF", "last_max", "You MUST specify the last_max");
-	} else {
-		if(debug) std::cout << cn << mn << "Successfully read Last Max: " << lastMax << std::endl;
-	}
+	//if(lastMax == -1) {
+	//	throw SPXINIParseException("PDF", "last_max", "You MUST specify the last_max");
+	//} else {
+	if(debug) std::cout << cn << mn << "Successfully read Last Max: " << lastMax << std::endl;
+	//}
 
-	includeEig = reader->GetBoolean("PDF", "include_eig", includeEig);
-	includeQuad = reader->GetBoolean("PDF", "include_quad", includeQuad);
-	includeMax = reader->GetBoolean("PDF", "include_max", includeMax);
+	includeEig  = reader->GetBoolean("PDF", "include_eig", includeEig);
+	includeQuad = reader->GetBoolean("PDF", "include_quad",includeQuad);
+	includeMax  = reader->GetBoolean("PDF", "include_max", includeMax);
+	is90Percent = reader->GetBoolean("PDF", "is90Percent", is90Percent);
+       	if(debug) 
+         if (is90Percent) std::cout << cn << mn << "Read in is90Percent is ON " << std::endl;
+         else             std::cout << cn << mn << "Read in is90Percent is OFF "<< std::endl;
 
+        ErrorPropagationType=reader->GetInteger("PDF", "ErrorPropagationType", ErrorPropagationType);
+	if (debug) std::cout<<cn<<mn<<"Read in ErrorPropagationType= "<<ErrorPropagationType<<std::endl;
+        if (ErrorPropagationType>StyleNNPDF) {
+	  std::cout<<cn<<mn<<"ERROR UNKNOWN Error Propagation type ! "<<ErrorPropagationType<<std::endl;
+          exit (0);
+        }
 	//Parse Band Type
 	tmp = reader->Get("PDF", "band_type", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
@@ -350,21 +379,20 @@ void SPXPDFSteeringFile::Parse(void) {
 	}
 
 	//Parse Error Size
-	tmp = reader->Get("PDF", "error_size", "EMPTY");
-	if(!tmp.compare("EMPTY")) {
-		throw SPXINIParseException("PDF", "error_size", "You MUST specify the error_size");
-	} else {
-		//Attempt to parse the error size
-		try {
-			errorSize.Parse(tmp);
-		} catch(const SPXException &e) {
-			std::cerr << e.what() << std::endl;
-
-			std::ostringstream s;
-			s << "Invalid Error Size: Type = " << errorSize.GetType() << ": Check configuration string: error_size = " << tmp;
-			throw SPXINIParseException("PDF", "error_size", s.str());
-		}
-	}
+	//tmp = reader->Get("PDF", "error_size", "EMPTY");
+	//if(!tmp.compare("EMPTY")) {
+	//		throw SPXINIParseException("PDF", "error_size", "You MUST specify the error_size");
+	//} else {
+	//	//Attempt to parse the error size
+	//	try {
+	//		errorSize.Parse(tmp);
+	//	} catch(const SPXException &e) {
+	//		std::cerr << e.what() << std::endl;
+	//			std::ostringstream s;
+	//		s << "Invalid Error Size: Type = " << errorSize.GetType() << ": Check configuration string: error_size = " << tmp;
+	//		throw SPXINIParseException("PDF", "error_size", s.str());
+	//	}
+	//}
 
 	alphaSErrorNumberUp = reader->GetInteger("PDF", "alpha_s_error_number_up", ALPHA_S_ERROR_NUM_EMPTY);
 	if(alphaSErrorNumberUp == ALPHA_S_ERROR_NUM_EMPTY) {

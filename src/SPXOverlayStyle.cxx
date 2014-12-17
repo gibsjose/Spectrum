@@ -43,7 +43,7 @@ SPXOverlayStyle::SPXOverlayStyle(std::string s) {
 void SPXOverlayStyle::Parse(std::string s) {
 	std::string mn = "Parse: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
-	
+
 	if(debug) std::cout << cn << mn << "Parsing configuration string: " << s << std::endl;
 
 	//Clear the style each time it is parsed
@@ -63,12 +63,12 @@ void SPXOverlayStyle::Parse(std::string s) {
 	//Check the parsed style options vector for size errors
 	if(v.size() > 3) {
 		style = OS_INVALID;
-		throw SPXINIParseException("PLOT_x", "overlay_style", "Incorrect overlay style: Configuration string can only be a combination of: \"data\", \"reference\", and \"convolute\"");
+		throw SPXINIParseException("PLOT_x", "overlay_style", "Incorrect overlay style: Configuration string can only be a combination of: \"data\", \"reference\", \"convolute\", and \"pdf\"");
 
 	}
 	if(v.size() < 1) {
 		style = OS_INVALID;
-		throw SPXINIParseException("PLOT_x", "overlay_style", "Incorrect overlay style: Configuration string must be at least ONE of: \"data\", \"reference\", or \"convolute\"");
+		throw SPXINIParseException("PLOT_x", "overlay_style", "Incorrect overlay style: Configuration string must be at least ONE of: \"data\", \"reference\", \"convolute\", and \"pdf\"");
 	}
 
 	//Create the style based on the configuration string(s)
@@ -88,6 +88,11 @@ void SPXOverlayStyle::Parse(std::string s) {
 			if(debug) std::cout << cn << mn << "Successfully matched style string: \"convolute\"" << std::endl;
 			style |= OS_CONVOLUTE;
 			if(debug) std::cout << cn << mn << "Overlay style successfully set to contain \"convolute\"" <<std::endl;
+		}
+		else if(!v[i].compare("pdf")) {
+			if(debug) std::cout << cn << mn << "Successfully matched style string: \"pdf\"" << std::endl;
+			style |= OS_PDF;
+			if(debug) std::cout << cn << mn << "Overlay style successfully set to contain \"pdf\"" <<std::endl;
 		}
 		else {
 			style = OS_INVALID;
@@ -132,6 +137,9 @@ std::string SPXOverlayStyle::ToString(void) {
 	if(style & OS_CONVOLUTE) {
 		v.push_back("convolute");
 	}
+	if(style & OS_PDF) {
+		v.push_back("pdf");
+	}
 
 	return SPXStringUtilities::VectorToCommaSeparatedList(v);
 }
@@ -158,7 +166,7 @@ bool SPXOverlayStyle::IsValid(void) {
 		return false;
 	}
 
-	if(style > (OS_DATA | OS_REFERENCE | OS_CONVOLUTE)) {
+	if(style > (OS_DATA | OS_REFERENCE | OS_CONVOLUTE | OS_PDF)) {
 		if(debug) std::cout << cn << mn << "Overlay style is invalid: Style is set to unknown value: " << style << std::endl;
 		return false;
 	}

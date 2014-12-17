@@ -12,6 +12,7 @@
 //	@Email:		gibsjose@mail.gvsu.edu
 //
 //************************************************************/
+#include <set>
 
 #include "SPXSteeringFile.h"
 #include "SPXUtilities.h"
@@ -36,6 +37,21 @@ void SPXSteeringFile::SetDefaults(void) {
 
 	plotMarker = true;
 	if(debug) std::cout << cn << mn << "plotMarker set to default: \"true\"" << std::endl;
+
+	BandwithPDF    = false;
+	if(debug) std::cout << cn << mn << "BandwithPDF set to default: \"false\"" << std::endl;
+
+	BandwithAlphaS = false;
+	if(debug) std::cout << cn << mn << "BandwithAlphaS set to default: \"false\"" << std::endl;
+
+	BandwithScales = false;
+	if(debug) std::cout << cn << mn << "BandwithScales set to default: \"false\"" << std::endl;
+
+	BandTotal      = false;
+	if(debug) std::cout << cn << mn << "BandwithTotal set to default: \"false\"" << std::endl;
+
+    RenScales.clear();
+    FacScales.clear();
 
 	plotStaggered = false;
 	if(debug) std::cout << cn << mn << "plotStaggered set to default: \"false\"" << std::endl;
@@ -116,6 +132,95 @@ void SPXSteeringFile::ParseAll(bool print) {
 	}
 }
 
+void SPXSteeringFile::PrintDataMetadata(void) {
+	std::string mn = "PrintDataMetadata: ";
+
+	std::string filename = "./metadata/data.txt";
+	std::ofstream file(filename.c_str(), std::ios::trunc);
+
+	//Make sure file is open
+	if(!file.is_open()) {
+		throw SPXFileIOException(filename, "Unable to open Data Metadata file");
+	}
+
+	std::set<std::string>metadataSet;
+
+	//Loop over each instance of Data and print Metadata
+	for(int i = 0; i < this->GetNumberOfPlotConfigurations(); i++) {
+		for(int j = 0; j < this->GetNumberOfConfigurationInstances(i); j++) {
+			SPXDataSteeringFile &dsf = this->GetDataSteeringFile(i, j);
+
+			//Only show the metadata once for each data file
+			if(metadataSet.count(dsf.GetFilename()) != 0) {
+				continue;
+			}
+
+			metadataSet.insert(dsf.GetFilename());
+
+			file << "Data: " << dsf.GetName() << std::endl;
+			file << "File: " << dsf.GetFilename() << std::endl;
+			file << "Experiment: " << dsf.GetExperiment() << std::endl;
+			file << "Reaction: " << dsf.GetReaction() << std::endl;
+			file << "Dataset Year: " << dsf.GetDatasetYear() << std::endl;
+			file << "Dataset Luminosity: " << dsf.GetDatasetLumi() << std::endl;
+			file << "Publication Status: " << dsf.GetPublicationStatus() << std::endl;
+			file << "Reference Journal Name: " << dsf.GetReferenceJournalName() << std::endl;
+			file << "Reference Journal Year: " << dsf.GetReferenceJournalYear() << std::endl;
+			file << "Reference arXiv ID: " << dsf.GetReferenceArXivNumber() << std::endl;
+			file << "Reference arXiv Year: " << dsf.GetReferenceArXivYear() << std::endl;
+			file << "Comments: " << dsf.GetComments() << std::endl;
+			file << std::endl;
+		}
+	}
+
+	//Close the file
+	file.close();
+}
+
+void SPXSteeringFile::PrintGridMetadata(void) {
+	std::string mn = "PrintGridMetadata: ";
+
+	std::string filename = "./metadata/grids.txt";
+	std::ofstream file(filename.c_str(), std::ios::trunc);
+
+	//Make sure file is open
+	if(!file.is_open()) {
+		throw SPXFileIOException(filename, "Unable to open Grid Metadata file");
+	}
+
+	std::set<std::string>metadataSet;
+
+	//Loop over each instance of Data and print Metadata
+	for(int i = 0; i < this->GetNumberOfPlotConfigurations(); i++) {
+		for(int j = 0; j < this->GetNumberOfConfigurationInstances(i); j++) {
+			SPXGridSteeringFile &gsf = this->GetGridSteeringFile(i, j);
+
+			//Only show the metadata once for each grid file
+			if(metadataSet.count(gsf.GetFilename()) != 0) {
+				continue;
+			}
+
+			metadataSet.insert(gsf.GetFilename());
+
+			file << "Grid: " << gsf.GetName() << std::endl;
+			file << "File: " << gsf.GetFilename() << std::endl;
+			file << "Author: " << gsf.GetAuthor() << std::endl;
+			file << "Luminosity Config File: " << gsf.GetLumiConfigFile() << std::endl;
+			file << "Renomalization Scale: " << gsf.GetScale() << std::endl;
+			file << "Reference Journal Name: " << gsf.GetReferenceJournalName() << std::endl;
+			file << "Reference Link to arXiv: " << gsf.GetReferenceLinkToArXiv() << std::endl;
+			file << "NLO Program Name: " << gsf.GetNLOProgramName() << std::endl;
+			file << "Grid Program Name: " << gsf.GetGridProgramName() << std::endl;
+			file << "Observable Definition Code: " << gsf.GetObservableDefinitionLinkToCode() << std::endl;
+			file << "Comments: " << gsf.GetComments() << std::endl;
+			file << std::endl;
+		}
+	}
+
+	//Close the file
+	file.close();
+}
+
 //Print the Steering File Data in a nice format
 void SPXSteeringFile::Print(void) {
 	std::cout << "Steering File: " << filename << std::endl;
@@ -123,6 +228,9 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Debug is " << (debug ? "ON" : "OFF") << std::endl;
 	std::cout << "\t Graphing configurations [GRAPH]" << std::endl;
 	std::cout << "\t\t Plot Band is: " << (plotBand ? "ON" : "OFF") << std::endl;
+	std::cout << "\t\t Plot cross section Uncertainties with PDF uncertainties: " << (BandwithPDF ? "ON" : "OFF") << std::endl;
+	std::cout << "\t\t Plot cross section Uncertainty with AlphaS uncertainties: " << (BandwithAlphaS ? "ON" : "OFF") << std::endl;
+	std::cout << "\t\t Plot cross section Uncertainty with ren&fac scale uncertainties: " << (BandwithScales ? "ON" : "OFF") << std::endl;    std::cout << "\t\t Plot Cross section Uncertainties with total uncertainties: " << (BandTotal ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Error Ticks is: " << (plotErrorTicks ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Marker is: " << (plotMarker ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Staggered is: " << (plotStaggered ? "ON" : "OFF") << std::endl;
@@ -135,6 +243,19 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Y Overlay Max: " << yOverlayMax << std::endl;
 	std::cout << "\t\t Y Ratio Min: " << yRatioMin << std::endl;
 	std::cout << "\t\t Y Ratio Max: " << yRatioMax << std::endl << std::endl;
+
+        std::cout<<"Number of Scale variations:"<<RenScales.size()<<std::endl;
+        if (RenScales.size()!=FacScales.size()) {
+	 std::cout<<" Something is wrong #RenScales != #FacScales, Check steering "<<std::endl;
+         exit (0);
+        }
+        for (int i=0; i<RenScales.size(); i++) {
+         std::cout<<"RenScales["<<i<<"]= "<<RenScales[i]<<std::endl;
+        }
+        for (int i=0; i<FacScales.size(); i++) {
+         std::cout<<"FacScales["<<i<<"]= "<<FacScales[i]<<std::endl;
+        }
+
 	std::cout << "\t Plot Configurations" << std::endl;
 	std::cout << "\t\t Number of Plots: " << GetNumberOfPlotConfigurations() << std::endl << std::endl;
 
@@ -169,9 +290,15 @@ void SPXSteeringFile::Print(void) {
 			std::cout << "\t\t\t PDF Steering File " << j << ": " << tmp.pdfSteeringFile.GetFilename() << std::endl;
 			std::cout << "\t\t\t Data Marker Style " << j << ": " << tmp.dataMarkerStyle << std::endl;
 			std::cout << "\t\t\t Data Marker Color " << j << ": " << tmp.dataMarkerColor << std::endl;
-			std::cout << "\t\t\t PDF Fill Style " << j << ": " << tmp.pdfFillStyle << std::endl;
-			std::cout << "\t\t\t PDF Fill Color " << j << ": " << tmp.pdfFillColor << std::endl;
-			std::cout << "\t\t\t PDF Marker Style " << j << ": " << tmp.pdfMarkerStyle << std::endl;
+			std::cout << "\t\t\t PDF Fill Style "     << j << ": " << tmp.pdfFillStyle << std::endl;
+			std::cout << "\t\t\t PDF Fill Color "     << j << ": " << tmp.pdfFillColor << std::endl;
+			std::cout << "\t\t\t PDF Marker Style "   << j << ": " << tmp.pdfMarkerStyle << std::endl;
+			std::cout << "\t\t\t Scale Fill Style "   << j << ": " << tmp.scaleFillStyle << std::endl;
+			std::cout << "\t\t\t Scale Fill Color "   << j << ": " << tmp.scaleFillColor << std::endl;
+			std::cout << "\t\t\t Scale Marker Style " << j << ": " << tmp.scaleMarkerStyle << std::endl;
+			std::cout << "\t\t\t AlphaS Fill Style "  << j << ": " << tmp.alphasFillStyle << std::endl;
+			std::cout << "\t\t\t AlphaS Fill Color "  << j << ": " << tmp.alphasFillColor << std::endl;
+			std::cout << "\t\t\t AlphaS Marker Style "<< j << ": " << tmp.alphasMarkerStyle << std::endl;
 			std::cout << "\t\t\t X Scale " << j << ": " << tmp.xScale << std::endl;
 			std::cout << "\t\t\t Y Scale " << j << ": " << tmp.yScale << std::endl << std::endl;
 		}
@@ -546,10 +673,157 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 				}
 			}
 
+
 			//Add to configurations map
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("pdf_marker_style", tmpVector));
 			if(debug) std::cout << cn << mn << "configurations[pdf_marker_style] = " << \
 				SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_marker_style"]) << std::endl;
+		}
+
+		//Get the scale_fill_style
+		tmp = reader->Get(plotSection, "scale_fill_style", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+			if(plotBand) {
+				std::cout << cn << mn << "WARNING: No plot option for scale_fill_style found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
+			} else {
+				if(debug) std::cout << cn << mn << "No plot option for scale_fill_style found" << std::endl;
+			}
+		} else {
+			//Parse into vector
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				std::cout << cn << mn << "scale_fill_style configuration string: " << tmp << " parsed into:" << std::endl;
+				for(int j = 0; j < tmpVector.size(); j++) {
+					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+				}
+			}
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("scale_fill_style", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[scale_fill_style] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["scale_fill_style"]) << std::endl;
+		}
+
+		//Get the scale_fill_color
+		tmp = reader->Get(plotSection, "scale_fill_color", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+			if(plotBand) {
+				std::cout << cn << mn << "WARNING: No plot option for scale_fill_color found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
+			} else {
+				if(debug) std::cout << cn << mn << "No plot options for scale_fill_color found" << std::endl;
+			}
+		} else {
+			//Parse into vector
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				std::cout << cn << mn << "scale_fill_color configuration string: " << tmp << " parsed into:" << std::endl;
+				for(int j = 0; j < tmpVector.size(); j++) {
+					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+				}
+			}
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("scale_fill_color", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[scale_fill_color] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["scale_fill_color"]) << std::endl;
+		}
+
+		//Get the scale_marker_style
+		tmp = reader->Get(plotSection, "scale_marker_style", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+			if(plotMarker) {
+				std::cout << cn << mn << "WARNING: No plot option for scale_marker_style found, but plot_marker = true: Defaulting to pdf steering file settings" << std::endl;
+			} else {
+				if(debug) std::cout << cn << mn << "No plot option for scale_marker_style found" << std::endl;
+			}
+		} else {
+			//Parse into vector
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				std::cout << cn << mn << "scale_marker_style configuration string: " << tmp << " parsed into:" << std::endl;
+				for(int j = 0; j < tmpVector.size(); j++) {
+					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+				}
+			}
+
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("scale_marker_style", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[scale_marker_style] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["scale_marker_style"]) << std::endl;
+		}
+
+		//Get the alphas_fill_style
+		tmp = reader->Get(plotSection, "alphas_fill_style", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+			if(plotBand) {
+				std::cout << cn << mn << "WARNING: No plot option for alphas_fill_style found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
+			} else {
+				if(debug) std::cout << cn << mn << "No plot option for alphas_fill_style found" << std::endl;
+			}
+		} else {
+			//Parse into vector
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				std::cout << cn << mn << "alphas_fill_style configuration string: " << tmp << " parsed into:" << std::endl;
+				for(int j = 0; j < tmpVector.size(); j++) {
+					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+				}
+			}
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("alphas_fill_style", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[alphas_fill_style] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["alphas_fill_style"]) << std::endl;
+		}
+
+		//Get the alphas_fill_color
+		tmp = reader->Get(plotSection, "alphas_fill_color", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+			if(plotBand) {
+				std::cout << cn << mn << "WARNING: No plot option for alphas_fill_color found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
+			} else {
+				if(debug) std::cout << cn << mn << "No plot options for alphas_fill_color found" << std::endl;
+			}
+		} else {
+			//Parse into vector
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				std::cout << cn << mn << "alphas_fill_color configuration string: " << tmp << " parsed into:" << std::endl;
+				for(int j = 0; j < tmpVector.size(); j++) {
+					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+				}
+			}
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("alphas_fill_color", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[alphas_fill_color] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["alphas_fill_color"]) << std::endl;
+		}
+
+		//Get the alphas_marker_style
+		tmp = reader->Get(plotSection, "alphas_marker_style", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+			if(plotMarker) {
+				std::cout << cn << mn << "WARNING: No plot option for alphas_marker_style found, but plot_marker = true: Defaulting to pdf steering file settings" << std::endl;
+			} else {
+				if(debug) std::cout << cn << mn << "No plot option for alphas_marker_style found" << std::endl;
+			}
+		} else {
+			//Parse into vector
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				std::cout << cn << mn << "alphas_marker_style configuration string: " << tmp << " parsed into:" << std::endl;
+				for(int j = 0; j < tmpVector.size(); j++) {
+					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+				}
+			}
+
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("alphas_marker_style", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[alphas_marker_style] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["alphas_marker_style"]) << std::endl;
 		}
 
 		//Get the x_scale
@@ -791,6 +1065,55 @@ void SPXSteeringFile::Parse(void) {
 
 	//Graphing configurations [GRAPH]
 	plotBand = reader->GetBoolean("GRAPH", "plot_band", plotBand);
+	BandwithPDF    = reader->GetBoolean("GRAPH", "band_with_pdf", BandwithPDF);
+	if (debug&& BandwithPDF) std::cout << cn << mn << "BandwithPDF is ON" << std::endl;
+
+	BandwithAlphaS = reader->GetBoolean("GRAPH", "band_with_alphas", BandwithAlphaS);
+	if (debug&& BandwithAlphaS) std::cout << cn << mn << "BandwithAlphaS is ON" << std::endl;
+
+	BandwithScales = reader->GetBoolean("GRAPH", "band_with_scale", BandwithScales);
+	if (debug&& BandwithScales) std::cout << cn << mn << "BandwithScales is ON" << std::endl;
+
+	BandTotal      = reader->GetBoolean("GRAPH", "band_total", BandTotal);
+	if (debug&& BandTotal) std::cout << cn << mn << "BandTotal is ON" << std::endl;
+
+	//Get the renormalisation scale
+	tmp = reader->Get("GRAPH","ren_scales", "EMPTY");
+        cout<<" tmp= "<<tmp<<endl;
+	if(!tmp.compare("EMPTY")) {
+	 if(debug) std::cout << cn << mn << "No ren_scales given using defaults " << std::endl;
+	}else{
+	 //Parse into vector
+         RenScales.clear();
+         //std::vector<std::string> tmpRenScales;
+	 //tmpRenScales = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+         RenScales=SPXStringUtilities::ParseStringToDoubleVector(tmp,',');
+	 if(debug) {
+	  std::cout << cn << mn << "RenScales: " << tmp << " parsed into:" << std::endl;
+	  for(int j = 0; j < RenScales.size(); j++) {
+	   std::cout << cn << mn << "\t" << RenScales[j] << std::endl;
+	  }
+	 }
+        }
+
+	tmp = reader->Get("GRAPH", "fac_scales", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+	 if(debug) std::cout << cn << mn << "No fac_scales given using defaults " << std::endl;
+	}else{
+	 //Parse into vector
+         FacScales.clear();
+         //std::vector<std::string> tmpFacScales;
+	 //tmpFacScales = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+         FacScales=SPXStringUtilities::ParseStringToDoubleVector(tmp,',');
+	 if(debug) {
+	  std::cout << cn << mn << "FacScales: " << tmp << " parsed into:" << std::endl;
+	  for(int j = 0; j < FacScales.size(); j++) {
+	   std::cout << cn << mn << "\t" << FacScales[j] << std::endl;
+	  }
+	 }
+        }
+
+
 	plotErrorTicks = reader->GetBoolean("GRAPH", "plot_error_ticks", plotErrorTicks);
 	plotMarker = reader->GetBoolean("GRAPH", "plot_marker", plotMarker);
 	plotStaggered = reader->GetBoolean("GRAPH", "plot_staggered", plotStaggered);
@@ -958,11 +1281,55 @@ void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 					pci.pdfMarkerStyle = pdfSteeringFile.GetMarkerStyle();
 				}
 
+				if(pci.scaleFillStyle == PC_EMPTY_STYLE) {
+					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
+						" Scale Fill Style was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetFillStyle() << std::endl;
+					pci.scaleFillStyle = pdfSteeringFile.GetFillStyle();
+				}
+
+				if(pci.scaleFillColor == PC_EMPTY_COLOR) {
+					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
+						" Scale Fill Color was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetFillColor() << std::endl;
+					pci.scaleFillColor = pdfSteeringFile.GetFillColor();
+				}
+
+				if(pci.scaleMarkerStyle == PC_EMPTY_STYLE) {
+					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
+						" Scale Marker Style was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetMarkerStyle() << std::endl;
+					pci.scaleMarkerStyle = pdfSteeringFile.GetMarkerStyle();
+				}
+
+				if(pci.alphasFillStyle == PC_EMPTY_STYLE) {
+					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
+						" AlphaS Fill Style was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetFillStyle() << std::endl;
+					pci.alphasFillStyle = pdfSteeringFile.GetFillStyle();
+				}
+
+				if(pci.alphasFillColor == PC_EMPTY_COLOR) {
+					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
+						" AlphaS Fill Color was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetFillColor() << std::endl;
+					pci.alphasFillColor = pdfSteeringFile.GetFillColor();
+				}
+
+				if(pci.alphasMarkerStyle == PC_EMPTY_STYLE) {
+					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
+						" Alphas Marker Style was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetMarkerStyle() << std::endl;
+					pci.alphasMarkerStyle = pdfSteeringFile.GetMarkerStyle();
+				}
+
 				//Update PCI with new data
 				SPXPlotConfigurationInstance &pcim = plotConfigurations.at(i).GetPlotConfigurationInstance(pdfSteeringFile.GetFilename());
 				pcim.pdfFillStyle = pci.pdfFillStyle;
 				pcim.pdfFillColor = pci.pdfFillColor;
-				pcim.pdfMarkerStyle = pci.pdfMarkerStyle;
+				pcim.pdfMarkerStyle=pci.pdfMarkerStyle;
+
+				pcim.scaleFillStyle = pci.scaleFillStyle;
+				pcim.scaleFillColor = pci.scaleFillColor;
+				pcim.scaleMarkerStyle=pci.scaleMarkerStyle;
+
+				pcim.alphasFillStyle = pci.alphasFillStyle;
+				pcim.alphasFillColor = pci.alphasFillColor;
+				pcim.alphasMarkerStyle=pci.alphasMarkerStyle;
 
 			} catch(const SPXException &e) {
 				std::cerr << e.what() << std::endl;

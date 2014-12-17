@@ -1,0 +1,74 @@
+;==============================================================
+;
+; Description:		
+; ATLAS inclusive jet cross sections 2010 sqrt(s)=2.76 TeV
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = true
+
+;==============================================================
+; Graphing Options
+;==============================================================
+[GRAPH]
+plot_band = true
+; plot_error_ticks = true
+;plot_marker = true
+;plot_staggered = true
+match_binning = false
+;grid_corr = true
+label_sqrt_s = true
+x_legend = 0.9
+y_legend = 0.9
+
+band_with_pdf = false
+band_with_alphas= false
+band_with_scale = true
+band_total = false
+
+ren_scales = 5.0,1.0,0.5,1.0,0.5
+fac_scales = 5.0,1.0,0.5,0.5,1.0
+
+; y_overlay_min =
+; y_overlay_max =
+; y_ratio_min =
+; y_ratio_max =
+;--------------------------------------------------------------
+;==============================================================
+; Plot 0 Options
+;==============================================================
+[PLOT_0]
+#plot_type = data[], grid[], pdf
+plot_type = data, grid, pdf
+pdf_directory = PDF
+data_directory = Data/jet/atlas/incljets2011_2p76TeV
+grid_directory = Grids/jet/atlas/incljets2011_2p76TeV/nlojet
+data_steering_files = atlas_2011_2p76TeV_jet_antiktr06_incljetpt_eta1.txt
+grid_steering_files = atlas_2011_2p76TeV_jet_antiktr06_incljetpt_eta1.txt
+pdf_steering_files = CT10.txt
+;pdf_steering_files = MRST2008nlo.txt
+;pdf_steering_files = CTEQ6M.txt
+;pdf_steering_files = NNPDF30nlo.txt
+;pdf_steering_files = HERAPDF15NLO.txt
+;pdf_steering_files = NNPDF23nloNoLHC.txt
+
+
+x_scale = 1.0
+y_scale = 1.0 
+x_log=true
+y_log=true
+ 
+desc = atlas_inclusive_jet_eta1
+;display_style = overlay,ratio
+display_style = ratio
+overlay_style = data, convolute
+
+ratio_title = NLO QCD/Reference
+ratio_style_0 = convolute / nominal
+ratio_0 = ([grid_0, pdf_0])
+
+
+

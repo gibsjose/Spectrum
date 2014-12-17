@@ -70,6 +70,8 @@ last_max = 6 													;[REQUIRED] Last uncertainty in which to look for a ma
 include_eig = true 												;[Optional] Include eigenvectors in band 
 include_quad = true 											;[Optional] Include parameterization uncertainties added in quadrature
 include_max = false 											;[Optional] Include model uncertainties among which one looks for a max
+
+ErrorPropagationType= 0  ; Error propagation type
 band_type =	use_error_band										;[REQUIRED] PDF band type: use_alpha_s OR use_error_band
 error_type = pdf_band											;[REQUIRED] PDF error type: alpha_s OR pdf_band
 error_size = one_sigma											;[REQUIRED] PDF error size: one_sigma OR 90_percent

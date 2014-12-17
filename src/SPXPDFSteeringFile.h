@@ -33,6 +33,13 @@ const int PDF_STYLE_EMPTY = -1;
 const int PDF_COLOR_EMPTY = -1;
 const int ALPHA_S_ERROR_NUM_EMPTY = -1;
 
+enum PDFErrorPropagation_t {
+EigenvectorSymmetricHessian=0,      // add in quadrature and symmetrize
+EigenvectorAsymmetricHessian,       // add in quadrature, keep asymetic uncertainties
+StyleHeraPDF,                      // HERAPDF type Eigenvector, QUAD MAX
+StyleNNPDF                         // NNPDF type 
+};
+
 class SPXPDFSteeringFile {
 
 private:
@@ -71,9 +78,11 @@ private:
 	bool includeEig;
 	bool includeQuad;
 	bool includeMax;
+        bool is90Percent;
+        int ErrorPropagationType;
 	SPXPDFBandType bandType;
 	SPXPDFErrorType errorType;
-	SPXPDFErrorSize errorSize;
+	//SPXPDFErrorSize errorSize;
 	int alphaSErrorNumberUp;
 	int alphaSErrorNumberDown;
 	std::string alphaSPDFNameUp;
@@ -190,6 +199,15 @@ public:
 		return this->includeMax;
 	}
 
+	bool GetIs90Percent(void) const {
+		return this->is90Percent;
+	}
+
+
+        int GetErrorPropagationType(void) const {
+         return this->ErrorPropagationType;
+        }
+
 	SPXPDFBandType & GetBandType(void) {
 		return this->bandType;
 	}
@@ -198,9 +216,9 @@ public:
 		return this->errorType;
 	}
 
-	SPXPDFErrorSize & GetErrorSize(void) {
-		return this->errorSize;
-	}
+	//SPXPDFErrorSize & GetErrorSize(void) {
+	//	return this->errorSize;
+	//}
 
 	int GetAlphaSErrorNumberUp(void) const {
 		return this->alphaSErrorNumberUp;
