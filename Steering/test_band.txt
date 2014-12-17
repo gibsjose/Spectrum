@@ -29,8 +29,8 @@ band_with_alphas= false
 band_with_scale = true
 band_total = false
 
-ren_scales 5.0,1.0,0.5,1.0,0.5
-fac_scales 5.0,1.0,0.5,0.5,1.0
+ren_scales = 5.0,1.0,0.5,1.0,0.5
+fac_scales = 5.0,1.0,0.5,0.5,1.0
 
 ; y_overlay_min =
 ; y_overlay_max =
