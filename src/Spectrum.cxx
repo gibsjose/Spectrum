@@ -20,6 +20,10 @@ namespace Test {
 	bool TestFeatures = false;
 }
 
+namespace Options {
+	bool Metadata = false;
+}
+
 int main(int argc, char *argv[]) {
 
 	if((argc - 1) < 1) {
@@ -30,6 +34,7 @@ int main(int argc, char *argv[]) {
 	std::string file;
 
 	Test::TestFeatures = false;
+	Options::Metadata = false;
 	bool drawApplication = true;
 
 	std::cout << "==================================" << std::endl;
@@ -48,6 +53,11 @@ int main(int argc, char *argv[]) {
 		//Test mode (implements test features)
 		else if(!arg.compare("-t")) {
 			Test::TestFeatures = true;
+		}
+
+		//Print Data/Grid Metadata to a file
+		else if(!arg.compare("-m")) {
+			Options::Metadata = true;
 		}
 
 		//No known flag: Treat as file name
@@ -80,7 +90,20 @@ int main(int argc, char *argv[]) {
     	exit(-1);
     }
 
-    	//=========================================================
+	//=========================================================
+	//   MetaData
+	//=========================================================
+	if(Options::Metadata) {
+		try {
+			steeringFile.PrintDataMetadata();
+			steeringFile.PrintGridMetadata();
+		} catch(const SPXException &e) {
+			std::cerr << e.what() << std::endl;
+			std::cerr << "WARNING: Could not write metadata" << std::endl;
+		}
+	}
+
+    //=========================================================
 	//     Analysis
 	//=========================================================
     try {

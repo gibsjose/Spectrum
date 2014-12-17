@@ -3,7 +3,7 @@
 //	PDF Error Type Header
 //
 //	Outlines the SPXPDFErrorType class, which describes the PDF
-//	error type. The options are 'alpha_s' or 'pdf_band'
+//	error type. The options are 'alpha_s' or 'pdf_band' or 'scale'
 //
 //	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
 //	@Date:		29.09.2014
@@ -22,6 +22,7 @@
 const int ET_INVALID =		-1;
 const int ET_ALPHA_S = 		(1 << 0);	//0b00000001
 const int ET_PDF_BAND = 	(1 << 1);	//0b00000010
+const int ET_SCALE_BAND = 	(1 << 2);	//0b00000100
 
 class SPXPDFErrorType {
 
@@ -64,6 +65,14 @@ public:
 
 	bool IsPDFBand(void) {
 		if((type == ET_PDF_BAND) && this->IsValid()) {
+			return true;
+		}
+
+		return false;
+	}
+
+	bool IsScaleBand(void) {
+		if((type == ET_SCALE_BAND) && this->IsValid()) {
 			return true;
 		}
 

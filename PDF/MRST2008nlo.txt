@@ -32,26 +32,26 @@
 ; General Options
 ;==============================================================
 [GEN]
-debug = false
+debug = true
 
 ;==============================================================
 ; Description
 ;==============================================================
 [DESC]
-name = HERAPDF15NLO_EIG
-; name_var = HERAPDF15NLO_EIG_R04
-type = HERAPDF15NLO
-order = NLO
-num_members = 33
+name = MSTW2008nlo68cl
+;name_var = MRST2008
+type = MSTW2008 ; general name used for printing etc
+order = 1
+num_members = 41
 ; pdf_set_path =
 
 ;==============================================================
 ; Style Options
 ;==============================================================
 [STYLE]
-fill_style = 3004
-fill_color = 810
-marker_style = 23
+fill_style = 3002
+fill_color = 634
+marker_style = 21
 
 ;==============================================================
 ; PDF Options
@@ -59,22 +59,19 @@ marker_style = 23
 [PDF]
 default_id = 0
 default_id_var = 0
-first_eig = 1
-last_eig = 20
-first_quad = 1
-last_quad = 8
-first_max = 9
-last_max = 12
-include_eig = true
-include_quad = true
-include_max = true
 band_type = use_error_band
-ErrorPropagationType = 2
+;
+ErrorPropagationType = 1
+;error_type = scale_band
 error_type = pdf_band
+;error_type = alphas_band
+;
 error_size = one_sigma
-alpha_s_error_number_up = 11
-alpha_s_error_number_down = 9
-alpha_s_pdf_name_up = HERAPDF15NLO_ALPHAS
-alpha_s_pdf_name_down = HERAPDF15NLO_ALPHAS
-alpha_s_pdf_histogram_name_up = HERAPDF15NLOas1156_prenorm
-alpha_s_pdf_histogram_name_down = HERAPDF15NLOasxxx_prenorm
+; PDF set member number
+alpha_s_error_number_up = 0
+alpha_s_error_number_down = 0
+alpha_s_pdf_name_up = MSTW2008nlo68cl_asmz-68cl
+alpha_s_pdf_name_down = MSTW2008nlo68cl_asmz+68cl
+alpha_s_pdf_histogram_name_up = MSTW2008nloAsDown_prenorm
+alpha_s_pdf_histogram_name_down =  MSTW2008nloAsUp_prenorm
+

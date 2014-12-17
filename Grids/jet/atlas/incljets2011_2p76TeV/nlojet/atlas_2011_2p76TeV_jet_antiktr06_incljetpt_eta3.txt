@@ -35,7 +35,7 @@ observable_definition_link_to_code = unknown
 [GRAPH]
 x_units = GeV	
 y_units = nb	
-grid_divided_by_bin_width = true 
+divided_by_bin_width = true 
 ;
 ;==============================================================
 ; Grid Options

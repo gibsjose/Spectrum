@@ -97,6 +97,10 @@ public:
 		return comments;
 	}
 
+	const std::string & GetExperiment(void) const {
+		return experiment;
+	}
+
 	const std::string & GetReaction(void) const {
 		return reaction;
 	}

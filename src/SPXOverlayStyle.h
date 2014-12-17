@@ -22,6 +22,7 @@ const int OS_INVALID =		-1;
 const int OS_DATA = 		(1 << 0);	//0b00000001
 const int OS_REFERENCE = 	(1 << 1);	//0b00000010
 const int OS_CONVOLUTE =	(1 << 2);	//0b00000100
+const int OS_PDF =			(1 << 3);	//0b00001000
 
 class SPXOverlayStyle {
 
@@ -56,7 +57,7 @@ public:
 
 	bool Contains(int mask) {
 		//Invalid mask... Does not contain data, reference, or convolute
-		if(!(mask & (OS_DATA | OS_REFERENCE | OS_CONVOLUTE))) {
+		if(!(mask & (OS_DATA | OS_REFERENCE | OS_CONVOLUTE | OS_PDF))) {
 			return false;
 		}
 
@@ -65,6 +66,8 @@ public:
 		} else if(((style & mask) == OS_REFERENCE) && (this->IsValid())) {
 			return true;
 		} else if(((style & mask) == OS_CONVOLUTE) && (this->IsValid())) {
+			return true;
+		} else if(((style & mask) == OS_PDF) && (this->IsValid())) {
 			return true;
 		} else {
 			return false;
@@ -91,6 +94,14 @@ public:
 
 	bool ContainsConvolute(void) {
 		if((style & OS_CONVOLUTE) && this->IsValid()) {
+			return true;
+		}
+
+		return false;
+	}
+
+	bool ContainsPDF(void) {
+		if((style & OS_PDF) && this->IsValid()) {
 			return true;
 		}
 

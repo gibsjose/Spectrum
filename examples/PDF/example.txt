@@ -72,7 +72,7 @@ include_quad = true 											;[Optional] Include parameterization uncertaintie
 include_max = false 											;[Optional] Include model uncertainties among which one looks for a max
 band_type =	use_error_band										;[REQUIRED] PDF band type: use_alpha_s OR use_error_band
 error_type = pdf_band											;[REQUIRED] PDF error type: alpha_s OR pdf_band
-error_size = one_sigma											;[REQUIRED] PDF error size: one_sigma OR 90_percent
+is90Percent ; Error bands are defined as 90%
 alpha_s_error_number_up = 7										;[REQUIRED] Error number UP
 alpha_s_error_number_down = 3									;[REQUIRED] Error number DOWN
 alpha_s_pdf_name_up = none										;[REQUIRED] AlphaS PDF name UP @TODO If this is 'none', why is it required?

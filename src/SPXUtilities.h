@@ -22,6 +22,10 @@ namespace Test {
     extern bool TestFeatures;
 }
 
+namespace Options {
+    extern bool Metadata;
+}
+
 //Typedefs for Maps/Pairs
 typedef std::map<std::string, std::vector<double> >  StringDoubleVectorMap_T;
 typedef std::pair<std::string, std::vector<double> >  StringDoubleVectorPair_T;

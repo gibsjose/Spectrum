@@ -61,6 +61,12 @@ struct SPXPlotConfigurationInstance {
 	int pdfFillColor;
 	int pdfFillStyle;
 	int pdfMarkerStyle;
+	int scaleFillColor;
+	int scaleFillStyle;
+	int scaleMarkerStyle;
+	int alphasFillColor;
+	int alphasFillStyle;
+	int alphasMarkerStyle;
 	double xScale;
 	double yScale;
 	unsigned int id;
@@ -80,6 +86,12 @@ struct SPXPlotConfigurationInstance {
 		pdfFillStyle = PC_EMPTY_STYLE;
 		pdfFillColor = PC_EMPTY_COLOR;
 		pdfMarkerStyle = PC_EMPTY_STYLE;
+		scaleFillStyle = PC_EMPTY_STYLE;
+		scaleFillColor = PC_EMPTY_COLOR;
+		scaleMarkerStyle = PC_EMPTY_STYLE;
+		alphasFillStyle = PC_EMPTY_STYLE;
+		alphasFillColor = PC_EMPTY_COLOR;
+		alphasMarkerStyle = PC_EMPTY_STYLE;
 		xScale = 1.0;
 		yScale = 1.0;
 	}

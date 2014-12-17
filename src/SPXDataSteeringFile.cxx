@@ -117,6 +117,7 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t Description [DESC]" << std::endl;
 	std::cout << "\t\t Name: " << name << std::endl;
 	std::cout << "\t\t Comments: " << comments << std::endl;
+	std::cout << "\t\t Experiment: " << experiment << std::endl;
 	std::cout << "\t\t Reaction: " << reaction << std::endl;
 	std::cout << "\t\t Dataset Year: " << datasetYear << std::endl;
 	std::cout << "\t\t Dataset Luminosity: " << datasetLumi << std::endl;
@@ -148,7 +149,7 @@ void SPXDataSteeringFile::Print(void) {
 void SPXDataSteeringFile::Parse(void) {
 	std::string mn = "Parse: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
-	
+
 	if(filename.empty()) {
 		throw SPXFileIOException(filename, "Empty file string \"\" was given");
 	}
