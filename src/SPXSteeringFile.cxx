@@ -12,6 +12,7 @@
 //	@Email:		gibsjose@mail.gvsu.edu
 //
 //************************************************************/
+#include <set>
 
 #include "SPXSteeringFile.h"
 #include "SPXUtilities.h"
@@ -49,8 +50,8 @@ void SPXSteeringFile::SetDefaults(void) {
 	BandTotal      = false;
 	if(debug) std::cout << cn << mn << "BandwithTotal set to default: \"false\"" << std::endl;
 
-        RenScales.clear();
-        FacScales.clear();
+    RenScales.clear();
+    FacScales.clear();
 
 	plotStaggered = false;
 	if(debug) std::cout << cn << mn << "plotStaggered set to default: \"false\"" << std::endl;
@@ -135,7 +136,7 @@ void SPXSteeringFile::PrintDataMetadata(void) {
 	std::string mn = "PrintDataMetadata: ";
 
 	std::string filename = "./metadata/data.txt";
-	std::ofstream file(filename, std::ios::trunc);
+	std::ofstream file(filename.c_str(), std::ios::trunc);
 
 	//Make sure file is open
 	if(!file.is_open()) {
@@ -146,7 +147,7 @@ void SPXSteeringFile::PrintDataMetadata(void) {
 
 	//Loop over each instance of Data and print Metadata
 	for(int i = 0; i < this->GetNumberOfPlotConfigurations(); i++) {
-		for(int j = 0; j < this->GetNumberOfPlotConfigurationInstances(i); j++) {
+		for(int j = 0; j < this->GetNumberOfConfigurationInstances(i); j++) {
 			SPXDataSteeringFile &dsf = this->GetDataSteeringFile(i, j);
 
 			//Only show the metadata once for each data file
@@ -180,7 +181,7 @@ void SPXSteeringFile::PrintGridMetadata(void) {
 	std::string mn = "PrintGridMetadata: ";
 
 	std::string filename = "./metadata/grids.txt";
-	std::ofstream file(filename, std::ios::trunc);
+	std::ofstream file(filename.c_str(), std::ios::trunc);
 
 	//Make sure file is open
 	if(!file.is_open()) {
@@ -191,7 +192,7 @@ void SPXSteeringFile::PrintGridMetadata(void) {
 
 	//Loop over each instance of Data and print Metadata
 	for(int i = 0; i < this->GetNumberOfPlotConfigurations(); i++) {
-		for(int j = 0; j < this->GetNumberOfPlotConfigurationInstances(i); j++) {
+		for(int j = 0; j < this->GetNumberOfConfigurationInstances(i); j++) {
 			SPXGridSteeringFile &gsf = this->GetGridSteeringFile(i, j);
 
 			//Only show the metadata once for each grid file
