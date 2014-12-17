@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 
 		//Print Data/Grid Metadata to a file
 		else if(!arg.compare("-m")) {
-			Options::MetaData = true;
+			Options::Metadata = true;
 		}
 
 		//No known flag: Treat as file name
