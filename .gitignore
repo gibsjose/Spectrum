@@ -10,6 +10,9 @@ PDFsets
 # Ctags folder
 tags
 
+# Metadata folder
+metadata
+
 # Root files
 *.root
 
