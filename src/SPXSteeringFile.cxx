@@ -131,6 +131,95 @@ void SPXSteeringFile::ParseAll(bool print) {
 	}
 }
 
+void SPXSteeringFile::PrintDataMetadata(void) {
+	std::string mn = "PrintDataMetadata: ";
+
+	std::string filename = "./metadata/data.txt";
+	std::ofstream file(filename, std::ios::trunc);
+
+	//Make sure file is open
+	if(!file.is_open()) {
+		throw SPXFileIOException(filename, "Unable to open Data Metadata file");
+	}
+
+	std::set<std::string>metadataSet;
+
+	//Loop over each instance of Data and print Metadata
+	for(int i = 0; i < this->GetNumberOfPlotConfigurations(); i++) {
+		for(int j = 0; j < this->GetNumberOfPlotConfigurationInstances(i); j++) {
+			SPXDataSteeringFile &dsf = this->GetDataSteeringFile(i, j);
+
+			//Only show the metadata once for each data file
+			if(metadataSet.count(dsf.GetFilename()) != 0) {
+				continue;
+			}
+
+			metadataSet.insert(dsf.GetFilename());
+
+			file << "Data: " << dsf.GetName() << std::endl;
+			file << "File: " << dsf.GetFilename() << std::endl;
+			file << "Experiment: " << dsf.GetExperiment() << std::endl;
+			file << "Reaction: " << dsf.GetReaction() << std::endl;
+			file << "Dataset Year: " << dsf.GetDatasetYear() << std::endl;
+			file << "Dataset Luminosity: " << dsf.GetDatasetLumi() << std::endl;
+			file << "Publication Status: " << dsf.GetPublicationStatus() << std::endl;
+			file << "Reference Journal Name: " << dsf.GetReferenceJournalName() << std::endl;
+			file << "Reference Journal Year: " << dsf.GetReferenceJournalYear() << std::endl;
+			file << "Reference arXiv ID: " << dsf.GetReferenceArXivNumber() << std::endl;
+			file << "Reference arXiv Year: " << dsf.GetReferenceArXivYear() << std::endl;
+			file << "Comments: " << dsf.GetComments() << std::endl;
+			file << std::endl;
+		}
+	}
+
+	//Close the file
+	file.close();
+}
+
+void SPXSteeringFile::PrintGridMetadata(void) {
+	std::string mn = "PrintGridMetadata: ";
+
+	std::string filename = "./metadata/grids.txt";
+	std::ofstream file(filename, std::ios::trunc);
+
+	//Make sure file is open
+	if(!file.is_open()) {
+		throw SPXFileIOException(filename, "Unable to open Grid Metadata file");
+	}
+
+	std::set<std::string>metadataSet;
+
+	//Loop over each instance of Data and print Metadata
+	for(int i = 0; i < this->GetNumberOfPlotConfigurations(); i++) {
+		for(int j = 0; j < this->GetNumberOfPlotConfigurationInstances(i); j++) {
+			SPXGridSteeringFile &gsf = this->GetGridSteeringFile(i, j);
+
+			//Only show the metadata once for each grid file
+			if(metadataSet.count(gsf.GetFilename()) != 0) {
+				continue;
+			}
+
+			metadataSet.insert(gsf.GetFilename());
+
+			file << "Grid: " << gsf.GetName() << std::endl;
+			file << "File: " << gsf.GetFilename() << std::endl;
+			file << "Author: " << gsf.GetAuthor() << std::endl;
+			file << "Luminosity Config File: " << gsf.GetLumiConfigFile() << std::endl;
+			file << "Renomalization Scale: " << gsf.GetScale() << std::endl;
+			file << "Reference Journal Name: " << gsf.GetReferenceJournalName() << std::endl;
+			file << "Reference Link to arXiv: " << gsf.GetReferenceLinkToArXiv() << std::endl;
+			file << "NLO Program Name: " << gsf.GetNLOProgramName() << std::endl;
+			file << "Grid Program Name: " << gsf.GetGridProgramName() << std::endl;
+			file << "Observable Definition Code: " << gsf.GetObservableDefinitionLinkToCode() << std::endl;
+			file << "Comments: " << gsf.GetComments() << std::endl;
+			file << std::endl;
+		}
+	}
+
+	//Close the file
+	file.close();
+}
+
 //Print the Steering File Data in a nice format
 void SPXSteeringFile::Print(void) {
 	std::cout << "Steering File: " << filename << std::endl;
@@ -159,13 +248,13 @@ void SPXSteeringFile::Print(void) {
 	 std::cout<<" Something is wrong #RenScales != #FacScales, Check steering "<<std::endl;
          exit (0);
         }
-        for (int i=0; i<RenScales.size(); i++) {	  
+        for (int i=0; i<RenScales.size(); i++) {
          std::cout<<"RenScales["<<i<<"]= "<<RenScales[i]<<std::endl;
         }
-        for (int i=0; i<FacScales.size(); i++) {	  
+        for (int i=0; i<FacScales.size(); i++) {
          std::cout<<"FacScales["<<i<<"]= "<<FacScales[i]<<std::endl;
         }
-      
+
 	std::cout << "\t Plot Configurations" << std::endl;
 	std::cout << "\t\t Number of Plots: " << GetNumberOfPlotConfigurations() << std::endl << std::endl;
 
@@ -986,7 +1075,7 @@ void SPXSteeringFile::Parse(void) {
 
 	BandTotal      = reader->GetBoolean("GRAPH", "band_total", BandTotal);
 	if (debug&& BandTotal) std::cout << cn << mn << "BandTotal is ON" << std::endl;
-        
+
 	//Get the renormalisation scale
 	tmp = reader->Get("GRAPH","ren_scales", "EMPTY");
         cout<<" tmp= "<<tmp<<endl;
@@ -998,7 +1087,7 @@ void SPXSteeringFile::Parse(void) {
          //std::vector<std::string> tmpRenScales;
 	 //tmpRenScales = SPXStringUtilities::CommaSeparatedListToVector(tmp);
          RenScales=SPXStringUtilities::ParseStringToDoubleVector(tmp,',');
-	 if(debug) {         
+	 if(debug) {
 	  std::cout << cn << mn << "RenScales: " << tmp << " parsed into:" << std::endl;
 	  for(int j = 0; j < RenScales.size(); j++) {
 	   std::cout << cn << mn << "\t" << RenScales[j] << std::endl;

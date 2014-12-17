@@ -18,6 +18,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <fstream>
 #include <algorithm>
 
 #include "INIReader.h"
@@ -68,7 +69,7 @@ private:
         bool BandwithPDF;           // show the Uncertainty band with the PDF uncertainties
 	bool BandwithAlphaS;        // show the Uncertainty band with alphas  uncertainties
 	bool BandwithScales;        // show the Uncertainty band with ren&fac scales uncertainties
-	bool BandTotal;             // show the Total uncertainty band 
+	bool BandTotal;             // show the Total uncertainty band
 
         std::vector<double> RenScales; // vector for renormalisation scale variations
         std::vector<double> FacScales; // vector for factorisation scale variations
@@ -99,6 +100,8 @@ public:
 	void PrintPDFSteeringFiles(void);
 	void PrintDataSteeringFiles(void);
 	void PrintGridSteeringFiles(void);
+	void PrintDataMetadata(void);
+	void PrintGridMetadata(void);
 
 	void Parse(void);
 	void ParsePDFSteeringFiles(void);
