@@ -1,10 +1,14 @@
-# Spectrum v0.8
-### 17 December, 2014
+# Spectrum v0.8.1
+### 18 December, 2014
 
 ## Authors
 @gibsjose @csembree Dr. Tancredi Carli
 
 ## Change Log
+
+### v0.8.1
+* Fixed a bug with the INIH Library having too small of a buffer for plots with 5+ data/grid files
+* The INIH Library is now compiled alongside Spectrum, so it is cross-platform and any changes made propagate throughout
 
 ### v0.8
 * Added a flag '-m' to Spectrum to write the Data/Grid metadata to a file
