@@ -1015,7 +1015,7 @@ void SPXPDF::CalcTotalErrors()
  std::string mn = "CalcTotalErrors:";
  if (debug) cout<<cn<<mn<<" Starting calculation of TotalErrors for: "<<PDFtype<<std::endl;
 
- if (do_PDFBand && do_AlphaS && do_Scale) {
+ if (!(do_PDFBand && do_AlphaS && do_Scale)) {
   std::cout<<cn<<mn<<"ERROR: to calculation total uncertainty need all uncertainties ON "<<std::endl;
   if (do_PDFBand) std::cout<<cn<<mn<<"do_PDFBand ON" <<std::endl;
   else            std::cout<<cn<<mn<<"do_PDFBand OFF"<<std::endl;
