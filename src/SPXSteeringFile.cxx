@@ -164,10 +164,8 @@ void SPXSteeringFile::PrintDataMetadata(void) {
 			file << "Dataset Year: " << dsf.GetDatasetYear() << std::endl;
 			file << "Dataset Luminosity: " << dsf.GetDatasetLumi() << std::endl;
 			file << "Publication Status: " << dsf.GetPublicationStatus() << std::endl;
-			file << "Reference Journal Name: " << dsf.GetReferenceJournalName() << std::endl;
+			file << "Reference Journal Name: " << dsf.GetReferenceJournalName() << ", " << dsf.GetReferenceArXivNumber() << std::endl;
 			file << "Reference Journal Year: " << dsf.GetReferenceJournalYear() << std::endl;
-			file << "Reference arXiv ID: " << dsf.GetReferenceArXivNumber() << std::endl;
-			file << "Reference arXiv Year: " << dsf.GetReferenceArXivYear() << std::endl;
 			file << "Comments: " << dsf.GetComments() << std::endl;
 			file << std::endl;
 		}
@@ -205,13 +203,9 @@ void SPXSteeringFile::PrintGridMetadata(void) {
 			file << "Grid: " << gsf.GetName() << std::endl;
 			file << "File: " << gsf.GetFilename() << std::endl;
 			file << "Author: " << gsf.GetAuthor() << std::endl;
-			file << "Luminosity Config File: " << gsf.GetLumiConfigFile() << std::endl;
 			file << "Renomalization Scale: " << gsf.GetScale() << std::endl;
-			file << "Reference Journal Name: " << gsf.GetReferenceJournalName() << std::endl;
-			file << "Reference Link to arXiv: " << gsf.GetReferenceLinkToArXiv() << std::endl;
 			file << "NLO Program Name: " << gsf.GetNLOProgramName() << std::endl;
 			file << "Grid Program Name: " << gsf.GetGridProgramName() << std::endl;
-			file << "Observable Definition Code: " << gsf.GetObservableDefinitionLinkToCode() << std::endl;
 			file << "Comments: " << gsf.GetComments() << std::endl;
 			file << std::endl;
 		}
