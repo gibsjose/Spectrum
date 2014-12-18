@@ -34,14 +34,17 @@ BIN_DIR = .
 TST_DIR = $(SRC_DIR)/test
 PLT_DIR = ./plots
 
+INI_SRC =	$(INI_DIR)/ini.c $(INI_DIR)/INIReader.cpp
+INI_OBJ = 	$(OBJ_DIR)/ini.o $(OBJ_DIR)/INIReader.o
+
 RAW_SRC = 	SPXGraphUtilities.cxx Spectrum.cxx SPXSteeringFile.cxx SPXRatioStyle.cxx SPXDisplayStyle.cxx SPXOverlayStyle.cxx \
  			SPXPDFBandType.cxx SPXPDFErrorType.cxx SPXPDFErrorSize.cxx SPXPlotConfiguration.cxx SPXPDFSteeringFile.cxx \
 			SPXGridSteeringFile.cxx SPXDataSteeringFile.cxx SPXDataFormat.cxx SPXData.cxx SPXPlot.cxx SPXCrossSection.cxx \
 			SPXGrid.cxx SPXPDF.cxx SPXRatio.cxx SPXPlotType.cxx SPXAtlasStyle.cxx SPXGridCorrections.cxx
 
 SRC = $(RAW_SRC:%.cxx=$(SRC_DIR)/%.cxx)
-SRC += $(INI_DIR)/ini.c $(INI_DIR)/INIReader.cpp
 OBJ = $(RAW_SRC:%.cxx=$(OBJ_DIR)/%.o)
+OBJ += $(INI_OBJ)
 DEP = $(OBJ:%.o=%.d)
 INC = -I$(INI_DIR) -I$(SRC_DIR)
 LIB_PATH =
@@ -52,7 +55,7 @@ BIN = $(BIN_DIR)/Spectrum
 
 .PHONY: all dir clean
 
-all: dir $(BIN)
+all: dir ini $(BIN)
 
 -include $(DEP)
 
@@ -66,6 +69,12 @@ dir:
 	@mkdir -p $(TST_DIR)
 	@mkdir -p $(PLT_DIR)
 
+ini: $(INI_SRC)
+	@echo -n "Building INIH Objects"
+	@$(CXX) $(CXXFLAGS) $(INC) -c $(INI_DIR)/ini.c -o $(OBJ_DIR)/ini.o
+	@$(CXX) $(CXXFLAGS) $(INC) -c $(INI_DIR)/INIReader.cpp -o $(OBJ_DIR)/INIReader.o
+	@echo " ---> Done"
+
 $(BIN): $(OBJ)
 	@echo
 	@echo "=================================="
@@ -78,18 +87,6 @@ $(BIN): $(OBJ)
 	@echo
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cxx
-	@echo
-	@echo -n "Building $<"
-	@$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
-	@echo " ---> Done"
-
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@echo
-	@echo -n "Building $<"
-	@$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
-	@echo " ---> Done"
-
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo
 	@echo -n "Building $<"
 	@$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
