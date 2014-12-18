@@ -29,6 +29,7 @@ CXXFLAGS += $(ROOTARCH) $(ROOTINCS) $(APPLCXXFLAGS) $(LHAPDFINCS)
 
 SRC_DIR = ./src
 OBJ_DIR = ./obj
+INI_DIR = ./inih/src
 BIN_DIR = .
 TST_DIR = $(SRC_DIR)/test
 PLT_DIR = ./plots
@@ -39,11 +40,12 @@ RAW_SRC = 	SPXGraphUtilities.cxx Spectrum.cxx SPXSteeringFile.cxx SPXRatioStyle.
 			SPXGrid.cxx SPXPDF.cxx SPXRatio.cxx SPXPlotType.cxx SPXAtlasStyle.cxx SPXGridCorrections.cxx
 
 SRC = $(RAW_SRC:%.cxx=$(SRC_DIR)/%.cxx)
+SRC += $(INI_DIR)/ini.c $(INI_DIR)/INIReader.cpp
 OBJ = $(RAW_SRC:%.cxx=$(OBJ_DIR)/%.o)
 DEP = $(OBJ:%.o=%.d)
-INC = -I./inih/include -I$(SRC_DIR)
-LIB_PATH = -L./inih/lib
-LIB = -linih $(ROOTLIBS) $(APPLCLIBS) $(APPLFLIBS) $(LHAPDFLIBS)
+INC = -I$(INI_DIR) -I$(SRC_DIR)
+LIB_PATH =
+LIB = $(ROOTLIBS) $(APPLCLIBS) $(APPLFLIBS) $(LHAPDFLIBS)
 BIN = $(BIN_DIR)/Spectrum
 
 .SUFFIXES: .cxx .o
@@ -76,6 +78,18 @@ $(BIN): $(OBJ)
 	@echo
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cxx
+	@echo
+	@echo -n "Building $<"
+	@$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
+	@echo " ---> Done"
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@echo
+	@echo -n "Building $<"
+	@$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
+	@echo " ---> Done"
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo
 	@echo -n "Building $<"
 	@$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
