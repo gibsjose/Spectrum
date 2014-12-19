@@ -1,11 +1,10 @@
 ![Spectrum Icon](https://spectrum.web.cern.ch/spectrum/img/spectrum_banner_512.png)
-###Spectrum Documentation – v0.7
-###02 December, 2014
+###Spectrum Documentation – v0.8
+###19 December, 2014
 ###Authors: [Tancredi Carli](mailto:tancredi.carli@cern.ch), [Joe Gibson](mailto:gibsjose@mail.gvsu.edu), [Cameron Embree](csembree@gmail.com)
-===
 
-##Table Of Contents
-===
+#Table Of Contents
+
 1.	###[Overview](overview.md)
 2.	###Installation
 	1.	####[Supported Platforms](installation/supported_platforms.md)
@@ -56,4 +55,3 @@
 		2.	#####[SPXGraphUtilities]()
 		3.	#####[SPXStringUtilities]()
 		4.	#####[SPXMathUtilities]()
-		
