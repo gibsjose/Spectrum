@@ -38,7 +38,7 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringFile) {
 
 	//Attempt to create the PDF object and perform convolution
 	try {
-		pdf = new SPXPDF(psf, grid->GetGridName());
+	  pdf = new SPXPDF(psf, grid->GetGridName());
 	} catch(const SPXException &e) {
 		throw;
 	}
@@ -58,7 +58,13 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringFile) {
 	}
 
         // Set which uncertainty to calculate in PDF file
-		
+        //default setting is in PDF class PDF true, rest false
+        if (pdf->GetDoPDFBand()==false || mainsteeringFile->GetBandwithPDF()==false) 
+         pdf->SetDoPDFBand (mainsteeringFile->GetBandwithPDF()); 
+        pdf->SetDoAlphaS  (mainsteeringFile->GetBandwithAlphaS());
+        pdf->SetDoScale   (mainsteeringFile->GetBandwithScales());
+        pdf->SetDoTotError(mainsteeringFile->GetBandTotal());
+
 	//@JJG 16.12.14
 	//
 	//	These should only be called if the steeringFile actually sets them, right? Currently for old steering files
@@ -67,15 +73,17 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringFile) {
 	//	Another option might be to just skip overriding the PDFBand from the top-level steering, since this is almost always wanted
 	//	and if it is not wanted they can modify the PDF steering file
 
-        //pdf->SetDoPDFBand (mainsteeringFile->GetBandwithPDF());
-        pdf->SetDoAlphaS  (mainsteeringFile->GetBandwithAlphaS());
-        pdf->SetDoScale   (mainsteeringFile->GetBandwithScales());
-        pdf->SetDoTotError(mainsteeringFile->GetBandTotal());
-
         std::vector<double> RenScales=mainsteeringFile->GetRenScales();
 	std::vector<double> FacScales=mainsteeringFile->GetFacScales();
 
-        pdf->SetScales(RenScales,FacScales);
+	if (RenScales.size()!=FacScales.size()) {
+         std::ostringstream oss;
+         oss << cn << mn << "Different number of values given for rennormalisation and factorisation scale";
+         throw SPXParseException(oss.str());
+	}
+
+        if (RenScales.size()!=0)
+         pdf->SetScales(RenScales,FacScales);
 
         pdf->Initialize();
 
@@ -84,49 +92,16 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringFile) {
         if (!grid->GetReference()) std::cout<<cn<<mn<<"reference histogram not found ! "<<endl;
 
 	SPXGraphUtilities::HistogramToGraph(gridReference, grid->GetReference());
-	SPXGraphUtilities::HistogramToGraph(nominal, pdf->GetPDFNominal());
+	SPXGraphUtilities::HistogramToGraph(nominal,       pdf->GetPDFNominal());
 
 	//Set the name of the convolution graphs appropriately
 	//Create name strings
-	TString name;
-	TString pdfName;
-	TString alphaSName;
-	TString scaleName;
+	//TString name;
+	//TString pdfName;
+	//TString alphaSName;
+	//TString scaleName;
 
-	//Check if name exists
-	if(!pci->gridSteeringFile.GetName().empty()) {
-		name = TString(pci->gridSteeringFile.GetName());
-		pdfName = name + "_pdf";
-		alphaSName = name + "_alpha_s";
-		scaleName = name + "_scale";
-	}
-
-	//Grid steering file has no [DESC]:name
-	//Default to filename
-	else {
-		if(debug) std::cout << cn << mn << "Grid steering file has no name value: using filename instead" << std::endl;
-		name = pci->gridSteeringFile.GetFilename();
-		name.ReplaceAll(TString(".txt"), TString(""));
-		pdfName = name + "_pdf";
-		alphaSName = name + "_alpha_s";
-		scaleName = name + "_scale";
-	}
-
-	//Set the graph names
-	//
-	if (debug) std::cout<<cn<<mn<<"Set graph names h_PDFBand_results pdfNames= "<<pdfName<<endl;
-	if(pdf->h_PDFBand_results) pdf->h_PDFBand_results->SetName(pdfName);
-        else if (debug) std::cout<<cn<<mn<<"h_PDFBand_results not found ! "<<endl;
-
-	if (debug) std::cout<<cn<<mn<<"Set graph h_AlphaS_results alphasName "<<alphaSName<<endl;
-	if(pdf->h_AlphaS_results) pdf->h_AlphaS_results->SetName(alphaSName);
-        else if (debug) std::cout<<cn<<mn<<"h_AlphaS_results not found ! "<<endl;
-
-	if (debug) std::cout<<cn<<mn<<"Set graph h_Scale_result scaleName "<<scaleName<<endl;
-	if(pdf->h_Scale_results) pdf->h_Scale_results->SetName(scaleName);
-        else if (debug) std::cout<<cn<<mn<<"h_Scale_results not found ! "<<endl;
-
-	if (debug) std::cout<<cn<<mn<<" finished "<<std::endl;
+	if(debug) std::cout << cn << mn << "Grid steering file has no name value: using filename instead" << std::endl;
 }
 
 void SPXCrossSection::ParseCorrections(void) {
@@ -135,13 +110,16 @@ void SPXCrossSection::ParseCorrections(void) {
 
 	//Check if grid contains corrections
 	if(pci->gridSteeringFile.GetNumberOfCorrectionFiles() != 0) {
-		try {
-			corrections = new SPXGridCorrections(*pci);
-			corrections->Parse();
-			corrections->Print();
-		} catch(const SPXException &e) {
-			throw;
-		}
+	 try {
+	  corrections = new SPXGridCorrections(*pci);
+	  corrections->Parse();
+  	  if (debug) {
+           std::cout<<cn<<mn<<"Sucessfully read in corrections: "<<std::endl;
+	   corrections->Print();
+          }
+	 } catch(const SPXException &e) {
+	  throw;
+	 }
 	}
 }
 

@@ -344,17 +344,19 @@ void SPXRatio::Divide(void) {
     //Grab the plot configuration instance
     SPXPlotConfigurationInstance pci;
 
+    if(debug) std::cout <<cn<<mn<< "Starting " << std::endl;
+
     if(ratioStyle.IsDataStat()) {
         try {
             ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroDenGraphErrors);
             ratioGraph->SetFillStyle(1001);
             ratioGraph->SetFillColor(kGray);
-            if(debug) std::cout << "SPXRatio::Divide: Successfully divided data stat graph with options: " << std::endl;
+            if(debug) std::cout <<cn<<mn<< "Successfully divided data stat graph with options: " << std::endl;
             if(debug) std::cout << "\t Fill Style = " << 1001 << std::endl;
             if(debug) std::cout << "\t Fill Color = " << kGray << std::endl;
         } catch(const SPXException &e) {
             std::cerr << e.what() << std::endl;
-            throw SPXGraphException("SPXRatio::Divide: Unable to divide data stat graphs");
+            throw SPXGraphException(cn + mn + "Unable to divide data stat graphs");
         }
 
         return;
@@ -365,12 +367,12 @@ void SPXRatio::Divide(void) {
             ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroDenGraphErrors);
             ratioGraph->SetFillStyle(1001);
             ratioGraph->SetFillColor(kGray);
-            if(debug) std::cout << "SPXRatio::Divide: Successfully divided data tot graph with options: " << std::endl;
+            if(debug) std::cout << cn<<mn<<"Successfully divided data tot graph with options: " << std::endl;
             if(debug) std::cout << "\t Fill Style = " << 1001 << std::endl;
             if(debug) std::cout << "\t Fill Color = " << kGray << std::endl;
         } catch(const SPXException &e) {
             std::cerr << e.what() << std::endl;
-            throw SPXGraphException("SPXRatio::Divide: Unable to divide data tot graphs");
+            throw SPXGraphException(cn + mn + "Unable to divide data tot graphs");
         }
 
         return;
@@ -388,7 +390,7 @@ void SPXRatio::Divide(void) {
                 SPXGraphUtilities::MatchBinning(denominatorGraph, numeratorGraph, true);
             } catch(const SPXException &e) {
                 std::cerr << e.what() << std::endl;
-                throw SPXGraphException("SPXRatio::Divide: Unable to match convolute binning to data binning");
+                throw SPXGraphException(cn + mn + "Unable to match convolute binning to data binning");
             }
         }
     }
@@ -404,13 +406,13 @@ void SPXRatio::Divide(void) {
             SPXGraphUtilities::MatchBinning(numeratorGraph, denominatorGraph, true);
         } catch(const SPXException &e) {
             std::cerr << e.what() << std::endl;
-            throw SPXGraphException("SPXRatio::Divide: Unable to match convolute binning to data binning");
+            throw SPXGraphException(cn + mn + "Unable to match convolute binning to data binning");
         }
     }
 
     //@TODO What if it's Data/Data???
     else if(ratioStyle.IsDataOverData()) {
-        if(debug) std::cout << "SPXRatio::Divide: Data/Data: Could not get pci" << std::endl;
+      if(debug) std::cout <<cn<<mn<<"Data/Data: Could not get pci" << std::endl;
 
         //@TODO Match binning here? Who is the master?
     }
@@ -434,12 +436,12 @@ void SPXRatio::Divide(void) {
 
         //Style ratio graph
         if(true) {
-            if(debug) std::cout << "SPXRatio::Divide: Obtaining PDF Fill Options..." << std::endl;
-            ratioGraph->SetFillStyle(pci.pdfFillStyle);
-            ratioGraph->SetFillColor(pci.pdfFillColor);
-            ratioGraph->SetMarkerStyle(pci.pdfMarkerStyle);
-            ratioGraph->SetMarkerColor(pci.pdfFillColor);
-            ratioGraph->SetLineColor(pci.pdfFillColor);
+	  if(debug) std::cout << cn<<mn<<"Obtaining PDF Fill Options..." << std::endl;
+            ratioGraph->SetFillStyle(pci.totalFillStyle);
+            ratioGraph->SetFillColor(pci.totalFillColor);
+            ratioGraph->SetMarkerStyle(pci.totalMarkerStyle);
+            ratioGraph->SetMarkerColor(pci.totalFillColor);
+            ratioGraph->SetLineColor(pci.totalFillColor);
             ratioGraph->SetMarkerSize(1.2);
 
             //NOTE: ROOT Color Transparencies are only supported in ROOT v6.0.0+ via the method
@@ -450,7 +452,7 @@ void SPXRatio::Divide(void) {
             //If it is a convolute / reference graph, darken the fill color and change the style
             if(ratioStyle.IsConvoluteOverReference()) {
                 ratioGraph->SetFillStyle(3002);
-                ratioGraph->SetFillColor(pci.pdfFillColor + 1);
+                ratioGraph->SetFillColor  (pci.pdfFillColor + 1);
                 ratioGraph->SetMarkerColor(pci.pdfFillColor + 1);
                 ratioGraph->SetLineStyle(3);
             }
@@ -458,19 +460,19 @@ void SPXRatio::Divide(void) {
             //Same for nominal
             if(ratioStyle.IsConvoluteOverNominal()) {
                 ratioGraph->SetFillStyle(3017);
-                ratioGraph->SetFillColor(pci.pdfFillColor + 2);
+                ratioGraph->SetFillColor  (pci.pdfFillColor + 2);
                 ratioGraph->SetMarkerColor(pci.pdfFillColor + 2);
                 ratioGraph->SetLineStyle(2);
             }
 
-            if(debug) std::cout << "SPXRatio::Divide: Set PDF Fill Options:" << std::endl;
+            if(debug) std::cout << cn + mn + "Set PDF Fill Options:" << std::endl;
             if(debug) std::cout << "\t Fill Style = " << ratioGraph->GetFillStyle() << std::endl;
             if(debug) std::cout << "\t Fill Color = " << ratioGraph->GetFillColor() << std::endl;
-            if(debug) std::cout << "\t Marker Style = " << ratioGraph->GetMarkerStyle() << std::endl;
+            if(debug) std::cout << "\t Marker Style= "<< ratioGraph->GetMarkerStyle() << std::endl;
         }
     } catch(const SPXException &e) {
         std::cerr << e.what() << std::endl;
-        throw SPXGraphException("SPXRatio::Divide: Unable to divide numerator and denominator to calculate ratio");
+        throw SPXGraphException(cn + mn + "Unable to divide numerator and denominator to calculate ratio");
     }
 }
 

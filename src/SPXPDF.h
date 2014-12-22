@@ -33,17 +33,24 @@
 
 #define DEFAULT -1
 
-using namespace std;
+//using namespace std;
+
+
+//typedef std::map<std::string,  TGraphAsymmErrors>  BandMap_T;
+
 
 class SPXPDF {
 
     public:
         //VARIABLES
 
+        // move this to private variables
         TGraphAsymmErrors *h_PDFBand_results;
         TGraphAsymmErrors *h_AlphaS_results;
         TGraphAsymmErrors *h_Scale_results;
         TGraphAsymmErrors *h_Total_results;
+
+	//        BandMap_T allbands;
 
         string calc_desc;
 
@@ -55,6 +62,9 @@ class SPXPDF {
         SPXPDF(SPXPDFSteeringFile *psf, const std::string &_gridName);
 
         virtual ~SPXPDF() { CleanUpSPXPDF(); }; //destructor
+
+
+        //void PrintMap(std::string &s, BandMap_T &m);
 
         // method for PDF standalone plots
 
@@ -112,8 +122,8 @@ class SPXPDF {
         int GetAlphaSmemberNumUp() const{return AlphaSmemberNumUp;};
         string GetAlphaSPDFSetNameDown() const{return AlphaSPDFSetNameDown;};
         string GetAlphaSPDFSetNameUp() const{return AlphaSPDFSetNameUp;};
-        string GetAlphaSPDFSetHistNameDown() const{return AlphaSPDFSetHistNameDown;};
-        string GetAlphaSPDFSetHistNameUp() const{return AlphaSPDFSetHistNameUp;};
+        //string GetAlphaSPDFSetHistNameDown() const{return AlphaSPDFSetHistNameDown;};
+        //string GetAlphaSPDFSetHistNameUp() const{return AlphaSPDFSetHistNameUp;};
 
         //mutator methods
         void SetDebug(bool _debug);
@@ -139,8 +149,8 @@ class SPXPDF {
         void SetAlphaSmemberNumUp(int _memberNum);
         void SetAlphaSPDFSetNameDown(string _name);
         void SetAlphaSPDFSetNameUp(string _name);
-        void SetAlphaSPDFSetHistNameDown(string _name);
-        void SetAlphaSPDFSetHistNameUp(string _name);
+        //void SetAlphaSPDFSetHistNameDown(string _name);
+        //void SetAlphaSPDFSetHistNameUp(string _name);
 
         void SetAlphaS_value_worldAverage(double setalpha) {alphaS_value_worldAverage=setalpha;};
         void SetAlphaS_absUnc_worldAverage(double setalpha){alphaS_absUnc_worldAverage=setalpha;};
@@ -198,8 +208,8 @@ class SPXPDF {
         int AlphaSmemberNumUp;
         string AlphaSPDFSetNameDown;
         string AlphaSPDFSetNameUp;
-        string AlphaSPDFSetHistNameDown;
-        string AlphaSPDFSetHistNameUp;
+        //string AlphaSPDFSetHistNameDown;
+        //string AlphaSPDFSetHistNameUp;
 
         appl::grid *my_grid;
 

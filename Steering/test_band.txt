@@ -24,13 +24,13 @@ label_sqrt_s = true
 x_legend = 0.9
 y_legend = 0.9
 
-band_with_pdf = false
+band_with_pdf = true
 band_with_alphas= false
-band_with_scale = true
-band_total = false
+;band_with_scale = true
+band_total = true
 
-ren_scales = 5.0,1.0,0.5,1.0,0.5
-fac_scales = 5.0,1.0,0.5,0.5,1.0
+ren_scales = 2.0,1.0,0.5,1.0,0.5
+fac_scales = 2.0,1.0,0.5,0.5,1.0
 
 ; y_overlay_min =
 ; y_overlay_max =
@@ -55,6 +55,24 @@ pdf_steering_files = CT10.txt
 ;pdf_steering_files = HERAPDF15NLO.txt
 ;pdf_steering_files = NNPDF23nloNoLHC.txt
 
+;data_marker_color=1
+;data_marker_style=20
+
+total_fill_style=3001
+total_fill_color=500
+total_marker_style=21
+
+pdf_fill_style=3004
+pdf_fill_color=400
+pdf_marker_style=22
+
+scale_fill_style=3005
+scale_fill_color=300
+scale_marker_style=23
+
+alphas_fill_style=3022
+alphas_fill_color=390
+alphas_marker_style=24
 
 x_scale = 1.0
 y_scale = 1.0 
@@ -62,8 +80,8 @@ x_log=true
 y_log=true
  
 desc = atlas_inclusive_jet_eta1
-;display_style = overlay,ratio
-display_style = ratio
+display_style = overlay,ratio
+;display_style = ratio
 overlay_style = data, convolute
 
 ratio_title = NLO QCD/Reference

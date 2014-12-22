@@ -58,6 +58,9 @@ struct SPXPlotConfigurationInstance {
 	SPXPDFSteeringFile pdfSteeringFile;
 	int dataMarkerStyle;
 	int dataMarkerColor;
+	int totalFillColor;
+	int totalFillStyle;
+	int totalMarkerStyle;
 	int pdfFillColor;
 	int pdfFillStyle;
 	int pdfMarkerStyle;
@@ -83,6 +86,9 @@ struct SPXPlotConfigurationInstance {
 		pdfDirectory = ".";
 		dataMarkerStyle = PC_EMPTY_STYLE;
 		dataMarkerColor = PC_EMPTY_COLOR;
+		totalFillStyle = PC_EMPTY_STYLE;
+		totalFillColor = PC_EMPTY_COLOR;
+		totalMarkerStyle = PC_EMPTY_STYLE;
 		pdfFillStyle = PC_EMPTY_STYLE;
 		pdfFillColor = PC_EMPTY_COLOR;
 		pdfMarkerStyle = PC_EMPTY_STYLE;
@@ -162,9 +168,18 @@ struct SPXPlotConfigurationInstance {
 
 		tmp << "\t Data Marker Style: " << dataMarkerStyle << std::endl;
 		tmp << "\t Data Marker Color: " << dataMarkerColor << std::endl;
+		tmp << "\t Total Fill Style: " << totalFillStyle << std::endl;
+		tmp << "\t Total Fill Color: " << totalFillColor << std::endl;
+		tmp << "\t Total Marker Style: " << totalMarkerStyle << std::endl;
 		tmp << "\t PDF Fill Style: " << pdfFillStyle << std::endl;
 		tmp << "\t PDF Fill Color: " << pdfFillColor << std::endl;
 		tmp << "\t PDF Marker Style: " << pdfMarkerStyle << std::endl;
+		tmp << "\t Scale Fill Style: " << scaleFillStyle << std::endl;
+		tmp << "\t Scale Fill Color: " << scaleFillColor << std::endl;
+		tmp << "\t Scale Marker Style: " << scaleMarkerStyle << std::endl;
+		tmp << "\t AlphaS Fill Style: " << alphasFillStyle << std::endl;
+		tmp << "\t AlphaS Fill Color: " << alphasFillColor << std::endl;
+		tmp << "\t AlphaS Marker Style: " << alphasMarkerStyle << std::endl;
 		tmp << "\t X Scale: " << xScale << std::endl;
 		tmp << "\t Y Scale: " << yScale << std::endl;
 		return tmp.str();

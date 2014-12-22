@@ -398,6 +398,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
+
 	//Create plot configurations object for all plots found
 	for(int i = 0; i < numPlots; i++) {
 
@@ -561,10 +562,12 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 				SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_steering_files"]) << std::endl;
 		}
 
+
+       	        if(debug) std::cout << cn << mn << "Start parsing data_marker_style " << std::endl;
 		//Get the data_marker_style
 		tmp = reader->Get(plotSection, "data_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			std::cout << cn << mn << "WARNING: No plot option for data_marker_color found: Defaulting to pre-defined settings (" << DEFAULT_DATA_MARKER_STYLE << ")" << std::endl;
+			std::cout << cn << mn << "WARNING: No plot option for data_marker_style found: Defaulting to pre-defined settings (" << DEFAULT_DATA_MARKER_STYLE << ")" << std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -582,6 +585,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		}
 
 		//Get the data_marker_color
+       	        if(debug) std::cout << cn << mn << "Start parsing data_marker_color " << std::endl;
 		tmp = reader->Get(plotSection, "data_marker_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			std::cout << cn << mn << "WARNING: No plot option for data_marker_color found: Defaulting to pre-defined settings (" << DEFAULT_DATA_MARKER_COLOR << ")" << std::endl;
@@ -601,7 +605,86 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 				SPXStringUtilities::VectorToCommaSeparatedList(configurations["data_marker_color"]) << std::endl;
 		}
 
+
+		//Get the total_fill_style
+       	        if(debug) std::cout << cn << mn << "Start parsing total_fill_style " << std::endl;
+		tmp = reader->Get(plotSection, "total_fill_style", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+			if(plotBand) {
+				std::cout << cn << mn << "WARNING: No plot option for total_fill_style found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
+			} else {
+				if(debug) std::cout << cn << mn << "No plot option for total_fill_style found" << std::endl;
+			}
+		} else {
+			//Parse into vector
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				std::cout << cn << mn << "total_fill_style configuration string: " << tmp << " parsed into:" << std::endl;
+				for(int j = 0; j < tmpVector.size(); j++) {
+					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+				}
+			}
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("total_fill_style", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[total_fill_style] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["total_fill_style"]) << std::endl;
+		}
+
+		//Get the total_fill_color
+       	        if(debug) std::cout << cn << mn << "Start parsing total_fill_color " << std::endl;
+		tmp = reader->Get(plotSection, "total_fill_color", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+			if(plotBand) {
+				std::cout << cn << mn << "WARNING: No plot option for total_fill_color found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
+			} else {
+				if(debug) std::cout << cn << mn << "No plot options for total_fill_color found" << std::endl;
+			}
+		} else {
+			//Parse into vector
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				std::cout << cn << mn << "total_fill_color configuration string: " << tmp << " parsed into:" << std::endl;
+				for(int j = 0; j < tmpVector.size(); j++) {
+					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+				}
+			}
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("total_fill_color", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[pdf_fill_color] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["total_fill_color"]) << std::endl;
+		}
+
+		//Get the pdf_marker_style
+       	        if(debug) std::cout << cn << mn << "Start parsing total_marker_style " << std::endl;
+		tmp = reader->Get(plotSection, "total_marker_style", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+			if(plotMarker) {
+				std::cout << cn << mn << "WARNING: No plot option for total_marker_style found, but plot_marker = true: Defaulting to pdf steering file settings" << std::endl;
+			} else {
+				if(debug) std::cout << cn << mn << "No plot option for total_marker_style found" << std::endl;
+			}
+		} else {
+			//Parse into vector
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				std::cout << cn << mn << "total_marker_style configuration string: " << tmp << " parsed into:" << std::endl;
+				for(int j = 0; j < tmpVector.size(); j++) {
+					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+				}
+			}
+
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("total_marker_style", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[total_marker_style] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["total_marker_style"]) << std::endl;
+		}
+
+
 		//Get the pdf_fill_style
+       	        if(debug) std::cout << cn << mn << "Start parsing pdf_fill_style " << std::endl;
 		tmp = reader->Get(plotSection, "pdf_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(plotBand) {
@@ -626,6 +709,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		}
 
 		//Get the pdf_fill_color
+       	        if(debug) std::cout << cn << mn << "Start parsing pdf_fill_color " << std::endl;
 		tmp = reader->Get(plotSection, "pdf_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(plotBand) {
@@ -650,6 +734,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		}
 
 		//Get the pdf_marker_style
+       	        if(debug) std::cout << cn << mn << "Start parsing pdf_marker_style " << std::endl;
 		tmp = reader->Get(plotSection, "pdf_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(plotMarker) {
@@ -674,7 +759,10 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 				SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_marker_style"]) << std::endl;
 		}
 
+
+
 		//Get the scale_fill_style
+       	        if(debug) std::cout << cn << mn << "Start parsing scale_fill_style " << std::endl;
 		tmp = reader->Get(plotSection, "scale_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(plotBand) {
@@ -699,6 +787,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		}
 
 		//Get the scale_fill_color
+       	        if(debug) std::cout << cn << mn << "Start parsing pdf_fill_color " << std::endl;
 		tmp = reader->Get(plotSection, "scale_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(plotBand) {
@@ -723,6 +812,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		}
 
 		//Get the scale_marker_style
+       	        if(debug) std::cout << cn << mn << "Start parsing scale_marker_style " << std::endl;
 		tmp = reader->Get(plotSection, "scale_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(plotMarker) {
@@ -748,6 +838,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		}
 
 		//Get the alphas_fill_style
+       	        if(debug) std::cout << cn << mn << "Start parsing alphas_fill_style " << std::endl;
 		tmp = reader->Get(plotSection, "alphas_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(plotBand) {
@@ -772,6 +863,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		}
 
 		//Get the alphas_fill_color
+       	        if(debug) std::cout << cn << mn << "Start parsing alphas_fill_style " << std::endl;
 		tmp = reader->Get(plotSection, "alphas_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(plotBand) {
@@ -796,6 +888,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		}
 
 		//Get the alphas_marker_style
+       	        if(debug) std::cout << cn << mn << "Start parsing alphas_marker_style " << std::endl;
 		tmp = reader->Get(plotSection, "alphas_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(plotMarker) {
@@ -821,6 +914,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		}
 
 		//Get the x_scale
+       	        if(debug) std::cout << cn << mn << "Start parsing x_scale " << std::endl;
 		tmp = reader->Get(plotSection, "x_scale", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(debug) std::cout << cn << mn << "No plot option for x_scale was specified" << std::endl;
@@ -843,6 +937,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		}
 
 		//Get the y_scale
+       	        if(debug) std::cout << cn << mn << "Start parsing y_scale " << std::endl;
 		tmp = reader->Get(plotSection, "y_scale", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			if(debug) std::cout << cn << mn << "No plot option for y_scale was specified" << std::endl;
@@ -867,6 +962,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		}
 
 		//Get the x_log
+       	        if(debug) std::cout << cn << mn << "Start parsing x_log " << std::endl;
 		tmp = reader->Get(plotSection, "x_log", "EMPTY");
 		if(tmp.compare("EMPTY") != 0) {
 			xLog = reader->GetBoolean(plotSection, "x_log", false);
@@ -924,6 +1020,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		}
 
 		//Get the display_style
+       	        if(debug) std::cout << cn << mn << "Start parsing display_style " << std::endl;
 		tmp = reader->Get(plotSection, "display_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			throw SPXINIParseException(plotSection, "display_style", "You MUST specify the display_style");
@@ -937,6 +1034,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		}
 
 		//Get the overlay_style
+       	        if(debug) std::cout << cn << mn << "Start parsing overlay_style " << std::endl;
 		tmp = reader->Get(plotSection, "overlay_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			throw SPXINIParseException(plotSection, "overlay_style", "You MUST specify the overlay_style");
@@ -1036,6 +1134,8 @@ void SPXSteeringFile::Parse(void) {
     	throw SPXFileIOException(filename, "INIReader::INIReader(): ParseError generated when parsing file");
 	}
 
+	if(debug) std::cout << cn << mn << " INIReader done " << std::endl;
+
 	std::string tmp;
 
 	//General configurations [GEN]
@@ -1121,6 +1221,9 @@ void SPXSteeringFile::Parse(void) {
 	yOverlayMax = reader->GetReal("GRAPH", "y_overlay_max", yOverlayMax);
 	yRatioMin = reader->GetReal("GRAPH", "y_ratio_min", yRatioMin);
 	yRatioMax = reader->GetReal("GRAPH", "y_ratio_max", yRatioMax);
+
+
+	if(debug) std::cout << cn << mn << " Start with ParsePlotConfigurations " << std::endl;
 
 	//Attempt to parse plot configurations
 	try {

@@ -199,8 +199,14 @@ void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
   AlphaSmemberNumUp    = psf->GetAlphaSErrorNumberUp();
   AlphaSPDFSetNameDown = psf->GetAlphaSPDFNameDown();
   AlphaSPDFSetNameUp   = psf->GetAlphaSPDFNameUp();
-  AlphaSPDFSetHistNameDown = psf->GetAlphaSPDFHistogramNameDown();
-  AlphaSPDFSetHistNameUp   = psf->GetAlphaSPDFHistogramNameUp();
+  if (TString(AlphaSPDFSetNameUp).Contains("none") ||
+      TString(AlphaSPDFSetNameDown).Contains("none") ){
+   std::ostringstream oss;
+   oss << cn << mn << "Need to provide AlphaSPDFSetNameUp and AlphaSPDFSetNameDown to evaluate alphas uncertainty ";
+   throw SPXParseException(oss.str());
+  }
+  //AlphaSPDFSetHistNameDown = psf->GetAlphaSPDFHistogramNameDown();
+  //AlphaSPDFSetHistNameUp   = psf->GetAlphaSPDFHistogramNameUp();
 
   if (debug) {
    std::cout<<cn<<mn<<"finished"<< std::endl;
@@ -226,17 +232,15 @@ void SPXPDF::Initialize()
 
  if (do_PDFBand) std::cout<<cn<<mn<<"do_PDFBand ON" <<std::endl;
  else            std::cout<<cn<<mn<<"do_PDFBand OFF"<<std::endl;
- if (do_AlphaS ) std::cout<<cn<<mn<<"do_AlphaS ON" <<std::endl;
- else            std::cout<<cn<<mn<<"do_AlphaS OFF"<<std::endl;
- if (do_Scale)   std::cout<<cn<<mn<<"do_Scale  ON" <<std::endl;
- else            std::cout<<cn<<mn<<"do_Scale  OFF"<<std::endl;
- if (do_Total)   std::cout<<cn<<mn<<"do_Total  ON" <<std::endl;
- else            std::cout<<cn<<mn<<"do_Total  OFF"<<std::endl;
+ if (do_AlphaS ) std::cout<<cn<<mn<<"do_AlphaS ON " <<std::endl;
+ else            std::cout<<cn<<mn<<"do_AlphaS OFF" <<std::endl;
+ if (do_Scale)   std::cout<<cn<<mn<<"do_Scale  ON " <<std::endl;
+ else            std::cout<<cn<<mn<<"do_Scale  OFF" <<std::endl;
+ // do_total is always on since total band should be always produced
+ //if (do_Total)   std::cout<<cn<<mn<<"do_Total  ON" <<std::endl;
+ //else            std::cout<<cn<<mn<<"do_Total  OFF"<<std::endl;
 
  if (!do_PDFBand && !do_AlphaS && !do_Scale) {
-  // std::cout<<cn<<mn<<"ERROR: All theory uncertainties disabled. Possible steering file error? "<<std::endl;
-  // std::cout<<cn<<mn<<"ERROR: Check settings in steering file "<<std::endl;
-  // exit(0);
 
   //@JJG 16.12.14
   //Here is an example of how to use the Exceptions instead of calling exit(0) and printint to std::cout
@@ -256,9 +260,11 @@ void SPXPDF::Initialize()
 
  if (do_Scale) {
   if (RenScales.size()!=FacScales.size()){
-   std::cout<<cn<<mn<<"ERROR Same number of renormalisation and factorisation scales are needed !"<<std::endl;
-   std::cout<<cn<<mn<<"ERROR RenScales.size() = "<<RenScales.size()<<" FacScales.size() = "<<FacScales.size()<<std::endl;
-   exit(0);
+   //std::cout<<cn<<mn<<"ERROR Same number of renormalisation and factorisation scales are needed !"<<std::endl;
+   //std::cout<<cn<<mn<<"ERROR RenScales.size() = "<<RenScales.size()<<" FacScales.size() = "<<FacScales.size()<<std::endl;
+   std::ostringstream oss;
+   oss << cn << mn << "ERROR Same number of renormalisation and factorisation scales are needed ! RenScales.size() = "<<RenScales.size()<<" FacScales.size() = "<<FacScales.size();
+   throw SPXParseException(oss.str());
   }
   if (debug) {
    std::cout<<cn<<mn<<"RenScales.size()="<<RenScales.size()<<std::endl;
@@ -314,7 +320,9 @@ void SPXPDF::Initialize()
 
  if (applgridok) {
   temp_hist= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-  temp_hist->SetName((TString) ("h_xsec_default"));
+  TString name="xsec_pdf_"+default_pdf_set_name;
+  //name.Replace("PDFSets/","");
+  temp_hist->SetName(name);
  } else {
   if (debug) std::cout<<cn<<mn<<"Histogram from PDF not applgrid ! "<<std::endl;
   temp_hist=this->FillPdfHisto();
@@ -334,12 +342,22 @@ void SPXPDF::Initialize()
  if (do_AlphaS) {
   h_errors_AlphaS.push_back(temp_hist);
   h_AlphaS_results=TH1TOTGraphAsymm(temp_hist);
+  TString name="xsec_alphas_"+default_pdf_set_name;
+  if (h_AlphaS_results) h_AlphaS_results->SetName(name);
  }
- if (do_Scale)   h_Scale_results=TH1TOTGraphAsymm(temp_hist);
- if (do_PDFBand) h_PDFBand_results=TH1TOTGraphAsymm(temp_hist);
- if (do_Total)   h_Total_results=TH1TOTGraphAsymm(temp_hist);
-
-
+ if (do_Scale)   {
+  h_Scale_results=TH1TOTGraphAsymm(temp_hist);
+  TString name="xsec_scale_"+default_pdf_set_name;
+  if (h_Scale_results) h_Scale_results->SetName(name);
+ }
+ if (do_PDFBand) {
+  h_PDFBand_results=TH1TOTGraphAsymm(temp_hist);
+  TString name="xsec_pdf_"+default_pdf_set_name;
+  if (h_PDFBand_results) h_PDFBand_results->SetName(name);
+ }
+ h_Total_results=TH1TOTGraphAsymm(temp_hist);
+ TString name="xsec_total_"+default_pdf_set_name;
+ h_Total_results->SetName(name);
 
  // Now do the scale variations
  if (debug)
@@ -427,34 +445,40 @@ void SPXPDF::Initialize()
 
   //check for necessary names before continuing
   if(AlphaSmemberNumDown==DEFAULT) {
-   std::cout<<cn<<mn<<"ERROR: 'AlphaSmemberNumDown' not provided in steer file: "<<steeringFileName<<std::endl;
-   exit(0);
+   std::ostringstream oss;
+   oss << cn << mn << "ERROR 'AlphaSmemberNumDown' not provided in steer file: "<<steeringFileName;
+   throw SPXParseException(oss.str());
   }
 
   if (AlphaSmemberNumUp==DEFAULT) {
-   std::cout<<cn<<mn<<"ERROR: 'AlphaSmemberNumUp' not provided in steer file: "<<steeringFileName<<std::endl;
-   exit(0);
+   std::ostringstream oss;
+   oss << cn << mn << "ERROR 'AlphaSmemberNumUp' not provided in steer file: "<<steeringFileName;
+   throw SPXParseException(oss.str());
   }
 
   if (AlphaSPDFSetNameUp.compare("")==0) {
-   std::cout<<cn<<mn<<"ERROR: 'AlphaSPDFSetNameUp' not provided in steer file: "<<steeringFileName<<std::endl;
-   exit(0);
+   std::ostringstream oss;
+   oss << cn << mn << "ERROR 'AlphaSPDFSetNameUp' not provided in steer file: "<<steeringFileName;
+   throw SPXParseException(oss.str());
   }
 
   if (AlphaSPDFSetNameDown.compare("")==0) {
-   std::cout<<cn<<mn<<"ERROR: 'AlphaSPDFSetNameDown' not provided in steer file: "<<steeringFileName<<std::endl;
-   exit(0);
+   std::ostringstream oss;
+   oss << cn << mn << "ERROR 'AlphaSPDFSetNameDown' not provided in steer file: "<<steeringFileName;
+   throw SPXParseException(oss.str());
   }
 
-  if (AlphaSPDFSetHistNameUp.compare("")==0) {
-   std::cout<<cn<<mn<<"ERROR: 'AlphaSPDFSetHistNameUp' not provided in steer file: "<<steeringFileName<<std::endl;
-   exit(0);
-  }
+  //if (AlphaSPDFSetHistNameUp.compare("")==0) {
+  // std::ostringstream oss;
+  // oss << cn << mn << "ERROR 'AlphaSPDFSetHistNameUp' not provided in steer file: "<<steeringFileName<<std::endl;
+  // throw SPXParseException(oss.str());
+  //}
 
-  if(AlphaSPDFSetHistNameDown.compare("")==0) {
-   std::cout<<cn<<mn<<"ERROR: 'AlphaSPDFSetHistNameDown' not provided in steer file: "<<steeringFileName<<std::endl;
-   exit(0);
-  }
+  //if(AlphaSPDFSetHistNameDown.compare("")==0) {
+  // std::ostringstream oss;
+  // oss << cn << mn << "ERROR 'AlphaSPDFSetHistNameDown' not provided in steer file: "<<steeringFileName<<std::endl;
+  // throw SPXParseException(oss.str());
+  //}
 
 // alphaS central
   std::cout<<cn<<mn<<"PDFset getting alphaS uncertainty for "<<default_pdf_set_name<<" PDF with Scale= "<<alphaS_scale_worldAverage<<std::endl;
@@ -468,13 +492,18 @@ void SPXPDF::Initialize()
   if (debug) std::cout<<cn<<mn<<"Setting up alphas down PDF-name= "<<AlphaSPDFSetNameDown<<" member= "<<AlphaSmemberNumDown<<std::endl;
   LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+AlphaSPDFSetNameDown+".LHgrid")).c_str(), AlphaSmemberNumDown);
 
+  TString AlphaSPDFSetHistNameDown=AlphaSPDFSetNameDown+"value_alphas= ";
+  TString AlphaSPDFSetHistNameUp  =AlphaSPDFSetNameUp+"value_alphas= ";
+  AlphaSPDFSetHistNameDown+=value_alphaS;
+  AlphaSPDFSetHistNameUp+=value_alphaS;
+
   if (applgridok) {
    temp_hist= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-   temp_hist->SetName((TString) ("h_xsec_"+AlphaSPDFSetHistNameDown));
+   temp_hist->SetName((TString) ("xsec_alphas_pdfset"+AlphaSPDFSetHistNameDown));
   } else {
    if (debug) std::cout<<cn<<mn<<"applgrid not found; histogram from PDF not applgrid ! "<<std::endl;
    temp_hist=this->FillPdfHisto();
-   temp_hist->SetName((TString) ("h_pdf_"+AlphaSPDFSetHistNameDown));
+   temp_hist->SetName((TString) ("pdfonly_"+AlphaSPDFSetHistNameDown));
   }
 
   if (!temp_hist) std::cout<<cn<<mn<<"temp_hist not found ! "<<std::endl;
@@ -494,11 +523,11 @@ void SPXPDF::Initialize()
 
   if (applgridok) {
    temp_hist= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-   temp_hist->SetName((TString) ("h_xsec_"+AlphaSPDFSetHistNameUp));
+   temp_hist->SetName((TString) ("xsec_alphaspdfset_"+AlphaSPDFSetHistNameUp));
   } else {
    if (debug) std::cout<<cn<<mn<<" histogram from PDF not applgrid ! "<<std::endl;
    temp_hist=this->FillPdfHisto();
-   temp_hist->SetName((TString) ("h_pdf_"+AlphaSPDFSetHistNameUp));
+   temp_hist->SetName((TString) ("pdfonly_"+AlphaSPDFSetHistNameUp));
   }
 
   h_errors_AlphaS.push_back(temp_hist);
@@ -615,10 +644,10 @@ void SPXPDF::Initialize()
     h_PDFBand_results=TH1TOTGraphAsymm(temp_hist);
     h_PDFBand_results->SetName(temp_hist->GetName());
 
-    h_PDFBand_results->SetFillStyle(fillStyleCode);
-    h_PDFBand_results->SetMarkerColor(fillColorCode);
-    h_PDFBand_results->SetLineColor(fillColorCode);
-    h_PDFBand_results->SetFillColor(fillColorCode);
+    h_PDFBand_results->SetFillStyle(fillStyleCode+1);
+    h_PDFBand_results->SetMarkerColor(fillColorCode+1);
+    h_PDFBand_results->SetLineColor(fillColorCode+1);
+    h_PDFBand_results->SetFillColor(fillColorCode+1);
    }
   }   /// pdf errors loop
 
@@ -652,7 +681,7 @@ void SPXPDF::CalcSystErrors()
  std::string mn = "CalcSystErrors: ";
  if (debug) {
   std::cout<<cn<<mn<<"Start systematic error calculation for: "<<PDFtype<<std::endl;
-  if (do_Total)  std::cout<<cn<<mn<<"Calculate total uncertainty band "<<std::endl;
+  //if (do_Total)  std::cout<<cn<<mn<<"Calculate total uncertainty band "<<std::endl;
   if (do_Scale)  std::cout<<cn<<mn<<"Calculate Scale uncertainty band "<<std::endl;
   if (do_PDFBand)std::cout<<cn<<mn<<"Calculate PDF uncertainty band "<<std::endl;
   if (do_AlphaS) std::cout<<cn<<mn<<"Calculate AlphaS uncertainty band "<<std::endl;
@@ -661,7 +690,8 @@ void SPXPDF::CalcSystErrors()
  if (do_PDFBand) CalcPDFBandErrors();
  if (do_AlphaS ) CalcAlphaSErrors();
  if (do_Scale)   CalcScaleErrors();
- if (do_Total)   CalcTotalErrors();
+ //if (do_Total)   
+ CalcTotalErrors();
 
  if (debug) {
   if (h_PDFBand_results){
@@ -702,8 +732,9 @@ void SPXPDF::CalcPDFBandErrors()
  defname+=defaultpdfid;
 
  if (h_errors_PDFBand.size()<1) {
-  std::cout<<cn<<mn<<"ERROR h_error_PDFBand is too small "<<h_errors_PDFBand.size()<<std::endl;
-  exit (0);
+  std::ostringstream oss;
+  oss << cn << mn << "ERROR h_error_PDFBand is too small "<<h_errors_PDFBand.size(); 
+  throw SPXParseException(oss.str());
  }
 
  hpdfdefault=(TH1D*)h_errors_PDFBand.at(defaultpdfid)->Clone(defname);
@@ -877,9 +908,10 @@ void SPXPDF::CalcPDFBandErrors()
    // this_err_down *= 1.645;
    //}
   } else {
-    std::cout<<cn<<mn<<"ERROR: Unsupported pdfCode encountered ErrorPropagationType= "<<ErrorPropagationType
-             <<" PDFtype= "<<PDFtype.c_str()<<std::endl;
-   exit(0);
+  std::ostringstream oss;
+  oss << cn << mn << "ERROR Unsupported pdfCode encountered ErrorPropagationType= "<<ErrorPropagationType
+             <<" PDFtype= "<<PDFtype.c_str();
+  throw SPXParseException(oss.str());
   }
 
   if (debug) std::cout<<cn<<mn<<"this_err_up= "  <<this_err_up  <<std::endl;
@@ -962,6 +994,11 @@ void SPXPDF::CalcAlphaSErrors()
 
  } /// bi
 
+  h_AlphaS_results->SetFillStyle  (fillStyleCode+2);
+  h_AlphaS_results->SetMarkerColor(fillColorCode+2);
+  h_AlphaS_results->SetLineColor  (fillColorCode+2);
+  h_AlphaS_results->SetFillColor  (fillColorCode+2);
+
  if (debug) std::cout<<cn<<mn<<"End AlphaS uncertainty calculation for: "<<PDFtype<<std::endl;
 }
 
@@ -1002,7 +1039,16 @@ void SPXPDF::CalcScaleErrors()
   h_Scale_results->SetPointEYlow(ibin-1, central-min);
  } /// ibin
 
+ //h_Scale_results->SetName(h_errors_Scale[0]->GetName());
+
+ h_Scale_results->SetFillStyle  (fillStyleCode+3);
+ h_Scale_results->SetMarkerColor(fillColorCode+3);
+ h_Scale_results->SetLineColor  (fillColorCode+3);
+ h_Scale_results->SetFillColor  (fillColorCode+3);
+
  if (debug) {
+  cout<<cn<<mn<<" Line Color= "<<h_Scale_results->GetLineColor()<<std::endl;
+  cout<<cn<<mn<<" Fill Color= "<<h_Scale_results->GetFillColor()<<std::endl;
   cout<<cn<<mn<<" h_Scale_results "<<std::endl;
   h_Scale_results->Print("all");
  }
@@ -1013,57 +1059,119 @@ void SPXPDF::CalcScaleErrors()
 void SPXPDF::CalcTotalErrors()
 {
  std::string mn = "CalcTotalErrors:";
- if (debug) cout<<cn<<mn<<" Starting calculation of TotalErrors for: "<<PDFtype<<std::endl;
+ if (debug) cout<<cn<<mn<<"Starting calculation of TotalErrors for: "<<PDFtype<<std::endl;
+ if (debug) cout<<cn<<mn<<"All enabled uncertainties are added in quadrature !  "<<std::endl;
 
+ /*
  if (!(do_PDFBand && do_AlphaS && do_Scale)) {
   std::cout<<cn<<mn<<"ERROR: to calculation total uncertainty need all uncertainties ON "<<std::endl;
-  if (do_PDFBand) std::cout<<cn<<mn<<"do_PDFBand ON" <<std::endl;
-  else            std::cout<<cn<<mn<<"do_PDFBand OFF"<<std::endl;
-
-  if (do_AlphaS ) std::cout<<cn<<mn<<"do_AlphaS ON"  <<std::endl;
-  else            std::cout<<cn<<mn<<"do_AlphaS OFF" <<std::endl;
-
-  if (do_Scale)   std::cout<<cn<<mn<<"do_Scale ON"   <<std::endl;
-  else            std::cout<<cn<<mn<<"do_Scale OFF"  <<std::endl;
-
   exit (0);
  }
+ */
+ if (do_PDFBand) std::cout<<cn<<mn<<"do_PDFBand ON" <<std::endl;
+ else            std::cout<<cn<<mn<<"do_PDFBand OFF"<<std::endl;
 
- if (h_Scale_results->GetN()!=h_PDFBand_results->GetN()) {
-  std::cout<<cn<<mn<<"ERROR: bins in scale and PDF vector not equal "<<std::endl;
-  std::cout<<cn<<mn<<"bins in scale vector= "<<h_Scale_results->GetN()<<std::endl;
-  std::cout<<cn<<mn<<"bins in PDF vector= "<<h_PDFBand_results->GetN()<<std::endl;
+ if (do_AlphaS ) std::cout<<cn<<mn<<"do_AlphaS ON"  <<std::endl;
+ else            std::cout<<cn<<mn<<"do_AlphaS OFF" <<std::endl;
+
+ if (do_Scale)   std::cout<<cn<<mn<<"do_Scale ON"   <<std::endl;
+ else            std::cout<<cn<<mn<<"do_Scale OFF"  <<std::endl;
+
+ if (do_PDFBand && do_Scale) {
+  if (h_Scale_results->GetN()!=h_PDFBand_results->GetN()) {
+   std::ostringstream oss;
+   oss << cn << mn << "ERROR bins in scale vector not equal Bins in PDF vector= "<<h_Scale_results->GetN()<<"Bins in PDF vector= "<<h_PDFBand_results->GetN(); 
+   throw SPXParseException(oss.str());
+  }
  }
 
- if (h_AlphaS_results->GetN()!=h_PDFBand_results->GetN()) {
-  std::cout<<cn<<mn<<"ERROR: bins in scale and PDF vector not equal "<<std::endl;
-  std::cout<<cn<<mn<<"bins in scale vector= "<<h_Scale_results->GetN()<<std::endl;
-  std::cout<<cn<<mn<<"bins in AlphaS vector= "<<h_AlphaS_results->GetN()<<std::endl;
+ if (do_PDFBand && do_AlphaS) {
+  if (h_AlphaS_results->GetN()!=h_PDFBand_results->GetN()) {
+   std::ostringstream oss;
+   oss << cn << mn << "ERROR bins in alphas and PDF vector not equal Bins in PDFband vector= "<<h_PDFBand_results->GetN()<<"Bins in AlphaS vector= "<<h_AlphaS_results->GetN(); 
+   throw SPXParseException(oss.str());
+  }
  }
 
- for (int ibin=0;ibin<h_Scale_results->GetN();++ibin){
-  if (debug) std::cout << cn<<mn<<"calculating total error for point " << ibin << std::endl;
-  double x;
-  double y;
-  h_PDFBand_results->GetPoint(ibin,x,y);
-  double PDFError_high=h_PDFBand_results->GetErrorYhigh(ibin);
-  double PDFError_low=h_PDFBand_results->GetErrorYlow(ibin);
+ if (do_Scale && do_AlphaS) {
+  if (h_AlphaS_results->GetN()!=h_Scale_results->GetN()) {
+   std::ostringstream oss;
+   oss << cn << mn << "ERROR bins in scale vector not equal Bins in Alphas vector= "<<h_Scale_results->GetN()<<"Bins in AlphaS vector= "<<h_AlphaS_results->GetN(); 
+   throw SPXParseException(oss.str());
+  }
+ }
 
-  double alphaSError_high=h_AlphaS_results->GetErrorYhigh(ibin);
-  double alphaSError_low=h_AlphaS_results->GetErrorYlow(ibin);
+ int nbin=0;
+ if (do_Scale) {
+  nbin=h_Scale_results->GetN();
+ }
 
-  double scaleError_high=h_Scale_results->GetErrorYhigh(ibin);
-  double scaleError_low=h_Scale_results->GetErrorYlow(ibin);
+ if (do_AlphaS ) {
+   nbin=h_AlphaS_results->GetN();
+ }
 
+ if (do_PDFBand) {
+   nbin=h_PDFBand_results->GetN();
+ }
+
+ if (debug) std::cout<<cn<<mn<<"nbin= " <<nbin <<std::endl;
+
+ if (nbin==0) {
+  std::ostringstream oss;
+  oss << cn << mn << "ERROR no bins to calculate uncertainty band ";
+  throw SPXParseException(oss.str());
+ }
+
+ for (int ibin=0;ibin<nbin;++ibin){
+  if (debug) std::cout << cn<<mn<<"Calculating total error for point " << ibin << std::endl;
+  double x=0.;
+  double y=0.;
+  double PDFError_high=0.;
+  double PDFError_low =0.;
+  double alphaSError_high=0.;
+  double alphaSError_low =0.;
+  double scaleError_high=0.;
+  double scaleError_low =0.;
+
+  // Since it is last, x,y is taken from PDF-band, if available
+  if (do_AlphaS ) {  
+   h_AlphaS_results->GetPoint(ibin,x,y);
+   alphaSError_high=h_AlphaS_results->GetErrorYhigh(ibin);
+   alphaSError_low =h_AlphaS_results->GetErrorYlow(ibin);
+  }
+
+  if (do_Scale) {
+   h_Scale_results->GetPoint(ibin,x,y);
+   scaleError_high=h_Scale_results->GetErrorYhigh(ibin);
+   scaleError_low =h_Scale_results->GetErrorYlow(ibin);
+  } 
+
+  if (do_PDFBand) {
+   h_PDFBand_results->GetPoint(ibin,x,y);
+   PDFError_high=h_PDFBand_results->GetErrorYhigh(ibin);
+   PDFError_low =h_PDFBand_results->GetErrorYlow(ibin);
+  }
+
+  // add now everything that is enabled in quadrature
   double totalError_high=sqrt(pow(PDFError_high,2)+pow(alphaSError_high,2)+pow(scaleError_high,2));
-  double totalError_low =sqrt(pow(PDFError_low,2)+pow(alphaSError_low,2)+pow(scaleError_low,2));
+  double totalError_low =sqrt(pow(PDFError_low ,2)+pow(alphaSError_low ,2)+pow(scaleError_low ,2));
 
   h_Total_results->SetPoint(ibin,x,y);
   h_Total_results->SetPointEYhigh(ibin,totalError_high);
   h_Total_results->SetPointEYlow(ibin,totalError_low);
  } /// ibin
+ 
+  h_Total_results->SetFillStyle  (fillStyleCode);
+  h_Total_results->SetMarkerColor(fillColorCode);
+  h_Total_results->SetLineColor  (fillColorCode);
+  h_Total_results->SetFillColor  (fillColorCode);
 
- if (debug) std::cout<<cn<<mn<<" End calc of TotalErrors for: "<<PDFtype<<std::endl;
+ if (debug) {
+  cout<<cn<<mn<<" Line Color= "<<h_Total_results->GetLineColor()<<std::endl;
+  cout<<cn<<mn<<" Fill Color= "<<h_Total_results->GetFillColor()<<std::endl;
+  std::cout<<cn<<mn<<" End calc of TotalErrors for: "<<PDFtype<<std::endl;
+  h_Total_results->Print();
+ }
 }
 
 
@@ -1108,8 +1216,9 @@ TH1D* SPXPDF::GetPDFRatio(int iset1, int iset2)
  ratio_to_ref_name +=iset2;
 
  if (iset1>=n_PDFMembers||iset2>=n_PDFMembers||iset1<0||iset2<0){
-  cout<<cn<<mn<<" iset too large iset2= "<< iset2<<" iset1= "<<iset1<<endl;
-  exit (0);
+  std::ostringstream oss;
+  oss << cn << mn << "ERROR iset too large iset2= "<< iset2<<" iset1= "<<iset1<<endl;
+  throw SPXParseException(oss.str());
  }
 
  if (iset2!=0) {
@@ -1162,15 +1271,16 @@ TGraphAsymmErrors* SPXPDF::TH1TOTGraphAsymm(TH1 *h1)
 	}
 
 	TGraphAsymmErrors* g1= new TGraphAsymmErrors();
+        g1->SetName(h1->GetName());
 
 	double x, y, ex, ey;
 	for (Int_t i=0; i<h1->GetNbinsX(); i++) {
-		y=h1->GetBinContent(i+1);
+	 y=h1->GetBinContent(i+1);
 	 ey=h1->GetBinError(i+1);
-		x=h1->GetBinCenter(i+1);
+	 x=h1->GetBinCenter(i+1);
 	 ex=h1->GetBinWidth(i+1)/2.;
 
- //if(debug) cout<<i<<" x,y = "<<x<<" "<<y<<" ex,ey = "<<ex<<" "<<ey<<std::endl;
+         //if(debug) cout<<i<<" x,y = "<<x<<" "<<y<<" ex,ey = "<<ex<<" "<<ey<<std::endl;
 
 	 g1->SetPoint(i,x,y);
 	 g1->SetPointError(i,ex,ex,ey,ey);
@@ -1364,15 +1474,15 @@ void SPXPDF::SetVariablesDefault()
 
  do_PDFBand=true;
  do_AlphaS=false;
- do_Scale=false;
- do_Total=false;
+ do_Scale =false;
+ do_Total =true;
 
  AlphaSmemberNumDown=DEFAULT;
  AlphaSmemberNumUp=DEFAULT;
  AlphaSPDFSetNameDown=defaultString;
  AlphaSPDFSetNameUp=defaultString;
- AlphaSPDFSetHistNameDown=defaultString;
- AlphaSPDFSetHistNameUp=defaultString;
+ //AlphaSPDFSetHistNameDown=defaultString;
+ //AlphaSPDFSetHistNameUp=defaultString;
 
  alphaS_value_worldAverage=0.1184;
  alphaS_absUnc_worldAverage=0.0020;
@@ -1453,12 +1563,12 @@ void SPXPDF::SetAlphaSPDFSetNameDown(string _name) {
 void SPXPDF::SetAlphaSPDFSetNameUp(string _name) {
  AlphaSPDFSetNameUp= _name;
 }
-void SPXPDF::SetAlphaSPDFSetHistNameDown(string _name) {
- AlphaSPDFSetHistNameDown= _name;
-}
-void SPXPDF::SetAlphaSPDFSetHistNameUp(string _name) {
- AlphaSPDFSetHistNameUp= _name;
-}
+//void SPXPDF::SetAlphaSPDFSetHistNameDown(string _name) {
+// AlphaSPDFSetHistNameDown= _name;
+//}
+//void SPXPDF::SetAlphaSPDFSetHistNameUp(string _name) {
+// AlphaSPDFSetHistNameUp= _name;
+//}
 
 void SPXPDF::CleanUpSPXPDF() {
   if (debug) cout<<cn<<" CleanUpSPXPDF: Starting to clean up..."<<std::endl;
@@ -1468,7 +1578,6 @@ void SPXPDF::CleanUpSPXPDF() {
 	 delete h_errors_PDFBand.at(i);
 	}
  }
-
 
  if (h_errors_AlphaS.size()>0) {
 	for (int i=0; i<h_errors_AlphaS.size(); ++i) {
@@ -1484,7 +1593,6 @@ void SPXPDF::CleanUpSPXPDF() {
 
 	if (debug) cout<<cn<<"CleanUpSPXPDF: Finished clean up!"<<std::endl;
 }
-
 
 
 TH1D * SPXPDF::FillPdfHisto(){

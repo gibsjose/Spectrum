@@ -79,6 +79,4 @@ alpha_s_error_number_up = 7										;[REQUIRED] Error number UP
 alpha_s_error_number_down = 3									;[REQUIRED] Error number DOWN
 alpha_s_pdf_name_up = none										;[REQUIRED] AlphaS PDF name UP @TODO If this is 'none', why is it required?
 alpha_s_pdf_name_down = CT10as									;[REQUIRED] AlphaS PDF name DOWN
-alpha_s_pdf_histogram_name_up = CT10as120_prenorm				;[REQUIRED] Histogram name UP
-alpha_s_pdf_histogram_name_down = CT10as116_prenorm				;[REQUIRED] Histogram name DOWN
 

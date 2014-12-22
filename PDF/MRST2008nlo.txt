@@ -49,7 +49,7 @@ num_members = 41
 ; Style Options
 ;==============================================================
 [STYLE]
-fill_style = 3002
+fill_style = 3004
 fill_color = 634
 marker_style = 21
 
@@ -72,6 +72,4 @@ alpha_s_error_number_up = 0
 alpha_s_error_number_down = 0
 alpha_s_pdf_name_up = MSTW2008nlo68cl_asmz-68cl
 alpha_s_pdf_name_down = MSTW2008nlo68cl_asmz+68cl
-alpha_s_pdf_histogram_name_up = MSTW2008nloAsDown_prenorm
-alpha_s_pdf_histogram_name_down =  MSTW2008nloAsUp_prenorm
 

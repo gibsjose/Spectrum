@@ -48,8 +48,8 @@ num_members = 101
 ; Style Options
 ;==============================================================
 [STYLE]
-fill_style = 3004
-fill_color = 8
+fill_style = 3003
+fill_color = 400
 marker_style = 23
 
 ;==============================================================
@@ -71,6 +71,5 @@ alpha_s_error_number_up = 0
 alpha_s_error_number_down = 0
 alpha_s_pdf_name_up =  NNPDF23_nlo_as_0120
 alpha_s_pdf_name_down= NNPDF23_nlo_as_0116
-alpha_s_pdf_histogram_name_up = NNPDFAsDown_prenorm
-alpha_s_pdf_histogram_name_down = NNPDFAsUp_prenorm
+
 

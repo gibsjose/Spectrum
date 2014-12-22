@@ -341,8 +341,9 @@ void SPXPDFSteeringFile::Parse(void) {
         ErrorPropagationType=reader->GetInteger("PDF", "ErrorPropagationType", ErrorPropagationType);
 	if (debug) std::cout<<cn<<mn<<"Read in ErrorPropagationType= "<<ErrorPropagationType<<std::endl;
         if (ErrorPropagationType>StyleNNPDF) {
-	  std::cout<<cn<<mn<<"ERROR UNKNOWN Error Propagation type ! "<<ErrorPropagationType<<std::endl;
-          exit (0);
+          std::ostringstream oss;
+          oss << cn << mn << "ERROR UNKNOWN Error Propagation type ! "<<ErrorPropagationType;
+          throw SPXParseException(oss.str());
         }
 	//Parse Band Type
 	tmp = reader->Get("PDF", "band_type", "EMPTY");
@@ -422,19 +423,19 @@ void SPXPDFSteeringFile::Parse(void) {
 		if(debug) std::cout << cn << mn << "Successfully read Alpha S PDF Name Down: " << alphaSPDFNameDown << std::endl;
 	}
 
-	alphaSPDFHistogramNameUp = reader->Get("PDF", "alpha_s_pdf_histogram_name_up", "EMPTY");
-	if(!alphaSPDFHistogramNameUp.compare("EMPTY")) {
-		throw SPXINIParseException("PDF", "alpha_s_pdf_histogram_name_up", "You MUST specify the alpha_s_pdf_histogram_name_up");
-	} else {
-		if(debug) std::cout << cn << mn << "Successfully read Alpha S PDF Histogram Name Up: " << alphaSPDFHistogramNameUp << std::endl;
-	}
+	//alphaSPDFHistogramNameUp = reader->Get("PDF", "alpha_s_pdf_histogram_name_up", "EMPTY");
+	//if(!alphaSPDFHistogramNameUp.compare("EMPTY")) {
+	//	throw SPXINIParseException("PDF", "alpha_s_pdf_histogram_name_up", "You MUST specify the alpha_s_pdf_histogram_name_up");
+	//} else {
+	//	if(debug) std::cout << cn << mn << "Successfully read Alpha S PDF Histogram Name Up: " << alphaSPDFHistogramNameUp << std::endl;
+	//}
 
-	alphaSPDFHistogramNameDown = reader->Get("PDF", "alpha_s_pdf_histogram_name_down", "EMPTY");
-	if(!alphaSPDFHistogramNameDown.compare("EMPTY")) {
-		throw SPXINIParseException("PDF", "alpha_s_pdf_histogram_name_down", "You MUST specify the alpha_s_pdf_histogram_name_down");
-	} else {
-		if(debug) std::cout << cn << mn << "Successfully read Alpha S PDF Histogram Name Down: " << alphaSPDFHistogramNameDown << std::endl;
-	}
+	//alphaSPDFHistogramNameDown = reader->Get("PDF", "alpha_s_pdf_histogram_name_down", "EMPTY");
+	//if(!alphaSPDFHistogramNameDown.compare("EMPTY")) {
+	//	throw SPXINIParseException("PDF", "alpha_s_pdf_histogram_name_down", "You MUST specify the alpha_s_pdf_histogram_name_down");
+	//} else {
+	//	if(debug) std::cout << cn << mn << "Successfully read Alpha S PDF Histogram Name Down: " << alphaSPDFHistogramNameDown << std::endl;
+	//}
 
 	delete reader;
 }

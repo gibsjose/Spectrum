@@ -42,6 +42,9 @@ bool SPXPlotConfigurationInstance::debug;
 //	options["pdf_steering_files"] --> Vector of PDF steering files
 //	options["data_marker_style"] --> Vector of data marker styles
 //	options["data_marker_color"] --> Vector of data marker colors
+//	options["total_fill_style"] --> Vector of Total fill style (optional)
+//	options["total_fill_color"] --> Vector of Total fill colors (optional)
+//	options["total_marker_style"] --> Vector of Total marker styles (optional)
 //	options["pdf_fill_style"] --> Vector of PDF fill style (optional)
 //	options["pdf_fill_color"] --> Vector of PDF fill colors (optional)
 //	options["pdf_marker_style"] --> Vector of PDF marker styles (optional)
@@ -89,6 +92,9 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	std::vector<std::string> psf;	//PDF steering files
 	std::vector<std::string> dms;	//Data marker styles
 	std::vector<std::string> dmc;	//Data marker colors
+	std::vector<std::string> tfs;	//Total fill style
+	std::vector<std::string> tfc;	//Total fill color
+	std::vector<std::string> tms;	//Total marker style
 	std::vector<std::string> pfs;	//PDF fill style
 	std::vector<std::string> pfc;	//PDF fill color
 	std::vector<std::string> pms;	//PDF marker style
@@ -222,6 +228,28 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		tmpVector = options["data_marker_color"];
 		std::cout << "\tdata_marker_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 
+		if(options.count("total_fill_style")) {
+			tmpVector = options["total_fill_style"];
+			std::cout << "\ttotal_fill_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No Total band fill style option specified" << std::endl;
+		}
+
+		if(options.count("total_fill_color")) {
+			tmpVector = options["total_fill_color"];
+			std::cout << "\ttotal_fill_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No Total fill color option specified" << std::endl;
+		}
+
+		if(options.count("total_marker_style")) {
+			tmpVector = options["total_marker_style"];
+			std::cout << "\ttotal_marker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No total marker style option specified" << std::endl;
+		}
+		
+
 		if(options.count("pdf_fill_style")) {
 			tmpVector = options["pdf_fill_style"];
 			std::cout << "\tpdf_fill_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
@@ -287,14 +315,14 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		if(options.count("x_scale")) {
 			tmpVector = options["x_scale"];
-			std::cout << "\tx_scale = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+			std::cout << cn<<mn<<"\tx_scale = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
 			if(debug) std::cout << cn << mn << "No X Scale option specified" << std::endl;
 		}
 
 		if(options.count("y_scale")) {
 			tmpVector = options["y_scale"];
-			std::cout << "\ty_scale = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+			std::cout << cn<<mn<<"\ty_scale = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
 			if(debug) std::cout << cn << mn << "No Y Scale option specified" << std::endl;
 		}
@@ -310,7 +338,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	}
 
 	//Get vector sizes
-	unsigned int rsSize = options["ratio_style"].size();
+	unsigned int rsSize= options["ratio_style"].size();
 	unsigned int rSize = options["ratio"].size();
 	unsigned int ddrSize = options["data_directory"].size();
 	unsigned int gdrSize = options["grid_directory"].size();
@@ -320,6 +348,9 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	unsigned int psfSize = options["pdf_steering_files"].size();
 	unsigned int dmsSize = 0;
 	unsigned int dmcSize = 0;
+	unsigned int tfsSize = 0;
+	unsigned int tfcSize = 0;
+	unsigned int tmsSize = 0;
 	unsigned int pfsSize = 0;
 	unsigned int pfcSize = 0;
 	unsigned int pmsSize = 0;
@@ -337,6 +368,17 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	if(options.count("data_marker_color")) {
 		dmcSize = options["data_marker_color"].size();
 	}
+
+	if(options.count("total_fill_style")) {
+		tfsSize = options["total_fill_style"].size();
+	}
+	if(options.count("total_fill_color")) {
+		tfcSize = options["total_fill_color"].size();
+	}	
+	if(options.count("total_marker_style")) {
+		tmsSize = options["total_marker_style"].size();
+	}
+
 	if(options.count("pdf_fill_style")) {
 		pfsSize = options["pdf_fill_style"].size();
 	}
@@ -346,6 +388,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	if(options.count("pdf_marker_style")) {
 		pmsSize = options["pdf_marker_style"].size();
 	}
+
 	if(options.count("scale_fill_style")) {
 		sfsSize = options["scale_marker_style"].size();
 	}
@@ -371,6 +414,8 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	if(options.count("y_scale")) {
 		ysSize = options["y_scale"].size();
 	}
+
+	if(debug) std::cout << cn << mn << "finished options " << std::endl;
 
 	//Check vector sizes that do not depend on the plot type
 	if(rSize != rsSize) {
@@ -398,6 +443,23 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		oss << "Size of y_scale vector (" << ysSize << ") DOES NOT match the size of the data_steering_files vector (" << dsfSize << ")";
 		throw SPXParseException(oss.str());
 	}
+
+	if((tfsSize != 0) && (tfsSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of total_fill_style vector (" << tfsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+	if((tfcSize != 0) && (tfcSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of total_fill_color vector (" << tfcSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+	if((tmsSize != 0) && (tmsSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of total_marker_style vector (" << tmsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+
 	if((pfsSize != 0) && (pfsSize != psfSize)) {
 		std::ostringstream oss;
 		oss << "Size of pdf_fill_style vector (" << pfsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
@@ -492,9 +554,14 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(dmsSize) dms.push_back(options["data_marker_style"][0]);		//Just one instance of data marker style
 			if(dmcSize) dmc.push_back(options["data_marker_color"][0]);		//Just one instance of data marker color
 
+			if(tfsSize) tfs.push_back(options["total_fill_style"][0]);		//Just one instance of total fill style
+			if(tfcSize) tfc.push_back(options["total_fill_color"][0]);		//Just one instance of total fill color
+			if(tmsSize) tms.push_back(options["total_marker_style"][0]);		//Just one instance of total marker style
+
 			if(pfsSize) pfs.push_back(options["pdf_fill_style"][0]);		//Just one instance of pdf fill style
 			if(pfcSize) pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
 			if(pmsSize) pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
+
 
 			if(sfsSize) sfs.push_back(options["scale_fill_style"][0]);		
 			if(sfcSize) sfc.push_back(options["scale_fill_color"][0]);		
@@ -536,6 +603,10 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 			if(dmsSize) dms.push_back(options["data_marker_style"][i]);
 			if(dmcSize) dmc.push_back(options["data_marker_color"][i]);
+
+			if(tfsSize) pfs.push_back(options["total_fill_style"][0]);		//Just one instance of pdf fill style
+			if(tfcSize) pfc.push_back(options["total_fill_color"][0]);		//Just one instance of pdf fill color
+			if(tmsSize) pms.push_back(options["total_marker_style"][0]);		//Just one instance of pdf marker style
 
 			if(pfsSize) pfs.push_back(options["pdf_fill_style"][0]);		//Just one instance of pdf fill style
 			if(pfcSize) pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
@@ -581,6 +652,10 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(dmsSize) dms.push_back(options["data_marker_style"][0]);		//Just one instance of data marker style
 			if(dmcSize) dmc.push_back(options["data_marker_color"][0]);		//Just one instance of data marker color
 
+			if(tfsSize) pfs.push_back(options["total_fill_style"][i]);
+			if(tfcSize) pfc.push_back(options["total_fill_color"][i]);
+			if(tmsSize) pms.push_back(options["total_marker_style"][i]);
+
 			if(pfsSize) pfs.push_back(options["pdf_fill_style"][i]);
 			if(pfcSize) pfc.push_back(options["pdf_fill_color"][i]);
 			if(pmsSize) pms.push_back(options["pdf_marker_style"][i]);
@@ -624,6 +699,10 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 			if(dmsSize) dms.push_back(options["data_marker_style"][0]);		//Just one instance of data marker style
 			if(dmcSize) dmc.push_back(options["data_marker_color"][0]);		//Just one instance of data marker color
+
+			if(tfsSize) pfs.push_back(options["total_fill_style"][0]);		//Just one instance of pdf fill style
+			if(tfcSize) pfc.push_back(options["total_fill_color"][0]);		//Just one instance of pdf fill color
+			if(tmsSize) pms.push_back(options["total_marker_style"][0]);		//Just one instance of pdf marker style
 
 			if(pfsSize) pfs.push_back(options["pdf_fill_style"][0]);		//Just one instance of pdf fill style
 			if(pfcSize) pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
@@ -697,6 +776,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	ratioTitle = options["ratio_title"].at(0);
 
 	//Parse the ratio_style vector if the display style contains 'ratio'
+	if (debug) std::cout << cn << mn << "Loop over ratio_style" << std::endl;
 	if(displayStyle.ContainsRatio()) {
 		for(int i = 0; i < options["ratio_style"].size(); i++) {
 			SPXRatioStyle rs;
@@ -712,7 +792,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 				throw SPXParseException(oss.str());
 			}
 		}
-
+      	        if (debug) std::cout << cn << mn << "SPXRatioStyle finished" << std::endl;
 		//Copy the ratio string vector
 		ratios = options["ratio"];
 	} else {
@@ -720,6 +800,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		ratios.clear();
 	}
 
+        if (debug) std::cout << cn << mn << "xLog and yLog" << std::endl;
 	//Parse the xLog and yLog
 	std::string xls = options["x_log"].at(0);
 	std::string yls = options["y_log"].at(0);
@@ -737,6 +818,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	}
 
 	//For each options instance, create an SPXPlotConfigurationInstance object and add it to the vector
+        if (debug) std::cout << cn << mn << "Loop over numberOfConfigurationInstances= "<<numberOfConfigurationInstances << std::endl;
 	for(int i = 0; i < numberOfConfigurationInstances; i++) {
 		SPXPlotConfigurationInstance pci;
 
@@ -757,6 +839,15 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		if(dmcSize) pci.dataMarkerColor = atoi(dmc[i].c_str());
 		else	 	pci.dataMarkerColor = PC_EMPTY_COLOR;
+
+		if(tfsSize) pci.totalFillStyle = atoi(tfs[i].c_str());
+		else 		pci.totalFillStyle = PC_EMPTY_STYLE;
+
+		if(tfcSize) pci.totalFillColor = atoi(tfc[i].c_str());
+		else 		pci.totalFillColor = PC_EMPTY_COLOR;
+
+		if(tmsSize) pci.totalMarkerStyle = atoi(tms[i].c_str());
+		else		pci.totalMarkerStyle = PC_EMPTY_STYLE;
 
 		if(pfsSize) pci.pdfFillStyle = atoi(pfs[i].c_str());
 		else 		pci.pdfFillStyle = PC_EMPTY_STYLE;
