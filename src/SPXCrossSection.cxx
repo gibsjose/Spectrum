@@ -49,21 +49,25 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringFile) {
 
 	if (debug) {
          std::cout<<cn<<mn<<"Created the PDF-class "<<endl;
-	 std::cout<<cn<<mn<<" dividedByBinWidth= " <<dividedByBinWidth<<std::endl;
+	 std::cout<<cn<<mn<<"dividedByBinWidth= " <<dividedByBinWidth<<std::endl;
 
-	 std::cout<<cn<<mn<<" GetBandwithPDF= "   <<mainsteeringFile->GetBandwithPDF()<<std::endl;
-	 std::cout<<cn<<mn<<" GetBandwithAlphas= "<<mainsteeringFile->GetBandwithAlphaS()<<std::endl;
-	 std::cout<<cn<<mn<<" GetBandwithScales= "<<mainsteeringFile->GetBandwithScales()<<std::endl;
-	 std::cout<<cn<<mn<<" GetBandTotal= "     <<mainsteeringFile->GetBandTotal()<<std::endl;
+	 std::cout<<cn<<mn<<"GetBandwithPDF= "   <<mainsteeringFile->GetBandwithPDF()<<std::endl;
+	 std::cout<<cn<<mn<<"GetBandwithAlphas= "<<mainsteeringFile->GetBandwithAlphaS()<<std::endl;
+	 std::cout<<cn<<mn<<"GetBandwithScales= "<<mainsteeringFile->GetBandwithScales()<<std::endl;
+	 std::cout<<cn<<mn<<"GetBandTotal= "     <<mainsteeringFile->GetBandTotal()<<std::endl;
 	}
 
-        // Set which uncertainty to calculate in PDF file
-        //default setting is in PDF class PDF true, rest false
-        if (pdf->GetDoPDFBand()==false || mainsteeringFile->GetBandwithPDF()==false) 
-         pdf->SetDoPDFBand (mainsteeringFile->GetBandwithPDF()); 
-        pdf->SetDoAlphaS  (mainsteeringFile->GetBandwithAlphaS());
-        pdf->SetDoScale   (mainsteeringFile->GetBandwithScales());
-        pdf->SetDoTotError(mainsteeringFile->GetBandTotal());
+        // The logic below only works, if we invert the defaults set in
+        // SPXSteering
+        //
+        if (mainsteeringFile->GetBandwithPDF()==false) 
+	 pdf->SetDoPDFBand (mainsteeringFile->GetBandwithPDF()); 
+        if (mainsteeringFile->GetBandwithAlphaS()==true) 
+         pdf->SetDoAlphaS  (mainsteeringFile->GetBandwithAlphaS());
+        if (mainsteeringFile->GetBandwithScales()==true) 
+         pdf->SetDoScale   (mainsteeringFile->GetBandwithScales());
+        if (mainsteeringFile->GetBandTotal()==false) 
+         pdf->SetDoTotError(mainsteeringFile->GetBandTotal());
 
 	//@JJG 16.12.14
 	//
@@ -94,14 +98,6 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringFile) {
 	SPXGraphUtilities::HistogramToGraph(gridReference, grid->GetReference());
 	SPXGraphUtilities::HistogramToGraph(nominal,       pdf->GetPDFNominal());
 
-	//Set the name of the convolution graphs appropriately
-	//Create name strings
-	//TString name;
-	//TString pdfName;
-	//TString alphaSName;
-	//TString scaleName;
-
-	if(debug) std::cout << cn << mn << "Grid steering file has no name value: using filename instead" << std::endl;
 }
 
 void SPXCrossSection::ParseCorrections(void) {
@@ -123,54 +119,37 @@ void SPXCrossSection::ParseCorrections(void) {
 	}
 }
 
-void SPXCrossSection::ApplyCorrections(void) {
-	std::string mn = "ApplyCorrections: ";
-	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+void SPXCrossSection::ApplyCorrections(TGraphAsymmErrors* g) {
 
-	if(pci->gridSteeringFile.GetNumberOfCorrectionFiles() == 0) {
-		return;
-	}
+ std::string mn = "ApplyCorrections: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
-	std::cout << cn << mn << ">>>>>>>>>>>>>>>>> APPLY CORRECTIONS <<<<<<<<<<<<<<<<<" << std::endl;
+ if (!g) {
+  std::ostringstream oss;
+  oss << cn << mn << "ERROR Graph to apply corrections not found "; 
+  throw SPXParseException(oss.str());
+ }
 
-	//Loop over the band bins and make sure they match, if not just do nothing
+ int ncorr=pci->gridSteeringFile.GetNumberOfCorrectionFiles(); 
+ if(ncorr == 0) {
+  if (debug) std::cout << cn << mn << "no correction file specified" << std::endl;
+  return;
+ }
 
-	unsigned int nBins = pdf->h_PDFBand_results->GetN();
-	double *x   = pdf->h_PDFBand_results->GetX();
-	double *y   = pdf->h_PDFBand_results->GetY();
-	double *exl = pdf->h_PDFBand_results->GetEXlow();
-	double *exh = pdf->h_PDFBand_results->GetEXhigh();
-	double *eyl = pdf->h_PDFBand_results->GetEYlow();
-	double *eyh = pdf->h_PDFBand_results->GetEYhigh();
+ std::cout << cn << mn << ">>>>>>>>>>>>>>>>> APPLY CORRECTIONS <<<<<<<<<<<<<<<<<" << std::endl;
+ if (debug) {
+  std::cout << cn << mn << " available corrections" << std::endl;
+  for (int i=0; i<ncorr; i++) {
+   std::string filename = pci->gridSteeringFile.GetCorrectionFile(i);
+   std::cout<<mn<<cn<<"filename= "<<filename<<std::endl;
+  }
+ }
 
-	unsigned int nBinsCorr = corrections->GetNumberOfBins();
-	double *c_x   = &(corrections->GetTotalX().at(0));
-	double *c_exl = &(corrections->GetTotalEXL().at(0));
-	double *c_exh = &(corrections->GetTotalEXH().at(0));
-	double *c_y   = &(corrections->GetTotalYCorrections().at(0));
-	double *c_eyl = &(corrections->GetTotalEYLCorrections().at(0));
-	double *c_eyh = &(corrections->GetTotalEYHCorrections().at(0));
+ //for (int i=0; i<ncorr; i++) {
+ // std::string filename = pci->gridSteeringFile.GetCorrectionFile(i);
+ // if (debug) std::cout<<mn<<cn<<"filename= "<<filename<<std::endl;
+ // TGraphAsymmErrors *gcorr=corrections->GetCorrectionGraph(filename);
+ // SPXGraphUtilities::Multiply(g,gcorr);
+ //}
 
-	//Loop over the smallest of the two
-	unsigned int n = (nBins < nBinsCorr ? nBins : nBinsCorr);
-
-	for(int i = 0; i < nBins; i++) {
-		for(int j = 0; j < nBinsCorr; j++) {
-
-			//Check for bin match
-			if(((x[i] - exl[i]) == c_exl[j]) && ((x[i] + exh[i]) == c_exh[j])) {
-
-				if(debug) std::cout << cn << mn << "Bins Match (i, j): (" << i << ", " << j << ")" << std::endl;
-
-				//Bins match; Scale y, eyl, and eyh
-				y[i] *= c_y[j];
-				eyl[i] *= c_eyl[j];
-				eyh[i] *= c_eyh[j];
-
-				break;
-			}
-		}
-	}
-
-	//@TODO Do the same for Alpha S and Scale uncertainty bands
 }

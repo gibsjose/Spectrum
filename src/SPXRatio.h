@@ -146,21 +146,27 @@ public:
 
     void Divide(void);
 
-    TGraphAsymmErrors *GetRatioGraph(void) {
-        if(!ratioGraph) {
-            throw SPXGraphException("SPXRatio::GetRatioGraph: Ratio graph is empty");
-        }
-
-        return ratioGraph;
+    std::vector<TGraphAsymmErrors *> GetRatioGraph(void) {
+    if(ratioGraph.size()==0) {
+     throw SPXGraphException("SPXRatio::GetRatioGraph: Ratio graph is empty");
     }
-
-    TGraphAsymmErrors *GetNumeratorGraph(void) {
-    	if(!numeratorGraph) {
-    		throw SPXGraphException("SPXRatio::GetNumeratorGraph: Numerator graph is empty");
-    	}
-
-    	return numeratorGraph;
+     return ratioGraph;
     }
+    //TGraphAsymmErrors *GetRatioGraph(void) {
+    //    if(!ratioGraph) {
+    //        throw SPXGraphException("SPXRatio::GetRatioGraph: Ratio graph is empty");
+    //    }
+    //
+    //    return ratioGraph;
+    //}
+
+    //TGraphAsymmErrors *GetNumeratorGraph(void) {
+    //	if(!numeratorGraph) {
+    //		throw SPXGraphException("SPXRatio::GetNumeratorGraph: Numerator graph is empty");
+    //	}
+    //
+    //	return numeratorGraph;
+    //}
 
     TGraphAsymmErrors *GetDenominatorGraph(void) {
     	if(!denominatorGraph) {
@@ -210,9 +216,13 @@ private:
     std::string denominatorNominalGridFile;         //Grid file if denominator contains nominal
     std::string denominatorDataFile;				//Data file if denominator contains data
 
-    TGraphAsymmErrors *numeratorGraph;              //TGraph of the numerator
+    // allow for several numeratorGraphs and ratioGraph (PDF, alphas, scale band)
+    //TGraphAsymmErrors *numeratorGraph;              //TGraph of the numerator
+    //TGraphAsymmErrors *ratioGraph;                  //TGraph: numeratorGraph / denominatorGraph
+
+    std::vector<TGraphAsymmErrors *> numeratorGraph;
+    std::vector<TGraphAsymmErrors *> ratioGraph;
     TGraphAsymmErrors *denominatorGraph;            //TGraph of the denominator
-    TGraphAsymmErrors *ratioGraph;                  //TGraph: numeratorGraph / denominatorGraph
 
     StringGraphMap_T * dataFileGraphMap;            //Map of data files to their data TGraph
     StringPairGraphMap_T * referenceFileGraphMap;   //Map of grid/pdf file pairs to their grid reference TGraph

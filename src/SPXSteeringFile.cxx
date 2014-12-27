@@ -38,8 +38,8 @@ void SPXSteeringFile::SetDefaults(void) {
 	plotMarker = true;
 	if(debug) std::cout << cn << mn << "plotMarker set to default: \"true\"" << std::endl;
 
-	BandwithPDF    = false;
-	if(debug) std::cout << cn << mn << "BandwithPDF set to default: \"false\"" << std::endl;
+	BandwithPDF    = true;
+	if(debug) std::cout << cn << mn << "BandwithPDF set to default: \"true\"" << std::endl;
 
 	BandwithAlphaS = false;
 	if(debug) std::cout << cn << mn << "BandwithAlphaS set to default: \"false\"" << std::endl;
@@ -47,11 +47,11 @@ void SPXSteeringFile::SetDefaults(void) {
 	BandwithScales = false;
 	if(debug) std::cout << cn << mn << "BandwithScales set to default: \"false\"" << std::endl;
 
-	BandTotal      = false;
-	if(debug) std::cout << cn << mn << "BandwithTotal set to default: \"false\"" << std::endl;
+	BandTotal      = true;
+	if(debug) std::cout << cn << mn << "BandwithTotal set to default: \"true\"" << std::endl;
 
-    RenScales.clear();
-    FacScales.clear();
+        RenScales.clear();
+        FacScales.clear();
 
 	plotStaggered = false;
 	if(debug) std::cout << cn << mn << "plotStaggered set to default: \"false\"" << std::endl;
@@ -610,11 +610,11 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
        	        if(debug) std::cout << cn << mn << "Start parsing total_fill_style " << std::endl;
 		tmp = reader->Get(plotSection, "total_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			if(plotBand) {
-				std::cout << cn << mn << "WARNING: No plot option for total_fill_style found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
-			} else {
-				if(debug) std::cout << cn << mn << "No plot option for total_fill_style found" << std::endl;
-			}
+		  //if(plotBand) {
+		  //		std::cout << cn << mn << "WARNING: No plot option for total_fill_style found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
+		  //	} else {
+		  //		if(debug) std::cout << cn << mn << "No plot option for total_fill_style found" << std::endl;//
+		  //		}
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -635,11 +635,11 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
        	        if(debug) std::cout << cn << mn << "Start parsing total_fill_color " << std::endl;
 		tmp = reader->Get(plotSection, "total_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			if(plotBand) {
-				std::cout << cn << mn << "WARNING: No plot option for total_fill_color found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
-			} else {
-				if(debug) std::cout << cn << mn << "No plot options for total_fill_color found" << std::endl;
-			}
+		  //if(plotBand) {
+		  //		std::cout << cn << mn << "WARNING: No plot option for total_fill_color found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
+		  //	} else {
+		  //		if(debug) std::cout << cn << mn << "No plot options for total_fill_color found" << std::endl;//
+		  //		}
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -687,11 +687,11 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
        	        if(debug) std::cout << cn << mn << "Start parsing pdf_fill_style " << std::endl;
 		tmp = reader->Get(plotSection, "pdf_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			if(plotBand) {
-				std::cout << cn << mn << "WARNING: No plot option for pdf_fill_style found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
-			} else {
-				if(debug) std::cout << cn << mn << "No plot option for pdf_fill_style found" << std::endl;
-			}
+		  //if(plotBand) {
+		  //		std::cout << cn << mn << "WARNING: No plot option for pdf_fill_style found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
+		  //	} else {
+		  //		if(debug) std::cout << cn << mn << "No plot option for pdf_fill_style found" << std::endl;
+		  //	}
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -712,11 +712,11 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
        	        if(debug) std::cout << cn << mn << "Start parsing pdf_fill_color " << std::endl;
 		tmp = reader->Get(plotSection, "pdf_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			if(plotBand) {
-				std::cout << cn << mn << "WARNING: No plot option for pdf_fill_color found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
-			} else {
-				if(debug) std::cout << cn << mn << "No plot options for pdf_fill_color found" << std::endl;
-			}
+		  //if(plotBand) {
+		  //		std::cout << cn << mn << "WARNING: No plot option for pdf_fill_color found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
+		  //	} else {
+		  //		if(debug) std::cout << cn << mn << "No plot options for pdf_fill_color found" << std::endl;
+		  //	}
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -765,11 +765,11 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
        	        if(debug) std::cout << cn << mn << "Start parsing scale_fill_style " << std::endl;
 		tmp = reader->Get(plotSection, "scale_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			if(plotBand) {
-				std::cout << cn << mn << "WARNING: No plot option for scale_fill_style found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
-			} else {
-				if(debug) std::cout << cn << mn << "No plot option for scale_fill_style found" << std::endl;
-			}
+		  //if(plotBand) {
+		  //		std::cout << cn << mn << "WARNING: No plot option for scale_fill_style found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
+		  //	} else {
+		  //		if(debug) std::cout << cn << mn << "No plot option for scale_fill_style found" << std::endl;
+		  //	}
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -790,11 +790,11 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
        	        if(debug) std::cout << cn << mn << "Start parsing pdf_fill_color " << std::endl;
 		tmp = reader->Get(plotSection, "scale_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			if(plotBand) {
-				std::cout << cn << mn << "WARNING: No plot option for scale_fill_color found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
-			} else {
-				if(debug) std::cout << cn << mn << "No plot options for scale_fill_color found" << std::endl;
-			}
+		  //if(plotBand) {
+		  //		std::cout << cn << mn << "WARNING: No plot option for scale_fill_color found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
+		  //	} else {
+		  //		if(debug) std::cout << cn << mn << "No plot options for scale_fill_color found" << std::endl;
+		  //	}
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -841,11 +841,11 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
        	        if(debug) std::cout << cn << mn << "Start parsing alphas_fill_style " << std::endl;
 		tmp = reader->Get(plotSection, "alphas_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			if(plotBand) {
-				std::cout << cn << mn << "WARNING: No plot option for alphas_fill_style found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
-			} else {
-				if(debug) std::cout << cn << mn << "No plot option for alphas_fill_style found" << std::endl;
-			}
+		  //if(plotBand) {
+		  //		std::cout << cn << mn << "WARNING: No plot option for alphas_fill_style found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
+		  //	} else {
+		  //		if(debug) std::cout << cn << mn << "No plot option for alphas_fill_style found" << std::endl;
+		  //	}
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -866,11 +866,11 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
        	        if(debug) std::cout << cn << mn << "Start parsing alphas_fill_style " << std::endl;
 		tmp = reader->Get(plotSection, "alphas_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			if(plotBand) {
-				std::cout << cn << mn << "WARNING: No plot option for alphas_fill_color found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
-			} else {
-				if(debug) std::cout << cn << mn << "No plot options for alphas_fill_color found" << std::endl;
-			}
+		  //if(plotBand) {
+		  //		std::cout << cn << mn << "WARNING: No plot option for alphas_fill_color found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
+		  //	} else {
+		  //		if(debug) std::cout << cn << mn << "No plot options for alphas_fill_color found" << std::endl;
+		  //	}
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);

@@ -60,6 +60,9 @@ public:
         return totalCorrections;
     }
 
+    TGraphAsymmErrors * GetCorrectionGraph(std::string &filename);
+    TGraphAsymmErrors * GetTotalCorrectionGraph(std::string &filename);
+
     std::vector<double> & GetX(std::string &filename) {
         return corrections[filename]["x"];
     }

@@ -49,7 +49,7 @@ public:
 
 	void Create(SPXSteeringFile *mainsteeringFile);
 	void ParseCorrections(void);
-	void ApplyCorrections(void);
+	void ApplyCorrections(TGraphAsymmErrors* g);
 
 	static bool GetDebug(void) {
 		return debug;
@@ -65,19 +65,19 @@ public:
 
 
 	TGraphAsymmErrors *GetPDFBandResults(void) {
-		return pdf->h_PDFBand_results;
+	  return pdf->GetPDFBand();
 	}
 
 	TGraphAsymmErrors *GetAlphaSBandResults(void) {
-		return pdf->h_AlphaS_results;
+	  return pdf->GetAlphaSBand();
 	}
 
 	TGraphAsymmErrors *GetScaleBandResults(void) {
-		return pdf->h_Scale_results;
+	  return pdf->GetScaleBand();
 	}
 
 	TGraphAsymmErrors *GetTotalBandResults(void) {
-		return pdf-> h_Total_results;
+	  return pdf-> GetTotalBand();
 	}
 
 	SPXPDFSteeringFile *GetPDFSteeringFile(void) {

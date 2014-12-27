@@ -36,25 +36,12 @@
 //using namespace std;
 
 
-//typedef std::map<std::string,  TGraphAsymmErrors>  BandMap_T;
+typedef std::map<std::string,  TGraphAsymmErrors*>  BandMap_T;
 
 
 class SPXPDF {
 
     public:
-        //VARIABLES
-
-        // move this to private variables
-        TGraphAsymmErrors *h_PDFBand_results;
-        TGraphAsymmErrors *h_AlphaS_results;
-        TGraphAsymmErrors *h_Scale_results;
-        TGraphAsymmErrors *h_Total_results;
-
-	//        BandMap_T allbands;
-
-        string calc_desc;
-
-        bool applgridok;
 
         //METHODS
         SPXPDF() {};
@@ -63,8 +50,7 @@ class SPXPDF {
 
         virtual ~SPXPDF() { CleanUpSPXPDF(); }; //destructor
 
-
-        //void PrintMap(std::string &s, BandMap_T &m);
+        void PrintMap(BandMap_T &m);
 
         // method for PDF standalone plots
 
@@ -99,6 +85,7 @@ class SPXPDF {
 
         //accessor methods
         bool IsDebugOn() const{return debug;};
+
         string GetPDFtype() const{return PDFtype;};
         string GetPDFName() const{return PDFname;};
         string GetPDFFullname(){ return default_pdf_set_name;};
@@ -114,9 +101,18 @@ class SPXPDF {
         bool Is90PercentErrorSize()const{return f_PDFErrorSize90Percent;}; 
 
         bool GetDoPDFBand() const{return do_PDFBand;};
-        bool GetDoAlphaS() const{return do_AlphaS;};
-        bool GetDoScale() const{return do_Scale;};
-        bool GetDoTotal() const{return do_Total;};
+        bool GetDoAlphaS()  const{return do_AlphaS;};
+        bool GetDoScale()   const{return do_Scale;};
+        bool GetDoTotal()   const{return do_Total;};
+
+        int GetNBands(){return Mapallbands.size();};
+        TGraphAsymmErrors *GetBand(int i);
+        string GetBandType(int i);
+
+        TGraphAsymmErrors *GetPDFBand(){ return h_PDFBand_results;};
+        TGraphAsymmErrors *GetAlphaSBand(){ return h_AlphaS_results;};
+        TGraphAsymmErrors *GetScaleBand() { return h_Scale_results;};
+        TGraphAsymmErrors *GetTotalBand() { return h_Total_results;};
 
         int GetAlphaSmemberNumDown() const{return AlphaSmemberNumDown;};
         int GetAlphaSmemberNumUp() const{return AlphaSmemberNumUp;};
@@ -124,6 +120,10 @@ class SPXPDF {
         string GetAlphaSPDFSetNameUp() const{return AlphaSPDFSetNameUp;};
         //string GetAlphaSPDFSetHistNameDown() const{return AlphaSPDFSetHistNameDown;};
         //string GetAlphaSPDFSetHistNameUp() const{return AlphaSPDFSetHistNameUp;};
+
+        TH1D * GetPdfdefault() { return hpdfdefault;};
+        TH1D * GetPDFNominal() { return hpdfdefault; };
+
 
         //mutator methods
         void SetDebug(bool _debug);
@@ -158,13 +158,20 @@ class SPXPDF {
 
         void SetScales(std::vector<double> aRenScales,std::vector<double> aFacScales);
 
-        TH1D * GetPdfdefault() { return hpdfdefault;};
-
-        TH1D * GetPDFNominal() { return hpdfdefault; };
-
     private:
         //VARIABLES
         static bool debug;
+
+        // map of bands
+	BandMap_T Mapallbands;
+        // bands for individual uncertainties
+        TGraphAsymmErrors *h_PDFBand_results;
+        TGraphAsymmErrors *h_AlphaS_results;
+        TGraphAsymmErrors *h_Scale_results;
+        TGraphAsymmErrors *h_Total_results;
+
+        //string calc_desc;
+        bool applgridok;
 
         std::string steeringFileName;
 

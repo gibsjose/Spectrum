@@ -220,39 +220,21 @@ void SPXPDF::Initialize()
  std::string mn = "Initialize: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
- if (debug) std::cout<<cn<<mn<<"Performing Initialization"<<std::endl;
+ if (debug) {
+  std::cout<<cn<<mn<<"Performing Initialization"<<std::endl;
 
- calc_desc = "SPXPDF-theory_errors";
- if (do_PDFBand)
-  calc_desc+="_PDFBand";
- if (do_AlphaS)
-  calc_desc+="_AlphaS";
- if (do_Scale)
-  calc_desc+="_Scale";
-
- if (do_PDFBand) std::cout<<cn<<mn<<"do_PDFBand ON" <<std::endl;
- else            std::cout<<cn<<mn<<"do_PDFBand OFF"<<std::endl;
- if (do_AlphaS ) std::cout<<cn<<mn<<"do_AlphaS ON " <<std::endl;
- else            std::cout<<cn<<mn<<"do_AlphaS OFF" <<std::endl;
- if (do_Scale)   std::cout<<cn<<mn<<"do_Scale  ON " <<std::endl;
- else            std::cout<<cn<<mn<<"do_Scale  OFF" <<std::endl;
- // do_total is always on since total band should be always produced
- //if (do_Total)   std::cout<<cn<<mn<<"do_Total  ON" <<std::endl;
- //else            std::cout<<cn<<mn<<"do_Total  OFF"<<std::endl;
+  if (do_PDFBand) std::cout<<cn<<mn<<"do_PDFBand ON" <<std::endl;
+  else            std::cout<<cn<<mn<<"do_PDFBand OFF"<<std::endl;
+  if (do_AlphaS ) std::cout<<cn<<mn<<"do_AlphaS ON " <<std::endl;
+  else            std::cout<<cn<<mn<<"do_AlphaS OFF" <<std::endl;
+  if (do_Scale)   std::cout<<cn<<mn<<"do_Scale  ON " <<std::endl;
+  else            std::cout<<cn<<mn<<"do_Scale  OFF" <<std::endl;
+  // do_total is always on since total band should be always produced
+  //if (do_Total)   std::cout<<cn<<mn<<"do_Total  ON" <<std::endl;
+  //else            std::cout<<cn<<mn<<"do_Total  OFF"<<std::endl;
+ }
 
  if (!do_PDFBand && !do_AlphaS && !do_Scale) {
-
-  //@JJG 16.12.14
-  //Here is an example of how to use the Exceptions instead of calling exit(0) and printint to std::cout
-  //    The advantages to this are:
-  //        - 'Stack' trace of errors is printed
-  //        - All exceptions are printed to std::cerr, which on the website shows up in the 'Spectrum Error Log'
-  //            - Printing an error to std::cout will force it to be in the normal log and NOT the Error Log
-  //
-  //    By using the std::ostringstream method, you can construct your error messages just like you were printing to std::cout
-  //    and can pass numbers, strings, etc. just the same way. oss.str() returns a std::string with the contents of the string stream.
-  //    One thing to note, however, is that string streams do not clear like you would think, so you should instantiate a new local copy
-  //    for each instance
   std::ostringstream oss;
   oss << cn << mn << "All theory uncertainties are disabled: Check settings in steering file";
   throw SPXParseException(oss.str());
@@ -321,7 +303,6 @@ void SPXPDF::Initialize()
  if (applgridok) {
   temp_hist= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
   TString name="xsec_pdf_"+default_pdf_set_name;
-  //name.Replace("PDFSets/","");
   temp_hist->SetName(name);
  } else {
   if (debug) std::cout<<cn<<mn<<"Histogram from PDF not applgrid ! "<<std::endl;
@@ -608,6 +589,8 @@ void SPXPDF::Initialize()
    if (applgridok) {
     if (debug) std::cout<<cn<<mn<<"Setting up convolute "<<std::endl;
     temp_hist = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+    TString hname=temp_hist->GetName()+TString("_pdf_")+default_pdf_set_name;
+    temp_hist->SetName(hname);
    } else {
     if (debug) std::cout<<cn<<mn<<"Histogram from PDF not applgrid ! "<<std::endl;
     TH1D *tmp=this->FillPdfHisto();
@@ -657,6 +640,22 @@ void SPXPDF::Initialize()
  if (debug) std::cout<<cn<<mn<<"Now calling CalcSystErrors "<<std::endl;
  this->CalcSystErrors();
 
+ if (h_Total_results){
+   Mapallbands["total"]=h_Total_results;
+ }
+ if (do_AlphaS) if (h_AlphaS_results) {
+  Mapallbands["alphas"]=h_AlphaS_results;
+ }
+ if (do_PDFBand) if(h_PDFBand_results) {
+  Mapallbands["pdf"]=h_PDFBand_results;
+ }
+ if (do_Scale) if(h_Scale_results){
+  Mapallbands["scale"]=h_Scale_results;
+ }
+
+ if (debug) PrintMap(Mapallbands);
+
+/*
  if (debug) {
   std::cout<<cn<<mn<<"After calculation of systematic uncertainties "<<std::endl;
   if (do_AlphaS) {
@@ -674,6 +673,7 @@ void SPXPDF::Initialize()
    h_Scale_results->Print("all");
   }
  }
+*/
 }
 
 void SPXPDF::CalcSystErrors()
@@ -693,6 +693,7 @@ void SPXPDF::CalcSystErrors()
  //if (do_Total)   
  CalcTotalErrors();
 
+ /*
  if (debug) {
   if (h_PDFBand_results){
    cout<<cn<<mn<<" Print h_PDFBand_results"<<endl;
@@ -714,7 +715,7 @@ void SPXPDF::CalcSystErrors()
    h_Total_results->Print();
   }
  }
-
+ */
  if (debug) std::cout<<cn<<mn<<"End systematic error calculation for: "<<PDFtype<<std::endl;
 }
 
@@ -944,7 +945,7 @@ void SPXPDF::CalcPDFBandErrors()
   }
  }  /// loop over bins
 
- if(debug) std::cout<<cn<<mn<<"End cal of PDFBandErrors for: "<<PDFtype<<std::endl;
+ if(debug) std::cout<<cn<<mn<<"End calculation of PDFBandErrors for: "<<PDFtype<<std::endl;
 }
 
 void SPXPDF::CalcAlphaSErrors()
@@ -1123,7 +1124,7 @@ void SPXPDF::CalcTotalErrors()
  }
 
  for (int ibin=0;ibin<nbin;++ibin){
-  if (debug) std::cout << cn<<mn<<"Calculating total error for point " << ibin << std::endl;
+  //if (debug) std::cout << cn<<mn<<"Calculating total error for point " << ibin << std::endl;
   double x=0.;
   double y=0.;
   double PDFError_high=0.;
@@ -1166,12 +1167,12 @@ void SPXPDF::CalcTotalErrors()
   h_Total_results->SetLineColor  (fillColorCode);
   h_Total_results->SetFillColor  (fillColorCode);
 
- if (debug) {
-  cout<<cn<<mn<<" Line Color= "<<h_Total_results->GetLineColor()<<std::endl;
-  cout<<cn<<mn<<" Fill Color= "<<h_Total_results->GetFillColor()<<std::endl;
-  std::cout<<cn<<mn<<" End calc of TotalErrors for: "<<PDFtype<<std::endl;
-  h_Total_results->Print();
- }
+  //if (debug) {
+  //cout<<cn<<mn<<" Line Color= "<<h_Total_results->GetLineColor()<<std::endl;
+  //cout<<cn<<mn<<" Fill Color= "<<h_Total_results->GetFillColor()<<std::endl;
+  //std::cout<<cn<<mn<<" End calculation of TotalErrors for: "<<PDFtype<<std::endl;
+  //h_Total_results->Print();
+  //}
 }
 
 
@@ -1623,3 +1624,48 @@ TH1D * SPXPDF::FillPdfHisto(){
 
 	return hpdf;
 };
+
+void SPXPDF::PrintMap(BandMap_T &m) {
+ std::string mn = "PrintMap: ";
+
+ if (debug) cout<<cn<<mn<<" starting "<<endl;
+
+ for(BandMap_T::const_iterator it = m.begin(); it != m.end(); ++it) {
+  std::cout <<cn<<mn<< " " << std::endl;
+  std::cout <<cn<<mn<< "map["<<it->first<<"]="<< " " << it->second->GetName() << std::endl;
+  it->second->Print("all");
+ }
+ return;
+ if (debug) cout<<cn<<mn<<" ending "<<endl;
+}
+
+TGraphAsymmErrors * SPXPDF::GetBand(int i){ 
+ if (i>Mapallbands.size()){
+  std::ostringstream oss;
+  oss << cn <<"GetBands:"<<"ERROR i= "<<i<<" is too large Number of bands= "<< Mapallbands.size();
+  throw SPXParseException(oss.str());
+ }
+ int j=0.;
+ for(BandMap_T::const_iterator it = Mapallbands.begin(); it != Mapallbands.end(); ++it) {
+  //if (debug) std::cout<<cn<<"GetBands: i= "<<i<<" j= "<<j<<" bandname= "<<it->second->GetName()<<std::endl;
+  if (j==i) {
+    return it->second;
+  } else j++;
+ }
+};
+
+string SPXPDF::GetBandType(int i){ 
+ if (i>Mapallbands.size()){
+  std::ostringstream oss;
+  oss << cn <<"GetBands:"<<"ERROR i= "<<i<<" is too large Number of bands= "<< Mapallbands.size();
+  throw SPXParseException(oss.str());
+ }
+ int j=0.;
+ for(BandMap_T::const_iterator it = Mapallbands.begin(); it != Mapallbands.end(); ++it) {
+  //if (debug) std::cout<<cn<<"GetBands: i= "<<i<<" j= "<<j<<" bandname= "<<it->second->GetName()<<std::endl;
+  if (j==i) {
+    return it->first;
+  } else j++;
+ }
+};
+

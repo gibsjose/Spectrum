@@ -137,8 +137,8 @@ void SPXGridCorrections::Parse(void) {
             //Fill total vectors with '1.0'
             for(int j = 0; j < numberOfBins; j++) {
                 tot_y.push_back(1.0);
-                tot_eyl.push_back(1.0);
-                tot_eyh.push_back(1.0);
+                tot_eyl.push_back(0.0);
+                tot_eyh.push_back(0.0);
             }
         }
 
@@ -169,6 +169,7 @@ void SPXGridCorrections::Parse(void) {
         corrections.insert(CorrectionsPair_T(filename, m));
 
         //Set the total corrections x, exl, exh vectors based on the first file
+        // 
         if(i == 0) {
             t_x = x;
             t_exl = exl;
@@ -178,14 +179,25 @@ void SPXGridCorrections::Parse(void) {
         //Multiply total vectors by scale to maintain total scaling
         for(int j = 0; j < numberOfBins; j++) {
             tot_y[j] *= y[j];
-            tot_eyl[j] *= eyl[j];
-            tot_eyh[j] *= eyh[j];
+            tot_eyl[j] += eyl[j]*eyl[j]/(y[j]*y[j]);
+            tot_eyh[j] += eyh[j]*eyh[j]/(y[j]*y[j]);
         }
 
         if(debug) std::cout << cn << mn << " ---> Successfully added correction to map" << std::endl;
 
         //Close the file
         CloseCorrectionFile();
+    }
+
+    // add up relative errors in quadrature
+    for (int j=0; j<tot_y.size(); j++) {
+     if (tot_y[j]!=0.) {
+      tot_eyl[j] =sqrt(tot_eyl[j])*tot_y[j];
+      tot_eyh[j] =sqrt(tot_eyh[j])*tot_y[j];
+     } else {
+      tot_eyl[j] =0.;
+      tot_eyh[j] =0.;
+     }
     }
 
     //Insert the x, exl, exh, and total vectors into the totalCorrections map
@@ -254,4 +266,42 @@ void SPXGridCorrections::Print(void) {
 
     std::string s = "Total Corrections";
     PrintMap(s, totalCorrections);
+}
+
+
+TGraphAsymmErrors * SPXGridCorrections::GetCorrectionGraph(std::string &filename){
+ std::string mn = "GetCorrectionGraph ";
+
+ TGraphAsymmErrors* gcorr= new TGraphAsymmErrors();
+ if (!gcorr) std::cout<<cn<<mn<<"ERROR creating graph "<<std::endl;
+
+ if (debug) {
+  std::cout<<cn<<mn<<" print corrections"<<std::endl;
+  PrintMap(filename,corrections[filename]);
+ }
+
+
+
+ if (debug) {
+   std::cout<<cn<<mn<<" numberOfBins= "<<numberOfBins<<std::endl;
+ }
+
+ for (int i=0; i<numberOfBins; i++) {
+
+ double c_x   = corrections[filename]["x"][i];
+ double c_exl = corrections[filename]["exl"][i];
+ double c_exh = corrections[filename]["exh"][i];
+ double c_y   = corrections[filename]["y"][i];
+ double c_eyl = corrections[filename]["eyl"][i];
+ double c_eyh = corrections[filename]["eyh"][i];
+  gcorr->SetPoint(i, c_x,c_y);
+  gcorr->SetPointError(i,c_exl,c_exh,c_eyl,c_eyh);
+ }
+
+ if (debug) {
+  std::cout<<cn<<mn<<" print graph"<<std::endl;
+  gcorr->Print("all");
+ }
+
+ return gcorr;
 }

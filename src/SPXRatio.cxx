@@ -348,9 +348,13 @@ void SPXRatio::Divide(void) {
 
     if(ratioStyle.IsDataStat()) {
         try {
-            ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroDenGraphErrors);
-            ratioGraph->SetFillStyle(1001);
-            ratioGraph->SetFillColor(kGray);
+	    //TC ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroDenGraphErrors);
+	    TGraphAsymmErrors *graph = SPXGraphUtilities::Divide(numeratorGraph.back(), denominatorGraph, ZeroDenGraphErrors);
+            graph->SetFillStyle(1001);
+            graph->SetFillColor(kGray);
+            ratioGraph.push_back(graph);
+	    //ratioGraph->SetFillStyle(1001);
+            //ratioGraph->SetFillColor(kGray);
             if(debug) std::cout <<cn<<mn<< "Successfully divided data stat graph with options: " << std::endl;
             if(debug) std::cout << "\t Fill Style = " << 1001 << std::endl;
             if(debug) std::cout << "\t Fill Color = " << kGray << std::endl;
@@ -364,9 +368,13 @@ void SPXRatio::Divide(void) {
 
     else if(ratioStyle.IsDataTot()) {
         try {
-            ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroDenGraphErrors);
-            ratioGraph->SetFillStyle(1001);
-            ratioGraph->SetFillColor(kGray);
+	    //ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, ZeroDenGraphErrors);
+	    TGraphAsymmErrors *graph = SPXGraphUtilities::Divide(numeratorGraph.back(), denominatorGraph, ZeroDenGraphErrors);
+            graph->SetFillStyle(1001);
+            graph->SetFillColor(kGray);
+            ratioGraph.push_back(graph);
+            //ratioGraph->SetFillStyle(1001);
+            //ratioGraph->SetFillColor(kGray);
             if(debug) std::cout << cn<<mn<<"Successfully divided data tot graph with options: " << std::endl;
             if(debug) std::cout << "\t Fill Style = " << 1001 << std::endl;
             if(debug) std::cout << "\t Fill Color = " << kGray << std::endl;
@@ -387,7 +395,10 @@ void SPXRatio::Divide(void) {
         //Match the convolute binning to the data binning
         if(ratioStyle.IsConvoluteOverData()) {
             try {
-                SPXGraphUtilities::MatchBinning(denominatorGraph, numeratorGraph, true);
+	      for (int i=0; i<numeratorGraph.size(); i++){
+                if (debug) std::cout<<cn<<mn<<" Matchbinning for numeratorGraph["<<i<<"]= "<<i<<std::endl;
+                SPXGraphUtilities::MatchBinning(denominatorGraph, numeratorGraph[i], true);
+              }
             } catch(const SPXException &e) {
                 std::cerr << e.what() << std::endl;
                 throw SPXGraphException(cn + mn + "Unable to match convolute binning to data binning");
@@ -403,7 +414,9 @@ void SPXRatio::Divide(void) {
 
         //Match the convolute binning to the data binning
         try {
-            SPXGraphUtilities::MatchBinning(numeratorGraph, denominatorGraph, true);
+	   for (int i=0; i<numeratorGraph.size(); i++){
+            SPXGraphUtilities::MatchBinning(numeratorGraph[i], denominatorGraph, true);
+           }
         } catch(const SPXException &e) {
             std::cerr << e.what() << std::endl;
             throw SPXGraphException(cn + mn + "Unable to match convolute binning to data binning");
@@ -432,43 +445,46 @@ void SPXRatio::Divide(void) {
         }
 
         //Divide graphs
-        ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, divideType);
+	for (int i=0; i<numeratorGraph.size(); i++){
+	 //ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, divideType);
+	 TGraphAsymmErrors *graph = SPXGraphUtilities::Divide(numeratorGraph[i], denominatorGraph,divideType); 
 
         //Style ratio graph
-        if(true) {
-	  if(debug) std::cout << cn<<mn<<"Obtaining PDF Fill Options..." << std::endl;
-            ratioGraph->SetFillStyle(pci.totalFillStyle);
-            ratioGraph->SetFillColor(pci.totalFillColor);
-            ratioGraph->SetMarkerStyle(pci.totalMarkerStyle);
-            ratioGraph->SetMarkerColor(pci.totalFillColor);
-            ratioGraph->SetLineColor(pci.totalFillColor);
-            ratioGraph->SetMarkerSize(1.2);
+	//if(debug) std::cout << cn<<mn<<"Obtaining PDF Fill Options..." << std::endl;
+        // graph->SetFillStyle(pci.totalFillStyle);
+        // graph->SetFillColor(pci.totalFillColor);
+        // graph->SetMarkerStyle(pci.totalMarkerStyle);
+        // graph->SetMarkerColor(pci.totalFillColor);
+        // graph->SetLineColor(pci.totalFillColor);
+        // graph->SetMarkerSize(1.2);
 
-            //NOTE: ROOT Color Transparencies are only supported in ROOT v6.0.0+ via the method
-            //          SetFillColorAlpha(ci, alpha_percentage)
-            //          SetMarkerColorAlpha(ci, alpha_percentage)
-            //          etc...
+         //NOTE: ROOT Color Transparencies are only supported in ROOT v6.0.0+ via the method
+         //          SetFillColorAlpha(ci, alpha_percentage)
+         //          SetMarkerColorAlpha(ci, alpha_percentage)
+         //          etc...
 
-            //If it is a convolute / reference graph, darken the fill color and change the style
-            if(ratioStyle.IsConvoluteOverReference()) {
-                ratioGraph->SetFillStyle(3002);
-                ratioGraph->SetFillColor  (pci.pdfFillColor + 1);
-                ratioGraph->SetMarkerColor(pci.pdfFillColor + 1);
-                ratioGraph->SetLineStyle(3);
-            }
+         //If it is a convolute / reference graph, darken the fill color and change the style
+         if(ratioStyle.IsConvoluteOverReference()) {
+          graph->SetFillStyle(3002);
+          graph->SetFillColor  (pci.pdfFillColor + 1);
+          graph->SetMarkerColor(pci.pdfFillColor + 1);
+          graph->SetLineStyle(3);
+         }
 
-            //Same for nominal
-            if(ratioStyle.IsConvoluteOverNominal()) {
-                ratioGraph->SetFillStyle(3017);
-                ratioGraph->SetFillColor  (pci.pdfFillColor + 2);
-                ratioGraph->SetMarkerColor(pci.pdfFillColor + 2);
-                ratioGraph->SetLineStyle(2);
-            }
+         //Same for nominal
+         if(ratioStyle.IsConvoluteOverNominal()) {
+          graph->SetFillStyle(3017);
+          graph->SetFillColor  (pci.pdfFillColor + 2);
+          graph->SetMarkerColor(pci.pdfFillColor + 2);
+          graph->SetLineStyle(2);
+         }
 
-            if(debug) std::cout << cn + mn + "Set PDF Fill Options:" << std::endl;
-            if(debug) std::cout << "\t Fill Style = " << ratioGraph->GetFillStyle() << std::endl;
-            if(debug) std::cout << "\t Fill Color = " << ratioGraph->GetFillColor() << std::endl;
-            if(debug) std::cout << "\t Marker Style= "<< ratioGraph->GetMarkerStyle() << std::endl;
+         if(debug) std::cout << cn + mn + "Set PDF Fill Options:" << std::endl;
+         if(debug) std::cout << "\t Fill Style = " << graph->GetFillStyle() << std::endl;
+         if(debug) std::cout << "\t Fill Color = " << graph->GetFillColor() << std::endl;
+         if(debug) std::cout << "\t Marker Style= "<< graph->GetMarkerStyle() << std::endl;
+
+         ratioGraph.push_back(graph);
         }
     } catch(const SPXException &e) {
         std::cerr << e.what() << std::endl;
@@ -578,11 +594,13 @@ void SPXRatio::GetGraphs(void) {
             throw SPXGraphException(cn + mn + oss.str());
         }
 
-        numeratorGraph = (*dataFileGraphMap)[key];
+        //numeratorGraph = (*dataFileGraphMap)[key];
+        numeratorGraph.push_back((*dataFileGraphMap)[key]);
         denominatorGraph = (*dataFileGraphMap)[key];
 
         //Make sure graphs are valid
-        if(!numeratorGraph || !denominatorGraph) {
+        //if(!numeratorGraph || !denominatorGraph) {
+        if(!numeratorGraph.back() || !denominatorGraph) {
             std::ostringstream oss;
             oss << "TGraph pointer at dataFileGraphMap[" << key << "] is NULL";
             throw SPXGraphException(cn + mn + oss.str());
@@ -621,11 +639,13 @@ void SPXRatio::GetGraphs(void) {
         }
 
         //Keys exist, grab graphs
-        numeratorGraph = (*convoluteFileGraphMap)[convoluteKey];
+        //numeratorGraph = (*convoluteFileGraphMap)[convoluteKey];
+        numeratorGraph.push_back((*convoluteFileGraphMap)[convoluteKey]);
         denominatorGraph = (*referenceFileGraphMap)[convoluteKey];
 
         //Make sure graphs are valid
-        if(!numeratorGraph) {
+        //if(!numeratorGraph) {
+        if(!numeratorGraph.back()) {
             std::ostringstream oss;
             oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
             throw SPXGraphException(cn + mn + oss.str());
@@ -639,10 +659,11 @@ void SPXRatio::GetGraphs(void) {
 
         //Print graphs (debug)
         if(debug) {
-            std::cout << cn << mn << "Printing Numerator (convolute) Graph:" << std::endl;
-            numeratorGraph->Print();
+            std::cout << cn << mn << "\n Printing Numerator (convolute) Graph:" << std::endl;
+            //numeratorGraph->Print();
+            numeratorGraph.back()->Print();
 
-            std::cout << cn << mn << "Printing Denominator (reference) Graph: " << std::endl;
+            std::cout << cn << mn << "\n Printing Denominator (reference) Graph: " << std::endl;
             denominatorGraph->Print();
         }
     }
@@ -660,48 +681,53 @@ void SPXRatio::GetGraphs(void) {
             std::cout << cn << mn << "Convolute Key = [" << convoluteKey.first << ", " << convoluteKey.second << "]" << std::endl;
         }
 
+        //TC>> Introduce loop over convoluteMap instead of checking for convoluteKey
         //Check for existence of convolute key in convolute graph map
-        if(convoluteFileGraphMap->count(convoluteKey) == 0) {
-            PrintConvoluteFileGraphMapKeys(std::cerr);
+        //if(convoluteFileGraphMap->count(convoluteKey) == 0) {
+	//    PrintConvoluteFileGraphMapKeys(std::cerr);
 
-            std::ostringstream oss;
-            oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
-            throw SPXGraphException(cn + mn + oss.str());
-        }
+	//    std::ostringstream oss;
+	//    oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
+	//    throw SPXGraphException(cn + mn + oss.str());
+	//}
 
         //Check for existence of convolute key in nominal graph map
         if(nominalFileGraphMap->count(convoluteKey) == 0) {
-            PrintReferenceFileGraphMapKeys(std::cerr);
+	    PrintReferenceFileGraphMapKeys(std::cerr);
 
-            std::ostringstream oss;
-            oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
-            throw SPXGraphException(cn + mn + oss.str());
-        }
+	    std::ostringstream oss;
+	    oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
+	    throw SPXGraphException(cn + mn + oss.str());
+	}
 
-        //Keys exist, grab graphs
-        numeratorGraph = (*convoluteFileGraphMap)[convoluteKey];
-        denominatorGraph = (*nominalFileGraphMap)[convoluteKey];
-
-        //Make sure graphs are valid
-        if(!numeratorGraph) {
-            std::ostringstream oss;
-            oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
-            throw SPXGraphException(cn + mn + oss.str());
-        }
-
+	denominatorGraph = (*nominalFileGraphMap)[convoluteKey];
         if(!denominatorGraph) {
-            std::ostringstream oss;
-            oss << "TGraph pointer at nominalFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
-            throw SPXGraphException(cn + mn + oss.str());
+         std::ostringstream oss;
+         oss << "TGraph pointer at nominalFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
+         throw SPXGraphException(cn + mn + oss.str());
         }
 
-        //Print graphs (debug)
-        if(debug) {
-            std::cout << cn << mn << "Printing Numerator (convolute) Graph:" << std::endl;
-            numeratorGraph->Print();
+        for(StringPairGraphMap_T::const_iterator it = convoluteFileGraphMap->begin(); it !=  convoluteFileGraphMap->end(); ++it) 
+        {
+	 numeratorGraph.push_back(it->second);
+       
+        //Keys exist, grab graphs
+        //TC numeratorGraph = (*convoluteFileGraphMap)[convoluteKey];
+        //Make sure graphs are valid
+        //if(!numeratorGraph) {
+        //    std::ostringstream oss;
+        //    oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
+        //    throw SPXGraphException(cn + mn + oss.str());
+        //}
 
-            std::cout << cn << mn << "Printing Denominator (nominal) Graph: " << std::endl;
+         //Print graphs (debug)
+         if(debug) {
+            std::cout << cn << mn << "\n Printing Numerator (convolute) Graph:" << std::endl;
+            numeratorGraph.back()->Print();
+
+            std::cout << cn << mn << "\n Printing Denominator (nominal) Graph: " << std::endl;
             denominatorGraph->Print();
+         }
         }
     }
 
@@ -733,29 +759,33 @@ void SPXRatio::GetGraphs(void) {
         }
 
         //Check for existence of convolute key
-        if(convoluteFileGraphMap->count(convoluteKey) == 0) {
-            PrintConvoluteFileGraphMapKeys(std::cerr);
+        //if(convoluteFileGraphMap->count(convoluteKey) == 0) {
+        //    PrintConvoluteFileGraphMapKeys(std::cerr);
 
-            std::ostringstream oss;
-            oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
-            throw SPXGraphException(cn + mn + oss.str());
-        }
+        //    std::ostringstream oss;
+        //    oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
+        //    throw SPXGraphException(cn + mn + oss.str());
+        //}
 
         //Keys exist, grab graphs
-        numeratorGraph = (*dataFileGraphMap)[dataKey];
-        denominatorGraph = (*convoluteFileGraphMap)[convoluteKey];
+        //numeratorGraph = (*dataFileGraphMap)[dataKey];
+        numeratorGraph.push_back((*dataFileGraphMap)[dataKey]);
+        //denominatorGraph = (*convoluteFileGraphMap)[convoluteKey];
 
         //Make sure graphs are valid
-        if(!numeratorGraph) {
+        if(!numeratorGraph.back()) {
             std::ostringstream oss;
             oss << "TGraph pointer at dataFileGraphMap[" << dataKey << "] is NULL";
             throw SPXGraphException(cn + mn + oss.str());
         }
-
-        if(!denominatorGraph) {
+        for(StringPairGraphMap_T::const_iterator it = convoluteFileGraphMap->begin(); it !=  convoluteFileGraphMap->end(); ++it) 
+        {
+	 TGraphAsymmErrors *denomitatorGraph=it->second;
+         if(!denominatorGraph) {
             std::ostringstream oss;
             oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
             throw SPXGraphException(cn + mn + oss.str());
+         }
         }
     }
 
@@ -778,13 +808,13 @@ void SPXRatio::GetGraphs(void) {
         }
 
         //Check for existence of convolute key
-        if(convoluteFileGraphMap->count(convoluteKey) == 0) {
-            PrintConvoluteFileGraphMapKeys(std::cerr);
+        //if(convoluteFileGraphMap->count(convoluteKey) == 0) {
+        //    PrintConvoluteFileGraphMapKeys(std::cerr);
 
-            std::ostringstream oss;
-            oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
-            throw SPXGraphException(cn + mn + oss.str());
-        }
+        //    std::ostringstream oss;
+        //    oss << "convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] was not found: Invalid key";
+        //    throw SPXGraphException(cn + mn + oss.str());
+        //}
 
         //Check for existence of data key
         if(dataFileGraphMap->count(dataKey) == 0) {
@@ -796,21 +826,25 @@ void SPXRatio::GetGraphs(void) {
         }
 
         //Keys exist, grab graphs
-        numeratorGraph = (*convoluteFileGraphMap)[convoluteKey];
         denominatorGraph = (*dataFileGraphMap)[dataKey];
+        for(StringPairGraphMap_T::const_iterator it = convoluteFileGraphMap->begin(); it !=  convoluteFileGraphMap->end(); ++it) 
+        {
+	 numeratorGraph.push_back(it->second);
+         //numeratorGraph = (*convoluteFileGraphMap)[convoluteKey];
 
-        //Make sure graphs are valid
-        if(!numeratorGraph) {
+         //Make sure graphs are valid
+         if(!numeratorGraph.back()) {
             std::ostringstream oss;
-            oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
+            oss << "TGraph pointer at convoluteFileGraphMap not found";
             throw SPXGraphException(cn + mn + oss.str());
-        }
+         }
 
-        if(!denominatorGraph) {
+         if(!denominatorGraph) {
             std::ostringstream oss;
             oss << "TGraph pointer at dataFileGraphMap[" << dataKey << "] is NULL";
             throw SPXGraphException(cn + mn + oss.str());
-        }
+         }
+	}
     }
 
     else if(ratioStyle.IsDataOverData()) {
@@ -846,11 +880,12 @@ void SPXRatio::GetGraphs(void) {
         }
 
         //Keys exist, grab graphs
-        numeratorGraph = (*dataFileGraphMap)[numDataKey];
+        //numeratorGraph = (*dataFileGraphMap)[numDataKey];
+        numeratorGraph.push_back((*dataFileGraphMap)[numDataKey]);
         denominatorGraph = (*dataFileGraphMap)[denDataKey];
 
         //Make sure graphs are valid
-        if(!numeratorGraph) {
+        if(!numeratorGraph.back()) {
             std::ostringstream oss;
             oss << "TGraph pointer at dataFileGraphMap[" << numDataKey << "] is NULL";
             throw SPXGraphException(cn + mn + oss.str());

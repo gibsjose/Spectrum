@@ -78,6 +78,9 @@ public:
 
 	static double GetTotalSigma(TGraphAsymmErrors * g, bool dividedByBinWidth);
 	static void DivideByBinWidth(TGraphAsymmErrors * g);
+
+	//TGraphAsymmErrors* Multiply(TGraphAsymmErrors * g1,TGraphAsymmErrors * g2);
+        void Multiply(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, int noerr=0);
 };
 
 #endif

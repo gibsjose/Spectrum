@@ -12,7 +12,7 @@
 
 #include "SPXGraphUtilities.h"
 
-std::string cn = "SPXGraphUtilities::";
+const std::string cn = "SPXGraphUtilities::";
 
 double SPXGraphUtilities::GetXMin(std::vector<TGraphAsymmErrors *> graphs) {
 
@@ -103,8 +103,12 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
     bool debug = false;
 
     //Make sure graphs are valid
-    if(!master || !slave) {
-        throw SPXGraphException(cn + mn + "Master and/or slave graph is invalid");
+    if(!master) {
+        throw SPXGraphException(cn + mn + "Master graph is invalid");
+    }
+
+    if(!slave) {
+        throw SPXGraphException(cn + mn + "Slave graph is invalid");
     }
 
     //Alias for dividedByBinWidth
@@ -697,4 +701,148 @@ void SPXGraphUtilities::DivideByBinWidth(TGraphAsymmErrors *g) {
     }
 
     return;
+}
+/*
+TGraphAsymmErrors* SPXGraphUtilities::Multiply(TGraphAsymmErrors * g1,TGraphAsymmErrors * g2){
+ std::string mn = "Multiply:";
+ //
+ // multiply graph g1 and graph g2
+ // result is stored in the return graph g3
+ //
+ if (!g1) {
+  std::ostringstream oss;
+  oss << cn << mn << "ERROR Graph g1 not found ";
+  throw SPXParseException(oss.str());
+ }
+ if (!g2) {
+  std::ostringstream oss;
+  oss << cn << mn << "ERROR Graph g2 not found ";
+  throw SPXParseException(oss.str());
+ }
+
+ TGraphAsymmErrors* g3= new TGraphAsymmErrors();
+ TString name=g1->GetName();
+ name+=" * ";
+ name+=g2->GetName();
+ g3->SetName(g1->GetName());
+
+ int nBins1 = g1->GetN();
+ int nBins2 = g2->GetN();
+ if (nBins1!=nBins2) {
+   //std::ostringstream oss;
+   std::cout << cn << mn << "WARNING Graph g1 NBin1= "<<nBin1<<" and graph g2 NBin2= "<<nBins2<<"do not have the same lenght ! "<<std::endl;
+  //throw SPXParseException(oss.str());
+ }
+
+ double *x1   = g1->GetX();
+ double *y1   = g1->GetY();
+ double *exl1 = g1->GetEXlow();
+ double *exh1 = g1->GetEXhigh();
+ double *eyl1 = g1->GetEYlow();
+ double *eyh1 = g1->GetEYhigh();
+
+ double *x2   = g2->GetX();
+ double *y2   = g2->GetY();
+ double *exl2 = g2->GetEXlow();
+ double *exh2 = g2->GetEXhigh();
+ double *eyl2 = g2->GetEYlow();
+ double *eyh2 = g2->GetEYhigh();
+
+
+//Loop over the smallest of the two
+ unsigned int n = (nBins < nBinsCorr ? nBins : nBinsCorr);
+
+ for(int i = 0; i < nBins1; i++) {
+  for(int j = 0; j < nBins2; j++) {
+
+   //Check for bin match
+   if(((x1[i] - exl1[i]) == exl2[j]) && ((x1[i] + exh1[i]) == exh2[j])) {
+
+    if(debug) std::cout << cn << mn << "Bins Match (i, j): (" << i << ", " << j << ")" << std::endl;
+
+    //Bins match; Scale y, eyl, and eyh
+    double y=0., eyl=0., eyh=0.;
+    y  = 2[i] *y2[j];
+    eyl=eyl2[i]*eyl2[j];
+    eyh=eyh2[i]*eyh2[j];
+
+    g3->SetPoint(i, x1[i],y);
+    g3->SetPointError(i,exl1,exh1,eyl,eyh);
+    break;
+   };
+  };
+ };
+};
+*/
+void SPXGraphUtilities::Multiply(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, int noerr) {
+ //
+ // multiply graph g1 and graph g2
+ // result is stored in g1
+ //
+ // noerr=0: add error from graph 2 in quadrature 
+ //       1: do not consider error from graph 2
+ // 
+ std::string mn = "Multiply: ";
+ bool debug=true;
+
+ int nBins1 = g1->GetN();
+ int nBins2 = g2->GetN();
+ if (nBins1!=nBins2) {
+   //std::ostringstream oss;
+   std::cout << cn << mn << "WARNING Graph g1 NBin1= "<<nBins1<<" and graph g2 NBin2= "<<nBins2<<"do not have the same lenght ! "<<std::endl;
+  //throw SPXParseException(oss.str());
+ }
+
+ double *x1   = g1->GetX();
+ double *y1   = g1->GetY();
+ double *exl1 = g1->GetEXlow();
+ double *exh1 = g1->GetEXhigh();
+ double *eyl1 = g1->GetEYlow();
+ double *eyh1 = g1->GetEYhigh();
+
+ double *x2   = g2->GetX();
+ double *y2   = g2->GetY();
+ double *exl2 = g2->GetEXlow();
+ double *exh2 = g2->GetEXhigh();
+ double *eyl2 = g2->GetEYlow();
+ double *eyh2 = g2->GetEYhigh();
+
+ //Loop over the smallest of the two
+ unsigned int n = (nBins1 < nBins2 ? nBins1 : nBins2);
+
+ if (debug) {
+  std::cout << cn << mn << "Print g1 before: " << std::endl;
+  g1->Print();
+ }
+
+ for(int i = 0; i < nBins1; i++) {
+  for(int j = 0; j < nBins2; j++) {
+
+   //Check for bin match
+   if(((x1[i] - exl1[i]) == exl2[j]) && ((x1[i] + exh1[i]) == exh2[j])) {
+
+    if(debug) std::cout << cn << mn << "Bins Match (i, j): (" << i << ", " << j << ")" << std::endl;
+
+    //Bins match; Scale y, eyl, and eyh
+    y1[i] *= y2[j];
+
+    // relative errors add up in quadrature
+    double eyl=0., eyh=0.;
+    if (noerr==1) {eyl2[i]=0.; eyh2[i]=0.;}
+    if (y1[i]*y1[i]!=0. && y2[i]*y2[i]!=0.)
+     eyl=sqrt(eyl1[i]*eyl1[i]/(y1[i]*y1[i])+eyl2[i]*eyl2[i]/(y2[i]*y2[i]))*(y1[i]*y2[i]);
+    if (y2[i]*y2[i]!=0.)
+     eyh=sqrt(eyh1[i]*eyh1[i]/(y1[i]*y1[i])+eyh2[i]*eyh2[i]/(y2[i]*y2[i]))*(y1[i]*y2[i]);
+
+    g1->SetPoint(i, x1[i],y1[i]);
+    g1->SetPointError(i,exl1[i],exh1[i],eyl,eyh);
+    break;
+   };
+  };
+ };
+
+ if (debug) {
+  std::cout << cn << mn << "Print g1 after" << std::endl;
+  g1->Print();
+ }
 }
