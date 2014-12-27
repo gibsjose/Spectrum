@@ -18,7 +18,7 @@ debug = true
 ; plot_error_ticks = true
 plot_marker = true
 plot_staggered = true
-match_binning = false
+;match_binning = true
 ;grid_corr = true
 label_sqrt_s = true
 x_legend = 0.9
@@ -52,7 +52,7 @@ data_marker_style = 20
 data_marker_color = 1
 ; 
 desc = atlas_inclusive_jet
-display_style = overlay
+display_style = overlay,ratio
 ;
 overlay_style = data, convolute
 ;

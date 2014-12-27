@@ -25,8 +25,8 @@ x_legend = 0.9
 y_legend = 0.9
 
 band_with_pdf = true
-band_with_alphas= false
-;band_with_scale = true
+band_with_alphas= true
+band_with_scale = true
 band_total = true
 
 ren_scales = 2.0,1.0,0.5,1.0,0.5
@@ -58,7 +58,7 @@ pdf_steering_files = CT10.txt
 ;data_marker_color=1
 ;data_marker_style=20
 
-total_fill_style=3001
+total_fill_style=3305
 total_fill_color=500
 total_marker_style=21
 
@@ -80,8 +80,8 @@ x_log=true
 y_log=true
  
 desc = atlas_inclusive_jet_eta1
-display_style = overlay,ratio
-;display_style = ratio
+;display_style = overlay,ratio
+display_style = ratio
 overlay_style = data, convolute
 
 ratio_title = NLO QCD/Reference
