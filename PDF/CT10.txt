@@ -57,10 +57,9 @@ default_id_var = 0
 is90Percent = true
 band_type = use_error_band
 ;
-;ErrorPropagationType = 1
-;error_type = scale_band
-error_type = pdf_band
+ErrorPropagationType = 1
 ;error_type = alphas_band
+error_type = pdf_band
 ;
 error_size = one_sigma
 ; PDF set member number

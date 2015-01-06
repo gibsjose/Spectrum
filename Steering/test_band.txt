@@ -24,10 +24,10 @@ label_sqrt_s = true
 x_legend = 0.9
 y_legend = 0.9
 
-band_with_pdf = true
+;band_with_pdf = true
 band_with_alphas= true
-band_with_scale = true
-band_total = true
+;band_with_scale = true
+;band_total = true
 
 ren_scales = 2.0,1.0,0.5,1.0,0.5
 fac_scales = 2.0,1.0,0.5,0.5,1.0
@@ -59,19 +59,19 @@ pdf_steering_files = CT10.txt
 ;data_marker_style=20
 
 total_fill_style=3305
-total_fill_color=500
+total_fill_color=2
 total_marker_style=21
 
 pdf_fill_style=3004
-pdf_fill_color=400
+pdf_fill_color=3
 pdf_marker_style=22
 
 scale_fill_style=3005
-scale_fill_color=300
+scale_fill_color=4
 scale_marker_style=23
 
 alphas_fill_style=3022
-alphas_fill_color=390
+alphas_fill_color=5
 alphas_marker_style=24
 
 x_scale = 1.0

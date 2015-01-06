@@ -1211,6 +1211,7 @@ void SPXPlot::InitializeCrossSections(void) {
                  oss << cn <<mn<<"GetBands:"<<"Band "<<iband<<" not found at index "<<i;
                  throw SPXParseException(oss.str());
                 }
+                if (debug) cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<endl;
 		//Update the Convolute File Map
 		//string theoryname=pci.pdfSteeringFile.GetFilename()+gband->GetName();
                 string theoryname=gband->GetName();
@@ -1218,28 +1219,37 @@ void SPXPlot::InitializeCrossSections(void) {
                 convoluteFileGraphMap.insert(StringPairGraphPair_T(convolutePair, gband));
                 // would be better to introduce a map
                 int markerstyle, fillcolor,fillstyle;
-		if (TString(gtype).Contains("pdf")==0){
+                if (gtype.compare(string("pdf"))==0){
+		 //if (debug) std::cout << cn << mn <<" matched pdf "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.pdfMarkerStyle;
                  fillcolor  =pci.pdfFillColor;
                  fillstyle  =pci.pdfFillStyle;
-                } else if (TString(gtype).Contains("alphas")==0){
+                } 
+                if (gtype.compare(string("alphas"))==0){
+		  //if (debug) std::cout << cn << mn <<" matched alphas "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.alphasMarkerStyle;
                  fillcolor  =pci.alphasFillColor;
                  fillstyle  =pci.alphasFillStyle;
-                } else if (TString(gtype).Contains("scale")==0){
+                } 
+                if (gtype.compare(string("scale"))==0){
+		 //if (debug) std::cout << cn << mn <<" matched scale "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.scaleMarkerStyle;
                  fillcolor  =pci.scaleFillColor;
                  fillstyle  =pci.scaleFillStyle;
-                } else if (TString(gtype).Contains("total")==0){
+                } 
+                if (gtype.compare(string("total"))==0){
+		 //if (debug) std::cout << cn << mn <<" matched total "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.totalMarkerStyle;
                  fillcolor  =pci.totalFillColor;
                  fillstyle  =pci.totalFillStyle;
-                } else {
-		 std::cout << cn << mn <<"Warning: band type not found "<< gtype.c_str() <<std::endl;
-                }
+                } 
+
                 if (debug)
-		  std::cout << cn << mn <<"Setting fillcolor= "<< fillcolor
-                                        <<" fillstyle= "<<fillstyle<<" markerstyle= "<<markerstyle <<std::endl;
+		  std::cout << cn << mn <<"gband: "<< gband->GetName()<<" Setting: \n"
+                                        <<" fillcolor= "<< fillcolor
+                                        <<" fillstyle= "<<fillstyle
+                                        <<" markerstyle= "<<markerstyle <<std::endl;
+
 		gband->SetMarkerSize(1.2);
 		gband->SetMarkerStyle(markerstyle);
 		gband->SetMarkerColor(fillcolor);

@@ -652,9 +652,9 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(dmsSize) dms.push_back(options["data_marker_style"][0]);		//Just one instance of data marker style
 			if(dmcSize) dmc.push_back(options["data_marker_color"][0]);		//Just one instance of data marker color
 
-			if(tfsSize) pfs.push_back(options["total_fill_style"][i]);
-			if(tfcSize) pfc.push_back(options["total_fill_color"][i]);
-			if(tmsSize) pms.push_back(options["total_marker_style"][i]);
+			if(tfsSize) tfs.push_back(options["total_fill_style"][i]);
+			if(tfcSize) tfc.push_back(options["total_fill_color"][i]);
+			if(tmsSize) tms.push_back(options["total_marker_style"][i]);
 
 			if(pfsSize) pfs.push_back(options["pdf_fill_style"][i]);
 			if(pfcSize) pfc.push_back(options["pdf_fill_color"][i]);
@@ -700,9 +700,9 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(dmsSize) dms.push_back(options["data_marker_style"][0]);		//Just one instance of data marker style
 			if(dmcSize) dmc.push_back(options["data_marker_color"][0]);		//Just one instance of data marker color
 
-			if(tfsSize) pfs.push_back(options["total_fill_style"][0]);		//Just one instance of pdf fill style
-			if(tfcSize) pfc.push_back(options["total_fill_color"][0]);		//Just one instance of pdf fill color
-			if(tmsSize) pms.push_back(options["total_marker_style"][0]);		//Just one instance of pdf marker style
+			if(tfsSize) tfs.push_back(options["total_fill_style"][0]);		//Just one instance of pdf fill style
+			if(tfcSize) tfc.push_back(options["total_fill_color"][0]);		//Just one instance of pdf fill color
+			if(tmsSize) tms.push_back(options["total_marker_style"][0]);		//Just one instance of pdf marker style
 
 			if(pfsSize) pfs.push_back(options["pdf_fill_style"][0]);		//Just one instance of pdf fill style
 			if(pfcSize) pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color

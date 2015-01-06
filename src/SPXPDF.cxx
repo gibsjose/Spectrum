@@ -371,14 +371,6 @@ void SPXPDF::Initialize()
 
      //double chi2=h_scale_temp->Chi2Test(temp_hist,"WWP");
      //if (chi2<0.99) {
-     if (iscale==0) {
-      if (fabs(h_scale_temp->GetSumOfWeights()-temp_hist->GetSumOfWeights())>1.e-10){
-       std::cout<<cn<<mn<<"WARNING h_scale=temp= "<<h_scale_temp->GetName()
-                <<" temp_hist= "<<temp_hist->GetName()<<" should be equal, but "
-                <<" W1= "<<h_scale_temp->GetSumOfWeights()
-                <<" W2= "<<temp_hist->GetSumOfWeights()<<std::endl;
-      }
-     }
      h_errors_Scale.push_back(h_scale_temp);
     }
    } else std::cout <<cn<<mn<<"ERROR: No renormalization or factorization scales provided ! The scale uncertainty will can not be calculated." << std::endl;
@@ -640,9 +632,7 @@ void SPXPDF::Initialize()
  if (debug) std::cout<<cn<<mn<<"Now calling CalcSystErrors "<<std::endl;
  this->CalcSystErrors();
 
- if (h_Total_results){
-   Mapallbands["total"]=h_Total_results;
- }
+
  if (do_AlphaS) if (h_AlphaS_results) {
   Mapallbands["alphas"]=h_AlphaS_results;
  }
@@ -651,6 +641,9 @@ void SPXPDF::Initialize()
  }
  if (do_Scale) if(h_Scale_results){
   Mapallbands["scale"]=h_Scale_results;
+ }
+ if (h_Total_results){
+   Mapallbands["total"]=h_Total_results;
  }
 
  if (debug) PrintMap(Mapallbands);

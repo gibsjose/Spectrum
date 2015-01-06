@@ -463,23 +463,25 @@ void SPXRatio::Divide(void) {
          //          SetMarkerColorAlpha(ci, alpha_percentage)
          //          etc...
 
+         // TC styles taken from numerator instead of setting them
+
          //If it is a convolute / reference graph, darken the fill color and change the style
-         if(ratioStyle.IsConvoluteOverReference()) {
-          graph->SetFillStyle(3002);
-          graph->SetFillColor  (pci.pdfFillColor + 1);
-          graph->SetMarkerColor(pci.pdfFillColor + 1);
-          graph->SetLineStyle(3);
-         }
+         //if(ratioStyle.IsConvoluteOverReference()) {
+         // graph->SetFillStyle(3002);
+         // graph->SetFillColor  (pci.pdfFillColor + 1);
+         // graph->SetMarkerColor(pci.pdfFillColor + 1);
+         // graph->SetLineStyle(3);
+         //}
 
          //Same for nominal
-         if(ratioStyle.IsConvoluteOverNominal()) {
-          graph->SetFillStyle(3017);
-          graph->SetFillColor  (pci.pdfFillColor + 2);
-          graph->SetMarkerColor(pci.pdfFillColor + 2);
-          graph->SetLineStyle(2);
-         }
+         //if(ratioStyle.IsConvoluteOverNominal()) {
+         // graph->SetFillStyle(3017);
+         // graph->SetFillColor  (pci.pdfFillColor + 2);
+         // graph->SetMarkerColor(pci.pdfFillColor + 2);
+         // graph->SetLineStyle(2);
+         //}
 
-         if(debug) std::cout << cn + mn + "Set PDF Fill Options:" << std::endl;
+         if(debug) std::cout << cn + mn + "Graph Fill Options:" << graph->GetName() << std::endl;
          if(debug) std::cout << "\t Fill Style = " << graph->GetFillStyle() << std::endl;
          if(debug) std::cout << "\t Fill Color = " << graph->GetFillColor() << std::endl;
          if(debug) std::cout << "\t Marker Style= "<< graph->GetMarkerStyle() << std::endl;
@@ -659,11 +661,11 @@ void SPXRatio::GetGraphs(void) {
 
         //Print graphs (debug)
         if(debug) {
-            std::cout << cn << mn << "\n Printing Numerator (convolute) Graph:" << std::endl;
+	  std::cout << cn << mn << "\n Printing Numerator (convolute) Graph:" << numeratorGraph.back()->GetName()<<std::endl;
             //numeratorGraph->Print();
             numeratorGraph.back()->Print();
 
-            std::cout << cn << mn << "\n Printing Denominator (reference) Graph: " << std::endl;
+            std::cout << cn << mn << "\n Printing Denominator (reference) Graph: " << denominatorGraph->GetName()<< std::endl;
             denominatorGraph->Print();
         }
     }
@@ -722,10 +724,10 @@ void SPXRatio::GetGraphs(void) {
 
          //Print graphs (debug)
          if(debug) {
-            std::cout << cn << mn << "\n Printing Numerator (convolute) Graph:" << std::endl;
+	   std::cout << cn << mn << "\n Printing Numerator (convolute) Graph:"<< numeratorGraph.back()->GetName() << std::endl;
             numeratorGraph.back()->Print();
 
-            std::cout << cn << mn << "\n Printing Denominator (nominal) Graph: " << std::endl;
+            std::cout << cn << mn << "\n Printing Denominator (nominal) Graph: " << denominatorGraph->GetName() << std::endl;
             denominatorGraph->Print();
          }
         }

@@ -362,7 +362,11 @@ TGraphAsymmErrors * SPXGraphUtilities::Divide(TGraphAsymmErrors *g1, TGraphAsymm
     result->SetName(g1->GetName());
     result->SetMarkerStyle(g1->GetMarkerStyle());
     result->SetMarkerColor(g1->GetMarkerColor());
+    result->SetMarkerSize(g1->GetMarkerSize());
     result->SetLineColor(g1->GetLineColor());
+    result->SetFillStyle(g1->GetFillStyle());
+    result->SetFillColor(g1->GetFillColor());
+
 
     Double_t   	x1=0.0,   y1=0.0, x2=0.0, y2=0.0;
     Double_t 	dx1h=0.0, dx1l=0.0;
