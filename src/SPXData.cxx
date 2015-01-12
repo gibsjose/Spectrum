@@ -257,7 +257,7 @@ void SPXData::ParseSpectrum(void) {
 
 	//Check positive/negative individual systematic count
 	if(pos_count != neg_count) {
-		std::cerr << cn << mn << "WARNING: Different number of positive/negative systematic errors: Data errors could be skewed" << std::endl;
+	  std::cerr << cn << mn << "WARNING: Different number of positive/negative systematic errors: Data errors could be skewed pos_count= " << pos_count << " neg_count= "<<neg_count << std::endl;
 	}
 
 	//Set master size to number of bins
@@ -502,7 +502,8 @@ void SPXData::ParseHERAFitter(void) {
 				}
 
 				if(pos_count != neg_count) {
-					std::cerr << cn << mn << "WARNING: Different number of positive/negative systematic errors: Data errors could be skewed" << std::endl;
+				 std::cerr << cn << mn << "WARNING: Different number of positive/negative systematic errors: Data errors could be skewed" 
+				 <<" pos_count= "<<pos_count<< " neg_count= "<<neg_count<< std::endl;
 				}
 
 				//Check size against calculated number of columns

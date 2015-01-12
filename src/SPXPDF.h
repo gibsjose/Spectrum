@@ -16,6 +16,8 @@
 #include <stdlib.h> // exit()
 #include <sstream>  // needed for internal io
 #include <iomanip>
+//#include <unordered_map>
+
 
 //ROOT
 #include "SPXROOT.h"
@@ -37,6 +39,7 @@
 
 
 typedef std::map<std::string,  TGraphAsymmErrors*>  BandMap_T;
+//typedef unordered_map<std::string,  TGraphAsymmErrors*>  BandMap_T;
 
 
 class SPXPDF {
@@ -80,8 +83,7 @@ class SPXPDF {
         double GetMinimum(int iset);
 
         //@TODO Move to SPXGraphUtilities
-        TGraphAsymmErrors* MyTGraphErrorsDivide(TGraphAsymmErrors* g1,TGraphAsymmErrors* g2, Int_t noerr=1);
-        TGraphAsymmErrors* TH1TOTGraphAsymm(TH1 *h1);
+        //TGraphAsymmErrors* TH1TOTGraphAsymm(TH1 *h1);
 
         //accessor methods
         bool IsDebugOn() const{return debug;};

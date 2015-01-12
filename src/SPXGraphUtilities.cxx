@@ -17,9 +17,12 @@ const std::string cn = "SPXGraphUtilities::";
 double SPXGraphUtilities::GetXMin(std::vector<TGraphAsymmErrors *> graphs) {
 
     double min = 1e30;
+    
 
     for(int i = 0; i < graphs.size(); i++) {
         double xmin, xmax, ymin, ymax;
+
+        if (!graphs[i]) throw SPXGraphException(cn+"GetXMin: graph not found !");
 
         graphs[i]->ComputeRange(xmin, ymin, xmax, ymax);
 
@@ -39,8 +42,11 @@ double SPXGraphUtilities::GetXMax(std::vector<TGraphAsymmErrors *> graphs) {
 
     double max = -1e30;
 
+
     for(int i = 0; i < graphs.size(); i++) {
         double xmin, xmax, ymin, ymax;
+
+        if (!graphs[i]) throw SPXGraphException(cn+"GetXMax: graph not found !");
 
         graphs[i]->ComputeRange(xmin, ymin, xmax, ymax);
 
@@ -60,8 +66,12 @@ double SPXGraphUtilities::GetYMin(std::vector<TGraphAsymmErrors *> graphs) {
 
     double min = 1e30;
 
+
+
     for(int i = 0; i < graphs.size(); i++) {
         double xmin, xmax, ymin, ymax;
+
+        if (!graphs[i]) throw SPXGraphException(cn+"GetYMin: graph not found !");
 
         graphs[i]->ComputeRange(xmin, ymin, xmax, ymax);
 
@@ -80,8 +90,12 @@ double SPXGraphUtilities::GetYMax(std::vector<TGraphAsymmErrors *> graphs) {
 
     double max = -1e30;
 
+
+
     for(int i = 0; i < graphs.size(); i++) {
         double xmin, xmax, ymin, ymax;
+
+        if (!graphs[i]) throw SPXGraphException(cn+"GetXMax: graph not found !");
 
         graphs[i]->ComputeRange(xmin, ymin, xmax, ymax);
 
@@ -95,6 +109,44 @@ double SPXGraphUtilities::GetYMax(std::vector<TGraphAsymmErrors *> graphs) {
 #endif
     return max;
 }
+
+
+TGraphAsymmErrors* SPXGraphUtilities::TH1TOTGraphAsymm(TH1 *h1)
+{
+  //
+  //convert the histogram h1 into a TGraphAsymmErrors
+  //
+      std::string mn = "TH1TOTGraphAsymm: ";
+
+      //if(debug) cout<<cn<<"TH1TOTGraphAsymm: start"<<std::endl;
+
+       if (!h1) {
+         throw SPXGraphException(cn + mn + "Histogram not found !");
+        }
+
+	TGraphAsymmErrors* g1= new TGraphAsymmErrors();
+        if (!g1) {
+         throw SPXGraphException(cn + mn + "Can not create Graph !");
+        }
+
+        g1->SetName(h1->GetName());
+
+	double x, y, ex, ey;
+	for (Int_t i=0; i<h1->GetNbinsX(); i++) {
+	 y=h1->GetBinContent(i+1);
+	 ey=h1->GetBinError(i+1);
+	 x=h1->GetBinCenter(i+1);
+	 ex=h1->GetBinWidth(i+1)/2.;
+
+         //if(debug) cout<<cn<<mn<<i<<" x,y = "<<x<<" "<<y<<" ex,ey = "<<ex<<" "<<ey<<std::endl;
+
+	 g1->SetPoint(i,x,y);
+	 g1->SetPointError(i,ex,ex,ey,ey);
+	}
+
+        return g1;
+}
+
 
 //Match binning of slave graph to the binning of the master graph
 void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmErrors *slave, bool dividedByBinWidth) {

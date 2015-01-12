@@ -485,6 +485,7 @@ void SPXRatio::Divide(void) {
          if(debug) std::cout << "\t Fill Style = " << graph->GetFillStyle() << std::endl;
          if(debug) std::cout << "\t Fill Color = " << graph->GetFillColor() << std::endl;
          if(debug) std::cout << "\t Marker Style= "<< graph->GetMarkerStyle() << std::endl;
+         if (debug) graph->Print();
 
          ratioGraph.push_back(graph);
         }

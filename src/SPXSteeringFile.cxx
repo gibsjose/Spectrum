@@ -44,7 +44,7 @@ void SPXSteeringFile::SetDefaults(void) {
 	BandwithAlphaS = false;
 	if(debug) std::cout << cn << mn << "BandwithAlphaS set to default: \"false\"" << std::endl;
 
-	BandwithScales = false;
+	BandwithScales = true;
 	if(debug) std::cout << cn << mn << "BandwithScales set to default: \"false\"" << std::endl;
 
 	BandTotal      = true;
@@ -240,8 +240,9 @@ void SPXSteeringFile::Print(void) {
 
         std::cout<<"Number of Scale variations:"<<RenScales.size()<<std::endl;
         if (RenScales.size()!=FacScales.size()) {
-	 std::cout<<" Something is wrong #RenScales != #FacScales, Check steering "<<std::endl;
-         exit (0);
+         std::ostringstream oss;
+         oss << cn << "Print ERROR Same number of renormalisation and factorisation scales are needed ! RenScales.size() = "<<RenScales.size()<<" FacScales.size() = "<<FacScales.size();
+         throw SPXParseException(oss.str());
         }
         for (int i=0; i<RenScales.size(); i++) {
          std::cout<<"RenScales["<<i<<"]= "<<RenScales[i]<<std::endl;
@@ -605,93 +606,11 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 				SPXStringUtilities::VectorToCommaSeparatedList(configurations["data_marker_color"]) << std::endl;
 		}
 
-
-		//Get the total_fill_style
-       	        if(debug) std::cout << cn << mn << "Start parsing total_fill_style " << std::endl;
-		tmp = reader->Get(plotSection, "total_fill_style", "EMPTY");
-		if(!tmp.compare("EMPTY")) {
-		  //if(plotBand) {
-		  //		std::cout << cn << mn << "WARNING: No plot option for total_fill_style found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
-		  //	} else {
-		  //		if(debug) std::cout << cn << mn << "No plot option for total_fill_style found" << std::endl;//
-		  //		}
-		} else {
-			//Parse into vector
-			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
-			if(debug) {
-				std::cout << cn << mn << "total_fill_style configuration string: " << tmp << " parsed into:" << std::endl;
-				for(int j = 0; j < tmpVector.size(); j++) {
-					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
-				}
-			}
-
-			//Add to configurations map
-			configurations.insert(std::pair<std::string, std::vector<std::string> >("total_fill_style", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[total_fill_style] = " << \
-				SPXStringUtilities::VectorToCommaSeparatedList(configurations["total_fill_style"]) << std::endl;
-		}
-
-		//Get the total_fill_color
-       	        if(debug) std::cout << cn << mn << "Start parsing total_fill_color " << std::endl;
-		tmp = reader->Get(plotSection, "total_fill_color", "EMPTY");
-		if(!tmp.compare("EMPTY")) {
-		  //if(plotBand) {
-		  //		std::cout << cn << mn << "WARNING: No plot option for total_fill_color found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
-		  //	} else {
-		  //		if(debug) std::cout << cn << mn << "No plot options for total_fill_color found" << std::endl;//
-		  //		}
-		} else {
-			//Parse into vector
-			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
-			if(debug) {
-				std::cout << cn << mn << "total_fill_color configuration string: " << tmp << " parsed into:" << std::endl;
-				for(int j = 0; j < tmpVector.size(); j++) {
-					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
-				}
-			}
-
-			//Add to configurations map
-			configurations.insert(std::pair<std::string, std::vector<std::string> >("total_fill_color", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[pdf_fill_color] = " << \
-				SPXStringUtilities::VectorToCommaSeparatedList(configurations["total_fill_color"]) << std::endl;
-		}
-
-		//Get the pdf_marker_style
-       	        if(debug) std::cout << cn << mn << "Start parsing total_marker_style " << std::endl;
-		tmp = reader->Get(plotSection, "total_marker_style", "EMPTY");
-		if(!tmp.compare("EMPTY")) {
-			if(plotMarker) {
-				std::cout << cn << mn << "WARNING: No plot option for total_marker_style found, but plot_marker = true: Defaulting to pdf steering file settings" << std::endl;
-			} else {
-				if(debug) std::cout << cn << mn << "No plot option for total_marker_style found" << std::endl;
-			}
-		} else {
-			//Parse into vector
-			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
-			if(debug) {
-				std::cout << cn << mn << "total_marker_style configuration string: " << tmp << " parsed into:" << std::endl;
-				for(int j = 0; j < tmpVector.size(); j++) {
-					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
-				}
-			}
-
-
-			//Add to configurations map
-			configurations.insert(std::pair<std::string, std::vector<std::string> >("total_marker_style", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[total_marker_style] = " << \
-				SPXStringUtilities::VectorToCommaSeparatedList(configurations["total_marker_style"]) << std::endl;
-		}
-
-
 		//Get the pdf_fill_style
        	        if(debug) std::cout << cn << mn << "Start parsing pdf_fill_style " << std::endl;
 		tmp = reader->Get(plotSection, "pdf_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		  //if(plotBand) {
-		  //		std::cout << cn << mn << "WARNING: No plot option for pdf_fill_style found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
-		  //	} else {
-		  //		if(debug) std::cout << cn << mn << "No plot option for pdf_fill_style found" << std::endl;
-		  //	}
+		 if(debug) std::cout << cn << mn << "No plot option for pdf_fill_style found using defaults " << std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -712,11 +631,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
        	        if(debug) std::cout << cn << mn << "Start parsing pdf_fill_color " << std::endl;
 		tmp = reader->Get(plotSection, "pdf_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		  //if(plotBand) {
-		  //		std::cout << cn << mn << "WARNING: No plot option for pdf_fill_color found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
-		  //	} else {
-		  //		if(debug) std::cout << cn << mn << "No plot options for pdf_fill_color found" << std::endl;
-		  //	}
+		 if(debug) std::cout << cn << mn << "No plot options for pdf_fill_color found" << std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -730,18 +645,15 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 			//Add to configurations map
 			configurations.insert(std::pair<std::string, std::vector<std::string> >("pdf_fill_color", tmpVector));
 			if(debug) std::cout << cn << mn << "configurations[pdf_fill_color] = " << \
-				SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_fill_color"]) << std::endl;
+			SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_fill_color"]) << std::endl;
+
 		}
 
 		//Get the pdf_marker_style
        	        if(debug) std::cout << cn << mn << "Start parsing pdf_marker_style " << std::endl;
 		tmp = reader->Get(plotSection, "pdf_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			if(plotMarker) {
-				std::cout << cn << mn << "WARNING: No plot option for pdf_marker_style found, but plot_marker = true: Defaulting to pdf steering file settings" << std::endl;
-			} else {
-				if(debug) std::cout << cn << mn << "No plot option for pdf_marker_style found" << std::endl;
-			}
+		 if(debug) std::cout << cn << mn << "No plot option for pdf_marker_style found using defaults " << std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -759,159 +671,252 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 				SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_marker_style"]) << std::endl;
 		}
 
+		//Get the total_fill_style
+       	        if(debug) std::cout << cn << mn << "Start parsing total_fill_style " << std::endl;
+		tmpVector.clear();
+		tmp = reader->Get(plotSection, "total_fill_style", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout << cn << mn << "WARNING: No plot option for total_fill_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_style" << std::endl;
 
+                 if (configurations.count("pdf_fill_style")!=0)
+		  tmpVector = configurations["pdf_fill_style"];
+		} else {
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		}
+
+		if(debug) {
+		 std::cout << cn << mn << "total_fill_style configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+		//Add to configurations map
+                if (tmpVector.size()!=0) {
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("total_fill_style", tmpVector));
+		 if(debug) std::cout << cn << mn << "configurations[total_fill_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["total_fill_style"]) << std::endl;
+                }
+
+		//Get the total_fill_color
+       	        if(debug) std::cout << cn << mn << "Start parsing total_fill_color " << std::endl;
+		tmpVector.clear();
+		tmp = reader->Get(plotSection, "total_fill_color", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout << cn << mn << "WARNING: No plot option for total_fill_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_color" << std::endl;
+
+                 if (configurations.count("pdf_fill_color")!=0)
+		  tmpVector = configurations["pdf_fill_color"];
+		} else {
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		}
+
+		if(debug) {
+		 std::cout << cn << mn << "total_fill_color configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+
+		//Add to configurations map
+                if (tmpVector.size()!=0) {
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("total_fill_color", tmpVector));
+		 if(debug) std::cout << cn << mn << "configurations[total_fill_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["total_fill_color"]) << std::endl;
+                }
+
+		//Get the total_marker_style
+       	        if(debug) std::cout << cn << mn << "Start parsing total_marker_style " << std::endl;
+		tmpVector.clear();
+		tmp = reader->Get(plotSection, "total_marker_style", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout << cn << mn << "WARNING: No plot option for total_marker_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_marker_style" << std::endl;
+
+
+		 if (configurations.count("pdf_marker_style")!=0)
+		  tmpVector = configurations["pdf_marker_style"];
+
+		} else {
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		}
+
+		if(debug) {
+		 std::cout << cn << mn << "total_marker_style configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+
+		//Add to configurations map
+                if (tmpVector.size()!=0) {		
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("total_marker_style", tmpVector));
+		 if(debug) std::cout << cn << mn << "configurations[total_marker_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["total_marker_style"]) << std::endl;		
+                }
+
+		//Get the scale_fill_color
+       	        if(debug) std::cout << cn << mn << "Start parsing scale_fill_color " << std::endl;
+		tmpVector.clear();
+		tmp = reader->Get(plotSection, "scale_fill_color", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout << cn << mn << "WARNING: No plot option for scale_fill_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_color" << std::endl;
+
+		if (configurations.count("pdf_fill_color")!=0)
+		 tmpVector = configurations["pdf_fill_color"];
+
+		} else {
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		}
+
+		if(debug) {
+		 std::cout << cn << mn << "scale_fill_color configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+
+		//Add to configurations map
+                if (tmpVector.size()!=0) {
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("scale_fill_color", tmpVector));
+		 if(debug) std::cout << cn << mn << "configurations[scale_fill_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["scale_fill_color"]) << std::endl;
+                }
 
 		//Get the scale_fill_style
        	        if(debug) std::cout << cn << mn << "Start parsing scale_fill_style " << std::endl;
+		tmpVector.clear();
 		tmp = reader->Get(plotSection, "scale_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		  //if(plotBand) {
-		  //		std::cout << cn << mn << "WARNING: No plot option for scale_fill_style found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
-		  //	} else {
-		  //		if(debug) std::cout << cn << mn << "No plot option for scale_fill_style found" << std::endl;
-		  //	}
-		} else {
-			//Parse into vector
-			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
-			if(debug) {
-				std::cout << cn << mn << "scale_fill_style configuration string: " << tmp << " parsed into:" << std::endl;
-				for(int j = 0; j < tmpVector.size(); j++) {
-					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
-				}
-			}
+		 std::cout << cn << mn << "WARNING: No plot option for scale_fill_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_color" << std::endl;
 
-			//Add to configurations map
-			configurations.insert(std::pair<std::string, std::vector<std::string> >("scale_fill_style", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[scale_fill_style] = " << \
-				SPXStringUtilities::VectorToCommaSeparatedList(configurations["scale_fill_style"]) << std::endl;
+		if (configurations.count("pdf_fill_style")!=0)
+		 tmpVector = configurations["pdf_fill_style"];
+
+		} else {
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
 		}
 
-		//Get the scale_fill_color
-       	        if(debug) std::cout << cn << mn << "Start parsing pdf_fill_color " << std::endl;
-		tmp = reader->Get(plotSection, "scale_fill_color", "EMPTY");
-		if(!tmp.compare("EMPTY")) {
-		  //if(plotBand) {
-		  //		std::cout << cn << mn << "WARNING: No plot option for scale_fill_color found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
-		  //	} else {
-		  //		if(debug) std::cout << cn << mn << "No plot options for scale_fill_color found" << std::endl;
-		  //	}
-		} else {
-			//Parse into vector
-			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
-			if(debug) {
-				std::cout << cn << mn << "scale_fill_color configuration string: " << tmp << " parsed into:" << std::endl;
-				for(int j = 0; j < tmpVector.size(); j++) {
-					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
-				}
-			}
-
-			//Add to configurations map
-			configurations.insert(std::pair<std::string, std::vector<std::string> >("scale_fill_color", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[scale_fill_color] = " << \
-				SPXStringUtilities::VectorToCommaSeparatedList(configurations["scale_fill_color"]) << std::endl;
+		if(debug) {
+		 std::cout << cn << mn << "scale_fill_style configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
 		}
+ 
+
+		//Add to configurations map
+                if (tmpVector.size()!=0) {
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("scale_fill_style", tmpVector));
+		 if(debug) std::cout << cn << mn << "configurations[scale_fill_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["scale_fill_style"]) << std::endl;
+                }
 
 		//Get the scale_marker_style
-       	        if(debug) std::cout << cn << mn << "Start parsing scale_marker_style " << std::endl;
+       	        if(debug) std::cout << cn << mn << "Start parsing total_marker_style " << std::endl;
+		tmpVector.clear();
 		tmp = reader->Get(plotSection, "scale_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			if(plotMarker) {
-				std::cout << cn << mn << "WARNING: No plot option for scale_marker_style found, but plot_marker = true: Defaulting to pdf steering file settings" << std::endl;
-			} else {
-				if(debug) std::cout << cn << mn << "No plot option for scale_marker_style found" << std::endl;
-			}
+		 std::cout << cn << mn << "WARNING: No plot option for scale_marker_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_marker_color" << std::endl;
+
+		if (configurations.count("pdf_marker_style")!=0)
+		 tmpVector = configurations["pdf_marker_style"];
+
 		} else {
-			//Parse into vector
-			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
-			if(debug) {
-				std::cout << cn << mn << "scale_marker_style configuration string: " << tmp << " parsed into:" << std::endl;
-				for(int j = 0; j < tmpVector.size(); j++) {
-					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
-				}
-			}
-
-
-			//Add to configurations map
-			configurations.insert(std::pair<std::string, std::vector<std::string> >("scale_marker_style", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[scale_marker_style] = " << \
-				SPXStringUtilities::VectorToCommaSeparatedList(configurations["scale_marker_style"]) << std::endl;
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
 		}
+
+		if(debug) {
+		 std::cout << cn << mn << "scale_marker_style configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+
+		//Add to configurations map
+		if (tmpVector.size()!=0)
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("scale_marker_style", tmpVector));
+		if(debug) std::cout << cn << mn << "configurations[scale_marker_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["scale_marker_style"]) << std::endl;
 
 		//Get the alphas_fill_style
        	        if(debug) std::cout << cn << mn << "Start parsing alphas_fill_style " << std::endl;
+		tmpVector.clear();
 		tmp = reader->Get(plotSection, "alphas_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		  //if(plotBand) {
-		  //		std::cout << cn << mn << "WARNING: No plot option for alphas_fill_style found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
-		  //	} else {
-		  //		if(debug) std::cout << cn << mn << "No plot option for alphas_fill_style found" << std::endl;
-		  //	}
-		} else {
-			//Parse into vector
-			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
-			if(debug) {
-				std::cout << cn << mn << "alphas_fill_style configuration string: " << tmp << " parsed into:" << std::endl;
-				for(int j = 0; j < tmpVector.size(); j++) {
-					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
-				}
-			}
+		 std::cout << cn << mn << "WARNING: No plot option for alphas_fill_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_style" << std::endl;
 
-			//Add to configurations map
-			configurations.insert(std::pair<std::string, std::vector<std::string> >("alphas_fill_style", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[alphas_fill_style] = " << \
-				SPXStringUtilities::VectorToCommaSeparatedList(configurations["alphas_fill_style"]) << std::endl;
+		if (configurations.count("pdf_fill_style")!=0)
+		 tmpVector = configurations["pdf_fill_style"];
+
+		} else {
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
 		}
+
+		if(debug) {
+		 std::cout << cn << mn << "alphas_fill_style configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+ 
+
+		//Add to configurations map
+		if (tmpVector.size()!=0)
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("alphas_fill_style", tmpVector));
+		if(debug) std::cout << cn << mn << "configurations[alphas_fill_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["alphas_fill_style"]) << std::endl;
 
 		//Get the alphas_fill_color
-       	        if(debug) std::cout << cn << mn << "Start parsing alphas_fill_style " << std::endl;
+       	        if(debug) std::cout << cn << mn << "Start parsing alphas_fill_color " << std::endl;
+		tmpVector.clear();
 		tmp = reader->Get(plotSection, "alphas_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		  //if(plotBand) {
-		  //		std::cout << cn << mn << "WARNING: No plot option for alphas_fill_color found, but plot_band = true: Defaulting to pdf steering file settings" << std::endl;
-		  //	} else {
-		  //		if(debug) std::cout << cn << mn << "No plot options for alphas_fill_color found" << std::endl;
-		  //	}
-		} else {
-			//Parse into vector
-			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
-			if(debug) {
-				std::cout << cn << mn << "alphas_fill_color configuration string: " << tmp << " parsed into:" << std::endl;
-				for(int j = 0; j < tmpVector.size(); j++) {
-					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
-				}
-			}
+		 std::cout << cn << mn << "WARNING: No plot option for alphas_fill_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_color" << std::endl;
 
-			//Add to configurations map
-			configurations.insert(std::pair<std::string, std::vector<std::string> >("alphas_fill_color", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[alphas_fill_color] = " << \
-				SPXStringUtilities::VectorToCommaSeparatedList(configurations["alphas_fill_color"]) << std::endl;
+		if (configurations.count("pdf_fill_color")!=0)
+		 tmpVector = configurations["pdf_fill_color"];
+		} else {
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
 		}
+
+		if(debug) {
+		 std::cout << cn << mn << "alphas_fill_color configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+
+		//Add to configurations map
+		if (tmpVector.size()!=0)
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("alphas_fill_color", tmpVector));
+		if(debug) std::cout << cn << mn << "configurations[alphas_fill_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["alphas_fill_color"]) << std::endl;
 
 		//Get the alphas_marker_style
        	        if(debug) std::cout << cn << mn << "Start parsing alphas_marker_style " << std::endl;
+		tmpVector.clear();
 		tmp = reader->Get(plotSection, "alphas_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			if(plotMarker) {
-				std::cout << cn << mn << "WARNING: No plot option for alphas_marker_style found, but plot_marker = true: Defaulting to pdf steering file settings" << std::endl;
-			} else {
-				if(debug) std::cout << cn << mn << "No plot option for alphas_marker_style found" << std::endl;
-			}
+		 std::cout << cn << mn << "WARNING: No plot option for alphas_marker_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_marker_style" << std::endl;
+
+		if (configurations.count("pdf_marker_style")!=0)
+		 tmpVector = configurations["pdf_marker_style"];
+
 		} else {
-			//Parse into vector
-			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
-			if(debug) {
-				std::cout << cn << mn << "alphas_marker_style configuration string: " << tmp << " parsed into:" << std::endl;
-				for(int j = 0; j < tmpVector.size(); j++) {
-					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
-				}
-			}
-
-
-			//Add to configurations map
-			configurations.insert(std::pair<std::string, std::vector<std::string> >("alphas_marker_style", tmpVector));
-			if(debug) std::cout << cn << mn << "configurations[alphas_marker_style] = " << \
-				SPXStringUtilities::VectorToCommaSeparatedList(configurations["alphas_marker_style"]) << std::endl;
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
 		}
+
+		if(debug) {
+		 std::cout << cn << mn << "alphas_marker_style configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+
+		//Add to configurations map
+		if (tmpVector.size()!=0)
+  		 configurations.insert(std::pair<std::string, std::vector<std::string> >("alphas_marker_style", tmpVector));
+		if(debug) std::cout << cn << mn << "configurations[alphas_marker_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["alphas_marker_style"]) << std::endl;
 
 		//Get the x_scale
        	        if(debug) std::cout << cn << mn << "Start parsing x_scale " << std::endl;
@@ -1159,6 +1164,7 @@ void SPXSteeringFile::Parse(void) {
 
 	//Graphing configurations [GRAPH]
 	plotBand = reader->GetBoolean("GRAPH", "plot_band", plotBand);
+
 	BandwithPDF    = reader->GetBoolean("GRAPH", "band_with_pdf", BandwithPDF);
 	if (debug&& BandwithPDF) std::cout << cn << mn << "BandwithPDF is ON" << std::endl;
 
@@ -1173,40 +1179,49 @@ void SPXSteeringFile::Parse(void) {
 
 	//Get the renormalisation scale
 	tmp = reader->Get("GRAPH","ren_scales", "EMPTY");
-        cout<<" tmp= "<<tmp<<endl;
 	if(!tmp.compare("EMPTY")) {
 	 if(debug) std::cout << cn << mn << "No ren_scales given using defaults " << std::endl;
+         SetDefaultScales();         
+
 	}else{
 	 //Parse into vector
          RenScales.clear();
          //std::vector<std::string> tmpRenScales;
 	 //tmpRenScales = SPXStringUtilities::CommaSeparatedListToVector(tmp);
          RenScales=SPXStringUtilities::ParseStringToDoubleVector(tmp,',');
-	 if(debug) {
-	  std::cout << cn << mn << "RenScales: " << tmp << " parsed into:" << std::endl;
-	  for(int j = 0; j < RenScales.size(); j++) {
-	   std::cout << cn << mn << "\t" << RenScales[j] << std::endl;
-	  }
-	 }
         }
+
+	if(debug) {
+	 std::cout << cn << mn << "RenScales: number=" << RenScales.size() << " parsed into:" << std::endl;
+	 for(int j = 0; j < RenScales.size(); j++) {
+	  std::cout << cn << mn << "\t" << RenScales[j] << std::endl;
+	 }
+	}
 
 	tmp = reader->Get("GRAPH", "fac_scales", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
 	 if(debug) std::cout << cn << mn << "No fac_scales given using defaults " << std::endl;
+         SetDefaultScales();         
 	}else{
 	 //Parse into vector
          FacScales.clear();
          //std::vector<std::string> tmpFacScales;
 	 //tmpFacScales = SPXStringUtilities::CommaSeparatedListToVector(tmp);
          FacScales=SPXStringUtilities::ParseStringToDoubleVector(tmp,',');
-	 if(debug) {
-	  std::cout << cn << mn << "FacScales: " << tmp << " parsed into:" << std::endl;
-	  for(int j = 0; j < FacScales.size(); j++) {
-	   std::cout << cn << mn << "\t" << FacScales[j] << std::endl;
-	  }
+
+         if (RenScales.size()!=FacScales.size()) {
+          std::ostringstream oss;
+          oss << cn<< mn << "ERROR Same number of renormalisation and factorisation scales are needed ! RenScales.size() = "<<RenScales.size()<<" FacScales.size() = "<<FacScales.size();
+          throw SPXParseException(oss.str());
+         }
+	}
+
+	if(debug) {
+	 std::cout << cn << mn << "FacScales: number= " << FacScales.size() << " parsed into:" << std::endl;
+	 for(int j = 0; j < FacScales.size(); j++) {
+	  std::cout << cn << mn << "\t" << FacScales[j] << std::endl;
 	 }
         }
-
 
 	plotErrorTicks = reader->GetBoolean("GRAPH", "plot_error_ticks", plotErrorTicks);
 	plotMarker = reader->GetBoolean("GRAPH", "plot_marker", plotMarker);
@@ -1223,7 +1238,7 @@ void SPXSteeringFile::Parse(void) {
 	yRatioMax = reader->GetReal("GRAPH", "y_ratio_max", yRatioMax);
 
 
-	if(debug) std::cout << cn << mn << " Start with ParsePlotConfigurations " << std::endl;
+	if(debug) std::cout << cn << mn << "Start with ParsePlotConfigurations " << std::endl;
 
 	//Attempt to parse plot configurations
 	try {
@@ -1433,4 +1448,30 @@ void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 			}
 		}
 	}
+}
+
+void SPXSteeringFile::SetDefaultScales(void) {
+  //
+  // Set default renormalisation and factorisation scales
+  // Note, that values can be overwritten in steering ren_scales and fac_scales
+  //
+         RenScales.clear();
+         FacScales.clear();
+         RenScales.push_back(2.0);
+         FacScales.push_back(2.0);
+
+         RenScales.push_back(2.0);
+         FacScales.push_back(1.0);
+
+         RenScales.push_back(1.0);
+         FacScales.push_back(2.0);
+
+         RenScales.push_back(0.5);
+         FacScales.push_back(0.5);
+
+         RenScales.push_back(1.0);
+         FacScales.push_back(0.5);
+
+         RenScales.push_back(0.5);
+         FacScales.push_back(1.0);
 }

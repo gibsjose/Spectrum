@@ -54,9 +54,26 @@ public:
 		debug = b;
 	}
 
+
 	const SPXDataFormat & GetDataFormat(void) {
 		return pci.dataSteeringFile.GetDataFormat();
 	}
+
+        const std::string & GetLegendLabel(void) {
+	 return pci.dataSteeringFile.GetLegendLabel();
+        }
+
+        const double GetSqrtS(void) {
+	 return pci.dataSteeringFile.GetSqrtS();
+        }
+
+        const std::string & GetDatasetYear(void) {
+	 return pci.dataSteeringFile.GetDatasetYear();
+        }
+
+        const std::string & GetDatasetLumi(void) {
+	 return pci.dataSteeringFile.GetDatasetLumi();
+        }
 
 	unsigned int GetNumberOfBins(void) {
 		return numberOfBins;

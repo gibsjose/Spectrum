@@ -64,7 +64,7 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringFile) {
 	 pdf->SetDoPDFBand (mainsteeringFile->GetBandwithPDF()); 
         if (mainsteeringFile->GetBandwithAlphaS()==true) 
          pdf->SetDoAlphaS  (mainsteeringFile->GetBandwithAlphaS());
-        if (mainsteeringFile->GetBandwithScales()==true) 
+        if (mainsteeringFile->GetBandwithScales()==false) 
          pdf->SetDoScale   (mainsteeringFile->GetBandwithScales());
         if (mainsteeringFile->GetBandTotal()==false) 
          pdf->SetDoTotError(mainsteeringFile->GetBandTotal());

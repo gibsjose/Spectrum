@@ -1,7 +1,7 @@
 ;==============================================================
 ;
 ; Description:
-; ATLAS inclusive jet cross sections 2010 sqrt(s)=2.76 TeV
+; ATLAS inclusive jet cross sections 2011 sqrt(s)=7 TeV
 ;--------------------------------------------------------------
 
 ;==============================================================
@@ -46,10 +46,10 @@ band_total = true
 #plot_type = data[], grid[], pdf
 plot_type = data, grid, pdf
 pdf_directory = PDF
-data_directory = Data/jet/atlas/incljets2011_2p76TeV
-grid_directory = Grids/jet/atlas/incljets2011_2p76TeV/nlojet
-data_steering_files = atlas_2011_2p76TeV_jet_antiktr06_incljetpt_eta1.txt
-grid_steering_files = atlas_2011_2p76TeV_jet_antiktr06_incljetpt_eta1.txt
+data_directory = Data/jet/atlas/incljets2011
+grid_directory = Grids/jet/atlas/incljets2011/nlojet
+data_steering_files = atlas_2011_jet_antiktr04_incljetpt_eta1.txt
+grid_steering_files = atlas_2011_incljet_eta1_r04.txt
 pdf_steering_files = CT10.txt
 ;pdf_steering_files = MRST2008nlo.txt
 ;pdf_steering_files = CTEQ6M.txt

@@ -8,7 +8,9 @@ CXX = g++
 
 STD = $(shell echo $(CXX_STD))
 
-CXXFLAGS += -g -O3 $(STD) -MP -MMD
+#CXXFLAGS += -g -O3 $(STD) -MP -MMD -std=c++11 
+CXXFLAGS += -g -O3 $(STD) -MP -MMD 
+# -std need for unordered_map in SPXPlot
 
 #ROOT
 ROOTINCS = $(shell root-config --cflags)
@@ -38,9 +40,9 @@ INI_SRC =	$(INI_DIR)/ini.c $(INI_DIR)/INIReader.cpp
 INI_OBJ = 	$(OBJ_DIR)/ini.o $(OBJ_DIR)/INIReader.o
 
 RAW_SRC = 	SPXGraphUtilities.cxx Spectrum.cxx SPXSteeringFile.cxx SPXRatioStyle.cxx SPXDisplayStyle.cxx SPXOverlayStyle.cxx \
- 			SPXPDFBandType.cxx SPXPDFErrorType.cxx SPXPDFErrorSize.cxx SPXPlotConfiguration.cxx SPXPDFSteeringFile.cxx \
-			SPXGridSteeringFile.cxx SPXDataSteeringFile.cxx SPXDataFormat.cxx SPXData.cxx SPXPlot.cxx SPXCrossSection.cxx \
-			SPXGrid.cxx SPXPDF.cxx SPXRatio.cxx SPXPlotType.cxx SPXAtlasStyle.cxx SPXGridCorrections.cxx
+	SPXPDFBandType.cxx SPXPDFErrorType.cxx SPXPDFErrorSize.cxx SPXPlotConfiguration.cxx SPXPDFSteeringFile.cxx \
+	SPXGridSteeringFile.cxx SPXDataSteeringFile.cxx SPXDataFormat.cxx SPXData.cxx SPXPlot.cxx SPXCrossSection.cxx \
+	SPXGrid.cxx SPXPDF.cxx SPXRatio.cxx SPXPlotType.cxx SPXAtlasStyle.cxx SPXGridCorrections.cxx
 
 SRC = $(RAW_SRC:%.cxx=$(SRC_DIR)/%.cxx)
 OBJ = $(RAW_SRC:%.cxx=$(OBJ_DIR)/%.o)

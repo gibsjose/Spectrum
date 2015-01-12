@@ -83,7 +83,7 @@ private:
 
 	//[FRAME_n]
 	std::vector<SPXPlotConfiguration> plotConfigurations;	//Options for each plot
-
+	void SetDefaultScales(void);
 	void SetDefaults(void);
 	unsigned int ParseNumberOfPlots(void);
 	unsigned int ParseNumberOfRatios(unsigned int plotNumber);
@@ -128,6 +128,7 @@ public:
 	bool GetPlotBand(void) const {
 		return this->plotBand;
 	}
+
 
 	bool GetPlotErrorTicks(void) const {
 		return this->plotErrorTicks;

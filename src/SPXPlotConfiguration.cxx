@@ -30,8 +30,8 @@
 const std::string cn = "SPXPlotConfiguration::";
 
 //Must define the static debug variable in the implementation
-bool SPXPlotConfiguration::debug;
-bool SPXPlotConfigurationInstance::debug;
+bool SPXPlotConfiguration::debug=true;
+bool SPXPlotConfigurationInstance::debug=true;
 
 //Constructs an SPXPlotConfiguration object with a map of string vectors, where keys are
 //	options["data_directory"] --> Vector of data directories
@@ -232,99 +232,98 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			tmpVector = options["total_fill_style"];
 			std::cout << "\ttotal_fill_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
-			if(debug) std::cout << cn << mn << "No Total band fill style option specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No total_fill_style  option specified" << std::endl;
 		}
 
 		if(options.count("total_fill_color")) {
 			tmpVector = options["total_fill_color"];
 			std::cout << "\ttotal_fill_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
-			if(debug) std::cout << cn << mn << "No Total fill color option specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No total_fill_color option specified" << std::endl;
 		}
 
 		if(options.count("total_marker_style")) {
 			tmpVector = options["total_marker_style"];
 			std::cout << "\ttotal_marker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
-			if(debug) std::cout << cn << mn << "No total marker style option specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No total_marker_style option specified" << std::endl;
 		}
 		
-
 		if(options.count("pdf_fill_style")) {
 			tmpVector = options["pdf_fill_style"];
 			std::cout << "\tpdf_fill_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
-			if(debug) std::cout << cn << mn << "No PDF fill style option specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No pdf_fill_style option specified" << std::endl;
 		}
 
 		if(options.count("pdf_fill_color")) {
 			tmpVector = options["pdf_fill_color"];
 			std::cout << "\tpdf_fill_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
-			if(debug) std::cout << cn << mn << "No PDF fill color option specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No pdf_fill_color option specified" << std::endl;
 		}
 
 		if(options.count("pdf_marker_style")) {
 			tmpVector = options["pdf_marker_style"];
 			std::cout << "\tpdf_marker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
-			if(debug) std::cout << cn << mn << "No PDF marker style option specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No pdf_marker_style option specified" << std::endl;
 		}
 
 		if(options.count("alphas_fill_style")) {
 			tmpVector = options["alphas_fill_style"];
 			std::cout << "\talphas_fill_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
-			if(debug) std::cout << cn << mn << "No Alphas fill style option specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No alphas_fill_style option specified" << std::endl;
 		}
 
 		if(options.count("alphas_fill_color")) {
 			tmpVector = options["alphas_fill_color"];
 			std::cout << "\talphas_fill_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
-			if(debug) std::cout << cn << mn << "No Alphas fill color option specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No alphas_fill_color option specified" << std::endl;
 		}
 
 		if(options.count("alphas_marker_style")) {
 			tmpVector = options["alphas_marker_style"];
 			std::cout << "\talphas_marker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
-			if(debug) std::cout << cn << mn << "No Alphas marker style option specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No alphas_marker_style option specified" << std::endl;
 		}
 
 		if(options.count("scale_fill_style")) {
-			tmpVector = options["scaöe_fill_style"];
+			tmpVector = options["scale_fill_style"];
 			std::cout << "\tscale_fill_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
-			if(debug) std::cout << cn << mn << "No Scale fill style option specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No scale_fill_style option specified" << std::endl;
 		}
 
 		if(options.count("scale_fill_color")) {
 			tmpVector = options["scale_fill_color"];
 			std::cout << "\tscale_fill_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
-			if(debug) std::cout << cn << mn << "No Scale fill color option specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No scale_fill_color option specified" << std::endl;
 		}
 
 		if(options.count("scale_marker_style")) {
 			tmpVector = options["scale_marker_style"];
 			std::cout << "\tscale_marker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
-			if(debug) std::cout << cn << mn << "No Scale marker style option specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No scale_marker_style option specified" << std::endl;
 		}
 
 		if(options.count("x_scale")) {
 			tmpVector = options["x_scale"];
 			std::cout << cn<<mn<<"\tx_scale = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
-			if(debug) std::cout << cn << mn << "No X Scale option specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No x_scale option specified" << std::endl;
 		}
 
 		if(options.count("y_scale")) {
 			tmpVector = options["y_scale"];
 			std::cout << cn<<mn<<"\ty_scale = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
-			if(debug) std::cout << cn << mn << "No Y Scale option specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No y_scale option specified" << std::endl;
 		}
 	}
 
@@ -334,7 +333,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	} catch(const SPXException &e) {
 		std::cerr << e.what() << std::endl;
 
-		throw SPXParseException("Could not parse Plot Type");
+		throw SPXParseException(cn+mn+"Could not parse Plot Type");
 	}
 
 	//Get vector sizes
@@ -390,7 +389,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	}
 
 	if(options.count("scale_fill_style")) {
-		sfsSize = options["scale_marker_style"].size();
+		sfsSize = options["scale_fill_style"].size();
 	}
 	if(options.count("scale_fill_color")) {
 		sfcSize = options["scale_fill_color"].size();
@@ -398,7 +397,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	if(options.count("scale_marker_style")) {
 		smsSize = options["scale_marker_style"].size();
 	}
-	if(options.count("alphas_fill_style")) {
+	if(options.count("alphas_marker_style")) {
 		afsSize = options["alphas_marker_style"].size();
 	}
 	if(options.count("alphas_fill_color")) {
@@ -693,20 +692,21 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		//Fill all other vectors as needed
 		for(int i = 0; i < numberOfConfigurationInstances; i++) {
-			dsf.push_back(options["data_steering_files"][0]);	//Just one instance of data steering file
+                        //Just one instance of data steering file
+			dsf.push_back(options["data_steering_files"][0]);	
 			gsf.push_back(options["grid_steering_files"][i]);
-			psf.push_back(options["pdf_steering_files"][0]);	//Just one instance of pdf steering file
+			psf.push_back(options["pdf_steering_files"][0]);	
 
-			if(dmsSize) dms.push_back(options["data_marker_style"][0]);		//Just one instance of data marker style
-			if(dmcSize) dmc.push_back(options["data_marker_color"][0]);		//Just one instance of data marker color
+			if(dmsSize) dms.push_back(options["data_marker_style"][0]);
+			if(dmcSize) dmc.push_back(options["data_marker_color"][0]);
 
-			if(tfsSize) tfs.push_back(options["total_fill_style"][0]);		//Just one instance of pdf fill style
-			if(tfcSize) tfc.push_back(options["total_fill_color"][0]);		//Just one instance of pdf fill color
-			if(tmsSize) tms.push_back(options["total_marker_style"][0]);		//Just one instance of pdf marker style
+			if(tfsSize) tfs.push_back(options["total_fill_style"][0]);
+			if(tfcSize) tfc.push_back(options["total_fill_color"][0]);
+			if(tmsSize) tms.push_back(options["total_marker_style"][0]);
 
-			if(pfsSize) pfs.push_back(options["pdf_fill_style"][0]);		//Just one instance of pdf fill style
-			if(pfcSize) pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
-			if(pmsSize) pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
+			if(pfsSize) pfs.push_back(options["pdf_fill_style"][0]);
+			if(pfcSize) pfc.push_back(options["pdf_fill_color"][0]);
+			if(pmsSize) pms.push_back(options["pdf_marker_style"][0]);
 
 			if(sfsSize) sfs.push_back(options["scale_fill_style"][0]);
 			if(sfcSize) sfc.push_back(options["scale_fill_color"][0]);
@@ -717,10 +717,10 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(amsSize) ams.push_back(options["alphas_marker_style"][0]);
 
 
-			if(xsSize) 	xsc.push_back(options["x_scale"][0]);				//Just one instance of x scale
+			if(xsSize) 	xsc.push_back(options["x_scale"][0]);				
 			else		xsc.push_back("1.0");
 
-			if(ysSize) 	ysc.push_back(options["y_scale"][0]);				//Just one instance of y scale
+			if(ysSize) 	ysc.push_back(options["y_scale"][0]);				
 			else		ysc.push_back("1.0");
 		}
 	}

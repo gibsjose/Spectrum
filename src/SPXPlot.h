@@ -83,12 +83,12 @@ public:
 	}
 
 private:
-	static bool debug;								//Flag indicating debug mode
-	SPXSteeringFile *steeringFile;					//Fully parsed steering file
-	unsigned int id;								//Plot number ID (0-based)
-	std::vector<SPXData> data;						//Vector of data
-	std::vector<SPXCrossSection> crossSections;		//Vector of cross sections
-	std::vector<SPXRatio> ratios;					//Vector of ratios
+	static bool debug;					// Flag indicating debug mode
+	SPXSteeringFile *steeringFile;				// Fully parsed steering file
+	unsigned int id;					// Plot number ID (0-based)
+	std::vector<SPXData> data;				// Vector of data
+	std::vector<SPXCrossSection> crossSections;		// Vector of cross sections
+	std::vector<SPXRatio> ratios;				// Vector of ratios
 
 	//File-to-Graph Maps: Used to facilitate ratio drawing via the SPXRatio class
 	//Each ratio object will maintain a reference to these three maps, allowing it to obtain
