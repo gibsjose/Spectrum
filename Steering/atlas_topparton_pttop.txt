@@ -22,7 +22,7 @@ plot_marker = false
 plot_error_ticks = true
 plot_staggered = true
 match_binning = true
-grid_corr = true
+grid_corr = false
 label_sqrt_s = true
 x_legend = 0.93
 y_legend = 0.93
@@ -30,10 +30,10 @@ y_legend = 0.93
 ; y_overlay_max =
 ; y_ratio_min =
 ; y_ratio_max =
-band_with_pdf= true
+;band_with_pdf= true
 ;band_with_alphas= false
-band_with_scale = false
-band_total = false
+;band_with_scale = false
+;band_total = false
 ;==============================================================
 ; Plot 0 Options
 ;==============================================================
@@ -50,13 +50,13 @@ y_scale = 1.0
 ;data_marker_style = 20
 ;data_marker_color = 1
 ;
-pdf_fill_style = 3006
-pdf_fill_color = 2
-pdf_marker_style = 20
-scale_fill_style=3004
-scale_fill_color=3
-alphas_fill_color=4
-alphas_fill_style=3001
+;pdf_fill_style = 3006
+;pdf_fill_color = 2
+;pdf_marker_style = 20
+;scale_fill_style=3004
+;scale_fill_color=3
+;alphas_fill_color=4
+;alphas_fill_style=3001
 ;
 ;pdf_marker_style = 20, 23
 x_log = false

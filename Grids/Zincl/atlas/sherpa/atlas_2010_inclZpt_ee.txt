@@ -26,7 +26,4 @@ grid_divided_by_bin_width = true
 [GRID]								
 ;grid_file = Zpt_bareelectrons.root
 grid_file = electrony02.root
-
-generator_id =sherpa 		
-ntuple_id =mcgrid 		
 lowest_order = 0		

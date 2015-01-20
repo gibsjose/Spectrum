@@ -31,6 +31,7 @@ private:
 	//INI Reader
 	INIReader *reader;
 
+	//std::string grid_dir;
 	//Metadata
 	std::string filename;
 
@@ -60,6 +61,10 @@ private:
 	//[GRID]
 	std::string gridFilepath;
 	std::vector<std::string> correctionFiles;
+	std::vector<std::string> correctionFilesLabel;
+	std::vector<std::string> correctionFilesAuthor;
+	std::vector<std::string> correctionFilesProgram;
+	std::vector<std::string> correctionFilesReference;
 	unsigned int lowestOrder;
 
 	void SetDefaults(void);
@@ -69,15 +74,25 @@ public:
 	void Print(void);
 	void Parse(void);
 
-	SPXGridSteeringFile(void) : filename(""), debug(false) {}
+        SPXGridSteeringFile(void) : filename(""), debug(false) {}
 
 	explicit SPXGridSteeringFile(const std::string &filename) : debug(false) {
 		this->filename = filename;
 	}
 
+
 	std::string GetFilename(void) const {
 		return this->filename;
 	}
+
+	//std::string GetGridDir(void) const {
+	//	return this->grid_dir;
+	//}
+
+	//void SetGridDir(std::string mydir) {
+	//  grid_dir=mydir;
+        //  return;
+	//}
 
 	void SetDebug(bool b) {
 		debug = b;
@@ -172,6 +187,18 @@ public:
 
 		return correctionFiles.at(index);
 	}
+
+
+	const std::string & GetCorrectionFileLabel(unsigned int index) const {
+
+		if((index + 1) > correctionFilesLabel.size()) {
+			int top = correctionFilesLabel.size() - 1;
+			throw SPXOutOfRangeException(top, index, "SPXGridSteeringFile::GetCorrectionFileLabel: Index out of range");
+		}
+
+		return correctionFilesLabel.at(index);
+	}
+
 
 	unsigned int GetLowestOrder(void) const {
 		return this->lowestOrder;

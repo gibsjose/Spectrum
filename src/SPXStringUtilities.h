@@ -248,9 +248,38 @@ public:
 		return dVector;
 	}
 
-	static std::vector<std::string> CommaSeparatedListToVector(const std::string &csl) {
-	  	return ParseString(csl, ',');
+       static std::vector<bool> ParseStringToBooleanVector(std::string rawData, char delimiter) {
+       	std::vector<bool> dVector;
+	std::stringstream lineStream(rawData);
+	std::string cell;
+
+	dVector.clear();
+	while(getline(lineStream, cell, delimiter)) {
+	 //Remove whitespace
+	 cell = Trim(cell);
+
+	 //Skip if cell is empty
+	 if(!cell.empty()) {
+	  try {
+           std::transform(cell.begin(), cell.end(), cell.begin(), ::tolower);
+           bool val=false;
+           if (cell == "true" || cell == "yes" || cell == "on" || cell == "1")
+            val=true;
+           else if (cell == "false" || cell == "no" || cell == "off" || cell == "0")
+            val=false;
+	   
+	   dVector.push_back(val);
+	  } catch(const SPXException &e) {
+	   throw;
+	  }
+	 }
 	}
+        return dVector;
+       }
+
+       static std::vector<std::string> CommaSeparatedListToVector(const std::string &csl) {
+         	return ParseString(csl, ',');
+       }
 
 	static std::string VectorToCommaSeparatedList(std::vector<std::string> &v) {
 		std::string csl;

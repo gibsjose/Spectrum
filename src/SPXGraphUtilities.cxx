@@ -166,6 +166,8 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
     //Alias for dividedByBinWidth
     bool db = dividedByBinWidth;
 
+    if (debug) if (db) std::cout<<cn<<mn<<" Divided by bin width is ON "<<std::endl;
+
     //Get the master/slave binning
     unsigned int m_bins = master->GetN();
     unsigned int s_bins = slave->GetN();
@@ -244,13 +246,16 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
             if(((s_x >= m_exl) && (s_x <= m_exh)) && (s_bw > m_bw)) {
                 if(debug) std::cout << std::endl;
                 if(debug) std::cout << cn << mn << "Slave bin width greater than master bin width: Printing debug info: " << std::endl;
-                if(debug) std::cout << cn << mn << "Slave point (index, x, y, exl, exh, eyl, eyh) = (" \
-                    << j << ", " << s_x << ", " << s_y << ", " << s_exl << ", " << s_exh << ", " << s_eyl << ", " \
+                if(debug) {
+                 std::cout<< cn << mn << "Slave point (index, x, y, exl, exh, eyl, eyh) = (" << j << ", "; 
+		 std::cout.width(10);
+		 std::cout<< s_x<< ", " << s_y << ", " << s_exl << ", " << s_exh << ", " << s_eyl << ", " \
                     << s_eyh << ")" << std::endl;
+                
                 if(debug) std::cout << cn << mn << "Master point (index, x, y, exl, exh, eyl, eyh) = (" \
                         << i << ", " << m_x << ", " << m_y << ", " << m_exl << ", " << m_exh << ", " << m_eyl << ", " \
                         << m_eyh << ")" << std::endl;
-
+                }
                 std::ostringstream oss;
 
                 oss << cn << mn << "Slave bin width (" << s_bw << ") greater than master bin witdh (" << m_bw << "):" <<
@@ -286,24 +291,24 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
                     //If divided by bin width, scale by the slave bin width before summing
                     if(db) {
                         s_y_sum += s_y * s_bw;
-                        s_eyl_sum += s_eyl * s_bw;
-                        s_eyh_sum += s_eyh * s_bw;
+                        s_eyl_sum += pow(s_eyl * s_bw,2);
+                        s_eyh_sum += pow(s_eyh * s_bw,2);
                     } else {
                         s_y_sum += s_y;
-                        s_eyl_sum += s_eyl;
-                        s_eyh_sum += s_eyh;
+                        s_eyl_sum += pow(s_eyl,2);
+                        s_eyh_sum += pow(s_eyh,2);
                     }
 
                     if(debug) {
-                        std::cout << cn << mn << "Slave point will be removed or modified" << std::endl;
-                        std::cout << "\t slave index = " << j << std::endl;
-                        std::cout << "\t s_x = " << s_x << std::endl;
-                        std::cout << "\t s_y = " << s_y << std::endl;
-                        std::cout << "\t s_exl = " << s_exl << std::endl;
-                        std::cout << "\t s_exh = " << s_exh << std::endl;
-                        std::cout << "\t s_y_sum = " << s_y_sum << std::endl;
-                        std::cout << "\t s_eyl_sum = " << s_eyl_sum << std::endl;
-                        std::cout << "\t s_eyh_sum = " << s_eyh_sum << std::endl;
+		      std::cout << cn << mn << "Slave point will be removed or modified s_bw= "<<s_bw << std::endl;
+                      std::cout << "\t slave index = " << j << std::endl;
+                      std::cout<< "\t s_x = ";        std::cout.width(15); std::cout << s_x << std::endl;
+                      std::cout << "\t s_y = ";       std::cout.width(15); std::cout << s_y << std::endl;
+                      std::cout << "\t s_exl = ";     std::cout.width(15); std::cout << s_exl << std::endl;
+                      std::cout << "\t s_exh = ";     std::cout.width(15); std::cout << s_exh << std::endl;
+                      std::cout << "\t s_y_sum = ";   std::cout.width(15); std::cout << s_y_sum << std::endl;
+                      std::cout << "\t s_eyl_sum = "; std::cout.width(15); std::cout << s_eyl_sum << std::endl;
+                      std::cout << "\t s_eyh_sum = "; std::cout.width(15); std::cout << s_eyh_sum << std::endl;
                     }
                 }
 
@@ -318,7 +323,17 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
                     n_exh = m_exh - m_x;
                     n_x = (m_exh + m_exl) / 2;
 
+                    if (s_eyl_sum>0.)
+                     s_eyl_sum=sqrt(s_eyl_sum);
+
+                    if (s_eyh_sum>0.)
+                     s_eyh_sum=sqrt(s_eyh_sum);
+
                     //Divided by bin width
+                    if (debug) {
+		     if (db) std::cout << cn << mn << "Divided by bin width m_bw= "<<m_bw<<" "<< std::endl;
+                    }
+
                     if(db) {
                         n_y = s_y_sum / m_bw;
                         n_eyl = s_eyl_sum / m_bw;
@@ -335,12 +350,12 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
                     if(debug) {
                         std::cout << cn << mn << "MODIFYING slave point with (index, x, y) = (" << j << ", " << t_x << ", " << t_y << ")" << std::endl;
                         std::cout << cn << mn << "New point values: " << std::endl;
-                        std::cout << "\t x = " << n_x << std::endl;
-                        std::cout << "\t y = " << n_y << std::endl;
-                        std::cout << "\t exl = " << n_exl << std::endl;
-                        std::cout << "\t exh = " << n_exh << std::endl;
-                        std::cout << "\t eyl = " << n_eyl << std::endl;
-                        std::cout << "\t eyh = " << n_eyh << std::endl;
+                        std::cout << "\t x = ";   std::cout.width(10); std::cout << n_x << std::endl;
+                        std::cout << "\t y = ";   std::cout.width(10); std::cout << n_y << std::endl;
+                        std::cout << "\t exl = "; std::cout.width(10); std::cout << n_exl << std::endl;
+                        std::cout << "\t exh = "; std::cout.width(10); std::cout << n_exh << std::endl;
+                        std::cout << "\t eyl = "; std::cout.width(10); std::cout << n_eyl << std::endl;
+                        std::cout << "\t eyh = "; std::cout.width(10); std::cout << n_eyh << std::endl;
                     }
 
                     //Set last bin to use new values
@@ -363,9 +378,10 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
                         t_exl = t_x - t_exl;
                         t_exh = t_x + t_exh;
 
-                        if(debug) std::cout << cn << mn << "REMOVING slave point with (index, x, y, exl, exh, eyl, eyh) = (" \
-                            << index << ", " << t_x << ", " << t_y << ", " << t_exl << ", " << t_exh << ", " << t_eyl << ", " \
-                            << t_eyh << ")" << std::endl;
+                        if(debug) {
+			  std::cout << cn << mn << "REMOVING slave point with (index, x, y, exl, exh, eyl, eyh) = ("<< index << ", ";
+                          std::cout.width(10); std::cout<< t_x << ", " << t_y << ", " << t_exl << ", " << t_exh << ", " << t_eyl << ", " << t_eyh << ")" << std::endl;
+                        }
 
                         slave->RemovePoint(index);
                     }
@@ -394,19 +410,32 @@ TGraphAsymmErrors * SPXGraphUtilities::Divide(TGraphAsymmErrors *g1, TGraphAsymm
     std::string mn = "Divide: ";
 
     //Make sure graphs are valid
-    if((!g1) || (!g2)) {
-        throw SPXGraphException(cn + mn + "At least one of the operand graphs is invalid");
+    if(!g1) {
+        throw SPXGraphException(cn + mn + "Graph g1 not found");
+    }
+
+    if(!g2) {
+        throw SPXGraphException(cn + mn + "Graph g2 not found");
     }
 
     int n1 = g1->GetN();
     int n2 = g2->GetN();
 
+    //std::cout << cn<<mn<<" n1= " <<n1<<" n2= "<<n2<< std::endl;
+    //g1->Print();
+    //std::cout << cn<<mn<<" g2= "<<g2<< std::endl;
+    //g2->Print();
+
     //Make sure the two graphs are the same size
     if(n1 != n2) {
         std::ostringstream oss;
-        oss << cn << mn << "Graphs do not contain the same number of bins: G1 N= " << n1 << " G2 N = " << n2;
+        oss << cn << mn << "Graphs do not contain the same number of bins: G1 "
+	    << g1->GetName() << " n1= " << n1 <<" G2 "<< g2->GetName() << " n2= " << n2;
         throw SPXGraphException(oss.str());
     }
+
+    //std::cout << cn<<mn<<" n1= " <<n1<<" n2= "<<n2<< std::endl;
+    
 
     //@TODO Pass result as parameter and return that way! Don't call 'new' in a function
     TGraphAsymmErrors *result = new TGraphAsymmErrors();
@@ -560,6 +589,25 @@ void SPXGraphUtilities::ScaleYErrors(TGraphAsymmErrors * g, double scale) {
     }
 }
 
+void SPXGraphUtilities::SPXCopyGraphProperties(TGraphErrors* g1, TGraphErrors* g2){
+ std::string mn = "SPXCopyGraphProperties";
+ // copy properties of graph g1 to g2
+
+ if (!g1) throw SPXGraphException(cn + mn + "Graph g1 does not exist ! " );
+ if (!g2) throw SPXGraphException(cn + mn + "Graph g2 does not exist ! " );
+
+ g2->SetName       (g1->GetName());
+ g2->SetMarkerStyle(g1->GetMarkerStyle());
+ g2->SetMarkerColor(g1->GetMarkerColor());
+ g2->SetLineColor  (g1->GetLineColor());
+ g2->SetLineStyle  (g1->GetLineStyle());
+ g2->SetLineWidth  (g1->GetLineWidth());
+
+ return;
+}
+
+
+
 void SPXGraphUtilities::HistogramToGraph(TGraphAsymmErrors * g, TH1 *h) {
     std::string mn = "HistogramToGraph: ";
 
@@ -583,6 +631,54 @@ void SPXGraphUtilities::HistogramToGraph(TGraphAsymmErrors * g, TH1 *h) {
         g->SetPoint(i, x, y);
         g->SetPointError(i, ex, ex, ey, ey);
     }
+}
+
+TH1D *SPXGraphUtilities::GraphToHistogram(TGraphAsymmErrors * g) {
+    std::string mn = "GraphToHistogram: ";
+    //Make sure histogram is valid
+    if(!g) {
+     throw SPXGraphException(cn + mn + "Graph provided was invalid");
+    }
+
+    //std::cout << cn<<mn<<"Print graph: "<<g->GetName() << std::endl;
+    //g->Print();
+
+    TString name=TString("h")+g->GetName();
+
+    int nbin=g->GetN();
+
+    Double_t xbins[nbin+1];
+    double x, y , exl, exh;
+    for(int ibin = 0; ibin < nbin; ibin++) {
+     g->GetPoint(ibin,x,y);
+     exl=g->GetErrorXlow(ibin);
+     exh=g->GetErrorXhigh(ibin);
+     xbins[ibin]=x-exl;
+     //std::cout << cn<<mn<<"xbins["<<ibin<<"]= "<<xbins[ibin] <<std::endl;
+    }
+
+    //std::cout << cn<<mn<<"x= "<<x<< " exh= "<< exh<<std::endl;
+    xbins[nbin]=x+exh;
+    //std::cout << cn<<mn<<"xbins["<<nbin<<"]= "<<xbins[nbin] <<std::endl;
+
+    TH1D *h1 = new TH1D(name,name,nbin,xbins); 
+
+    for(int ibin = 0; ibin < nbin; ibin++) {
+        double eyh=g->GetErrorYhigh(ibin);
+        double eyl=g->GetErrorYlow(ibin);
+        double x, y;
+        g->GetPoint(ibin,x,y);
+
+        double ey=(eyh+eyl)/2.;
+       	h1->SetBinContent(ibin+1,y);
+        h1->SetBinError  (ibin+1,ey);
+        //std::cout << cn<<mn<<ibin<<" x= " << x <<" y= "<<y<<" ey= "<<ey<< std::endl;
+    }
+
+    //std::cout << cn<<mn<<"Print Histogram: " << h1->GetName()<< std::endl;
+    //h1->Print("all");
+
+    return h1;
 }
 
 void SPXGraphUtilities::ClearGraph(TGraphAsymmErrors * g) {
@@ -758,78 +854,78 @@ void SPXGraphUtilities::DivideByBinWidth(TGraphAsymmErrors *g) {
 
     return;
 }
-/*
-TGraphAsymmErrors* SPXGraphUtilities::Multiply(TGraphAsymmErrors * g1,TGraphAsymmErrors * g2){
- std::string mn = "Multiply:";
- //
- // multiply graph g1 and graph g2
- // result is stored in the return graph g3
- //
- if (!g1) {
-  std::ostringstream oss;
-  oss << cn << mn << "ERROR Graph g1 not found ";
-  throw SPXParseException(oss.str());
- }
- if (!g2) {
-  std::ostringstream oss;
-  oss << cn << mn << "ERROR Graph g2 not found ";
-  throw SPXParseException(oss.str());
- }
 
- TGraphAsymmErrors* g3= new TGraphAsymmErrors();
- TString name=g1->GetName();
- name+=" * ";
- name+=g2->GetName();
- g3->SetName(g1->GetName());
+//TGraphAsymmErrors* SPXGraphUtilities::Multiply(TGraphAsymmErrors * g1,TGraphAsymmErrors * g2){
+// std::string mn = "Multiply:";
+// //
+// // multiply graph g1 and graph g2
+// // result is stored in the return graph g3
+// //
+// if (!g1) {
+//  std::ostringstream oss;
+//  oss << cn << mn << "ERROR Graph g1 not found ";
+//  throw SPXParseException(oss.str());
+// }
+// if (!g2) {
+//  std::ostringstream oss;
+//  oss << cn << mn << "ERROR Graph g2 not found ";
+//  throw SPXParseException(oss.str());
+//}
+//
+// TGraphAsymmErrors* g3= new TGraphAsymmErrors();
+// TString name=g1->GetName();
+// name+=" * ";
+// name+=g2->GetName();
+// g3->SetName(g1->GetName());
+//
+// int nBins1 = g1->GetN();
+// int nBins2 = g2->GetN();
+// if (nBins1!=nBins2) {
+//   //std::ostringstream oss;
+//   std::cout << cn << mn << "WARNING Graph g1 NBin1= "<<nBin1<<" and graph g2 NBin2= "<<nBins2<<"do not have the same lenght ! "<<std::endl;
+//  //throw SPXParseException(oss.str());
+// }
 
- int nBins1 = g1->GetN();
- int nBins2 = g2->GetN();
- if (nBins1!=nBins2) {
-   //std::ostringstream oss;
-   std::cout << cn << mn << "WARNING Graph g1 NBin1= "<<nBin1<<" and graph g2 NBin2= "<<nBins2<<"do not have the same lenght ! "<<std::endl;
-  //throw SPXParseException(oss.str());
- }
+//double *x1   = g1->GetX();
+// double *y1   = g1->GetY();
+// double *exl1 = g1->GetEXlow();
+// double *exh1 = g1->GetEXhigh();
+// double *eyl1 = g1->GetEYlow();
+// double *eyh1 = g1->GetEYhigh();
+//
+// double *x2   = g2->GetX();
+// double *y2   = g2->GetY();
+// double *exl2 = g2->GetEXlow();
+// double *exh2 = g2->GetEXhigh();
+// double *eyl2 = g2->GetEYlow();
+// double *eyh2 = g2->GetEYhigh();
+//
+//
+////Loop over the smallest of the two
+//unsigned int n = (nBins < nBinsCorr ? nBins : nBinsCorr);
+//
+// for(int i = 0; i < nBins1; i++) {
+//  for(int j = 0; j < nBins2; j++) {
 
- double *x1   = g1->GetX();
- double *y1   = g1->GetY();
- double *exl1 = g1->GetEXlow();
- double *exh1 = g1->GetEXhigh();
- double *eyl1 = g1->GetEYlow();
- double *eyh1 = g1->GetEYhigh();
+//   //Check for bin match
+//   if(((x1[i] - exl1[i]) == exl2[j]) && ((x1[i] + exh1[i]) == exh2[j])) {
 
- double *x2   = g2->GetX();
- double *y2   = g2->GetY();
- double *exl2 = g2->GetEXlow();
- double *exh2 = g2->GetEXhigh();
- double *eyl2 = g2->GetEYlow();
- double *eyh2 = g2->GetEYhigh();
+//    if(debug) std::cout << cn << mn << "Bins Match (i, j): (" << i << ", " << j << ")" << std::endl;
 
+//    //Bins match; Scale y, eyl, and eyh
+//    double y=0., eyl=0., eyh=0.;
+//    y  = 2[i] *y2[j];
+//    eyl=eyl2[i]*eyl2[j];
+//    eyh=eyh2[i]*eyh2[j];
 
-//Loop over the smallest of the two
- unsigned int n = (nBins < nBinsCorr ? nBins : nBinsCorr);
+//    g3->SetPoint(i, x1[i],y);
+//    g3->SetPointError(i,exl1,exh1,eyl,eyh);
+//    break;
+//   };
+//  };
+// };
+//};
 
- for(int i = 0; i < nBins1; i++) {
-  for(int j = 0; j < nBins2; j++) {
-
-   //Check for bin match
-   if(((x1[i] - exl1[i]) == exl2[j]) && ((x1[i] + exh1[i]) == exh2[j])) {
-
-    if(debug) std::cout << cn << mn << "Bins Match (i, j): (" << i << ", " << j << ")" << std::endl;
-
-    //Bins match; Scale y, eyl, and eyh
-    double y=0., eyl=0., eyh=0.;
-    y  = 2[i] *y2[j];
-    eyl=eyl2[i]*eyl2[j];
-    eyh=eyh2[i]*eyh2[j];
-
-    g3->SetPoint(i, x1[i],y);
-    g3->SetPointError(i,exl1,exh1,eyl,eyh);
-    break;
-   };
-  };
- };
-};
-*/
 void SPXGraphUtilities::Multiply(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, int noerr) {
  //
  // multiply graph g1 and graph g2
@@ -839,13 +935,15 @@ void SPXGraphUtilities::Multiply(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, i
  //       1: do not consider error from graph 2
  // 
  std::string mn = "Multiply: ";
- bool debug=true;
+ bool debug=false;
 
  int nBins1 = g1->GetN();
  int nBins2 = g2->GetN();
  if (nBins1!=nBins2) {
    //std::ostringstream oss;
-   std::cout << cn << mn << "WARNING Graph g1 NBin1= "<<nBins1<<" and graph g2 NBin2= "<<nBins2<<"do not have the same lenght ! "<<std::endl;
+   std::cout << cn << mn << "WARNING Graph g1 "<<g1->GetName()<<" NBin1= "<<nBins1
+                             <<" and graph g2 "<<g2->GetName()<<" NBin2= "<<nBins2
+                             <<" do not have the same lenght ! "<<std::endl;
   //throw SPXParseException(oss.str());
  }
 
@@ -867,38 +965,64 @@ void SPXGraphUtilities::Multiply(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, i
  unsigned int n = (nBins1 < nBins2 ? nBins1 : nBins2);
 
  if (debug) {
-  std::cout << cn << mn << "Print g1 before: " << std::endl;
+  std::cout << " " << std::endl;
+  std::cout << cn << mn << "Print g1 before: " <<g1->GetName()<< std::endl;
   g1->Print();
+
+  std::cout << " " << std::endl;
+  std::cout << cn << mn << "Print g2 before: " <<g2->GetName()<< std::endl;
+  g2->Print();
+
  }
 
  for(int i = 0; i < nBins1; i++) {
+   bool nomatch=true;
   for(int j = 0; j < nBins2; j++) {
 
-   //Check for bin match
-   if(((x1[i] - exl1[i]) == exl2[j]) && ((x1[i] + exh1[i]) == exh2[j])) {
+   //Check for exact bin match
+   // std::cout<<"Old x1="<<x1[i]  <<" x2="<<x2[j]
+   //          <<" exl1= "<<exl1[i]<<" exh1= "<<exh1[i]
+   //          <<" exl2= "<<exl2[j]<<" exh2= "<<exh2[j]
+   //          << std::endl;
 
-    if(debug) std::cout << cn << mn << "Bins Match (i, j): (" << i << ", " << j << ")" << std::endl;
+    if(((x1[i] - exl1[i]) == (x2[j]-exl2[j])) && ((x1[i] + exh1[i]) == (x2[j]+exh2[j]))) {
+    //double emean=(dx1+dx2)/2.;
+    //if (fabs(x1-x2)>=emean && fabs(x1-x2)>dx 
+    nomatch=false;
 
     //Bins match; Scale y, eyl, and eyh
     y1[i] *= y2[j];
 
     // relative errors add up in quadrature
     double eyl=0., eyh=0.;
-    if (noerr==1) {eyl2[i]=0.; eyh2[i]=0.;}
+    // do not modify the graph, these are pointers !
+    double myeyl2=eyl2[i], myeyh2=eyh2[i]; 
+    if (noerr==1) {myeyl2=0.; myeyh2=0.;}
+
     if (y1[i]*y1[i]!=0. && y2[i]*y2[i]!=0.)
-     eyl=sqrt(eyl1[i]*eyl1[i]/(y1[i]*y1[i])+eyl2[i]*eyl2[i]/(y2[i]*y2[i]))*(y1[i]*y2[i]);
+     eyl=sqrt(eyl1[i]*eyl1[i]/(y1[i]*y1[i])+myeyl2*myeyl2/(y2[i]*y2[i]))*(y1[i]*y2[i]);
+
     if (y2[i]*y2[i]!=0.)
-     eyh=sqrt(eyh1[i]*eyh1[i]/(y1[i]*y1[i])+eyh2[i]*eyh2[i]/(y2[i]*y2[i]))*(y1[i]*y2[i]);
+     eyh=sqrt(eyh1[i]*eyh1[i]/(y1[i]*y1[i])+myeyh2*myeyh2/(y2[i]*y2[i]))*(y1[i]*y2[i]);
+
+    if(debug) std::cout << cn << mn << "Bins Match (i, j): (" << i << ", " << j << ")" 
+                        <<" New y1= "<<y1[i]<<" eyl= "<<eyl<<" eyh= "<<eyh<< std::endl;
 
     g1->SetPoint(i, x1[i],y1[i]);
     g1->SetPointError(i,exl1[i],exh1[i],eyl,eyh);
     break;
-   };
+   }; 
   };
+  if(nomatch) std::cout << cn << mn << "No Bins Match for bin i= " << i << std::endl;  
  };
 
  if (debug) {
-  std::cout << cn << mn << "Print g1 after" << std::endl;
+  std::cout << " " << std::endl;
+  std::cout << cn << mn << "Print g1 after " << g1->GetName()<<std::endl;
   g1->Print();
+
+  std::cout << " " << std::endl;
+  std::cout << cn << mn << "Print g2 before: " <<g2->GetName()<< std::endl;
+  g2->Print();
  }
 }

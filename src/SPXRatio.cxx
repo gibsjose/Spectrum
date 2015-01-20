@@ -449,39 +449,7 @@ void SPXRatio::Divide(void) {
 	 //ratioGraph = SPXGraphUtilities::Divide(numeratorGraph, denominatorGraph, divideType);
 	 TGraphAsymmErrors *graph = SPXGraphUtilities::Divide(numeratorGraph[i], denominatorGraph,divideType); 
 
-        //Style ratio graph
-	//if(debug) std::cout << cn<<mn<<"Obtaining PDF Fill Options..." << std::endl;
-        // graph->SetFillStyle(pci.totalFillStyle);
-        // graph->SetFillColor(pci.totalFillColor);
-        // graph->SetMarkerStyle(pci.totalMarkerStyle);
-        // graph->SetMarkerColor(pci.totalFillColor);
-        // graph->SetLineColor(pci.totalFillColor);
-        // graph->SetMarkerSize(1.2);
-
-         //NOTE: ROOT Color Transparencies are only supported in ROOT v6.0.0+ via the method
-         //          SetFillColorAlpha(ci, alpha_percentage)
-         //          SetMarkerColorAlpha(ci, alpha_percentage)
-         //          etc...
-
-         // TC styles taken from numerator instead of setting them
-
-         //If it is a convolute / reference graph, darken the fill color and change the style
-         //if(ratioStyle.IsConvoluteOverReference()) {
-         // graph->SetFillStyle(3002);
-         // graph->SetFillColor  (pci.pdfFillColor + 1);
-         // graph->SetMarkerColor(pci.pdfFillColor + 1);
-         // graph->SetLineStyle(3);
-         //}
-
-         //Same for nominal
-         //if(ratioStyle.IsConvoluteOverNominal()) {
-         // graph->SetFillStyle(3017);
-         // graph->SetFillColor  (pci.pdfFillColor + 2);
-         // graph->SetMarkerColor(pci.pdfFillColor + 2);
-         // graph->SetLineStyle(2);
-         //}
-
-         if(debug) std::cout << cn + mn + "Graph Fill Options:" << graph->GetName() << std::endl;
+         if(debug) std::cout << cn + mn + "\nFill Options for graph with name: " << graph->GetName() << std::endl;
          if(debug) std::cout << "\t Fill Style = " << graph->GetFillStyle() << std::endl;
          if(debug) std::cout << "\t Fill Color = " << graph->GetFillColor() << std::endl;
          if(debug) std::cout << "\t Marker Style= "<< graph->GetMarkerStyle() << std::endl;

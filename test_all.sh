@@ -29,3 +29,8 @@
 # band test
 #
 ./Spectrum Steering/test_band.txt
+#
+./Spectrum detailedtheoryband_atlas_incljet2011_2p76TeV.txt
+#
+./Spectrum detailedtheoryband_atlas_incljet2011.txt
+#

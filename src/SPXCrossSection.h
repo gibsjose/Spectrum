@@ -43,13 +43,13 @@ public:
 	}
 
 	~SPXCrossSection(void) {
-		//delete grid;
-		//delete pdf;
+	 //delete grid;
+	 //delete pdf;
 	}
 
 	void Create(SPXSteeringFile *mainsteeringFile);
 	void ParseCorrections(void);
-	void ApplyCorrections(TGraphAsymmErrors* g);
+	void ApplyCorrections();
 
 	static bool GetDebug(void) {
 		return debug;
@@ -63,22 +63,21 @@ public:
 		return dividedByBinWidth;
 	}
 
+	//TGraphAsymmErrors *GetPDFBandResults(void) {
+	//  return pdf->GetPDFBand();
+	//}
 
-	TGraphAsymmErrors *GetPDFBandResults(void) {
-	  return pdf->GetPDFBand();
-	}
+	//TGraphAsymmErrors *GetAlphaSBandResults(void) {
+	//  return pdf->GetAlphaSBand();
+	//}
 
-	TGraphAsymmErrors *GetAlphaSBandResults(void) {
-	  return pdf->GetAlphaSBand();
-	}
+	//TGraphAsymmErrors *GetScaleBandResults(void) {
+	//  return pdf->GetScaleBand();
+	//}
 
-	TGraphAsymmErrors *GetScaleBandResults(void) {
-	  return pdf->GetScaleBand();
-	}
-
-	TGraphAsymmErrors *GetTotalBandResults(void) {
-	  return pdf-> GetTotalBand();
-	}
+	//TGraphAsymmErrors *GetTotalBandResults(void) {
+	//  return pdf-> GetTotalBand();
+	//}
 
 	SPXPDFSteeringFile *GetPDFSteeringFile(void) {
 		return psf;
@@ -104,19 +103,25 @@ public:
 		return nominal;
 	}
 
+        std::vector<std::string> GetCorrectionLabels();
+
 private:
-	static bool debug;					 //Flag indicating debug mode
-	unsigned int plotID;					//Plot ID
-	SPXPDFSteeringFile *psf;				//Fully parsed PDF Steering File
-	SPXPlotConfigurationInstance *pci;			//Fully parsed Plot configuration instance (contains grid steering file)
-	SPXGrid *grid;						//Grid
-	SPXPDF *pdf;						//PDF
-	SPXGridCorrections *corrections;			//Grid corrections
-	bool dividedByBinWidth;					//Flag indicating that the grid was already divided by the bin width
+	static bool debug;		       // Flag indicating debug mode
+	unsigned int plotID;		       // Plot ID
+	SPXPDFSteeringFile *psf;	       // Fully parsed PDF Steering File
+	SPXPlotConfigurationInstance *pci;     // Fully parsed Plot configuration instance (contains grid steering file)
+	SPXGrid *grid;			       // Grid
+	SPXPDF *pdf;			       // PDF
+	SPXGridCorrections *corrections;       // Grid corrections
+	bool dividedByBinWidth;		       // Flag indicating that the grid was already divided by the bin width
 
-	TGraphAsymmErrors *gridReference;			//Reference Graph from Grid
-	TGraphAsymmErrors *nominal;				//Nominal (default) graph from PDF
+	TGraphAsymmErrors *gridReference;      // Reference Graph from Grid
+	TGraphAsymmErrors *nominal;	       // Nominal (default) graph from PDF
 
+        std::vector<std::string> correctionlabels; // labels of corrections from Grid Steering file
+	                                           // corrections can be Hadcorr, e.w.
+
+        SPXSteeringFile *mainsteeringFile;       // pointer to main steering file frpm SPXPlot
 };
 
 #endif

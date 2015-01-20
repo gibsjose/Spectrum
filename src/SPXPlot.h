@@ -35,11 +35,11 @@ public:
 		this->id = plotNumber;
 
 		if(debug) {
-			SPXData::SetDebug(true);
-			SPXDataFormat::SetDebug(true);
-			SPXCrossSection::SetDebug(true);
-			SPXGridCorrections::SetDebug(true);
-			SPXRatio::SetDebug(true);
+		 SPXData::SetDebug(true);
+		 SPXDataFormat::SetDebug(true);
+		 SPXCrossSection::SetDebug(true);
+		 SPXGridCorrections::SetDebug(true);
+		 SPXRatio::SetDebug(true);
 		}
 	}
 
@@ -51,7 +51,7 @@ public:
 	void ScaleAxes(void);
 	void CreateCanvas(void);
 	void MatchOverlayBinning(void);
-	void ApplyGridCorrections(void);
+	//void ApplyGridCorrections(void);
 	void DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax);
 	void DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax);
 	void DivideCanvasIntoPads(void);

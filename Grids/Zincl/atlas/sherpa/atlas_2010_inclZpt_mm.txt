@@ -26,7 +26,4 @@ grid_divided_by_bin_width = true
 [GRID]								
 grid_file = muony02.root
 ;grid_file = Zptmuon_ptcut_y03.root
-
-generator_id =sherpa 		
-ntuple_id = 						
 lowest_order = 0								

@@ -40,6 +40,4 @@ divided_by_bin_width = true
 ;==============================================================
 [GRID]								 
 grid_file = none
-generator_id =none 		
-ntuple_id =none		
-lowest_order = 2		
+lowest_order = 0

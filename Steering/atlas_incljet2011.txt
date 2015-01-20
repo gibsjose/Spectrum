@@ -21,6 +21,13 @@ plot_staggered = true
 ;match_binning = true
 ;grid_corr = true
 label_sqrt_s = true
+
+;band_with_pdf= false
+;band_with_alphas= false
+;band_with_scale = true
+;band_with_gridcorrection = false
+;band_total = false
+
 x_legend = 0.9
 y_legend = 0.9
 ; y_overlay_min =

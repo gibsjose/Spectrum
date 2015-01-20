@@ -106,6 +106,20 @@ void SPXGridSteeringFile::Print(void) {
 	for(int i = 0; i < correctionFiles.size(); i++) {
 		std::cout << "\t\t\t " << correctionFiles.at(i) << std::endl;
 	}
+	for(int i = 0; i < correctionFilesLabel.size(); i++) {
+		std::cout << "\t\t\t " << correctionFilesLabel.at(i) << std::endl;
+	}
+	for(int i = 0; i < correctionFilesAuthor.size(); i++) {
+		std::cout << "\t\t\t " << correctionFilesAuthor.at(i) << std::endl;
+	}
+	for(int i = 0; i < correctionFilesProgram.size(); i++) {
+		std::cout << "\t\t\t " << correctionFilesProgram.at(i) << std::endl;
+	}
+	for(int i = 0; i < correctionFilesReference.size(); i++) {
+		std::cout << "\t\t\t " << correctionFilesReference.at(i) << std::endl;
+	}
+
+
 	std::cout << "\t\t Lowest Order: " << lowestOrder << std::endl << std::endl;
 }
 
@@ -258,10 +272,88 @@ void SPXGridSteeringFile::Parse(void) {
 		if(debug) {
 			std::cout << cn << mn << "correction_files string \"" << tmp << "\" parsed into:" << std::endl;
 			for(int i = 0; i < correctionFiles.size(); i++) {
-				std::cout << "\t " << correctionFiles.at(i);
+			 std::cout << "\t " << correctionFiles.at(i)<<std::endl;
 			}
+			std::cout << " " <<std::endl;
 		}
 	}
+
+        if (correctionFiles.size()>0) {
+  	 tmp = reader->Get("GRID", "correction_files_label", "EMPTY");
+	 if(!tmp.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "No correction file label were specified" << std::endl;
+		correctionFilesLabel.clear();
+	 } else {
+		//Parse into vector
+		correctionFilesLabel = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+
+		if(debug) {
+			std::cout << cn << mn << "\n correction_files_label string \"" << tmp << "\" parsed into:" << std::endl;
+			for(int i = 0; i < correctionFilesLabel.size(); i++) {
+				std::cout << "\t " << correctionFilesLabel.at(i);
+			}
+			std::cout << " " << std::endl;
+		}
+	 }
+	}
+
+        if (correctionFiles.size()>0) {
+  	 tmp = reader->Get("GRID", "correction_files_program", "EMPTY");
+	 if(!tmp.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "No correction file program name were specified" << std::endl;
+		correctionFilesProgram.clear();
+	 } else {
+		//Parse into vector
+		correctionFilesProgram = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+
+		if(debug) {
+			std::cout << cn << mn << "\n correction_files_program string \"" << tmp << "\" parsed into:" << std::endl;
+			for(int i = 0; i < correctionFilesProgram.size(); i++) {
+				std::cout << "\t " << correctionFilesProgram.at(i);
+			}
+			std::cout << " " << std::endl;
+		}
+	 }
+	}
+
+        if (correctionFiles.size()>0) {
+  	 tmp = reader->Get("GRID", "correction_files_author", "EMPTY");
+	 if(!tmp.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "No correction file author were specified" << std::endl;
+		correctionFilesAuthor.clear();
+	 } else {
+		//Parse into vector
+		correctionFilesAuthor = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+
+		if(debug) {
+			std::cout << cn << mn << "\n correction_files_author string \"" << tmp << "\" parsed into:" << std::endl;
+			for(int i = 0; i < correctionFilesAuthor.size(); i++) {
+				std::cout << "\t " << correctionFilesAuthor.at(i);
+			}
+			std::cout << " " << std::endl;
+		}
+	 }
+	}
+
+        if (correctionFiles.size()>0) {
+  	 tmp = reader->Get("GRID", "correction_files_reference", "EMPTY");
+	 if(!tmp.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "No correction file reference were specified" << std::endl;
+		correctionFilesReference.clear();
+	 } else {
+		//Parse into vector
+		correctionFilesReference = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+
+		if(debug) {
+			std::cout << cn << mn << "\n correction_files_reference string \"" << tmp << "\" parsed into:" << std::endl;
+			for(int i = 0; i < correctionFilesReference.size(); i++) {
+				std::cout << "\t " << correctionFilesReference.at(i);
+			}
+			std::cout << " " << std::endl;
+		}
+	 }
+	}
+
 
 	lowestOrder = (unsigned int)reader->GetInteger("GRID", "lowest_order", lowestOrder);
 	if(lowestOrder > 2) {

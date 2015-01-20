@@ -60,7 +60,4 @@ grid_divided_by_bin_width = true
 ;==============================================================
 [GRID]								
 grid_file = incljets_rapidity_00_05_R06_P2.root		
-
-generator_id =nlojet++ 		
-ntuple_id = 						
 lowest_order = 2								

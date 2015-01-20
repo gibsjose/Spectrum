@@ -201,7 +201,7 @@ void SPXData::ParseSpectrum(void) {
 					numberOfColumns = tmp_data.size();
 
 					//Warn user that the aforementioned columns will be assumed for the remaining bins
-					std::cout << cn << mn << "WARNING: The remaining bins MUST also have exactly " << numberOfColumns << " columns" << std::endl;
+					std::cout << cn << mn << "INFO: The remaining bins MUST also have exactly " << numberOfColumns << " columns" << std::endl;
 				}
 				//After the 0th bin, make sure all other bins have the exact same number of columns
 				else {

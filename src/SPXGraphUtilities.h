@@ -65,6 +65,10 @@ public:
 	static void ScaleXErrors(TGraphAsymmErrors * g, double scale);
 	static void ScaleYErrors(TGraphAsymmErrors * g, double scale);
 
+        static void SPXCopyGraphProperties(TGraphErrors* g1, TGraphErrors* g2);
+
+	static TH1D* GraphToHistogram(TGraphAsymmErrors * g);
+
 	static void HistogramToGraph(TGraphAsymmErrors * g, TH1 *h);
 	static void ClearGraph(TGraphAsymmErrors * g);
 
@@ -81,7 +85,7 @@ public:
 
         static TGraphAsymmErrors* TH1TOTGraphAsymm(TH1 *h1);
 	//TGraphAsymmErrors* Multiply(TGraphAsymmErrors * g1,TGraphAsymmErrors * g2);
-        void Multiply(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, int noerr=0);
+        static void Multiply(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, int noerr=0);
 };
 
 #endif

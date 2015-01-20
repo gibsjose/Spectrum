@@ -71,6 +71,8 @@ private:
 	bool BandwithScales;        // show the Uncertainty band with ren&fac scales uncertainties
 	bool BandTotal;             // show the Total uncertainty band
 
+        std::vector<bool> gridcorrections; // flags if grid correction go into band
+
         std::vector<double> RenScales; // vector for renormalisation scale variations
         std::vector<double> FacScales; // vector for factorisation scale variations
 
@@ -193,6 +195,22 @@ public:
 	bool GetBandTotal(void) const {
 		return this->BandTotal;
 	}
+
+	int GetNumberofCorrectionToBand() {
+	 //std::cout<<" gridcorrections.size()= "<<gridcorrections.size()<<std::endl;
+	 return gridcorrections.size(); 
+        }
+	bool GetGridCorrectionToBand(int i) {
+	 if (i>=gridcorrections.size()){  
+          std::ostringstream oss;
+          oss<<"SPXSteering::GetBandGridCorrection: gridcorrectionsize= "<<gridcorrections.size()<<" but i= "<<i;
+          throw SPXParseException(oss.str());
+         } 
+
+	 return gridcorrections.at(i);
+	}
+
+
 
 	unsigned int GetNumberOfPlotConfigurations(void) const {
 		return this->plotConfigurations.size();

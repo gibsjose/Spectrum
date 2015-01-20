@@ -41,6 +41,9 @@ divided_by_bin_width = true
 ;==============================================================
 [GRID]								 
 grid_file = atlas-incljets-R04-eta3.root
-generator_id =nlojet++ 		
-ntuple_id =jetmod		
+correction_files = atlas_2011_2p76TeV_jet_antiktr04_incljetpt_eta3_hadcorr.txt
+correction_files_label = k_{had}
+correction_files_reference = EPJ C73 (2013) 2509   
+correction_files_author    = ATLAS
+correction_files_program = Pythia and Herwig tunes
 lowest_order = 2		
