@@ -83,6 +83,7 @@ class SPXPDF {
         string GetPDFtype() const{return PDFtype;};
         string GetPDFName() const{return PDFname;};
         string GetPDFFullname(){ return default_pdf_set_name;};
+
         int GetNumPDFMembers() const{return n_PDFMembers;};
         int GetFillStyleCode() const{return fillStyleCode;};
         int GetFillColorCode() const{return fillColorCode;};
@@ -108,6 +109,10 @@ class SPXPDF {
 
         TH1D * GetPdfdefault() { return hpdfdefault;};
         TH1D * GetPDFNominal() { return hpdfdefault; };
+
+        TGraphAsymmErrors *GetTotalBand() {
+         return h_Total_results;   
+        }
 
         //mutator methods
         void SetDebug(bool _debug);

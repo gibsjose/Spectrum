@@ -166,7 +166,7 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
     //Alias for dividedByBinWidth
     bool db = dividedByBinWidth;
 
-    if (debug) if (db) std::cout<<cn<<mn<<" Divided by bin width is ON "<<std::endl;
+    if (debug) if (db) std::cout<<cn<<mn<<"Divided by bin width is ON "<<std::endl;
 
     //Get the master/slave binning
     unsigned int m_bins = master->GetN();
@@ -855,76 +855,6 @@ void SPXGraphUtilities::DivideByBinWidth(TGraphAsymmErrors *g) {
     return;
 }
 
-//TGraphAsymmErrors* SPXGraphUtilities::Multiply(TGraphAsymmErrors * g1,TGraphAsymmErrors * g2){
-// std::string mn = "Multiply:";
-// //
-// // multiply graph g1 and graph g2
-// // result is stored in the return graph g3
-// //
-// if (!g1) {
-//  std::ostringstream oss;
-//  oss << cn << mn << "ERROR Graph g1 not found ";
-//  throw SPXParseException(oss.str());
-// }
-// if (!g2) {
-//  std::ostringstream oss;
-//  oss << cn << mn << "ERROR Graph g2 not found ";
-//  throw SPXParseException(oss.str());
-//}
-//
-// TGraphAsymmErrors* g3= new TGraphAsymmErrors();
-// TString name=g1->GetName();
-// name+=" * ";
-// name+=g2->GetName();
-// g3->SetName(g1->GetName());
-//
-// int nBins1 = g1->GetN();
-// int nBins2 = g2->GetN();
-// if (nBins1!=nBins2) {
-//   //std::ostringstream oss;
-//   std::cout << cn << mn << "WARNING Graph g1 NBin1= "<<nBin1<<" and graph g2 NBin2= "<<nBins2<<"do not have the same lenght ! "<<std::endl;
-//  //throw SPXParseException(oss.str());
-// }
-
-//double *x1   = g1->GetX();
-// double *y1   = g1->GetY();
-// double *exl1 = g1->GetEXlow();
-// double *exh1 = g1->GetEXhigh();
-// double *eyl1 = g1->GetEYlow();
-// double *eyh1 = g1->GetEYhigh();
-//
-// double *x2   = g2->GetX();
-// double *y2   = g2->GetY();
-// double *exl2 = g2->GetEXlow();
-// double *exh2 = g2->GetEXhigh();
-// double *eyl2 = g2->GetEYlow();
-// double *eyh2 = g2->GetEYhigh();
-//
-//
-////Loop over the smallest of the two
-//unsigned int n = (nBins < nBinsCorr ? nBins : nBinsCorr);
-//
-// for(int i = 0; i < nBins1; i++) {
-//  for(int j = 0; j < nBins2; j++) {
-
-//   //Check for bin match
-//   if(((x1[i] - exl1[i]) == exl2[j]) && ((x1[i] + exh1[i]) == exh2[j])) {
-
-//    if(debug) std::cout << cn << mn << "Bins Match (i, j): (" << i << ", " << j << ")" << std::endl;
-
-//    //Bins match; Scale y, eyl, and eyh
-//    double y=0., eyl=0., eyh=0.;
-//    y  = 2[i] *y2[j];
-//    eyl=eyl2[i]*eyl2[j];
-//    eyh=eyh2[i]*eyh2[j];
-
-//    g3->SetPoint(i, x1[i],y);
-//    g3->SetPointError(i,exl1,exh1,eyl,eyh);
-//    break;
-//   };
-//  };
-// };
-//};
 
 void SPXGraphUtilities::Multiply(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, int noerr) {
  //
@@ -940,11 +870,11 @@ void SPXGraphUtilities::Multiply(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, i
  int nBins1 = g1->GetN();
  int nBins2 = g2->GetN();
  if (nBins1!=nBins2) {
-   //std::ostringstream oss;
-   std::cout << cn << mn << "WARNING Graph g1 "<<g1->GetName()<<" NBin1= "<<nBins1
-                             <<" and graph g2 "<<g2->GetName()<<" NBin2= "<<nBins2
-                             <<" do not have the same lenght ! "<<std::endl;
-  //throw SPXParseException(oss.str());
+  std::ostringstream oss;
+  oss << cn <<mn<<"WARNING Graph g1 "<<g1->GetName()<<" NBin1= "<<nBins1
+                   <<" and graph g2 "<<g2->GetName()<<" NBin2= "<<nBins2
+                   <<" do not have the same lenght ! ";
+  throw SPXParseException(oss.str());
  }
 
  double *x1   = g1->GetX();

@@ -51,8 +51,9 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
 	dividedByBinWidth = this->pci->gridSteeringFile.IsGridDividedByBinWidth();
 
 	int bncorr=mainsteeringFile->GetNumberofCorrectionToBand();
-	std::cout<<cn<<mn<<"Number of corrections from main steering "<<bncorr<<std::endl;
+
 	if (debug) {
+
          std::cout<<cn<<mn<<"Created the PDF-class "<<endl;
 	 std::cout<<cn<<mn<<"dividedByBinWidth= " <<dividedByBinWidth<<std::endl;
 
@@ -69,6 +70,10 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
         }
 
         int ncorr=pci->gridSteeringFile.GetNumberOfCorrectionFiles(); 
+        if (debug){
+   	 std::cout<<cn<<mn<<"Number of corrections from main steering "<<bncorr<<std::endl;
+   	 std::cout<<cn<<mn<<"Number of corrections from grid steering "<< ncorr<<std::endl;
+        }
         if (bncorr>ncorr) {
 	 std::cout<<cn<<mn<<"Number of grid correction in Grid file "<<ncorr
                   <<" and main steering file "<<bncorr<<" do not match"<<std::endl;
@@ -98,28 +103,29 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
          pdf->SetScales(RenScales,FacScales);
 
         pdf->Initialize();
+}
 
-        if(mainsteeringFile->GetGridCorr()) {
-	  this->ParseCorrections();
-	  this->ApplyCorrections();       
-        }
+//        if(mainsteeringFile->GetGridCorr()) {
+//	  this->ParseCorrections();
+//	  this->ApplyCorrections();       
+//        }
 
         // calculate total uncertainties
-        pdf->CalcTotalErrors();
+        //pdf->CalcTotalErrors();
 
 	//Convert reference and nominal histograms to graphs and save them
-        if (!pdf->GetPDFNominal()) {
-         throw SPXParseException(cn+mn+"nominal PDF histogram not found !");
-        }
+        //if (!pdf->GetPDFNominal()) {
+        // throw SPXParseException(cn+mn+"nominal PDF histogram not found !");
+        //}
 
-        if (!grid->GetReference()) {
-         std::cout<<cn<<mn<<"WARNING: reference histogram not found ! "<<endl;
-        }
+        //if (!grid->GetReference()) {
+        // std::cout<<cn<<mn<<"WARNING: reference histogram not found ! "<<endl;
+        //}
 
-	SPXGraphUtilities::HistogramToGraph(gridReference, grid->GetReference());
-	SPXGraphUtilities::HistogramToGraph(nominal,       pdf->GetPDFNominal());
+	//SPXGraphUtilities::HistogramToGraph(gridReference, grid->GetReference());
+	//SPXGraphUtilities::HistogramToGraph(nominal,       pdf->GetPDFNominal());
 
-}
+//}
 
 void SPXCrossSection::ParseCorrections(void) {
 	std::string mn = "ParseCorrections: ";
@@ -140,12 +146,43 @@ void SPXCrossSection::ParseCorrections(void) {
 	}
 }
 
+void SPXCrossSection::UpdateBandandHisto() {
+ std::string mn = "UpdateBandandHisto: ";
+ // calculate total uncertainties
+ 
+ pdf->CalcTotalErrors();
+
+ //Convert reference and nominal histograms to graphs and save them
+ if (!pdf->GetPDFNominal()) {
+  throw SPXParseException(cn+mn+"Nominal PDF histogram not found !");
+ }
+
+ if (!grid->GetReference()) {
+  std::cout<<cn<<mn<<"WARNING: reference histogram not found ! "<<endl;
+ }
+
+ SPXGraphUtilities::HistogramToGraph(gridReference, grid->GetReference());
+ SPXGraphUtilities::HistogramToGraph(nominal,       pdf->GetPDFNominal());
+ 
+ return;
+}
+
 void SPXCrossSection::ApplyCorrections() {
  std::string mn = "ApplyCorrections: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if(!mainsteeringFile)
   throw SPXParseException(cn+mn+"main steering file not found !");
+
+ if(mainsteeringFile->ApplyGridCorr()) {
+   if (debug) std::cout << cn << mn << "INFO: grid corrections will be applied cross sections !" << std::endl;
+ } else {
+   if (debug) std::cout << cn << mn << "INFO: No grid correction asked for in steering file ! return " << std::endl;
+   return;
+ }
+
+ if (debug) std::cout << cn << mn << "Parse grid corrections" << std::endl;
+ this->ParseCorrections();
 
  int bncorr=mainsteeringFile->GetNumberofCorrectionToBand();
 
@@ -177,17 +214,17 @@ void SPXCrossSection::ApplyCorrections() {
   filename=griddir+"/"+filename;
   std::cout<<cn<<mn<<"Apply corrections from filename= "<<filename<<" label= "<<corrLabel.c_str()<<std::endl;
 
-  TGraphAsymmErrors *g=corrections->GetCorrectionGraph(filename);
-  if (!g) {
+  TGraphAsymmErrors *gcorr=corrections->GetCorrectionGraph(filename);
+  if (!gcorr) {
    throw SPXGraphException(cn + mn + "Correction graph not found for filename= "+filename);
   }
   if (debug) {
-   std::cout<<cn<<mn<<"Print correction graph: "<<g->GetName()<<std::endl;
-   g->Print();
+   std::cout<<cn<<mn<<"Print correction graph: "<<gcorr->GetName()<<std::endl;
+   gcorr->Print();
   }
 
   bool includeinband=mainsteeringFile->GetGridCorrectionToBand(i);
-  pdf->ApplyBandCorrection(g,corrLabel,includeinband);
+  pdf->ApplyBandCorrection(gcorr,corrLabel,includeinband);
  }
 
  if (debug) std::cout << cn << mn << "APPLY CORRECTIONS finished !" << std::endl;
@@ -225,3 +262,71 @@ std::vector<std::string> SPXCrossSection::GetCorrectionLabels() {
  }
  return correctionlabels;
 }
+void SPXCrossSection::MatchBinning(StringGraphMap_T dataFileGraphMap) {
+ std::string mn = "MatchBinning: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ //Match binning of all graphs within each PCI, if matchBinning set
+ if(mainsteeringFile->GetMatchBinning()) {
+
+  TGraphAsymmErrors *master=0;
+
+  if(debug) std::cout << cn << mn << "Matched binning is ON" << std::endl;
+
+  if(debug) std::cout << cn << mn << "Matching cross section bands to data master" << std::endl;
+
+  std::string dataKey = pci->dataSteeringFile.GetFilename();
+  std::string gridKey = pci->gridSteeringFile.GetFilename();
+  std::string pdfKey  = pci->pdfSteeringFile.GetFilename();
+
+  StringPair_T convoluteKey(gridKey, pdfKey);
+
+  if(debug) std::cout << cn << mn << "dataKey= "<<dataKey
+                                  <<" gridKey= "<<gridKey <<" pdfKey= "<<pdfKey<< std::endl;
+
+  master = dataFileGraphMap[dataKey];
+  if (!master) {
+   std::ostringstream oss;
+   oss << cn << mn << "Data master graph not found ! ";
+   throw SPXParseException(oss.str());
+  }
+
+  if (debug)
+   std::cout << cn << mn << "data master file name "<<master->GetName()<<std::endl;
+
+  //
+  // Check if data master is divided by bin width
+  bool dividedByBinWidth = false;
+  //TC if(pci.dataSteeringFile.IsDividedByBinWidth() && !pci.gridSteeringFile.IsGridDividedByBinWidth()) {
+  if(pci->dataSteeringFile.IsDividedByBinWidth() && pci->gridSteeringFile.IsGridDividedByBinWidth()) {
+   dividedByBinWidth = true;
+  }
+                                
+  //
+  // loop over all graphs in Map
+  // 
+  //for(StringPairGraphMap_T::const_iterator it = convoluteFileGraphMap.begin(); it !=  convoluteFileGraphMap.end(); ++it) 
+  //{
+  // loop over all Band in pdf
+  int nbands=pdf->GetNBands();
+  if (debug) std::cout << cn << mn <<"Number of bands= " <<nbands<< std::endl;
+
+  for (int iband=0; iband<nbands; iband++) {
+   TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+   if (!gband) {
+    std::ostringstream oss;
+    oss << cn <<mn<<"get bands "<<"Band "<<iband<<" not found at index "<<iband;
+    throw SPXGeneralException(oss.str());
+   }
+   if (debug) std::cout << cn <<mn<<"Match binning for graph "<<gband->GetName()<<std::endl;
+   //if (debug) if (dividedByBinWidth)  std::cout << cn <<mn<<"Divided by binwidth is ON "<<std::endl;
+
+   SPXGraphUtilities::MatchBinning(master, gband, dividedByBinWidth);
+   if (debug) {
+    std::cout << cn <<mn<<"After matching pdf graph "<<gband->GetName()<<" to data "<<master->GetName()<<std::endl;
+    gband->Print();
+   }
+  }
+ }
+}
+

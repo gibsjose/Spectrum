@@ -8,7 +8,7 @@
 #
 # ATLAS inclusive jets 2011 7 TeV
 ./Spectrum Steering/atlas_incljet2011.txt
-#./Spectrum Steering/atlas_incljet2011_all.txt
+./Spectrum Steering/atlas_incljet2011_all.txt
 #
 #
 # ATLAS inclusive jets 2011 2.76 TeV
@@ -28,9 +28,11 @@
 #
 # band test
 #
-./Spectrum Steering/test_band.txt
+#./Spectrum Steering/test_band.txt
 #
-./Spectrum detailedtheoryband_atlas_incljet2011_2p76TeV.txt
+./Spectrum Steering/detailedtheoryband_atlas_incljet2011_2p76TeV.txt
 #
-./Spectrum detailedtheoryband_atlas_incljet2011.txt
+./Spectrum Steering/detailedtheoryband_atlas_incljet2011.txt
+#
+./Spectrum Steering/hadronisation_uncertainty_detailedtheoryband_atlas_incljet2011_2p76TeV.txt
 #

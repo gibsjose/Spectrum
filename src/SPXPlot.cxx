@@ -41,9 +41,8 @@ void SPXPlot::Initialize(void) {
 		NormalizeCrossSections();
                 if (debug) std::cout << cn << mn << "finished NormalizeCrossSections id= " << id << std::endl;
 
-		MatchOverlayBinning();
-                if (debug) std::cout << cn << mn << "finished MatchOverlayBinning id= " << id << std::endl;
-
+		//MatchOverlayBinning();
+                //if (debug) std::cout << cn << mn << "finished MatchOverlayBinning id= " << id << std::endl;
 
 		InitializeRatios();
                 if (debug) std::cout << cn << mn << "finished  	InitializeRatios id= " << id << std::endl;
@@ -243,9 +242,12 @@ void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yM
 		//		slightly larger for some points since the other error is negative and
 		//		would bring the total error down
 		for(int i = 0; i < data.size(); i++) {
-			graphs.push_back(data[i].GetStatisticalErrorGraph());
-			graphs.push_back(data[i].GetSystematicErrorGraph());
-			graphs.push_back(data[i].GetTotalErrorGraph());
+		        //graphs.push_back(data[i].GetStatisticalErrorGraph());
+			//graphs.push_back(data[i].GetSystematicErrorGraph());
+			//graphs.push_back(data[i].GetTotalErrorGraph());
+			graphs.push_back(data[i]->GetStatisticalErrorGraph());
+			graphs.push_back(data[i]->GetSystematicErrorGraph());
+			graphs.push_back(data[i]->GetTotalErrorGraph());
 		}
 
 		//Cross sections
@@ -259,7 +261,7 @@ void SPXPlot::DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yM
 		  TGraphAsymmErrors * gband   =pdf->GetBand(iband);
 		  if (!gband) {
                    std::ostringstream oss;
-                   oss << cn <<mn<<"get bands "<<"Band "<<iband<<" not found at index "<<i;
+                   oss << cn <<mn<<"Band iband= "<<iband<<" not found at index "<<iband;
                    throw SPXGeneralException(oss.str());
                   }
                   graphs.push_back(gband);
@@ -457,9 +459,9 @@ void SPXPlot::ConfigurePads(void) {
 		std::cout << "\t yLow = " << yLowRatio << std::endl;
 		std::cout << "\t yUp  = " << yUpRatio << std::endl;
 		std::cout << "\t Fill Color = " << 0 << std::endl;
-		std::cout << "\t Left Margin = " << ratioPad->GetLeftMargin() << std::endl;
-		std::cout << "\t Right Margin = " << ratioPad->GetRightMargin() << std::endl;
-		std::cout << "\t Top Margin = " << ratioPad->GetTopMargin() << std::endl;
+		std::cout << "\t Left Margin = "   << ratioPad->GetLeftMargin() << std::endl;
+		std::cout << "\t Right Margin = "  << ratioPad->GetRightMargin() << std::endl;
+		std::cout << "\t Top Margin = "    << ratioPad->GetTopMargin() << std::endl;
 		std::cout << "\t Bottom Margin = " << ratioPad->GetBottomMargin() << std::endl;
 	}
 
@@ -594,8 +596,6 @@ void SPXPlot::StaggerConvoluteOverlay(void) {
 	//Stagger convolutes in overlay
 	for(int i = 0; i < crossSections.size(); i++) {
 
-	      //TGraphAsymmErrors *graph = crossSections[i].GetPDFBandResults();
-              //TGraphAsymmErrors *graph = crossSections[i].GetTotalBandResults();
               SPXPDF * pdf=crossSections[i].GetPDF();
               int nbands=pdf->GetNBands();
               if (debug) std::cout << cn << mn <<"Number of bands= " <<nbands<< std::endl;
@@ -674,14 +674,15 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 //Matches the overlay binning if the match_binning flag is set
 //NOTE: Ratios are automatically matched, since they must align in order
 //		to use the SPXGraphUtilities::Divide function
+/*
 void SPXPlot::MatchOverlayBinning(void) {
 	std::string mn = "MatchOverlayBinning: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
-	SPXPlotType &pt = pc.GetPlotType();
-	SPXDisplayStyle &ds = pc.GetDisplayStyle();
-	SPXOverlayStyle &os = pc.GetOverlayStyle();
+	SPXPlotType          &pt = pc.GetPlotType();
+	SPXDisplayStyle      &ds = pc.GetDisplayStyle();
+	SPXOverlayStyle      &os = pc.GetOverlayStyle();
 
 	//Do nothing if not drawing overlay
 	if(!ds.ContainsOverlay()) {
@@ -712,19 +713,17 @@ void SPXPlot::MatchOverlayBinning(void) {
                                                     <<" gridKey= "<<gridKey <<" pdfKey= "<<pdfKey<< std::endl;
 
 				master = dataFileGraphMap[dataKey];
-                                //TC loop over map instead
- 				//TC slave = convoluteFileGraphMap[convoluteKey];
                                 //
 				//Check if data master is divided by bin width
 				bool dividedByBinWidth = false;
-				//TCif(pci.dataSteeringFile.IsDividedByBinWidth() && !pci.gridSteeringFile.IsGridDividedByBinWidth()) {
+				//TC if(pci.dataSteeringFile.IsDividedByBinWidth() && !pci.gridSteeringFile.IsGridDividedByBinWidth()) {
                                 if(pci.dataSteeringFile.IsDividedByBinWidth() && pci.gridSteeringFile.IsGridDividedByBinWidth()) {
 				 dividedByBinWidth = true;
                                 }
                                 
                                 //
                                 // loop over all graphs in Map
-                                // TC>>>
+                                // 
                                 for(StringPairGraphMap_T::const_iterator it = convoluteFileGraphMap.begin(); it !=  convoluteFileGraphMap.end(); ++it) 
                                 {
 				 TGraphAsymmErrors *slave=it->second;
@@ -738,21 +737,7 @@ void SPXPlot::MatchOverlayBinning(void) {
 		}
 	}
 }
-
-//void SPXPlot::ApplyGridCorrections(void) {
-// std::string mn = "ApplyGridCorrections: ";
-// if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
-//
-// if(steeringFile->GetGridCorr()) {
-//  if (debug) cout<<cn<<mn<<"Apply grid corrections ON "<<endl;
-//  for(int i = 0; i < crossSections.size(); i++) {
-//   std::cout<<i<<" turned off ApplyCorrections() -> now in initialise"<<std::endl;
-//   //crossSections.at(i).ApplyCorrections();
-//  }
-// } else
-//  std::cout<<cn<<mn<<"No grid corrections applied "<<std::endl;
-// return;
-//}
+*/
 
 void SPXPlot::DrawOverlay(void) {
 	std::string mn = "DrawOverlay: ";
@@ -819,26 +804,20 @@ void SPXPlot::DrawOverlay(void) {
 				csOptions += "Z";
 			//}
 
-			//Set cross section X errors to 0 if not plotting band
-			//if(!steeringFile->GetPlotBand()) {
-			      //SPXGraphUtilities::ClearXErrors(crossSections.at(i).GetPDFBandResults());
-                              //SPXGraphUtilities::ClearXErrors(crossSections.at(i).GetTotalBandResults());
-			      //SPXGraphUtilities::ClearXErrors(crossSections.at(i).GetNominal());
-			//}
-
 			//Warn user that the number of bins in data does not match the number in convolute, if that's the case
 			if(os.ContainsData()) {
-			      //unsigned int cbins = crossSections.at(i).GetPDFBandResults()->GetN();
-                              //unsigned int cbins = crossSections.at(i).GetTotalBandResults()->GetN();
                               SPXPDF * pdf=crossSections[i].GetPDF();
                               int nbands=pdf->GetNBands();
                               if (nbands<1) throw SPXGeneralException(cn+mn+"No band found !");
+                              // there should e also a band
 			      unsigned int cbins = pdf->GetBand(0)->GetN();
-			      unsigned int dbins = data.at(0).GetTotalErrorGraph()->GetN();
+			      //unsigned int dbins = data.at(0).GetTotalErrorGraph()->GetN();
+                              unsigned int dbins = data.at(0)->GetTotalErrorGraph()->GetN();
 
 			      if(cbins != dbins) {
 			       std::cerr << cn << mn << "WARNING: The number of convolute bins (" << cbins << ") does not match the number of master data bins (" << dbins << ")" << std::endl;
-			       std::cerr << "\t\t\t You can enable bin matching with the \"match_binning = true\" flag in the steering file, if you would like to do so" << std::endl;
+			       std::cerr << "\t\t\t This might be fixed by calling Matchbinning later !" << std::endl;
+			       //std::cerr << "\t\t\t You can enable bin matching with the \"match_binning = true\" flag in the steering file, if you would like to do so" << std::endl;
 			       }
 
 			       //Same for theory
@@ -846,14 +825,13 @@ void SPXPlot::DrawOverlay(void) {
 
 			       if(pbins != dbins) {
 			        std::cerr << cn << mn << "WARNING: The number of theory cross section bins (" << pbins << ") does not match the number of master data bins (" << dbins << ")" << std::endl;
-				std::cerr << "\t\t\t You can enable bin matching with the \"match_binning = true\" flag in the steering file, if you would like to do so" << std::endl;
+				//std::cerr << "\t\t\t You can enable bin matching with the \"match_binning = true\" flag in the steering file, if you would like to do so" << std::endl;
+				std::cerr << "\t\t\t This might be fixed by calling MatchBinning later..." << std::endl;
 			       }
 			}
 
 			//Draw theory Cross Section 
 			if(os.ContainsConvolute()) {
-			 //crossSections.at(i).GetPDFBandResults()->Draw(csOptions.c_str());
-                         //crossSections.at(i).GetTotalBandResults()->Draw(csOptions.c_str());
                          SPXPDF * pdf=crossSections[i].GetPDF();
                          int nbands=pdf->GetNBands();
                          if (debug) std::cout << cn << mn <<"Number of bands= " <<nbands<< std::endl;
@@ -885,8 +863,6 @@ void SPXPlot::DrawOverlay(void) {
 
 				//Modify style for theory, if both convolute and theory are drawn
 				if(os.ContainsConvolute()) {
-				      //TGraphAsymmErrors *cs = crossSections.at(i).GetPDFBandResults();
-                                      //TGraphAsymmErrors *cs = crossSections.at(i).GetTotalBandResults();
 				      SPXPDF * pdf=crossSections.at(i).GetPDF();
                                       int nbands=pdf->GetNBands();
                                       if (nbands<1) throw SPXGeneralException(cn+mn+"no band found !");
@@ -932,8 +908,11 @@ void SPXPlot::DrawOverlay(void) {
 				statOptions = "Z";
 			}
 
-			data[i].GetTotalErrorGraph()->Draw(totOptions.c_str());
-			data[i].GetStatisticalErrorGraph()->Draw(statOptions.c_str());
+			//data[i].GetTotalErrorGraph()->Draw(totOptions.c_str());
+			//data[i].GetStatisticalErrorGraph()->Draw(statOptions.c_str());
+
+			data[i]->GetTotalErrorGraph()->Draw(totOptions.c_str());
+			data[i]->GetStatisticalErrorGraph()->Draw(statOptions.c_str());
 
 			if(debug) std::cout << cn << mn << "Sucessfully drew data for Plot " << id << " data " << i << " with Syst options = " \
 				<< totOptions << " Stat options = " << statOptions << std::endl;
@@ -1066,7 +1045,7 @@ void SPXPlot::DrawLegend(void) {
 	SPXOverlayStyle      &os = pc.GetOverlayStyle();
 
         // Why zero here, Where to the the PlotConfiguriotninstance
-        cout<<cn<<mn<<"HuHu fix me "<<endl;
+        cout<<cn<<mn<<"HuHu fix me 0 is not good ! "<<endl;
         SPXGridSteeringFile gridsteeringFile=pc.GetPlotConfigurationInstance(0).gridSteeringFile;
 
         bool overlay=ds.ContainsOverlay();  
@@ -1108,10 +1087,12 @@ void SPXPlot::DrawLegend(void) {
          throw SPXGeneralException(cn+mn+"No data object found !");
 
         for(int i = 0; i < data.size(); i++) {                 
-         TString datalabel=data.at(i).GetLegendLabel();
+	  //TString datalabel=data.at(i).GetLegendLabel();
+         TString datalabel=data.at(i)->GetLegendLabel();
          if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
          if (!ratioonly) // ratioonly figures have data in the ratio, no separate label
-          leg->AddEntry(data.at(i).GetTotalErrorGraph(), datalabel, "P");
+	   //leg->AddEntry(data.at(i).GetTotalErrorGraph(), datalabel, "P");
+           leg->AddEntry(data.at(i)->GetTotalErrorGraph(), datalabel, "P");
 
           //TString datalabel =" L=";
           //datalabel+=data.at(i).GetDatasetLumi();
@@ -1174,7 +1155,7 @@ void SPXPlot::DrawLegend(void) {
 
          // look if it only grid corrections
 	 bool gridcorrectionfound=false;
-         if(steeringFile->GetGridCorr()) {
+         if(steeringFile->ApplyGridCorr()) {
           std::vector<string> corrlabel=crossSections[i].GetCorrectionLabels();
           for (int iband=0; iband<nbands; iband++) {
            for(int ic = 0; ic < corrlabel.size(); ic++) {
@@ -1207,7 +1188,7 @@ void SPXPlot::DrawLegend(void) {
 
          if (!bandsdifferent) {
           TString text="NLO QCD";
-          if(steeringFile->GetGridCorr()) {
+          if(steeringFile->ApplyGridCorr()) {
 	   std::vector<string> corrlabel=crossSections[i].GetCorrectionLabels();
            if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
  	   for(int ic = 0; ic < corrlabel.size(); ic++) {
@@ -1232,7 +1213,7 @@ void SPXPlot::DrawLegend(void) {
            TGraphAsymmErrors * gband   =pdf->GetBand(iband);
 	   string              gtype   =pdf->GetBandType(iband);
 
-           if (debug) std::cout << cn << mn <<"Different properties iband= "<<iband<<"gtype= "<< gtype.c_str()<< std::endl;
+           if (debug) std::cout << cn << mn <<"Different properties iband= "<<iband<<" gtype= "<< gtype.c_str()<< std::endl;
 
            TString label="";
            TString bandtype=TString(gtype);
@@ -1270,10 +1251,10 @@ void SPXPlot::DrawLegend(void) {
            }
 
            if (debug) std::cout << cn << mn <<"npdf= "<<npdf<< std::endl;
-	   if (pdffound) {if (debug) std::cout << cn << mn <<" PDF found "<< pdftype.Data()<< std::endl;
+	   if (pdffound) {if (debug) std::cout << cn << mn <<"PDF found "<< pdftype.Data()<< std::endl;
            } else {
-	    if (debug) std::cout << cn << mn <<" PDF not found "<< std::endl;
-            if(steeringFile->GetGridCorr()) {
+	    if (debug) std::cout << cn << mn <<"No PDF band found "<< std::endl;
+            if(steeringFile->ApplyGridCorr()) {
 	     std::vector<string> corrlabel=crossSections[i].GetCorrectionLabels();
              if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
  	     for(int ic = 0; ic < corrlabel.size(); ic++) {
@@ -1303,9 +1284,9 @@ void SPXPlot::DrawLegend(void) {
        y1 = ylegend-(nraw*(linesize));  y2=ylegend;
   
        if (debug) { 
-	std::cout<<cn<<mn<<" xlegend= "<<xlegend<<" ylegend= "<<ylegend<<std::endl;
-	std::cout<<cn<<mn<<" x1= "<<x1<<" y1= "<<y1<<std::endl;
-	std::cout<<cn<<mn<<" x2= "<<x2<<" y2= "<<y2<<std::endl;
+	std::cout<<cn<<mn<<"xlegend= "<<xlegend<<" ylegend= "<<ylegend<<std::endl;
+	std::cout<<cn<<mn<<"x1= "<<x1<<" y1= "<<y1<<std::endl;
+	std::cout<<cn<<mn<<"x2= "<<x2<<" y2= "<<y2<<std::endl;
        }
 
        leg->SetX1NDC(x1);
@@ -1321,7 +1302,8 @@ void SPXPlot::DrawLegend(void) {
 	 //TString infolabel = "#font[9]{";
         TString infolabel = "";
         if (i>0) sqrtsvalold=sqrtsval;
-        sqrtsval = data.at(i).GetSqrtS();
+        //sqrtsval = data.at(i).GetSqrtS();
+        sqrtsval = data.at(i)->GetSqrtS();
         if (i>0&&sqrtsval!=sqrtsvalold)
          std::cout<<cn<<mn<<"WARNING label not correct"<<" sqrt(s) changed old="<<sqrtsvalold<<" new= "<<sqrtsval<<std::endl;
 
@@ -1336,7 +1318,7 @@ void SPXPlot::DrawLegend(void) {
         else           text->SetTextSize(0.04);
         double xshift=6.*text->GetTextSize();
         //double xshift=1.5*text->GetTextSize();
-        if (debug) std::cout<<cn<<mn<<" xshift= "<<xshift<<std::endl;
+        if (debug) std::cout<<cn<<mn<<"xshift= "<<xshift<<std::endl;
         //if (debug) text->Print();
 	text->DrawLatexNDC(x1-xshift,y2-2.*csize,infolabel.Data());         
        }
@@ -1462,13 +1444,17 @@ void SPXPlot::InitializeCrossSections(void) {
 		if(debug) std::cout << cn << mn << "Added convolute with key = [" << key.first << ", " << key.second << "] to crossSectionsSet" << std::endl;
 
 		try {
-                        // TC changed this grid steering is in plot configuration
-			//SPXPDFSteeringFile &psf = pci.pdfSteeringFile;
-			//SPXCrossSection crossSectionInstance = SPXCrossSection(&psf, &pci);
+
  		        SPXCrossSection crossSectionInstance = SPXCrossSection(&pci);
 			pcis.push_back(pci);
 
 			crossSectionInstance.Create(steeringFile);
+
+			crossSectionInstance.MatchBinning(dataFileGraphMap);
+
+			crossSectionInstance.ApplyCorrections();
+
+			crossSectionInstance.UpdateBandandHisto();
 
 			crossSections.push_back(crossSectionInstance);
 
@@ -1500,7 +1486,7 @@ void SPXPlot::InitializeCrossSections(void) {
                 string theoryname=gband->GetName();
    	        StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), theoryname);
                 convoluteFileGraphMap.insert(StringPairGraphPair_T(convolutePair, gband));
-                // would be better to introduce a map...
+                // 
                 int markerstyle=-99, fillcolor=-99,fillstyle=-99;
 
                 if (gtype.compare(string("pdf"))==0){
@@ -1678,11 +1664,6 @@ void SPXPlot::NormalizeCrossSections(void) {
                          }
                         }
 
-			//if (gTotal)  SPXGraphUtilities::Scale(gTotal, xScale, yScale);
-			//if (gPDF)    SPXGraphUtilities::Scale(gPDF,   xScale, yScale);
-			//if (gAlphaS) SPXGraphUtilities::Scale(gAlphaS,xScale, yScale);
-			//if (gScale)  SPXGraphUtilities::Scale(gScale, xScale, yScale);
-
 			//Check if data/grid are/are not normalized by total sigma or bin width
 			bool normalizeToTotalSigma = pci->dataSteeringFile.IsNormalizedToTotalSigma();
 			bool dataDividedByBinWidth = pci->dataSteeringFile.IsDividedByBinWidth();
@@ -1699,27 +1680,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 			if(!dataDividedByBinWidth && gridDividedByBinWidth) {
 			 throw SPXGraphException(cn + mn + "Grid IS divided by the bin with but the data IS NOT: Not supported");
 			}
-			/*
-			double totalSigma=0.;
-			double totalSigmaPDF=0.;
-			double totalSigmaAlphaS=0.;
-			double totalSigmaScale=0.;
-                        if (gTotal)  totalSigma=SPXGraphUtilities::GetTotalSigma(gTotal, gridDividedByBinWidth);
-                        if (gPDF)    totalSigmaPDF   =SPXGraphUtilities::GetTotalSigma(gPDF, gridDividedByBinWidth);
-                        if (gAlphaS) totalSigmaAlphaS=SPXGraphUtilities::GetTotalSigma(gAlphaS, gridDividedByBinWidth);
-                        if (gScale) totalSigmaScale=SPXGraphUtilities::GetTotalSigma(gScale, gridDividedByBinWidth);
-			double totalSigmaNom = SPXGraphUtilities::GetTotalSigma(gNom, gridDividedByBinWidth);
-			double totalSigmaRef = SPXGraphUtilities::GetTotalSigma(gRef, referenceDividedByBinWidth);
 
-			if(debug) {
-			  std::cout<<cn<<mn<< "Total Sigma    = "      << totalSigma      << std::endl;
-			  std::cout<<cn<<mn<< "Total SigmaPDF = "      << totalSigmaPDF   << std::endl;
-			  std::cout<<cn<<mn<< "Total SigmaAlphaS= "    << totalSigmaAlphaS << std::endl;
-			  std::cout<<cn<<mn<< "Total SigmaScale = "    << totalSigmaScale << std::endl;
-			  std::cout<<cn<<mn<< "Nominal Total Sigma = " << totalSigmaNom   << std::endl;
-			  std::cout<<cn<<mn<< "Reference Total Sigma = "<< totalSigmaRef  << std::endl;
-			}
-			*/
 			double totalSigmaNom = SPXGraphUtilities::GetTotalSigma(gNom, gridDividedByBinWidth);
 			double totalSigmaRef = SPXGraphUtilities::GetTotalSigma(gRef, referenceDividedByBinWidth);
 			if(debug) {
@@ -1730,16 +1691,13 @@ void SPXPlot::NormalizeCrossSections(void) {
 			//@TODO Do I need to do this also for the Alpha S and Scale Uncertainty bands?
 			if(dataDividedByBinWidth && !gridDividedByBinWidth) {
 			 if(debug) std::cout << cn << mn << "Dividing Cross Section by the Bin Width" << std::endl;
-			 //	if (gTotal)  SPXGraphUtilities::DivideByBinWidth(gTotal);
-			 //	if (gPDF)    SPXGraphUtilities::DivideByBinWidth(gPDF);
-			 //	if (gAlphaS) SPXGraphUtilities::DivideByBinWidth(gAlphaS);
-			 //	if (gScale)  SPXGraphUtilities::DivideByBinWidth(gScale);
 			 SPXGraphUtilities::DivideByBinWidth(gNom);
                         }
 			if(dataDividedByBinWidth && !referenceDividedByBinWidth) {
 			  if(debug) std::cout << cn << mn << "Dividing Grid Reference by the Bin Width" << std::endl;
 			  SPXGraphUtilities::DivideByBinWidth(gRef);
 			}
+
 
 			//Set the yBinWidthScale, which is the scaling of the data's Y Bin Width Units to the data's X Units
 			double yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), pci->dataSteeringFile.GetYBinWidthUnits());
@@ -1758,10 +1716,13 @@ void SPXPlot::NormalizeCrossSections(void) {
                            std::ostringstream oss;
                            oss << cn <<mn<<"Band "<<iband<<" not found at index "<<i;
                            throw SPXParseException(oss.str());
-			  }else {
+			  } else {
 			  if (debug) std::cout << cn << mn << "Normalise band " << gband->GetName() << std::endl;  
+
                           double totalSigma=SPXGraphUtilities::GetTotalSigma(gband, gridDividedByBinWidth);
+
     			  if(dataDividedByBinWidth && !gridDividedByBinWidth) {
+
 			  if(debug) std::cout << cn << mn << "Divide by binwidth "<< std::endl;
                            SPXGraphUtilities::DivideByBinWidth(gband);
                           }
@@ -1775,85 +1736,6 @@ void SPXPlot::NormalizeCrossSections(void) {
                           }
                          }
                         }
-			//}
-			/*
-			if (gTotal)  SPXGraphUtilities::Scale(gTotal, 1.0, (1.0 / yBinWidthScale));
-                        if (gPDF)    SPXGraphUtilities::Scale(gPDF, 1.0, (1.0 / yBinWidthScale));
-                        if (gAlphaS) SPXGraphUtilities::Scale(gAlphaS, 1.0, (1.0 / yBinWidthScale));
-                        if (gScale)  SPXGraphUtilities::Scale(gScale, 1.0, (1.0 / yBinWidthScale));
-
-			if(normalizeToTotalSigma) {
-                                if (gTotal) {
-				 if(totalSigma== 0) throw SPXGeneralException(cn + mn + "Divide by zero error: Total Sigma is zero");
-
-				if(debug) std::cout << cn << mn << "Scaling by 1 / total sigma: " << std::scientific << (1.0 / totalSigma) << std::endl;
-				 SPXGraphUtilities::Scale(gTotal, 1.0, (1.0 / totalSigma));
-                                }
-
-                                if (gPDF) {
-				 if(totalSigmaPDF == 0) throw SPXGeneralException(cn + mn + "Divide by zero error: Total Sigma PDF is zero");
-
-				if(debug) std::cout << cn << mn << "Scaling by 1 / total sigmaPDF: " << std::scientific << (1.0 / totalSigmaPDF) << std::endl;
-				 SPXGraphUtilities::Scale(gPDF, 1.0, (1.0 / totalSigmaPDF));
-                                }
-                                if (gAlphaS) {
-				 if(totalSigmaAlphaS == 0) throw SPXGeneralException(cn + mn + "Divide by zero error: Total Sigma Alphas is zero");
-
-				if(debug) std::cout << cn << mn << "Scaling by 1 / total sigmaAlphaS: " << std::scientific << (1.0 / totalSigmaAlphaS) << std::endl;
-				 SPXGraphUtilities::Scale(gAlphaS, 1.0, (1.0 / totalSigmaAlphaS));
-                                }
-                                if (gScale) {
-				 if(totalSigmaScale == 0) throw SPXGeneralException(cn + mn + "Divide by zero error: Total Sigma Scale is zero");
-
-				if(debug) std::cout << cn << mn << "Scaling by 1 / total sigmaScale: " << std::scientific << (1.0 / totalSigmaScale) << std::endl;
-				 SPXGraphUtilities::Scale(gScale, 1.0, (1.0 / totalSigmaScale));
-                                }
-
-				SPXGraphUtilities::Scale(gNom, 1.0, (1.0 / totalSigmaNom));
-				SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / totalSigmaRef));
-			}
-
-			if(debug) std::cout << cn << mn << "Sucessfully normalized Cross Section i= " << i << std::endl;
-
-			//Print cross section
-			if(gTotal&&debug) {
-				std::cout << cn << mn << "Printing Cross Section Total i= " << i << std::endl;
-				gTotal->Print();
-				std::cout << std::endl;
-			}
-
-			if(gPDF&&debug) {
-				std::cout << cn << mn << "Printing Cross Section PDF i= " << i << std::endl;
-				gPDF->Print();
-				std::cout << std::endl;
-			}
-
-			if(gAlphaS&&debug) {
-				std::cout << cn << mn << "Printing Cross Section AlphaS i= " << i << std::endl;
-				gAlphaS->Print();
-				std::cout << std::endl;
-			}
-
-			if(gScale&&debug) {
-				std::cout << cn << mn << "Printing Cross Section Scale i= " << i << std::endl;
-				gScale->Print();
-				std::cout << std::endl;
-			}
-
-			//Print PDF nominal
-			if(debug) {
-				std::cout << cn << mn << "Printing Cross Section Nominal " << i << std::endl;
-				gNom->Print();
-				std::cout << std::endl;
-			}
-
-			//Print Grid Reference
-			if(debug) {
-				std::cout << cn << mn << "Printing Grid Reference " << i << std::endl;
-				gRef->Print();
-				std::cout << std::endl;
-			}
-			*/
 
 		} catch(const SPXException &e) {
 			std::cerr << e.what() << std::endl;
@@ -1884,27 +1766,30 @@ void SPXPlot::InitializeData(void) {
 
 		//Check if data with the same steering file has already been added to the data vector (same data...)
 		// Don't add to vector if it already exists
-		if(dataSet.count(key) != 0) {
-			if(debug) std::cout << cn << mn << "Data with filename \"" << pci.dataSteeringFile.GetFilename() << \
+		//if(dataSet.count(key) != 0) {
+		//	if(debug) std::cout << cn << mn << "Data with filename \"" << pci.dataSteeringFile.GetFilename() << \
 				"\" has already been processed: Will not process duplicate" << std::endl;
 
-			continue;
-		}
+		//	continue;
+		//}
 
 		//Add data steering file to data set
-		dataSet.insert(key);
+		//dataSet.insert(key);
 
 		if(debug) std::cout << cn << mn << "Added data with key = [" << key << "] to dataSet" << std::endl;
 
-		SPXData dataInstance = SPXData(pci);
+		//SPXData dataInstance = SPXData(pci);
+
+                SPXData *dataInstance = new SPXData(pci);
 
 		//@DEBUG
 		std::cout  << cn << mn << pci.dataDirectory << std::endl;
 		std::cout  << cn << mn << pci.dataSteeringFile.GetFilename() << std::endl;
 
 		try {
-			dataInstance.Parse();
-			dataInstance.Print();
+		        //dataInstance.Parse();
+			//dataInstance.Print();
+                        dataInstance->Print();
 			data.push_back(dataInstance);
 		} catch(const SPXException &e) {
 			throw;
@@ -1916,12 +1801,16 @@ void SPXPlot::InitializeData(void) {
 	for(int i = 0; i < data.size(); i++) {
 
 		//Create graphs: once this function is called, it is safe to manipulate graphs
-		data[i].CreateGraphs();
+		//data[i].CreateGraphs();
 
 		//Obtain the graphs
-		TGraphAsymmErrors *statGraph = data[i].GetStatisticalErrorGraph();
-		TGraphAsymmErrors *systGraph = data[i].GetSystematicErrorGraph();
-		TGraphAsymmErrors *totGraph  = data[i].GetTotalErrorGraph();
+		//TGraphAsymmErrors *statGraph = data[i].GetStatisticalErrorGraph();
+		//TGraphAsymmErrors *systGraph = data[i].GetSystematicErrorGraph();
+		//TGraphAsymmErrors *totGraph  = data[i].GetTotalErrorGraph();
+
+		TGraphAsymmErrors *statGraph = data[i]->GetStatisticalErrorGraph();
+		TGraphAsymmErrors *systGraph = data[i]->GetSystematicErrorGraph();
+		TGraphAsymmErrors *totGraph  = data[i]->GetTotalErrorGraph();
 
 		//Get settings
 		SPXPlotConfigurationInstance &pci = steeringFile->GetPlotConfigurationInstance(id, i);

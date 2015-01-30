@@ -17,22 +17,21 @@
 
 #include "SPXROOT.h"
 
-#include "SPXGrid.h"
-#include "SPXPDF.h"
 #include "SPXPDFSteeringFile.h"
 #include "SPXPlotConfiguration.h"
 #include "SPXGridCorrections.h"
 #include "SPXSteeringFile.h"
 #include "SPXUtilities.h"
 
+#include "SPXGrid.h"
+#include "SPXPDF.h"
+
 class SPXCrossSection {
 
 public:
-   // TC changed this grid steering is in plot configuration
-   //explicit SPXCrossSection(SPXPDFSteeringFile *psf, SPXPlotConfigurationInstance *pci) {
+
      explicit SPXCrossSection(SPXPlotConfigurationInstance *pci) {
 
-              //this->psf = psf;
                 this->psf =&pci->pdfSteeringFile;
 		this->pci = pci;
              
@@ -63,22 +62,6 @@ public:
 		return dividedByBinWidth;
 	}
 
-	//TGraphAsymmErrors *GetPDFBandResults(void) {
-	//  return pdf->GetPDFBand();
-	//}
-
-	//TGraphAsymmErrors *GetAlphaSBandResults(void) {
-	//  return pdf->GetAlphaSBand();
-	//}
-
-	//TGraphAsymmErrors *GetScaleBandResults(void) {
-	//  return pdf->GetScaleBand();
-	//}
-
-	//TGraphAsymmErrors *GetTotalBandResults(void) {
-	//  return pdf-> GetTotalBand();
-	//}
-
 	SPXPDFSteeringFile *GetPDFSteeringFile(void) {
 		return psf;
 	}
@@ -105,11 +88,17 @@ public:
 
         std::vector<std::string> GetCorrectionLabels();
 
+        void MatchBinning(StringGraphMap_T dataFileGraphMap);
+        void UpdateBandandHisto(void);
+
+
 private:
 	static bool debug;		       // Flag indicating debug mode
-	unsigned int plotID;		       // Plot ID
+
 	SPXPDFSteeringFile *psf;	       // Fully parsed PDF Steering File
 	SPXPlotConfigurationInstance *pci;     // Fully parsed Plot configuration instance (contains grid steering file)
+        SPXSteeringFile *mainsteeringFile;       // pointer to main steering file frpm SPXPlot
+
 	SPXGrid *grid;			       // Grid
 	SPXPDF *pdf;			       // PDF
 	SPXGridCorrections *corrections;       // Grid corrections
@@ -119,9 +108,9 @@ private:
 	TGraphAsymmErrors *nominal;	       // Nominal (default) graph from PDF
 
         std::vector<std::string> correctionlabels; // labels of corrections from Grid Steering file
-	                                           // corrections can be Hadcorr, e.w.
+       	                                           // corrections can be Hadcorr, e.w.
 
-        SPXSteeringFile *mainsteeringFile;       // pointer to main steering file frpm SPXPlot
+
 };
 
 #endif

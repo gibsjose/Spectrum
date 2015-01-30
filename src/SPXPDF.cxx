@@ -339,11 +339,11 @@ void SPXPDF::Initialize()
   if (h_PDFBand_results) h_PDFBand_results->SetName(name);
  }
 
- if (do_Total) {
-  h_Total_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
-  TString name="xsec_total_"+default_pdf_set_name;
-  h_Total_results->SetName(name);
- }
+ //if (do_Total) {
+ // h_Total_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
+ // TString name="xsec_total_"+default_pdf_set_name;
+ // h_Total_results->SetName(name);
+ //}
 
  // Now do the scale variations
  if (debug)
@@ -654,11 +654,6 @@ void SPXPDF::Initialize()
  if (debug) std::cout<<cn<<mn<<"Now calling CalcSystErrors "<<std::endl;
  this->CalcSystErrors();
 
- //
- //if (do_Total) if (h_Total_results){
- // Mapallbands["total"]=h_Total_results;
- //}
-
  if (do_PDFBand) if(h_PDFBand_results) {
   Mapallbands["pdf"]=h_PDFBand_results;
  }
@@ -697,7 +692,6 @@ void SPXPDF::CalcSystErrors()
  std::string mn = "CalcSystErrors: ";
  if (debug) {
   std::cout<<cn<<mn<<"Start systematic error calculation for: "<<PDFtype<<std::endl;
-  //if (do_Total)  std::cout<<cn<<mn<<"Calculate total uncertainty band "<<std::endl;
   if (do_Scale)  std::cout<<cn<<mn<<"Calculate Scale uncertainty band "<<std::endl;
   if (do_PDFBand)std::cout<<cn<<mn<<"Calculate PDF uncertainty band "<<std::endl;
   if (do_AlphaS) std::cout<<cn<<mn<<"Calculate AlphaS uncertainty band "<<std::endl;
@@ -706,7 +700,6 @@ void SPXPDF::CalcSystErrors()
  if (do_PDFBand) CalcPDFBandErrors();
  if (do_AlphaS ) CalcAlphaSErrors();
  if (do_Scale)   CalcScaleErrors();
- //if (do_Total)   CalcTotalErrors();
 
  if (debug) std::cout<<cn<<mn<<"End systematic error calculation for: "<<PDFtype<<std::endl;
 }
@@ -1025,125 +1018,6 @@ void SPXPDF::CalcScaleErrors()
  if (debug) cout<<cn<<mn<<"End calculation of ScaleErrors for: "<<PDFtype<<std::endl;
 }
 
-/*
-void SPXPDF::CalcTotalErrors()
-{
- std::string mn = "CalcTotalErrors:";
- if (debug) cout<<cn<<mn<<"Starting calculation of TotalErrors for: "<<PDFtype<<std::endl;
- if (debug) cout<<cn<<mn<<"All enabled uncertainties are added in quadrature !  "<<std::endl;
-
- if (do_PDFBand) std::cout<<cn<<mn<<"do_PDFBand ON" <<std::endl;
- else            std::cout<<cn<<mn<<"do_PDFBand OFF"<<std::endl;
-
- if (do_AlphaS ) std::cout<<cn<<mn<<"do_AlphaS ON"  <<std::endl;
- else            std::cout<<cn<<mn<<"do_AlphaS OFF" <<std::endl;
-
- if (do_Scale)   std::cout<<cn<<mn<<"do_Scale ON"   <<std::endl;
- else            std::cout<<cn<<mn<<"do_Scale OFF"  <<std::endl;
-
- if (do_PDFBand && do_Scale) {
-  if (h_Scale_results->GetN()!=h_PDFBand_results->GetN()) {
-   std::ostringstream oss;
-   oss << cn << mn << "ERROR bins in scale vector not equal Bins in PDF vector= "<<h_Scale_results->GetN()<<"Bins in PDF vector= "<<h_PDFBand_results->GetN(); 
-   throw SPXParseException(oss.str());
-  }
- }
-
- if (do_PDFBand && do_AlphaS) {
-  if (h_AlphaS_results->GetN()!=h_PDFBand_results->GetN()) {
-   std::ostringstream oss;
-   oss << cn << mn << "ERROR bins in alphas and PDF vector not equal Bins in PDFband vector= "<<h_PDFBand_results->GetN()<<"Bins in AlphaS vector= "<<h_AlphaS_results->GetN(); 
-   throw SPXParseException(oss.str());
-  }
- }
-
- if (do_Scale && do_AlphaS) {
-  if (h_AlphaS_results->GetN()!=h_Scale_results->GetN()) {
-   std::ostringstream oss;
-   oss << cn << mn << "ERROR bins in scale vector not equal Bins in Alphas vector= "<<h_Scale_results->GetN()<<"Bins in AlphaS vector= "<<h_AlphaS_results->GetN(); 
-   throw SPXParseException(oss.str());
-  }
- }
-
- int nbin=0;
- if (do_Scale) {
-  nbin=h_Scale_results->GetN();
- }
-
- if (do_AlphaS ) {
-   nbin=h_AlphaS_results->GetN();
- }
-
- if (do_PDFBand) {
-   nbin=h_PDFBand_results->GetN();
- }
-
- if (debug) std::cout<<cn<<mn<<"nbin= " <<nbin <<std::endl;
-
- if (nbin==0) {
-  std::cout<<cn<<mn<<"WARNING can not calculate total uncertainty, since not individual uncertainty specified nbin= " <<nbin <<std::endl;
-  return;
-   //std::ostringstream oss;
-   //oss << cn << mn << "ERROR no bins to calculate uncertainty band, no uncertainty specified before ";
-   //throw SPXParseException(oss.str());
- }
-
- for (int ibin=0;ibin<nbin;++ibin){
-  //if (debug) std::cout << cn<<mn<<"Calculating total error for point " << ibin << std::endl;
-  double x=0.;
-  double exl=0., exh=0.;
-  double y=0.;
-  double PDFError_high=0.;
-  double PDFError_low =0.;
-  double alphaSError_high=0.;
-  double alphaSError_low =0.;
-  double scaleError_high=0.;
-  double scaleError_low =0.;
-
-  // Since it is last, x,y is taken from PDF-band, if available
-  if (do_AlphaS ) {  
-   h_AlphaS_results->GetPoint(ibin,x,y);
-   alphaSError_high=h_AlphaS_results->GetErrorYhigh(ibin);
-   alphaSError_low =h_AlphaS_results->GetErrorYlow(ibin);
-   exh=h_AlphaS_results->GetErrorXhigh(ibin);
-   exl=h_AlphaS_results->GetErrorXlow(ibin);
-  }
-
-  if (do_Scale) {
-   h_Scale_results->GetPoint(ibin,x,y);
-   scaleError_high=h_Scale_results->GetErrorYhigh(ibin);
-   scaleError_low =h_Scale_results->GetErrorYlow(ibin);
-   exh=h_Scale_results->GetErrorXhigh(ibin);
-   exl=h_Scale_results->GetErrorXlow(ibin);
-  } 
-
-  if (do_PDFBand) {
-   h_PDFBand_results->GetPoint(ibin,x,y);
-   PDFError_high=h_PDFBand_results->GetErrorYhigh(ibin);
-   PDFError_low =h_PDFBand_results->GetErrorYlow(ibin);
-   exh=h_PDFBand_results->GetErrorXhigh(ibin);
-   exl=h_PDFBand_results->GetErrorXlow(ibin);
-  }
-
-  // add now everything that is enabled in quadrature
-  double totalError_high=sqrt(pow(PDFError_high,2)+pow(alphaSError_high,2)+pow(scaleError_high,2));
-  double totalError_low =sqrt(pow(PDFError_low ,2)+pow(alphaSError_low ,2)+pow(scaleError_low ,2));
-
-  h_Total_results->SetPoint(ibin,x,y);
-  h_Total_results->SetPointEYhigh(ibin,totalError_high);
-  h_Total_results->SetPointEYlow(ibin,totalError_low);
-
-  h_Total_results->SetPointEXhigh(ibin,exh);
-  h_Total_results->SetPointEXlow(ibin,exl);
- } /// ibin
- 
-  h_Total_results->SetFillStyle  (fillStyleCode);
-  h_Total_results->SetMarkerColor(fillColorCode);
-  h_Total_results->SetLineColor  (fillColorCode);
-  h_Total_results->SetFillColor  (fillColorCode);
-
-}
-*/
 void SPXPDF::CalcTotalErrors()
 {
  std::string mn = "CalcTotalErrors:";
@@ -1158,13 +1032,13 @@ void SPXPDF::CalcTotalErrors()
   return;
  } 
 
-
  int nbin=0; 
  int nbinold=(Mapallbands.begin()->second)->GetN();
  for(BandMap_T::const_iterator it = Mapallbands.begin(); it != Mapallbands.end(); ++it) {
-  std::cout <<cn<<mn<< " " << std::endl;
+  if (debug) std::cout <<cn<<mn<< " Do= " <<  it->second->GetName() << std::endl;
 
   nbin=it->second->GetN();
+
   if (debug)
    std::cout <<cn<<mn<< "map["<<it->first<<"]:"<< " graph name: " << it->second->GetName() <<" nbin= "<<nbin<< std::endl;
   if (nbin!=nbinold)
@@ -1174,9 +1048,16 @@ void SPXPDF::CalcTotalErrors()
   if (gtype.compare(string("total"))==0){
    std::ostringstream oss;
    oss << cn << mn << "ERROR Mapallbands already contains total uncertainty, called twice ? "; 
-   throw SPXParseException(oss.str());
+   throw SPXGraphException(oss.str());
   }
 
+ }
+
+ // Create total uncertainty graph
+ TString name="xsec_total_"+default_pdf_set_name;
+ h_Total_results=(TGraphAsymmErrors *) (Mapallbands.begin()->second)->Clone(name);
+ if (!h_Total_results) {
+  throw SPXGraphException(cn+mn+"Could not create h_Total_results !");
  }
 
  for (int ibin=0; ibin<nbin; ibin++) {
@@ -1638,6 +1519,12 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
   //std::cout <<cn<<mn<< "Before multiply: gcorr: " << gcorr->GetName()<< std::endl;
   //gcorr->Print();
 
+  if (gband->GetN()!=gcorr->GetN()) {
+   std::ostringstream oss;
+   oss << cn << mn << "Graph "<<gband->GetName()<<" has different nbin= "<<gband->GetN()<<" than graph"<<gcorr->GetName()<<" nbin= "<<gcorr->GetN();
+   throw SPXParseException(oss.str());
+  }
+
   SPXGraphUtilities::Multiply(gband,gcorr,1);
 
   //std::cout <<cn<<mn<< "After multiply: gcorr: " << gcorr->GetName()<< std::endl;
@@ -1662,7 +1549,8 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
 
  // use only the correction, not the uncertainty in ratio
  TString hname=hpdfdefault->GetName();
- TGraphAsymmErrors* gcorr2=(TGraphAsymmErrors*)gcorr->Clone("gtmp");;
+ hname+="_"+corrLabel;
+ TGraphAsymmErrors* gcorr2=(TGraphAsymmErrors*)gcorr->Clone(TString("g"+hname));;
  SPXGraphUtilities::ClearYErrors(gcorr2);
  TH1D*  hcorr=SPXGraphUtilities::GraphToHistogram(gcorr2);
 
@@ -1671,10 +1559,15 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
   hcorr->Print("all");
  }
 
- hpdfdefault->Multiply(hcorr);
- hname+="_"+corrLabel;
- hpdfdefault->SetName(hname);
+ if (hpdfdefault->GetNbinsX()==hcorr->GetNbinsX()){
+  hpdfdefault->Multiply(hcorr);
+ } else {
+  // neeed to recalculate hpdfdefault
+  hpdfdefault=SPXGraphUtilities::GraphToHistogram(gband2);
+ }
 
+ hpdfdefault->SetName(hname);
+ 
  if (debug) {
   std::cout <<cn<<mn<< "After Print hpdfdefault: "<< hpdfdefault->GetName()<< std::endl;
   hpdfdefault->Print("all");
@@ -1697,7 +1590,7 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
 
  if (gband2->GetN()!=gcorr->GetN()) {
   std::ostringstream oss;
-  oss << cn << mn << "Band and correction graph do not have the same number of bins ";
+  oss << cn << mn << "Band n= "<<gband2->GetN()<<" and correction graph n= "<<gcorr->GetN()<<" do not have the same number of bins ";
   throw SPXParseException(oss.str());
  }
 

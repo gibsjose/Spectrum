@@ -23,6 +23,40 @@ const std::string cn = "SPXData::";
 //Must define the static debug variable in the implementation
 bool SPXData::debug;
 
+SPXData::SPXData(const SPXPlotConfigurationInstance &pci) {
+ std::string mn = "SPXData: ";
+
+ this->pci = pci;
+ this->dataFormat = pci.dataSteeringFile.GetDataFormat();
+ dividedByBinWidth = this->pci.dataSteeringFile.IsDividedByBinWidth();
+
+ //set pointer to zero
+ statisticalErrorGraph=0;
+ systematicErrorGraph=0;
+ totalErrorGraph=0;
+
+ cov_matrixtot=0;
+ cov_matrixstat=0;
+ cov_matrixsyst=0;
+
+ corr_matrixtot=0;
+ corr_matrixstat=0;
+ corr_matrixsyst=0;
+
+ // Parse in data
+  
+ if (debug) std::cout<<cn<<mn<<"Parse in Data"<<std::endl;
+ this->Parse();
+
+ if (debug) std::cout<<cn<<mn<<"Create graphs"<<std::endl;
+ this->CreateGraphs();
+
+ if (debug) std::cout<<cn<<mn<<"Read correlation matrix"<<std::endl;
+ this->ReadCorrelation(); 
+
+ return;
+}
+
 //Public helper method to parse the data file based on the type
 void SPXData::Parse(void) {
 	std::string mn = "Parse: ";
@@ -47,18 +81,19 @@ void SPXData::Parse(void) {
 			std::cerr << e.what() << std::endl;
 			throw SPXParseException(pci.dataSteeringFile.GetDataFile(), "Error parsing data file");
 		}
-	} else if(dataFormat.IsHERAFitter()) {
-		if(debug) std::cout << cn << mn << "Data format is " << dataFormat.ToString() << std::endl;
+		//} else if(dataFormat.IsHERAFitter()) {
+		//if(debug) std::cout << cn << mn << "Data format is " << dataFormat.ToString() << std::endl;
 
-		try {
-			ParseHERAFitter();
-		} catch(const SPXException &e) {
-			std::cerr << e.what() << std::endl;
-			throw SPXParseException(pci.dataSteeringFile.GetDataFile(), "Error parsing data file");
-		}
+		//try {
+		//	ParseHERAFitter();
+		//} catch(const SPXException &e) {
+		//	std::cerr << e.what() << std::endl;
+		//	throw SPXParseException(pci.dataSteeringFile.GetDataFile(), "Error parsing data file");
+		//}
 	} else {
 		throw SPXParseException("DataSteeringFile " + pci.dataSteeringFile.GetFilename() + " has invalid data format");
 	}
+	return;
 }
 
 void SPXData::ParseSpectrum(void) {
@@ -286,6 +321,15 @@ void SPXData::ParseSpectrum(void) {
 				const std::string &name = it->first;
 				std::vector<double> &syst = it->second;
 
+				std::cout<<cn<<mn<<" i= "<<i<<" syst.size()= "<<syst.size()<<std::endl;
+
+			        if (i>=syst.size()) { 
+				 std::ostringstream oss;
+				 oss << cn << mn << "Systematic uncertainty vector too small syst.size()= "<<syst.size()<<" i= "<<i<<" Check number of bins in systematic text file";
+				 throw SPXParseException(oss.str());
+                                }
+
+
 				//Positive systematic
 				if(name.find("+") != std::string::npos) {
 					p_errors.push_back(syst.at(i));
@@ -301,6 +345,7 @@ void SPXData::ParseSpectrum(void) {
 					p_errors.push_back(syst.at(i));
 					n_errors.push_back(syst.at(i));
 				}
+
 			}
 
 			syst_p_t = SPXMathUtilities::AddErrorsInQuadrature(p_errors);
@@ -318,6 +363,12 @@ void SPXData::ParseSpectrum(void) {
 
 			//Otherwise, compare the summed individuals against the total within the acceptable percent difference
 			else if((numberOfColumns == 6) || (numberOfColumns == 7)) {
+			  if(debug) std::cout << cn << mn << " i= " << i << " size: syst_p= "<<syst_p.size()<<" syst_n "<<syst_n.size()<< std::endl;
+  			        if (i>=syst_n.size()) {
+				 std::ostringstream oss;
+				 oss << cn << mn << "Systematic uncertainty vector too small size neg= "<<syst_n.size()<<" pos= "<<syst_p.size()<<" i= "<<i;
+				 throw SPXParseException(oss.str());
+                                }
 				double given_total_p = syst_p.at(i);
 				double given_total_n = syst_n.at(i);
 				double delta_p = abs(given_total_p - syst_p_t);
@@ -386,6 +437,7 @@ void SPXData::ParseSpectrum(void) {
 	if(debug) std::cout << cn << mn << "Successfully added data to map" << std::endl;
 }
 
+/*
 void SPXData::ParseHERAFitter(void) {
 	std::string mn = "ParseHERAFitter: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
@@ -655,14 +707,14 @@ void SPXData::ParseHERAFitter(void) {
 	PrintHERAFitter();
 	while(1);
 }
-
+*/
 //Helper method to choose correct print method based on data format
 void SPXData::Print(void) {
 
 	if(dataFormat.IsSpectrum()) {
 		PrintSpectrum();
-	} else if(dataFormat.IsHERAFitter()) {
-		PrintHERAFitter();
+	 //} else if(dataFormat.IsHERAFitter()) {
+	 //PrintHERAFitter();
 	}
 }
 
@@ -704,24 +756,27 @@ void SPXData::PrintSpectrum(void) {
 
 	std::cout << "This data has " << individualSystematics.size() / 2<< " Individual Systematic Errors:" << std::endl << std::endl;
 
+        this->PrintSystematics(individualSystematics);
+
 	//Iterate over individual systematic errors
-	for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
-		const std::string &syst_name = it->first;
-		std::vector<double> &systematic = it->second;
+	//for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
+	//	const std::string &syst_name = it->first;
+	//	std::vector<double> &systematic = it->second;
+	//
+	//	std::cout << std::left << std::setw(24) << syst_name << "  ";
+	//	std::cout << std::fixed;
+	//	std::cout.precision(4);
+	//	for(int j = 0; j < systematic.size(); j++) {
+	//		std::cout.width(10);
+	//		std::cout << systematic.at(j) << " ";
+	//	}
+	//	std::cout << std::endl;
+	//}
 
-		std::cout << std::left << std::setw(24) << syst_name << "  ";
-		std::cout << std::fixed;
-		std::cout.precision(4);
-		for(int j = 0; j < systematic.size(); j++) {
-			std::cout.width(10);
-			std::cout << systematic.at(j) << " ";
-		}
-		std::cout << std::endl;
-	}
-
-	std::cout << std::endl << std::endl;
+	//std::cout << std::endl << std::endl;
 }
 
+/*
 void SPXData::PrintHERAFitter(void) {
 	std::string mn = "PrintHERAFitter: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
@@ -779,7 +834,7 @@ void SPXData::PrintHERAFitter(void) {
 
 	std::cout << "" << std::endl << std::endl;
 }
-
+*/
 void SPXData::CreateGraphs(void) {
 	std::string mn = "CreateGraphs: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
@@ -876,16 +931,545 @@ void SPXData::CreateGraphs(void) {
 	systematicErrorGraph->SetName(systName);
 	totalErrorGraph->SetName(totName);
 
-	if(debug) {
-		std::cout << std::endl;
-		std::cout << cn << mn << "Statistical Error Graph created with name: " << statName << std::endl;
-		statisticalErrorGraph->Print();
-		std::cout << std::endl;
-		std::cout << cn << mn << "Systematic Error Graph created with name: " << systName << std::endl;
-		systematicErrorGraph->Print();
-		std::cout << std::endl << std::endl;
-		std::cout << cn << mn << "Total Error Graph created with name: " << totName << std::endl;
-		totalErrorGraph->Print();
-		std::cout << std::endl;
-	}
+	//if(debug) {
+	//	std::cout << std::endl;
+	//	std::cout << cn << mn << "Statistical Error Graph created with name: " << statName << std::endl;
+	//	statisticalErrorGraph->Print();
+	//	std::cout << std::endl;
+	//	std::cout << cn << mn << "Systematic Error Graph created with name: " << systName << std::endl;
+	//	systematicErrorGraph->Print();
+	//	std::cout << std::endl << std::endl;
+	//	std::cout << cn << mn << "Total Error Graph created with name: " << totName << std::endl;
+	//	totalErrorGraph->Print();
+	//	std::cout << std::endl;
+	//}
+}
+
+
+void SPXData::ReadCorrelation()
+{
+ std::string mn = "ReadCorrelation: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+
+ string corrtotalfilename=pci.dataSteeringFile.GetTotalCorrellationFileName();
+ if (debug) std::cout <<cn<<mn<<"Read total correlations corrfilename= "<<corrtotalfilename<< std::endl;
+
+ string corrstatfilename=pci.dataSteeringFile.GetStatCorrellationFileName();
+ if (debug) std::cout <<cn<<mn<<"Read statistical correlations corrfilename= "<<corrstatfilename<< std::endl;
+
+
+ if (!totalErrorGraph) {
+  throw SPXParseException(cn+mn+"Total data graph totalErrorGraph not found !");
+ }
+
+ //if (debug) {
+ // std::cout <<cn<<mn<<"Print totalErrorGraph: "<< std::endl; 
+ // totalErrorGraph->Print("all");
+ //}
+
+ if (!statisticalErrorGraph) {
+  throw SPXParseException(cn+mn+"Statistical data graph statistical ErrorGraph not found !");
+ }
+
+ /*
+ if (debug) {
+  std::cout <<cn<<mn<<"Print statisticalErrorGraph: "<< std::endl; 
+  statisticalErrorGraph->Print("all");
+ }
+
+ if (!systematicErrorGraph) {
+  throw SPXParseException(cn+mn+"Systematics data graph tsystematicErrorGraph not found !");
+ }
+
+ if (debug) {
+  std::cout <<cn<<mn<<"Print systematics ErrorGraph: "<< std::endl; 
+  systematicErrorGraph->Print("all");
+ }
+*/
+
+ bool hastotal=false;
+ bool hasstatistical=false;
+ if (corrtotalfilename.size()>0) hastotal=true;
+ if (corrstatfilename.size()>0) hasstatistical=true;
+
+
+ if (hastotal)
+  std::cout <<cn<<mn<<"INFO Total correllation matrix provided ! "<< std::endl; 
+
+ if (hasstatistical)
+  std::cout <<cn<<mn<<"INFO Statistical correllation matrix provided ! "<< std::endl; 
+
+ // create covariance and correlation matrices
+ const int nbin=totalErrorGraph->GetN();
+
+ if (hasstatistical) { 
+  cov_matrixstat = new TMatrixT<double>(nbin, nbin);
+  corr_matrixstat= new TMatrixT<double>(nbin, nbin);
+
+  if (debug) 
+   std::cout <<cn<<mn<<"Read correlation matrix from: "<<corrtotalfilename<< std::endl; 
+
+  this->ReadCorrelationMatrix(corrstatfilename);
+
+ } else {
+  cov_matrixstat = 0;  
+  corr_matrixstat = 0;
+ }
+
+ if (hastotal) {
+  cov_matrixtot  = new TMatrixT<double>(nbin, nbin);
+  corr_matrixtot = new TMatrixT<double>(nbin, nbin);
+
+  if (debug) 
+   std::cout <<cn<<mn<<"Read correlation matrix from: "<<corrtotalfilename<< std::endl; 
+  this->ReadCorrelationMatrix(corrtotalfilename);
+
+ } else {
+  cov_matrixtot  = 0;
+  corr_matrixtot = 0;
+
+  if (!hasstatistical) {
+   if (debug) std::cout <<cn<<mn<<"INFO Calculate statistical (diagonal) covariance matrix from statistical uncertainties ! "<< std::endl; 
+
+   cov_matrixstat   = new TMatrixT<double>(nbin, nbin);
+   corr_matrixstat  = new TMatrixT<double>(nbin, nbin);
+   corr_matrixstat->UnitMatrix();
+
+   if (debug) std::cout <<cn<<mn<<"INFO correlation matrix is unity ! "<< std::endl; 
+
+   for (int ibin=0; ibin<nbin; ibin++){
+    double eystath=statisticalErrorGraph->GetErrorYhigh(ibin);
+    double eystatl=statisticalErrorGraph->GetErrorYlow(ibin);
+    double eystat=0.5*(eystath+eystatl);
+
+    for (int jbin=0; jbin<nbin; jbin++){
+     double val=0.;
+     if (ibin==jbin) val=eystat;
+     (*cov_matrixstat)(ibin,jbin)=val;
+    }
+   }
+
+   //if (debug) {
+   // std::cout <<cn<<mn<<"Statistical covariance matrix: "<< std::endl; 
+   // cov_matrixstat->Print();
+
+   //std::cout <<cn<<mn<<"Statistical correlation matrix: "<< std::endl; 
+   // corr_matrixstat->Print();
+   // }
+  }
+
+  if (debug) {
+   std::cout <<cn<<mn<<"Statistical covariance matrix: "<< std::endl; 
+   cov_matrixstat->Print();
+  }
+
+  if (debug) 
+   std::cout <<cn<<mn<<"INFO Calculate systematic covariance matrix from systematic components ! "<< std::endl; 
+ 
+  this->CalculateSystematicCovarianceMatrix();
+
+  // add up stat and syst covariance matrice
+
+  // calculate total covariance
+
+
+ }
+
+ return;
+
+}
+
+void SPXData::ReadCorrelationMatrix(string filename) {
+ std::string mn = "ReadCorrelationMatrix: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ if(filename.empty()) {
+  throw SPXFileIOException(cn+mn+"Filename is empty !");
+ }
+
+ filename=pci.dataDirectory+"/"+filename;
+
+ std::ifstream infile(filename.c_str(), ios::in);
+ if(!infile){ // Check open
+  infile.close();
+  std::ostringstream oss;
+  oss <<cn<<mn<< "Can't open " << filename;
+  throw SPXParseException(oss.str());
+ } else {
+  if (debug) std::cout <<cn<<mn<<"Read data correlations file: " << filename.c_str() << std::endl;
+ }
+
+ //Bin count to make sure that always the same number of bins is read
+ unsigned int bin_count = 0;
+
+ //Number of columns (used to determine symmetric, asymmetric, or no total systematic error)
+ unsigned int numberOfColumns = 0;
+
+ int nbin=totalErrorGraph->GetN();
+ if (nbin==0) {
+  throw SPXParseException(cn+mn+"Number of bins is zero; do not know what to do");
+ }
+
+ std::string line;
+
+ bool iscorrelationmatrix=false;
+ bool iscovariancematrix=false;
+
+ bool isstat=false;
+ bool istotal=false;
+
+ int col_num= -1;
+
+ std::vector<double> vrow;
+ std::vector< std::vector<double> > vmatrix;
+ vrow.clear();
+ vmatrix.clear(); 
+
+ while (infile.good()) {
+  //Skip comments
+  std::getline(infile, line);
+  if(line.empty()) continue;
+  //String stream to parse the individual lines
+  std::istringstream iss(line);
+  //if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
+
+  if(!line.empty() && (line[0] == ';')) {
+   continue;
+  } else if(!line.empty()) {
+
+   if (TString(line).Contains("is_correlation_matrix")) iscorrelationmatrix=true;
+   if (TString(line).Contains("is_covariance_matrix"))  iscovariancematrix=true;
+
+   if (TString(line).Contains("is_totalerror"))       istotal=true;
+   if (TString(line).Contains("is_statisticserror"))  isstat=true;
+
+   if(isdigit((int)SPXStringUtilities::LeftTrim(line).at(0)) || line.at(0)=='-') {
+    //if(debug) std::cout << cn << mn << bin_count<<" Line: " << line << std::endl;
+
+    //Convert all tabs to spaces
+    std::string formatted_line = SPXStringUtilities::ReplaceAll(line, "\t", " ");
+    std::vector<double> vrow = SPXStringUtilities::ParseStringToDoubleVector(formatted_line, ' ');
+    if (debug) std::cout << cn << mn << "Number of columns read: " << vrow.size() << std::endl;
+
+    //Set number of columns
+    if(vrow.size()!= nbin) {
+     std::ostringstream oss;
+     oss << cn<<mn<<"Number of columns read= "<< vrow.size() <<"  but nbin= "<<nbin<< filename;
+     throw SPXParseException(oss.str());
+    }
+    bin_count++;
+    vmatrix.push_back(vrow);
+   } 
+  }
+ }
+
+ /*
+ if (debug) {
+  std::cout<<cn<<mn<<"Matrix  " << std::endl;
+  for (int i=0; i<vmatrix.size(); i++) {
+   vrow=vmatrix[i];
+   for (int j=0; j<vrow.size(); j++) {
+     std::cout<<" i=  " << i<<" j= "<<j<<" v= "<<vrow[j]<<std::endl;
+   }
+  }
+ }
+ */
+
+ if (debug) {
+  std::cout<<cn<<mn<<"  " << std::endl;
+  if (isstat)  std::cout<<cn<<mn<<"Matrix " << filename<<" has statistical correllation " << std::endl;
+  if (istotal) std::cout<<cn<<mn<<"Matrix " << filename<<" has total correlation " << std::endl;
+ }
+
+ if (isstat&&istotal) {
+  std::ostringstream oss;
+  oss <<cn<<mn<< "Matrix " << filename<<" can either have statistical or total correllation; do not know what to do !";
+  throw SPXParseException(oss.str());
+ }
+
+ if (!isstat&&!istotal) {
+  std::ostringstream oss;
+  oss <<cn<<mn<< "Matrix " << filename<<" has to have either statistical or total correlation; do not know what to do !";
+  throw SPXParseException(oss.str());
+ }
+
+ if (debug) {
+  std::cout<<cn<<mn<<"  " << std::endl;
+  if (iscorrelationmatrix) std::cout<<cn<<mn<<"Matrix " << filename<<" is correlation matrix " << std::endl;
+  if (iscovariancematrix) std::cout<<cn<<mn<<"Matrix " << filename<<" is covariance matrix " << std::endl;
+  std::cout<<cn<<mn<<"  " << std::endl;
+ }
+
+ if (iscorrelationmatrix&&iscovariancematrix) {
+  std::ostringstream oss;
+  oss <<cn<<mn<< "Matrix " << filename<<" can either be correlation or covariance matrix; do not know what to do !";
+  throw SPXParseException(oss.str());
+ }
+
+ if (!iscorrelationmatrix&&!iscovariancematrix) {
+  std::ostringstream oss;
+  oss <<cn<<mn<< "Matrix " << filename<<" has to be either correlation or covariance matrix; do not know what to do !";
+  throw SPXParseException(oss.str());
+ }
+
+ if (isstat&&cov_matrixstat==0) {
+  std::ostringstream oss;
+  oss <<cn<<mn<< "Matrix " << filename<<" is statistical, but matrix is not provided !";
+  throw SPXParseException(oss.str());
+ } 
+
+ if (istotal&&cov_matrixtot==0) {
+  std::ostringstream oss;
+  oss <<cn<<mn<< "Matrix " << filename<<" is total, but matrix is not provided !";
+  throw SPXParseException(oss.str());
+ } 
+
+ //
+ // now fill correlation and covariance matrix
+ //
+ for (int row_num=0; row_num<vmatrix.size(); row_num++) {
+ 
+  double row_data_err=0., col_data_err=0.;
+
+  if (istotal) {
+  row_data_err = 0.5*(totalErrorGraph->GetErrorYhigh(row_num) + totalErrorGraph->GetErrorYlow(row_num));
+  }
+  if (isstat) {
+  row_data_err = 0.5*(statisticalErrorGraph->GetErrorYhigh(row_num) + statisticalErrorGraph->GetErrorYlow(row_num));
+  }
+
+  vrow=vmatrix[row_num];
+
+  for (int col_num=0; col_num<vrow.size(); col_num++) {
+   if (istotal) {
+    col_data_err = 0.5*(totalErrorGraph->GetErrorYhigh(col_num) + totalErrorGraph->GetErrorYlow(col_num));
+   }
+   if (isstat) {
+    col_data_err = 0.5*(statisticalErrorGraph->GetErrorYhigh(col_num) + statisticalErrorGraph->GetErrorYlow(col_num));
+   }
+
+   double val=vrow[col_num];
+
+   if (row_num==col_num) { 
+    if (iscovariancematrix) {
+     col_data_err=sqrt(val);
+     row_data_err=sqrt(val);
+    }
+   }
+
+  //if (debug) {
+  // std::cout <<cn<< " row_num= "<<row_num<< " col_num "<<col_num<<" val= "<<val<<std::endl;
+  // std::cout <<cn<< " row_data_err= "<<row_data_err<< " col_data_err= "<<col_data_err<<std::endl;
+  //}
+
+   // correlation matrix divided by total error in row/col
+   double cov_val = 0., corr_val=0.;
+   if (iscovariancematrix) {
+    cov_val =val;
+    corr_val=val/(row_data_err*col_data_err);
+   }
+   if (iscorrelationmatrix) {
+    cov_val =corr_val*row_data_err*col_data_err;
+    corr_val=val;
+   } 
+   if (istotal) {
+    (*cov_matrixtot )(row_num, col_num) = cov_val;
+    (*corr_matrixtot)(row_num, col_num)= corr_val;
+   }
+
+   if (isstat) {
+    (*cov_matrixstat )(row_num, col_num) = cov_val;
+    (*corr_matrixstat)(row_num, col_num)= corr_val;
+   }
+  }
+ }
+
+ if (debug) {
+  if (istotal) {
+   std::cout<<"  " << std::endl;
+   std::cout<<cn<<mn<<"Print total correlation matrix: " << std::endl;
+   corr_matrixtot->Print();
+
+   std::cout<<cn<<mn<<"Print total covariance matrix: " << std::endl;
+   cov_matrixtot->Print();
+  }
+
+  if (isstat) {
+   std::cout<<"  " << std::endl;
+   std::cout<<cn<<mn<<"Print statistical correlation matrix: " << std::endl;
+   corr_matrixstat->Print();
+
+   std::cout<<cn<<mn<<"Print statistical covariance matrix: " << std::endl;
+   cov_matrixstat->Print();
+  }
+ }
+
+ return;
+}
+
+void SPXData::CalculateSystematicCovarianceMatrix() {
+ std::string mn = "CalculateSystematicCovarianceMatrix: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ if (!systematicErrorGraph)
+  throw SPXParseException(cn+mn+"Systematics data graph tsystematicErrorGraph not found !");
+
+ int Nbin=this->GetNumberOfBins();
+
+ if (debug) std::cout<<cn<<mn<<"Nbin= " << Nbin << std::endl;
+
+ cov_matrixsyst = new TMatrixT<double>(Nbin, Nbin);
+ corr_matrixsyst= new TMatrixT<double>(Nbin, Nbin);
+
+ double covmatrixsyst[Nbin][Nbin];
+ for (int ibin=0; ibin<Nbin; ibin++)
+  for (int jbin=0; jbin<Nbin; jbin++)
+   covmatrixsyst[ibin][jbin]=0.;
+
+ //if (debug) {
+ // std::cout<<cn<<mn<<"Orginal systematics uncertainty "<< std::endl;
+ // this->PrintSystematics(individualSystematics);
+ //}
+
+ StringDoubleVectorMap_T symsystmap=SPXData::SymmetrizeSystemicUncertaintiesMatrix(individualSystematics);
+
+ if (debug) {
+  std::cout<<" "<< std::endl;
+  std::cout<<cn<<mn<<"Symmetrized systematics uncertainty "<< std::endl;
+  this->PrintSystematics(symsystmap);
+ }
+
+ for(StringDoubleVectorMap_T::iterator it =symsystmap.begin(); it != symsystmap.end(); ++it) {
+
+  const std::string   &name = it->first;
+  std::vector<double> &syst = it->second;
+
+  std::cout<<cn<<mn<<"Number of bins in systematics vector: "<<syst.size()  << std::endl;
+  //for (int i=0; i<syst.size(); i++) {
+  // std::cout<<cn<<mn<<" syst["<<i<<"]= "<<syst.at(i)  << std::endl;
+  //}
+
+  if (Nbin!=syst.size()) {
+   std::ostringstream oss;
+   oss <<cn<<mn<< "Nbin= " << Nbin <<" not consistent with syst compenents vector size= "<<syst.size();
+   throw SPXParseException(oss.str());
+  }
+
+  if (debug) std::cout<<cn<<mn<<"Loop over Nbin: "<<syst.size()  << std::endl;
+  for ( int ibin=0; ibin<Nbin; ibin++ ){
+   for ( int jbin=0; jbin<Nbin; jbin++ ){
+     // if (debug) std::cout<<cn<<mn<<ibin<<" "<<jbin<<" systematic name= "<<name
+     //		             <<" erri= "<<syst.at(ibin)<<" errj= "<<syst.at(jbin)
+     //                        <<std::endl;          
+     covmatrixsyst[ibin][jbin]+=syst.at(ibin)*syst.at(jbin);          
+   }
+  }
+ }
+
+ // Fill covariance matrix
+ for (int ibin=0; ibin<Nbin; ibin++) {
+  for (int jbin=0; jbin<Nbin; jbin++) {
+   (*cov_matrixsyst)(ibin,jbin)=covmatrixsyst[ibin][jbin];
+   double err=covmatrixsyst[ibin][ibin]*covmatrixsyst[jbin][jbin];
+   if (err>0) err=sqrt(err);
+   (*corr_matrixsyst)(ibin,jbin)=covmatrixsyst[ibin][jbin]/err;
+  }
+ }
+ 
+ if (debug) {
+  std::cout<<"  " << std::endl;
+  std::cout<<cn<<mn<<"Print systematic correlation matrix: " << std::endl;
+  corr_matrixsyst->Print();
+
+  std::cout<<cn<<mn<<"Print systematic covariance matrix: " << std::endl;
+  cov_matrixsyst->Print();
+ }
+
+ return;
+}
+
+StringDoubleVectorMap_T SPXData::SymmetrizeSystemicUncertaintiesMatrix(StringDoubleVectorMap_T systmap) {
+ std::string mn = "SymmetrizeSystemicUncertaintiesMatrix: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ bool debug2=false;
+
+ if (debug) std::cout<<cn<<mn<<"Loop over systematics Number of systematics= "<< systmap.size()  << std::endl;
+
+ // declare map containing symmetrized systematic uncertainties
+ std::map <string, vector <double> >  symsystmap;
+
+ //
+ // Loop over systematic uncertainty components
+ //
+
+ for(StringDoubleVectorMap_T::iterator it =systmap.begin(); it != systmap.end(); ++it) {
+
+  const std::string   &name = it->first;
+  std::vector<double> &syst = it->second;
+
+  if (debug) std::cout<<cn<<mn<<"Systematic name= "<< name  << std::endl;
+
+  TString sname=name;
+  if (name.find("+") != std::string::npos) {
+   if (debug2) std::cout<<cn<<mn<<"Positive systematic name= "<< name  << std::endl;
+   sname.ReplaceAll("+","-");
+   std::vector <double> vtmp;
+   vtmp.clear();
+
+   if (systmap.count(string(sname.Data()))) {
+    if (debug2) std::cout<<cn<<mn<<"Corresponding negative systematic found sname= "<< sname  << std::endl;
+    std::vector <double> vtmp;
+    for (int i=0; i<syst.size(); i++) {
+      double err=0.5*(systmap[string(sname.Data())].at(i) + syst.at(i));
+      vtmp.push_back(err);
+    } 
+    sname.ReplaceAll("-","");
+    symsystmap[string(sname.Data())]=vtmp;
+   } else {
+    std::cout<<cn<<mn<<"INFO Corresponding negative systematic sname= "<< sname <<" not found !" << std::endl;
+   } 
+  } else if (name.find("-") != std::string::npos) {
+   TString sname=TString(name);
+   sname.ReplaceAll("-","");
+   if (symsystmap.count(string(sname.Data()))) {
+    if (debug2) std::cout<<cn<<mn<<"already averaged sname= "<< sname  << std::endl;
+   } else {
+    std::cout<<cn<<mn<<"WARNING not yet in map, there is mismatch between +/- errors "<< sname  << std::endl;
+   }
+  } else {
+   std::cout<<cn<<mn<<"WARNING systematics sname= "<< sname <<" negative or positive ? " << std::endl;
+   std::cout<<cn<<mn<<"WARNING Do not know what to do....add to map " << std::endl;
+   symsystmap[name]=syst;
+  }
+ }
+
+ return symsystmap;
+
+}
+
+void SPXData::PrintSystematics(StringDoubleVectorMap_T syst) {
+//Iterate over individual systematic errors
+ std::string mn = "PrintSystematics: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+        
+ std::cout<<" Number systematics uncertainties= "<<syst.size()<<endl;
+
+ for(StringDoubleVectorMap_T::iterator it = syst.begin(); it != syst.end(); it++) {
+  const std::string &syst_name = it->first;
+  std::vector<double> &systematic = it->second;
+
+  std::cout << std::left << std::setw(24) << syst_name << "  ";
+  std::cout << std::fixed;
+  std::cout.precision(4);
+  for(int j = 0; j < systematic.size(); j++) {
+   std::cout.width(10);
+   std::cout << systematic.at(j) << " ";
+  }
+  std::cout << std::endl;
+ }
+
+ std::cout << std::endl << std::endl;
+ return;
 }

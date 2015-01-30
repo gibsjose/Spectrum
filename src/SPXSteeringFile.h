@@ -63,7 +63,7 @@ private:
 	bool plotMarker;	    //Flag to indicate that data point markers should be plotted
 	bool plotStaggered;	    //Flag to indicate that points should be staggered horizontally for readability
 	bool matchBinning;	    //Flag to indicate that the binning of all graphs on the plot should be matched
-	bool gridCorr;		    //Flag to indicate that, if specified in the grid steering, the grid corrections should be applied
+	bool gridCorr;		    //Flag to indicate that, if specified in the steering, the grid corrections should be applied
 	bool labelSqrtS;	    //Flag to indicate that the Sqrt(s) value should be shown in the legend
 
         bool BandwithPDF;           // show the Uncertainty band with the PDF uncertainties
@@ -148,7 +148,7 @@ public:
 		return this->matchBinning;
 	}
 
-	bool GetGridCorr(void) const {
+	bool ApplyGridCorr(void) const {
 		return this->gridCorr;
 	}
 
@@ -202,9 +202,10 @@ public:
         }
 	bool GetGridCorrectionToBand(int i) {
 	 if (i>=gridcorrections.size()){  
-          std::ostringstream oss;
-          oss<<"SPXSteering::GetBandGridCorrection: gridcorrectionsize= "<<gridcorrections.size()<<" but i= "<<i;
-          throw SPXParseException(oss.str());
+	   //std::ostringstream oss;
+	   //oss<<"SPXSteering::GetBandGridCorrection: gridcorrectionsize= "<<gridcorrections.size()<<" but i= "<<i;
+	   //throw SPXParseException(oss.str());
+           return false;
          } 
 
 	 return gridcorrections.at(i);

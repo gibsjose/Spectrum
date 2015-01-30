@@ -394,15 +394,19 @@ void SPXRatio::Divide(void) {
 
         //Match the convolute binning to the data binning
         if(ratioStyle.IsConvoluteOverData()) {
-            try {
 	      for (int i=0; i<numeratorGraph.size(); i++){
-                if (debug) std::cout<<cn<<mn<<" Matchbinning for numeratorGraph["<<i<<"]= "<<i<<std::endl;
+               try {
+                if (debug) std::cout<<cn<<mn<<"Match binning for numeratorGraph["<<i<<"]= "<<i<<std::endl;
                 SPXGraphUtilities::MatchBinning(denominatorGraph, numeratorGraph[i], true);
-              }
-            } catch(const SPXException &e) {
+               } catch(const SPXException &e) {
                 std::cerr << e.what() << std::endl;
-                throw SPXGraphException(cn + mn + "Unable to match convolute binning to data binning");
-            }
+                std::ostringstream oss;
+                oss << cn <<mn<<"Unable to match numerator "<<numeratorGraph[i]->GetName()
+                    <<" with nbins= "<<numeratorGraph[i]->GetN()
+                    <<" with denominator= "<<denominatorGraph->GetName()<<" nbins= "<<denominatorGraph->GetN();
+                throw SPXGraphException(oss.str());
+               }
+              }
         }
     }
 
