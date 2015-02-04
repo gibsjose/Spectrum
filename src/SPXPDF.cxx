@@ -424,13 +424,6 @@ void SPXPDF::Initialize()
  }
 
  if (do_AlphaS) {
-  alphaS_relUnc_worldAverage=alphaS_absUnc_worldAverage/alphaS_value_worldAverage;
-  if (debug) {
-   std::cout<<cn<<mn<<"alphaS_scale_worldAverage = "<<alphaS_scale_worldAverage<<std::endl;
-   std::cout<<cn<<mn<<"alphaS_absUnc_worldAverage= "<<alphaS_absUnc_worldAverage<<std::endl;
-   std::cout<<cn<<mn<<"alphaS_value_worldAverage = "<<alphaS_value_worldAverage<<std::endl;
-   std::cout<<cn<<mn<<"alphaS_relUnc_worldAverage= "<<alphaS_relUnc_worldAverage<<std::endl;
-  }
 
   //check for necessary names before continuing
   if(AlphaSmemberNumDown==DEFAULT) {
@@ -930,6 +923,26 @@ void SPXPDF::CalcAlphaSErrors()
  if (!h_errors_AlphaS[0])
   std::cout<<cn<<mn<<"ERROR h_errors_AlphaS[0] not found ! "<<std::endl;
 
+  if (f_PDFErrorSize90Percent){
+   alphaS_absUnc_worldAverage=0.002;
+  } else {
+   alphaS_absUnc_worldAverage=0.0012;
+  }
+
+  if (debug)
+   std::cout<<cn<<mn<<" alphaS_absUnc_worldAverage= "<< alphaS_absUnc_worldAverage <<std::cout;
+  
+  alphaS_relUnc_worldAverage=alphaS_absUnc_worldAverage/alphaS_value_worldAverage;
+
+  if (debug) {
+   std::cout<<cn<<mn<<"alphaS_scale_worldAverage = "<<alphaS_scale_worldAverage<<std::endl;
+   std::cout<<cn<<mn<<"alphaS_absUnc_worldAverage= "<<alphaS_absUnc_worldAverage<<std::endl;
+   std::cout<<cn<<mn<<"alphaS_value_worldAverage = "<<alphaS_value_worldAverage<<std::endl;
+   std::cout<<cn<<mn<<"alphaS_relUnc_worldAverage= "<<alphaS_relUnc_worldAverage<<std::endl;
+  }
+
+
+
  double alphaS_absUnc=alphaS_relUnc_worldAverage*alphaS_variations.at(0);
 
  if (debug) cout<<cn<<mn<<"alphaS_absUnc= "<<alphaS_absUnc<<std::endl;
@@ -1286,7 +1299,7 @@ void SPXPDF::SetVariablesDefault()
  //AlphaSPDFSetHistNameUp=defaultString;
 
  alphaS_value_worldAverage=0.1184;
- alphaS_absUnc_worldAverage=0.0020;
+ //alphaS_absUnc_worldAverage=0.0020;
  alphaS_scale_worldAverage=91.1876;
 
  if (debug) cout<<cn<<"setVariablesDefault: End default values are set."<<std::endl;

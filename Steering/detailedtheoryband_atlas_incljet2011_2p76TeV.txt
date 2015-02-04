@@ -16,7 +16,7 @@ debug = true
 [GRAPH]
 plot_band = true
 ; plot_error_ticks = true
-;plot_marker = true
+plot_marker = false
 ;plot_staggered = true
 match_binning = false
 ;grid_corr = true

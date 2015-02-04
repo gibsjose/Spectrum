@@ -1225,8 +1225,10 @@ void SPXPlot::DrawLegend(void) {
 	    label=bandtype;
 
            if (steeringFile->GetPlotMarker()) { 
+	     //std::cout<<cn<<mn<<" Plot marker "<<std::endl;
             leg->AddEntry(gband, label, "P");
 	   } else if (steeringFile->GetPlotBand()) {
+	     //std::cout<<cn<<mn<<" Plot band "<<std::endl;
             leg->AddEntry(gband, label, "LF");
 	   } else
             std::cout << cn << mn <<"WARNING do not know what to do not plotMarker, not plotBand"<< std::endl;
