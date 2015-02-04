@@ -159,7 +159,7 @@ void SPXPDFSteeringFile::Print(void) {
         else if (ErrorPropagationType==StyleNNPDF)  
   	 std::cout << "\t\t NNPDF type  "<< std::endl;
         else
-  	 std::cout << "\t\tn UNKNOWN !! "<< std::endl;
+  	 std::cout << "\t\t \n UNKNOWN !! "<< std::endl;
 
 	std::cout << "\t\t Band Type: " << bandType.ToString() << std::endl;
 	std::cout << "\t\t Error Type: " << errorType.ToString() << std::endl;
@@ -176,8 +176,13 @@ void SPXPDFSteeringFile::Parse(void) {
 	std::string mn = "Parse: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 	
+	//Set Defaults
+	this->SetDefaults();
+
 	if(filename.empty()) {
-		throw SPXFileIOException(filename, "Empty file string \"\" was given");
+	 //throw SPXFileIOException(filename, "Empty file string \"\" was given");
+	 std::cout<<cn<<mn<<"WARNING no steering file given, do not know what to do, return "<<std::endl;
+         return;
 	}
 
 	//Initialize reader
@@ -195,7 +200,7 @@ void SPXPDFSteeringFile::Parse(void) {
 	debug = reader->GetBoolean("GEN", "debug", debug);
 
 	//Set Defaults
-	this->SetDefaults();
+	//this->SetDefaults();
 
 	//Enable all debug options if debug is on
 	if(debug) {

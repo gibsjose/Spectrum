@@ -54,6 +54,13 @@ desc = atlas_2011_top_parton_ttbary
 display_style = overlay, ratio
 overlay_style = data, convolute
 ratio_title = NLO QCD / Data
-ratio_style_0 = convolute / data
-ratio_0 = ([grid_0, pdf_0]) / (data_0)
-
+;ratio_style_0 = convolute / data
+;ratio_0 = ([grid_0, pdf_0]) / (data_0)
+ratio_style_0 = data_tot
+ratio_0 = data_0
+;
+ratio_style_1 = data_stat
+ratio_1 = data_0
+;
+ratio_style_2 = convolute / data
+ratio_2 = ([grid_0, pdf_0]) / (data_0)

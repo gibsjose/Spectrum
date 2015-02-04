@@ -43,7 +43,7 @@ band_total = true
 ; Plot 0 Options
 ;==============================================================
 [PLOT_0]
-#plot_type = data[], grid[], pdf
+;plot_type = data[], grid[], pdf
 plot_type = data, grid, pdf
 pdf_directory = PDF
 data_directory = Data/jet/atlas/incljets2011_2p76TeV

@@ -54,6 +54,36 @@ desc = atlas_2011_top_parton_mtt
 display_style = overlay, ratio
 overlay_style = data, convolute
 ratio_title = NLO QCD / Data
-ratio_style_0 = convolute / data
-ratio_0 = ([grid_0, pdf_0]) / (data_0)
+;ratio_style_0 = convolute / data
+;ratio_0 = ([grid_0, pdf_0]) / (data_0)
+[PLOT_1]
+plot_type = data, grid, pdf
+;plot_type = data, grid, pdf
+data_directory = Data/jet/atlas/incljets2011
+data_steering_files = atlas_2011_jet_antiktr04_incljetpt_eta2.txt
+grid_directory = Grids/jet/atlas/incljets2011/nlojet
+grid_steering_files = atlas_2011_incljet_eta2_r04.txt
+pdf_directory = PDF
+pdf_steering_files = CT10.txt
+;
+x_log = true
+y_log = true
+; 
+desc = atlas_inclusive_jet
+display_style = overlay, ratio
+;
+overlay_style = data, convolute
+;
+ratio_title =NLO QCD/Data
+;ratio_style_0 = convolute / data
+;ratio_0 = ([grid_0, pdf_0]) / (data_0)
+;
+ratio_style_0 = data_tot
+ratio_0 = data_0
+;
+ratio_style_1 = data_stat
+ratio_1 = data_0
+;
+ratio_style_2 = convolute / data
+ratio_2 = ([grid_0, pdf_0]) / (data_0)
 

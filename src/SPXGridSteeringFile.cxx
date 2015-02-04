@@ -127,8 +127,12 @@ void SPXGridSteeringFile::Parse(void) {
 	std::string mn = "Parse: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 	
+        this->SetDefaults();
+
 	if(filename.empty()) {
-		throw SPXFileIOException(filename, "Empty file string \"\" was given");
+	 //throw SPXFileIOException(filename, "Empty file string \"\" was given");
+	 std::cout<<cn<<mn<<"WARNING no steering file given, do not know what to do, return "<<std::endl;
+         return;
 	}
 
 	//Initialize reader
@@ -147,7 +151,7 @@ void SPXGridSteeringFile::Parse(void) {
 	if(debug) std::cout << cn << mn << "Debug is ON" << std::endl;
 
 	//Set Defaults
-	this->SetDefaults();
+	//this->SetDefaults();
 
 	//Description [DESC]
 	name = reader->Get("DESC", "name", "EMPTY");

@@ -158,9 +158,14 @@ void SPXDataSteeringFile::Parse(void) {
 	std::string mn = "Parse: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
+	this->SetDefaults();
+
 	if(filename.empty()) {
-		throw SPXFileIOException(filename, "Empty file string \"\" was given");
-	}
+	 //throw SPXFileIOException(filename, "Empty file string \"\" was given");
+	 std::cout<<cn<<mn<<"WARNING no steering file given, do not know what to do, return "<<std::endl;
+         return; 
+	} else
+	 if (debug) std::cout<<cn<<mn<<"Steering file name= "<<filename.c_str()<<std::endl;
 
 	//Initialize reader
 	reader = new INIReader(filename);
@@ -176,7 +181,7 @@ void SPXDataSteeringFile::Parse(void) {
 	if(debug) std::cout << cn << mn << "Debug is ON" << std::endl;
 
 	//Set Defaults
-	this->SetDefaults();
+	//this->SetDefaults();
 
 	std::string tmp;
 

@@ -29,6 +29,7 @@ void SPXSteeringFile::SetDefaults(void) {
 
 	if(debug) std::cout << cn << mn << "Setting default Steering File data" << std::endl;
 
+
 	plotBand = false;
 	if(debug) std::cout << cn << mn << "plotBand set to default: \"false\"" << std::endl;
 
@@ -253,12 +254,26 @@ void SPXSteeringFile::Print(void) {
          std::cout<<"\t\t FacScales["<<i<<"]= "<<FacScales[i]<<std::endl;
         }
 
-	std::cout << "\t Plot Configurations" << std::endl;
+
+	std::cout << "\n \t Plot Configurations" << std::endl;
 	std::cout << "\t\t Number of Plots: " << GetNumberOfPlotConfigurations() << std::endl << std::endl;
+        if (GetNumberOfPlotConfigurations()==0) {
+          std::ostringstream oss;
+          oss << cn << "Please, specify either a data_steering_file or a mc_Steering_file " << std::endl << std::endl;
+
+          throw SPXParseException(oss.str());
+        }
 
 	for(int i = 0; i < GetNumberOfPlotConfigurations(); i++) {
 		std::cout << "\t\t Plot " << i << " Configuration [PLOT_" << i << "]" << std::endl;
-		std::cout << "\t\t Description: " << plotConfigurations[i].GetDescription() << std::endl;
+ 		std::cout << "\t\t Description: " << plotConfigurations[i].GetDescription() << std::endl;
+
+      	        //if (hasdata.at(i)) std::cout << "\n \t Data steering file found !" << std::endl;
+      	        //else               std::cout << "\n \t No data steering file found !" << std::endl;
+                
+	        //if (hasmc.at(i))   std::cout << "\t MC steering file found ! \n"   << std::endl;
+	        //else               std::cout << "\t No MC steering file found ! \n"   << std::endl;
+
 		std::cout << "\t\t Plot Type: " << plotConfigurations[i].GetPlotType().ToString() << std::endl;
 		std::cout << "\t\t Display Style: " << plotConfigurations[i].GetDisplayStyle().ToString() << std::endl;
 		std::cout << "\t\t Overlay Style: " << plotConfigurations[i].GetOverlayStyle().ToString() << std::endl;
@@ -329,8 +344,9 @@ unsigned int SPXSteeringFile::ParseNumberOfPlots(void) {
 			if(debug) std::cout << cn << mn << "plot section: " << plotSection << " was not found. Number of plots found: " << plotNumber << std::endl;
 			noMorePlots = true;
 			break;
-		} else {
+    		} else {
 			plotNumber++;
+  		        //hasdata.push_back(plotNumber);
 			if(debug) std::cout << cn << mn << "plot section: " << plotSection << " found. Current number of plots: " << plotNumber << std::endl;
 		}
 
@@ -510,7 +526,8 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		//Get the data_steering_files
 		tmp = reader->Get(plotSection, "data_steering_files", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			throw SPXINIParseException(plotSection, "data_steering_files", "You MUST specify the data_steering_files");
+		  //throw SPXINIParseException(plotSection, "data_steering_files", "You MUST specify the data_steering_files");
+		 std::cout<<"INFO no data_Steering_file found "<<endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -530,8 +547,10 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 
 		//Get the grid_steering_files
 		tmp = reader->Get(plotSection, "grid_steering_files", "EMPTY");
-		if(!tmp.compare("EMPTY")) {
-			throw SPXINIParseException(plotSection, "grid_steering_files", "You MUST specify the grid_steering_files");
+
+		if(!tmp.compare("EMPTY") ) {
+		  //throw SPXINIParseException(plotSection, "grid_steering_files", "You MUST specify the grid_steering_files");
+		 std::cout<<"INFO no grid_steering_file found "<<endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -551,7 +570,8 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		//Get the pdf_steering_files
 		tmp = reader->Get(plotSection, "pdf_steering_files", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			throw SPXINIParseException(plotSection, "pdf_steering_files", "You MUST specify the pdf_steering_files");
+		  //throw SPXINIParseException(plotSection, "pdf_steering_files", "You MUST specify the pdf_steering_files");
+		 std::cout<<"INFO no pdf_steering_file found "<<std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -1220,7 +1240,9 @@ void SPXSteeringFile::Parse(void) {
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(filename.empty()) {
-		throw SPXFileIOException(filename, "Empty file string \"\" was given");
+	 //throw SPXFileIOException(filename, "Empty file string \"\" was given");
+	 std::cout<<cn<<mn<<"WARNING no steering file given, do not know what to do, return "<<std::endl;
+         return;
 	}
 
 	//Initialize reader

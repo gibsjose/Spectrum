@@ -112,19 +112,36 @@ struct SPXPlotConfigurationInstance {
 	bool IsEmpty(void) const {
 		std::string mn = "IsEmpty: ";
 
+
 		if(!dataSteeringFile.GetFilename().empty()) {
-			//if(debug) std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Data steering file = " << dataSteeringFile.GetFilename() << std::endl;
-			return false;
+		 if(debug) std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Data steering file = " << dataSteeringFile.GetFilename() << std::endl;
+		 //return false;
 		}
 
 		if(!gridSteeringFile.GetFilename().empty()) {
-			//std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Grid steering file = " << gridSteeringFile.GetFilename() << std::endl;
-			return false;
+		  if (debug) std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Grid steering file = " << gridSteeringFile.GetFilename() << std::endl;
+		  //return false;
 		}
 
 		if(!pdfSteeringFile.GetFilename().empty()) {
-			return false;
+		  if (debug) std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: PDF steering file = " << pdfSteeringFile.GetFilename() << std::endl;
+		  //return false;
 		}
+
+		if(dataSteeringFile.GetFilename().empty() && 
+                  (gridSteeringFile.GetFilename().empty()||pdfSteeringFile.GetFilename().empty())) {
+		  if (debug) {
+		   if(dataSteeringFile.GetFilename().empty())
+                    std::cout << "SPXPlotConfigurationInstance::IsEmpty: "<< " no data steering  " << std::endl;
+
+		   if(gridSteeringFile.GetFilename().empty())
+                   std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << " no grid steering  " << std::endl;
+
+		   if(pdfSteeringFile.GetFilename().empty())
+                   std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << " no PDF steering " << std::endl;
+                  }
+		  return false;
+                }
 
 		if(dataMarkerStyle != PC_EMPTY_STYLE) {
 			//std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Marker style = " << dataMarkerStyle << std::endl;
@@ -146,27 +163,32 @@ struct SPXPlotConfigurationInstance {
 
 		//Empty, but valid
 		if(this->IsEmpty()) {
+			if(debug) std::cout << mn << "IsEmpty" << std::endl;
 			return true;
 		}
 
 		//Not empty, but fields are missing
 		if(dataSteeringFile.GetFilename().empty()) {
-			if(debug) std::cout << foicn << mn << "Data Steering Filename field missing from PlotConfigurationInstance Object" << std::endl;
-			return false;
+			if(debug) std::cout << mn << "Data Steering Filename field missing from PlotConfigurationInstance Object" << std::endl;
+			//return false;
 		}
 
 		if(gridSteeringFile.GetFilename().empty()) {
-			if(debug) std::cout << foicn << mn << "Grid Steering Filename field missing from PlotConfigurationInstance Object" << std::endl;
-			return false;
+			if(debug) std::cout << mn << "Grid Steering Filename field missing from PlotConfigurationInstance Object" << std::endl;
+			//return false;
 		}
 
 		if(pdfSteeringFile.GetFilename().empty()) {
-			if(debug) std::cout << foicn << mn << "PDF Steering Filename field missing from PlotConfigurationInstance Object" << std::endl;
-			return false;
+			if(debug) std::cout << mn << "PDF Steering Filename field missing from PlotConfigurationInstance Object" << std::endl;
+			//return false;
 		}
 
-		if(debug) std::cout << foicn << mn << "SPXPlotConfigurationInstance object is VALID" << std::endl;
-		return true;
+                if(!dataSteeringFile.GetFilename().empty() ||
+                   (!(gridSteeringFile.GetFilename().empty()&&pdfSteeringFile.GetFilename().empty()))){
+
+		 if(debug) std::cout << mn << "SPXPlotConfigurationInstance object is VALID" << std::endl;
+		 return true;
+                }
 	}
 
 	const std::string ToString(void) const {
@@ -217,7 +239,8 @@ public:
 		if(debug) SPXUtilities::PrintMethodHeader(focn, mn);
 
 		if(instance.IsEmpty()) {
-			throw SPXParseException("SPXPlotConfiguration::AddConfigurationInstance: Could not add configuration instance: Instance is empty");
+		  //throw SPXParseException("SPXPlotConfiguration::AddConfigurationInstance: Could not add configuration instance: Instance is empty");
+		  std::cout<<mn<<"INFO instance is EMPTY "<<std::endl;
 		}
 
 		if(!instance.IsValid()) {

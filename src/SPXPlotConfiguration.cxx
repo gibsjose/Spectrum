@@ -166,23 +166,28 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		}
 
 		if(options.count("grid_directory") == 0) {
-			throw SPXParseException("The options map MUST contain a vector for grid_directory");
+		  //throw SPXParseException("The options map MUST contain a vector for grid_directory");
+		  std::cout<<"INFO no grid_directory found !"<<std::endl;
 		}
 
 		if(options.count("pdf_directory") == 0) {
-			throw SPXParseException("The options map MUST contain a vector for pdf_directory");
+		  //throw SPXParseException("The options map MUST contain a vector for pdf_directory");
+		  std::cout<<"INFO no pdf_directory found !"<<std::endl;
 		}
 
 		if(options.count("data_steering_files") == 0) {
-			throw SPXParseException("The options map MUST contain a vector for data_steering_files");
+		  //throw SPXParseException("The options map MUST contain a vector for data_steering_files");
+		  std::cout<<"INFO no data_steering_files found !"<<std::endl;
 		}
 
 		if(options.count("grid_steering_files") == 0) {
-			throw SPXParseException("The options map MUST contain a vector for grid_steering_files");
+		  //throw SPXParseException("The options map MUST contain a vector for grid_steering_files");
+		  std::cout<<"INFO no grid_steering_files found !"<<std::endl;
 		}
 
 		if(options.count("pdf_steering_files") == 0) {
-			throw SPXParseException("The options map MUST contain a vector for pdf_steering_files");
+		  //throw SPXParseException("The options map MUST contain a vector for pdf_steering_files");
+		  std::cout<<"INFO no pdf_steering_files found !"<<std::endl;
 		}
 	}
 
@@ -554,7 +559,6 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		throw SPXParseException(oss.str());
 	}
 
-
 	if((cfsSize != 0) && (cfsSize != psfSize)) {
 		std::ostringstream oss;
 		oss << "Size of corrections_fill_style vector (" << cfsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
@@ -600,50 +604,81 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 	//data, grid, pdf
 	if(plotType.IsType1()) {
-		if(dsfSize != 1) {
-			throw SPXParseException("Size of data_steering_files vector MUST be 1 (ONE) for Plot Type 1 (data, grid, pdf)");
-		}
-		if(gsfSize != 1) {
-			throw SPXParseException("Size of grid_steering_files vector MUST be 1 (ONE) for Plot Type 1 (data, grid, pdf)");
-		}
-		if(psfSize != 1) {
-			throw SPXParseException("Size of pdf_steering_files vector MUST be 1 (ONE) for Plot Type 1 (data, grid, pdf)");
-		}
+	  //if(dsfSize != 1) {
+	  //		throw SPXParseException("Size of data_steering_files vector MUST be 1 (ONE) for Plot Type 1 (data, grid, pdf)");
+	  //	}
+		//if(gsfSize != 1) {
+		//	throw SPXParseException("Size of grid_steering_files vector MUST be 1 (ONE) for Plot Type 1 (data, grid, pdf)");
+		//}
+		//if(psfSize != 1) {
+		//	throw SPXParseException("Size of pdf_steering_files vector MUST be 1 (ONE) for Plot Type 1 (data, grid, pdf)");
+		//}
+
+  	        if(debug) std::cout << cn << mn << "plotType is 1 ! " << std::endl;
 
 		numberOfConfigurationInstances = 1;
 
 		//Fill all other vectors as needed
 		for(int i = 0; i < numberOfConfigurationInstances; i++) {
-			dsf.push_back(options["data_steering_files"][0]);	//Just one instance of data steering file
-			gsf.push_back(options["grid_steering_files"][0]);	//Just one instance of grid steering file
-			psf.push_back(options["pdf_steering_files"][0]);	//Just one instance of pdf steering file
 
-			if(dmsSize) dms.push_back(options["data_marker_style"][0]);		//Just one instance of data marker style
-			if(dmcSize) dmc.push_back(options["data_marker_color"][0]);		//Just one instance of data marker color
 
-			if(tfsSize) tfs.push_back(options["total_fill_style"][0]);		//Just one instance of total fill style
-			if(tfcSize) tfc.push_back(options["total_fill_color"][0]);		//Just one instance of total fill color
-			if(tmsSize) tms.push_back(options["total_marker_style"][0]);		//Just one instance of total marker style
-			if(pfsSize) pfs.push_back(options["pdf_fill_style"][0]);		//Just one instance of pdf fill style
-			if(pfcSize) pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
-			if(pmsSize) pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
+  	          //if(debug) std::cout << cn << mn << "data_steering_files count= " <<
+		  //	      options.count("data_steering_files")<< std::endl;
 
-			if(sfsSize) sfs.push_back(options["scale_fill_style"][0]);		
-			if(sfcSize) sfc.push_back(options["scale_fill_color"][0]);		
-			if(smsSize) sms.push_back(options["scale_marker_style"][0]);		
+  	          //if(debug) std::cout << cn << mn << "data_steering_files size= " <<
+		  //options["data_steering_files"].size()<< std::endl;
 
-			if(afsSize) afs.push_back(options["alphas_fill_style"][0]);		
-			if(afcSize) afc.push_back(options["alphas_fill_color"][0]);		
-			if(amsSize) ams.push_back(options["alphas_marker_style"][0]);		
 
-			if(cfsSize) cfs.push_back(options["corrections_fill_style"][0]);		
-			if(cfcSize) cfc.push_back(options["corrections_fill_color"][0]);		
-			if(cmsSize) cms.push_back(options["corrections_marker_style"][0]);		
+                  if (options["data_steering_files"].size()>0)
+		   dsf.push_back(options["data_steering_files"].at(0));	//Just one instance of data steering file
 
-			if(xsSize) 	xsc.push_back(options["x_scale"][0]);				//Just one instance of x scale
-			else		xsc.push_back("1.0");
-			if(ysSize) 	ysc.push_back(options["y_scale"][0]);				//Just one instance of y scale
-			else		ysc.push_back("1.0");
+  	          //if(debug) std::cout << cn << mn << "grid_steering_files " << std::endl;
+
+                  if (options["grid_steering_files"].size()>0)
+		   gsf.push_back(options["grid_steering_files"].at(0));	//Just one instance of grid steering file
+
+  	          //if(debug) std::cout << cn << mn << "pdf_steering_files " << std::endl;
+
+                  if (options["pdf_steering_files"].size()>0)
+		   psf.push_back(options["pdf_steering_files"].at(0));	//Just one instance of pdf steering file
+
+  	          if(debug) std::cout << cn << mn << "data_marker_style " << std::endl;
+
+		   if(dmsSize) dms.push_back(options["data_marker_style"].at(0));		//Just one instance of data marker style
+
+		   if(dmcSize) dmc.push_back(options["data_marker_color"].at(0));		//Just one instance of data marker color
+		   if(tfsSize) tfs.push_back(options["total_fill_style"].at(0));		//Just one instance of total fill style
+
+		   if(tfcSize) tfc.push_back(options["total_fill_color"].at(0));		//Just one instance of total fill color
+		   if(tmsSize) tms.push_back(options["total_marker_style"].at(0));		//Just one instance of total marker style
+		   if(pfsSize) pfs.push_back(options["pdf_fill_style"].at(0));		//Just one instance of pdf fill style
+
+		   if(pfcSize) pfc.push_back(options["pdf_fill_color"].at(0));		//Just one instance of pdf fill color
+
+		   if(pmsSize) pms.push_back(options["pdf_marker_style"].at(0));		//Just one instance of pdf marker style
+		   if(sfsSize) sfs.push_back(options["scale_fill_style"].at(0));		
+
+		   if(sfcSize) sfc.push_back(options["scale_fill_color"].at(0));		
+
+		   if(smsSize) sms.push_back(options["scale_marker_style"].at(0));		
+
+		   if(afsSize) afs.push_back(options["alphas_fill_style"].at(0));		
+
+		   if(afcSize) afc.push_back(options["alphas_fill_color"].at(0));		
+
+		   if(amsSize) ams.push_back(options["alphas_marker_style"].at(0));		
+
+		   if(cfsSize) cfs.push_back(options["corrections_fill_style"].at(0));		
+
+		   if(cfcSize) cfc.push_back(options["corrections_fill_color"].at(0));		
+
+		   if(cmsSize) cms.push_back(options["corrections_marker_style"].at(0));		
+
+		   if(xsSize) 	xsc.push_back(options["x_scale"].at(0));				//Just one instance of x scale
+		   else	        xsc.push_back("1.0");
+
+		   if(ysSize) 	ysc.push_back(options["y_scale"].at(0));				//Just one instance of y scale
+                  else		ysc.push_back("1.0");
 		}
 	}
 
@@ -667,39 +702,39 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		//Fill all other vectors as needed
 		for(int i = 0; i < numberOfConfigurationInstances; i++) {
-			dsf.push_back(options["data_steering_files"][i]);
-			gsf.push_back(options["grid_steering_files"][i]);
-			psf.push_back(options["pdf_steering_files"][0]);	//Just one instance of pdf steering file
+		  dsf.push_back(options["data_steering_files"].at(i));
+		  gsf.push_back(options["grid_steering_files"].at(i));
+		  psf.push_back(options["pdf_steering_files"].at(0));	//Just one instance of pdf steering file
 
-			if(dmsSize) dms.push_back(options["data_marker_style"][i]);
-			if(dmcSize) dmc.push_back(options["data_marker_color"][i]);
+		  if(dmsSize) dms.push_back(options["data_marker_style"].at(i));
+		  if(dmcSize) dmc.push_back(options["data_marker_color"].at(i));
 
-			if(tfsSize) tfs.push_back(options["total_fill_style"][0]);		//Just one instance of pdf fill style
-			if(tfcSize) tfc.push_back(options["total_fill_color"][0]);		//Just one instance of pdf fill color
-			if(tmsSize) tms.push_back(options["total_marker_style"][0]);		//Just one instance of pdf marker style
+		  if(tfsSize) tfs.push_back(options["total_fill_style"].at(0));		//Just one instance of pdf fill style
+		  if(tfcSize) tfc.push_back(options["total_fill_color"].at(0));		//Just one instance of pdf fill color
+		  if(tmsSize) tms.push_back(options["total_marker_style"].at(0));		//Just one instance of pdf marker style
 
-			if(pfsSize) pfs.push_back(options["pdf_fill_style"][0]);		//Just one instance of pdf fill style
-			if(pfcSize) pfc.push_back(options["pdf_fill_color"][0]);		//Just one instance of pdf fill color
-			if(pmsSize) pms.push_back(options["pdf_marker_style"][0]);		//Just one instance of pdf marker style
+		  if(pfsSize) pfs.push_back(options["pdf_fill_style"].at(0));		//Just one instance of pdf fill style
+		  if(pfcSize) pfc.push_back(options["pdf_fill_color"].at(0));		//Just one instance of pdf fill color
+		  if(pmsSize) pms.push_back(options["pdf_marker_style"].at(0));		//Just one instance of pdf marker style
 
-			if(sfsSize) sfs.push_back(options["scale_fill_style"][0]);	   
-			if(sfcSize) sfc.push_back(options["scale_fill_color"][0]);	        //Just one instance of scale fill style
-			if(smsSize) sms.push_back(options["scale_marker_style"][0]);	   
+		  if(sfsSize) sfs.push_back(options["scale_fill_style"].at(0));	   
+		  if(sfcSize) sfc.push_back(options["scale_fill_color"].at(0));	        //Just one instance of scale fill style
+		  if(smsSize) sms.push_back(options["scale_marker_style"].at(0));	   
 
-			if(afsSize) afs.push_back(options["alphas_fill_style"][0]);	   
-			if(afcSize) afc.push_back(options["alphas_fill_color"][0]);	        //Just one instance of alphas fill style
-			if(amsSize) ams.push_back(options["alphas_marker_style"][0]);	   
+		  if(afsSize) afs.push_back(options["alphas_fill_style"].at(0));	   
+		  if(afcSize) afc.push_back(options["alphas_fill_color"].at(0));	        //Just one instance of alphas fill style
+		  if(amsSize) ams.push_back(options["alphas_marker_style"].at(0));	   
 
-			if(cfsSize) cfs.push_back(options["corrections_fill_style"][0]);	   
-			if(cfcSize) cfc.push_back(options["corrections_fill_color"][0]);        //Just one instance of correction fill style
-			if(cmsSize) cms.push_back(options["corrections_marker_style"][0]);	   
+		  if(cfsSize) cfs.push_back(options["corrections_fill_style"].at(0));	   
+		  if(cfcSize) cfc.push_back(options["corrections_fill_color"].at(0));        //Just one instance of correction fill style
+		  if(cmsSize) cms.push_back(options["corrections_marker_style"].at(0));	   
 
-			if(xsSize > 1) 			xsc.push_back(options["x_scale"][i]);
-			else if(xsSize == 1)	xsc.push_back(options["x_scale"][0]);
+		  if(xsSize > 1) 			xsc.push_back(options["x_scale"].at(i));
+		  else if(xsSize == 1)	xsc.push_back(options["x_scale"].at(0));
 			else					xsc.push_back("1.0");
 
 			if(ysSize > 1) 			ysc.push_back(options["y_scale"][i]);
-			else if(ysSize == 1)	ysc.push_back(options["y_scale"][0]);
+			else if(ysSize == 1)	ysc.push_back(options["y_scale"].at(0));
 			else					ysc.push_back("1.0");
 		}
 	}
@@ -720,38 +755,38 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		//Fill all other vectors as needed
 		for(int i = 0; i < numberOfConfigurationInstances; i++) {
-			dsf.push_back(options["data_steering_files"][0]);	//Just one instance of data steering file
-			gsf.push_back(options["grid_steering_files"][0]);	//Just one instance of grid steering file
-			psf.push_back(options["pdf_steering_files"][i]);
+		  dsf.push_back(options["data_steering_files"].at(0));	//Just one instance of data steering file
+		  gsf.push_back(options["grid_steering_files"].at(0));	//Just one instance of grid steering file
+		  psf.push_back(options["pdf_steering_files"].at(i));
 
-			if(dmsSize) dms.push_back(options["data_marker_style"][0]);		//Just one instance of data marker style
-			if(dmcSize) dmc.push_back(options["data_marker_color"][0]);		//Just one instance of data marker color
+		  if(dmsSize) dms.push_back(options["data_marker_style"].at(0));		//Just one instance of data marker style
+		  if(dmcSize) dmc.push_back(options["data_marker_color"].at(0));		//Just one instance of data marker color
 
-			if(tfsSize) tfs.push_back(options["total_fill_style"][i]);
-			if(tfcSize) tfc.push_back(options["total_fill_color"][i]);
-			if(tmsSize) tms.push_back(options["total_marker_style"][i]);
+		  if(tfsSize) tfs.push_back(options["total_fill_style"].at(0));
+		  if(tfcSize) tfc.push_back(options["total_fill_color"].at(i));
+		  if(tmsSize) tms.push_back(options["total_marker_style"].at(i));
 
-			if(pfsSize) pfs.push_back(options["pdf_fill_style"][i]);
-			if(pfcSize) pfc.push_back(options["pdf_fill_color"][i]);
-			if(pmsSize) pms.push_back(options["pdf_marker_style"][i]);
+		  if(pfsSize) pfs.push_back(options["pdf_fill_style"].at(i));
+		  if(pfcSize) pfc.push_back(options["pdf_fill_color"].at(i));
+		  if(pmsSize) pms.push_back(options["pdf_marker_style"].at(i));
 
-			if(sfsSize) sfs.push_back(options["scale_fill_style"][i]);
-			if(sfcSize) sfc.push_back(options["scale_fill_color"][i]);
-			if(smsSize) sms.push_back(options["scale_marker_style"][i]);
+		  if(sfsSize) sfs.push_back(options["scale_fill_style"].at(i));
+		  if(sfcSize) sfc.push_back(options["scale_fill_color"].at(i));
+		  if(smsSize) sms.push_back(options["scale_marker_style"].at(i));
 
 
-			if(afsSize) afs.push_back(options["alphas_fill_style"][i]);
-			if(afcSize) afc.push_back(options["alphas_fill_color"][i]);
-			if(amsSize) ams.push_back(options["alphas_marker_style"][i]);
+		  if(afsSize) afs.push_back(options["alphas_fill_style"].at(i));
+		  if(afcSize) afc.push_back(options["alphas_fill_color"].at(i));
+		  if(amsSize) ams.push_back(options["alphas_marker_style"].at(i));
 
-			if(cfsSize) cfs.push_back(options["corrections_fill_style"][i]);
-			if(cfcSize) cfc.push_back(options["corrections_fill_color"][i]);
-			if(cmsSize) cms.push_back(options["corrections_marker_style"][i]);
+		  if(cfsSize) cfs.push_back(options["corrections_fill_style"].at(i));
+		  if(cfcSize) cfc.push_back(options["corrections_fill_color"].at(i));
+		  if(cmsSize) cms.push_back(options["corrections_marker_style"].at(i));
 
-			if(xsSize) 	xsc.push_back(options["x_scale"][0]);				//Just one instance of x scale
+		  if(xsSize) 	xsc.push_back(options["x_scale"].at(0));				//Just one instance of x scale
 			else		xsc.push_back("1.0");
 
-			if(ysSize) 	ysc.push_back(options["y_scale"][0]);				//Just one instance of y scale
+		  if(ysSize) 	ysc.push_back(options["y_scale"].at(0));				//Just one instance of y scale
 			else		ysc.push_back("1.0");
 		}
 	}
@@ -773,38 +808,38 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		//Fill all other vectors as needed
 		for(int i = 0; i < numberOfConfigurationInstances; i++) {
                         //Just one instance of data steering file
-			dsf.push_back(options["data_steering_files"][0]);	
-			gsf.push_back(options["grid_steering_files"][i]);
-			psf.push_back(options["pdf_steering_files"][0]);	
+		  dsf.push_back(options["data_steering_files"].at(0));	
+		  gsf.push_back(options["grid_steering_files"].at(i));
+		  psf.push_back(options["pdf_steering_files"].at(0));	
 
-			if(dmsSize) dms.push_back(options["data_marker_style"][0]);
-			if(dmcSize) dmc.push_back(options["data_marker_color"][0]);
+		  if(dmsSize) dms.push_back(options["data_marker_style"].at(0));
+		  if(dmcSize) dmc.push_back(options["data_marker_color"].at(0));
 
-			if(tfsSize) tfs.push_back(options["total_fill_style"][0]);
-			if(tfcSize) tfc.push_back(options["total_fill_color"][0]);
-			if(tmsSize) tms.push_back(options["total_marker_style"][0]);
+		  if(tfsSize) tfs.push_back(options["total_fill_style"].at(0));
+		  if(tfcSize) tfc.push_back(options["total_fill_color"].at(0));
+		  if(tmsSize) tms.push_back(options["total_marker_style"].at(0));
 
-			if(pfsSize) pfs.push_back(options["pdf_fill_style"][0]);
-			if(pfcSize) pfc.push_back(options["pdf_fill_color"][0]);
-			if(pmsSize) pms.push_back(options["pdf_marker_style"][0]);
+		  if(pfsSize) pfs.push_back(options["pdf_fill_style"].at(0));
+		  if(pfcSize) pfc.push_back(options["pdf_fill_color"].at(0));
+		  if(pmsSize) pms.push_back(options["pdf_marker_style"].at(0));
 
-			if(sfsSize) sfs.push_back(options["scale_fill_style"][0]);
-			if(sfcSize) sfc.push_back(options["scale_fill_color"][0]);
-			if(smsSize) sms.push_back(options["scale_marker_style"][0]);
+		  if(sfsSize) sfs.push_back(options["scale_fill_style"].at(0));
+		  if(sfcSize) sfc.push_back(options["scale_fill_color"].at(0));
+		  if(smsSize) sms.push_back(options["scale_marker_style"].at(0));
 
-			if(afsSize) afs.push_back(options["alphas_fill_style"][0]);
-			if(afcSize) afc.push_back(options["alphas_fill_color"][0]);
-			if(amsSize) ams.push_back(options["alphas_marker_style"][0]);
+		  if(afsSize) afs.push_back(options["alphas_fill_style"].at(0));
+		  if(afcSize) afc.push_back(options["alphas_fill_color"].at(0));
+		  if(amsSize) ams.push_back(options["alphas_marker_style"].at(0));
 
-			if(cfsSize) cfs.push_back(options["corrections_fill_style"][0]);
-			if(cfcSize) cfc.push_back(options["corrections_fill_color"][0]);
-			if(cmsSize) cms.push_back(options["corrections_marker_style"][0]);
+		  if(cfsSize) cfs.push_back(options["corrections_fill_style"].at(0));
+		  if(cfcSize) cfc.push_back(options["corrections_fill_color"].at(0));
+		  if(cmsSize) cms.push_back(options["corrections_marker_style"].at(0));
 
 
-			if(xsSize) 	xsc.push_back(options["x_scale"][0]);				
+		  if(xsSize) 	xsc.push_back(options["x_scale"].at(0));				
 			else		xsc.push_back("1.0");
 
-			if(ysSize) 	ysc.push_back(options["y_scale"][0]);				
+		  if(ysSize) 	ysc.push_back(options["y_scale"].at(0));				
 			else		ysc.push_back("1.0");
 		}
 	}
@@ -812,31 +847,31 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	//Process directories
 	if(ddrSize == 1) {
 		for(int i = 0; i < numberOfConfigurationInstances; i++) {
-			ddr.push_back(options["data_directory"][0]);
+		  ddr.push_back(options["data_directory"].at(0));
 		}
 	} else {
 		for(int i = 0; i < numberOfConfigurationInstances; i++) {
-			ddr.push_back(options["data_directory"][i]);
+		  ddr.push_back(options["data_directory"].at(i));
 		}
 	}
 
 	if(gdrSize == 1) {
 		for(int i = 0; i < numberOfConfigurationInstances; i++) {
-			gdr.push_back(options["grid_directory"][0]);
+		  gdr.push_back(options["grid_directory"].at(0));
 		}
 	} else {
 		for(int i = 0; i < numberOfConfigurationInstances; i++) {
-			gdr.push_back(options["grid_directory"][i]);
+		  gdr.push_back(options["grid_directory"].at(i));
 		}
 	}
 
 	if(pdrSize == 1) {
 		for(int i = 0; i < numberOfConfigurationInstances; i++) {
-			pdr.push_back(options["pdf_directory"][0]);
+		  pdr.push_back(options["pdf_directory"].at(0));
 		}
 	} else {
 		for(int i = 0; i < numberOfConfigurationInstances; i++) {
-			pdr.push_back(options["pdf_directory"][i]);
+		  pdr.push_back(options["pdf_directory"].at(i));
 		}
 	}
 
@@ -910,69 +945,85 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		pci.id = i;
 
+                //if (debug) std::cout << cn << mn << " ddr.size()= "<<ddr.size()<< std::endl;
 		//Copy from vectors to pci
-		pci.dataDirectory = ddr[i];
-		pci.gridDirectory = gdr[i];
-		pci.pdfDirectory  = pdr[i];
-		pci.dataSteeringFile = SPXDataSteeringFile(ddr[i] + "/" + dsf[i]);
-		pci.gridSteeringFile = SPXGridSteeringFile(gdr[i] + "/" + gsf[i]);
-		pci.pdfSteeringFile  = SPXPDFSteeringFile(pdr[i]  + "/" + psf[i]);
+                if (ddr.size()>i) {
+		 pci.dataDirectory = ddr.at(i);
+                if (dsf.size()>i) 
+		 pci.dataSteeringFile = SPXDataSteeringFile(ddr[i] + "/" + dsf.at(i));
+                }
 
-		if(dmsSize) pci.dataMarkerStyle = atoi(dms[i].c_str());
+                //if (debug) std::cout << cn << mn << " gdr.size()= "<<gdr.size()<< std::endl;
+                if (gdr.size()>i) {
+ 		 pci.gridDirectory = gdr.at(i);
+                 if (gsf.size()>i) 
+		  pci.gridSteeringFile = SPXGridSteeringFile(gdr[i] + "/" + gsf.at(i));
+                }
+
+                //if (debug) std::cout << cn << mn << " pdr.size()= "<<pdr.size()<< std::endl;
+                if (pdr.size()>i) {
+		 pci.pdfDirectory  = pdr.at(i);
+                 if (psf.size()>i) 
+		  pci.pdfSteeringFile  = SPXPDFSteeringFile(pdr[i]  + "/" + psf.at(i));
+                }
+
+                if (debug) std::cout << cn << mn << "Now do plot options "<< std::endl;
+
+		if(dmsSize) pci.dataMarkerStyle = atoi(dms.at(i).c_str());
 		else 		pci.dataMarkerStyle = PC_EMPTY_STYLE;
 
-		if(dmcSize) pci.dataMarkerColor = atoi(dmc[i].c_str());
+		if(dmcSize) pci.dataMarkerColor = atoi(dmc.at(i).c_str());
 		else	 	pci.dataMarkerColor = PC_EMPTY_COLOR;
 
-		if(tfsSize) pci.totalFillStyle = atoi(tfs[i].c_str());
+		if(tfsSize) pci.totalFillStyle = atoi(tfs.at(i).c_str());
 		else 		pci.totalFillStyle = PC_EMPTY_STYLE;
 
-		if(tfcSize) pci.totalFillColor = atoi(tfc[i].c_str());
+		if(tfcSize) pci.totalFillColor = atoi(tfc.at(i).c_str());
 		else 		pci.totalFillColor = PC_EMPTY_COLOR;
 
-		if(tmsSize) pci.totalMarkerStyle = atoi(tms[i].c_str());
+		if(tmsSize) pci.totalMarkerStyle = atoi(tms.at(i).c_str());
 		else		pci.totalMarkerStyle = PC_EMPTY_STYLE;
 
-		if(pfsSize) pci.pdfFillStyle = atoi(pfs[i].c_str());
+		if(pfsSize) pci.pdfFillStyle = atoi(pfs.at(i).c_str());
 		else 		pci.pdfFillStyle = PC_EMPTY_STYLE;
 
-		if(pfcSize) pci.pdfFillColor = atoi(pfc[i].c_str());
+		if(pfcSize) pci.pdfFillColor = atoi(pfc.at(i).c_str());
 		else 		pci.pdfFillColor = PC_EMPTY_COLOR;
 
-		if(pmsSize) pci.pdfMarkerStyle = atoi(pms[i].c_str());
+		if(pmsSize) pci.pdfMarkerStyle = atoi(pms.at(i).c_str());
 		else		pci.pdfMarkerStyle = PC_EMPTY_STYLE;
 
-		if(sfsSize) pci.scaleFillStyle = atoi(sfs[i].c_str());
+		if(sfsSize) pci.scaleFillStyle = atoi(sfs.at(i).c_str());
 		else 		pci.scaleFillStyle = PC_EMPTY_STYLE;
 
-		if(sfcSize) pci.scaleFillColor = atoi(sfc[i].c_str());
+		if(sfcSize) pci.scaleFillColor = atoi(sfc.at(i).c_str());
 		else 		pci.scaleFillColor = PC_EMPTY_COLOR;
 
-		if(smsSize) pci.scaleMarkerStyle = atoi(sms[i].c_str());
+		if(smsSize) pci.scaleMarkerStyle = atoi(sms.at(i).c_str());
 		else		pci.scaleMarkerStyle = PC_EMPTY_STYLE;
 
-		if(afsSize) pci.alphasFillStyle = atoi(afs[i].c_str());
+		if(afsSize) pci.alphasFillStyle = atoi(afs.at(i).c_str());
 		else 		pci.alphasFillStyle = PC_EMPTY_STYLE;
 
-		if(afcSize) pci.alphasFillColor = atoi(afc[i].c_str());
+		if(afcSize) pci.alphasFillColor = atoi(afc.at(i).c_str());
 		else 		pci.alphasFillColor = PC_EMPTY_COLOR;
 
-		if(amsSize) pci.alphasMarkerStyle = atoi(ams[i].c_str());
+		if(amsSize) pci.alphasMarkerStyle = atoi(ams.at(i).c_str());
 		else		pci.alphasMarkerStyle = PC_EMPTY_STYLE;
 
-		if(cfsSize) pci.correctionsFillStyle = atoi(cfs[i].c_str());
+		if(cfsSize) pci.correctionsFillStyle = atoi(cfs.at(i).c_str());
 		else 		pci.correctionsFillStyle = PC_EMPTY_STYLE;
 
-		if(cfcSize) pci.correctionsFillColor = atoi(cfc[i].c_str());
+		if(cfcSize) pci.correctionsFillColor = atoi(cfc.at(i).c_str());
 		else 		pci.correctionsFillColor = PC_EMPTY_COLOR;
 
-		if(cmsSize) pci.correctionsMarkerStyle = atoi(cms[i].c_str());
+		if(cmsSize) pci.correctionsMarkerStyle = atoi(cms.at(i).c_str());
 		else		pci.correctionsMarkerStyle = PC_EMPTY_STYLE;
 
-		if(xsSize)	pci.xScale = atof(xsc[i].c_str());
+		if(xsSize)	pci.xScale = atof(xsc.at(i).c_str());
 		else		pci.xScale = 1.0;
 
-		if(ysSize)	pci.yScale = atof(ysc[i].c_str());
+		if(ysSize)	pci.yScale = atof(ysc.at(i).c_str());
 		else		pci.yScale = 1.0;
 
 		//Attempt to add the configuration instance

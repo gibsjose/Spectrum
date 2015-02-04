@@ -63,6 +63,25 @@ Finally, for boolean values, the possible values are:
 
 **Optional** `y_ratio_max =` Force Y maximum for Ratio
 
+**Optional** 
+
+**Optional**  `total_fill_style = ` band fill style for total uncertainty
+**Optional**  `total_fill_color = ` band and marker fill color for total uncertainty
+**Optional**  `total_marker_style = ` marker style for total uncertainty
+
+**Optional**  `pdf_fill_style = ` band fill style for PDF uncertainty
+**Optional**  `pdf_fill_color = ` band and marker fill color for pdf uncertainty
+**Optional**  `pdf_marker_style = ` marker style for pdf uncertainty
+
+**Optional**  `scale_fill_style = ` band fill style for scale uncertainty
+**Optional**  `scale_fill_color = ` band and marker fill color for scale uncertainty
+**Optional**  `scale_marker_style = ` marker style for scale uncertainty
+
+**Optional**  `alphas_fill_style = ` fill style for alphas uncertainty
+**Optional**  `alphas_fill_color = ` band and marker fill color for alphas uncertainty
+**Optional**  `alphas_marker_style = ` marker style for alphas uncertainty
+
+
 ##`[PLOT_n]`
 This is where you define the specific plot settings. You can create as many `[PLOT_n]` sections as you want, as long as `n` starts at `0` and increments each plot instance. Keep in mind that each plot definition under a new plot section will be plotted **on a separate ROOT canvas**.
 
@@ -75,6 +94,12 @@ This is where you define the specific plot settings. You can create as many `[PL
 > `data, grid, pdf[]`
 
 This defines the actual type of plot you would like to make. For example, a plot where you would like to compare multiple PDFs with one dataset would be of type `data, grid, pdf[]`, where the `[]` denotes multiplicity
+
+Must be in the order data, grid, pdf. Do not switch order.
+
+Can be data **xor** <br>
+or     grid, pdf **xor** <br>
+or     data, grid, pdf
 
 **REQUIRED** `desc =` The description of the plot (used as the title if non-empty)
 
@@ -124,6 +149,14 @@ To actually define ratios, you must give them both a style and a value. Thus, th
 > `convolute / nominal` **xor** <br>
 > `data / convolute` **xor** <br>
 > `data / data`
+
+`ratio_style_0 = data_stat` put data statistical uncertainty in ratio (and does not add it in ratio uncertainty)
+`ratio_style_0 = data_tot` put data total uncertainty in ratio (and does not add it in ratio uncertainty)
+
+** Example ** Plots first total data statistics, then total data statistic, then ratio (data uncertainties are not in ratio)
+`ratio_style_0 = data_tot` 
+`ratio_style_1 = data_stat` 
+`ratio_style_2 = data/convolute` 
 
 **Optional** `ratio_n =` You **must** follow the exact syntax for specifying the ratios, otherwise you will be issued errors:
 

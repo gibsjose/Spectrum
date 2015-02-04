@@ -95,6 +95,9 @@ public:
 
 	//These functions simplify the main file's interface to parsing
 	// and printing the Steering Files
+        //vector <bool> hasdata;
+        //vector <bool> hasmc;
+ 
 	void PrintAll(void);
 	void ParseAll(bool print);
 
@@ -211,7 +214,23 @@ public:
 	 return gridcorrections.at(i);
 	}
 
+        //bool HasData(int iplot) {
+	// if (iplot>hasdata.size()) {
+	// std::ostringstream oss;
+	//  oss << "SPXSteering:: Something is wrong iplot= "<<iplot<<" but hasdata vector size= "<<hasdata.size();
+	// throw SPXParseException(oss.str());
+	// };
+	// return hasdata.at(iplot);
+	//};
 
+        //bool HasMC(int iplot) {
+	// if (iplot>hasmc.size()) {
+        //  std::ostringstream oss;
+	//  oss << "SPXSteering:: Something is wrong iplot= "<<iplot<<" but hasmc vector size= "<<hasmc.size();
+	//  throw SPXParseException(oss.str());
+        // }
+        // return hasmc.at(iplot);
+        //};
 
 	unsigned int GetNumberOfPlotConfigurations(void) const {
 		return this->plotConfigurations.size();

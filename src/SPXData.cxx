@@ -91,7 +91,7 @@ void SPXData::Parse(void) {
 		//	throw SPXParseException(pci.dataSteeringFile.GetDataFile(), "Error parsing data file");
 		//}
 	} else {
-		throw SPXParseException("DataSteeringFile " + pci.dataSteeringFile.GetFilename() + " has invalid data format");
+	 throw SPXParseException("DataSteeringFile " + pci.dataSteeringFile.GetFilename() + " has invalid data format");
 	}
 	return;
 }
@@ -321,7 +321,7 @@ void SPXData::ParseSpectrum(void) {
 				const std::string &name = it->first;
 				std::vector<double> &syst = it->second;
 
-				std::cout<<cn<<mn<<" i= "<<i<<" syst.size()= "<<syst.size()<<std::endl;
+				//std::cout<<cn<<mn<<" i= "<<i<<" syst.size()= "<<syst.size()<<std::endl;
 
 			        if (i>=syst.size()) { 
 				 std::ostringstream oss;
@@ -1345,7 +1345,7 @@ void SPXData::CalculateSystematicCovarianceMatrix() {
   const std::string   &name = it->first;
   std::vector<double> &syst = it->second;
 
-  std::cout<<cn<<mn<<"Number of bins in systematics vector: "<<syst.size()  << std::endl;
+  //std::cout<<cn<<mn<<"Number of bins in systematics vector: "<<syst.size()  << std::endl;
   //for (int i=0; i<syst.size(); i++) {
   // std::cout<<cn<<mn<<" syst["<<i<<"]= "<<syst.at(i)  << std::endl;
   //}
@@ -1356,7 +1356,7 @@ void SPXData::CalculateSystematicCovarianceMatrix() {
    throw SPXParseException(oss.str());
   }
 
-  if (debug) std::cout<<cn<<mn<<"Loop over Nbin: "<<syst.size()  << std::endl;
+  //if (debug) std::cout<<cn<<mn<<"Loop over Nbin: "<<syst.size()  << std::endl;
   for ( int ibin=0; ibin<Nbin; ibin++ ){
    for ( int jbin=0; jbin<Nbin; jbin++ ){
      // if (debug) std::cout<<cn<<mn<<ibin<<" "<<jbin<<" systematic name= "<<name
@@ -1395,7 +1395,7 @@ StringDoubleVectorMap_T SPXData::SymmetrizeSystemicUncertaintiesMatrix(StringDou
 
  bool debug2=false;
 
- if (debug) std::cout<<cn<<mn<<"Loop over systematics Number of systematics= "<< systmap.size()  << std::endl;
+ if (debug2) std::cout<<cn<<mn<<"Loop over systematics Number of systematics= "<< systmap.size()  << std::endl;
 
  // declare map containing symmetrized systematic uncertainties
  std::map <string, vector <double> >  symsystmap;
@@ -1409,7 +1409,7 @@ StringDoubleVectorMap_T SPXData::SymmetrizeSystemicUncertaintiesMatrix(StringDou
   const std::string   &name = it->first;
   std::vector<double> &syst = it->second;
 
-  if (debug) std::cout<<cn<<mn<<"Systematic name= "<< name  << std::endl;
+  if (debug2) std::cout<<cn<<mn<<"Systematic name= "<< name  << std::endl;
 
   TString sname=name;
   if (name.find("+") != std::string::npos) {
