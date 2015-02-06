@@ -1322,7 +1322,8 @@ void SPXPlot::DrawLegend(void) {
         //double xshift=1.5*text->GetTextSize();
         if (debug) std::cout<<cn<<mn<<"xshift= "<<xshift<<std::endl;
         //if (debug) text->Print();
-	text->DrawLatexNDC(x1-xshift,y2-2.*csize,infolabel.Data());         
+        text->SetNDC(); 
+	text->DrawLatex(x1-xshift,y2-2.*csize,infolabel.Data());         
        }
 
        leg->Draw();
