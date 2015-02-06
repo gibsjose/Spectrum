@@ -1,0 +1,8 @@
+; statistical correction matrix ttbar pt
+; http://arxiv.org/pdf/1407.0371v3.pdf
+is_correlation_matrix
+is_statisticserror
+-0.45  0.23  0.92  1.00
+-0.65  0.44  1.00  0.92
+-0.97  1.00  0.44  0.23
+ 1.00 -0.97 -0.65 -0.45

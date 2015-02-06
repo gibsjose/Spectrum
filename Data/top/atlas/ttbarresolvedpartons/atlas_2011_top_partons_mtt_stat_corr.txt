@@ -1,0 +1,9 @@
+; statistical correllation matrix mtt
+; http://arxiv.org/pdf/1407.0371v3.pdf Table XIII
+is_correlation_matrix
+is_statisticserror
+-0.09 -0.19 -0.24  0.92  1.0
+-0.06 -0.28 -0.23  1.00  0.92
+-0.73  0.23  1.00 -0.23 -0.24
+ 0.72  1.00  0.23 -0.28 -0.19
+ 1.00 -0.72 -0.73 -0.06 -0.09

@@ -1,0 +1,6 @@
+; ytt http://arxiv.org/pdf/1407.0371v3.pdf
+is_covariance_matrix
+is_totalerror
+ 6.35e-4  1.72e-4 -2.69e-4
+ 1.72e-4  9.56e-5 -8.90e-5 
+-2.69e-4 -8.90e-5  1.19e-4

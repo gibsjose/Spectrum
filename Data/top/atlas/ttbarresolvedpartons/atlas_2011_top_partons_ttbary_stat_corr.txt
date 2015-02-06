@@ -1,0 +1,7 @@
+; statistical correction matrix
+; http://arxiv.org/pdf/1407.0371v3.pdf Table XIII
+is_correlation_matrix
+is_statisticserror
+-0.90  0.11  1.00
+-0.53  1.00  0.11
+ 1.00 -0.53 -0.90
