@@ -74,13 +74,13 @@ public:
 		return false;
 	}
 
-	bool IsHERAFitter(void) const {
-		if((format == DF_HERAFITTER) && this->IsValid()) {
-			return true;
-		}
-
-		return false;
-	}
+	//bool IsHERAFitter(void) const {
+	//	if((format == DF_HERAFITTER) && this->IsValid()) {
+	//		return true;
+	//	}
+	//
+	//	return false;
+	//}
 
 private:
 	static bool debug;

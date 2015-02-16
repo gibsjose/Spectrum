@@ -30,24 +30,16 @@
 
 #include "SPXPDFSteeringFile.h"
 #include "SPXException.h"
+#include "SPXUtilities.h"
 
 #define DEFAULT -1
 
-using namespace std;
+//using namespace std;
+typedef std::map<std::string,  TGraphAsymmErrors*>  BandMap_T;
 
 class SPXPDF {
 
     public:
-        //VARIABLES
-
-        TGraphAsymmErrors *h_PDFBand_results;
-        TGraphAsymmErrors *h_AlphaS_results;
-        TGraphAsymmErrors *h_Scale_results;
-        TGraphAsymmErrors *h_Total_results;
-
-        string calc_desc;
-
-        bool applgridok;
 
         //METHODS
         SPXPDF() {};
@@ -55,6 +47,8 @@ class SPXPDF {
         SPXPDF(SPXPDFSteeringFile *psf, const std::string &_gridName);
 
         virtual ~SPXPDF() { CleanUpSPXPDF(); }; //destructor
+
+        void PrintMap(BandMap_T &m);
 
         // method for PDF standalone plots
 
@@ -83,37 +77,42 @@ class SPXPDF {
         double GetMaximum(int iset);
         double GetMinimum(int iset);
 
-        //@TODO Move to SPXGraphUtilities
-        TGraphAsymmErrors* MyTGraphErrorsDivide(TGraphAsymmErrors* g1,TGraphAsymmErrors* g2, Int_t noerr=1);
-        TGraphAsymmErrors* TH1TOTGraphAsymm(TH1 *h1);
-
         //accessor methods
         bool IsDebugOn() const{return debug;};
+
         string GetPDFtype() const{return PDFtype;};
         string GetPDFName() const{return PDFname;};
         string GetPDFFullname(){ return default_pdf_set_name;};
+
         int GetNumPDFMembers() const{return n_PDFMembers;};
         int GetFillStyleCode() const{return fillStyleCode;};
         int GetFillColorCode() const{return fillColorCode;};
 	int GetMarkerStyle() const{return markerStyle;};
 	int GetMarkerColor() const{return fillColorCode;}; //should be marker color, using fill color as default
         string GetPDFBandType() const{return PDFBandType;};
-        //string GetPDFErrorType() const{return PDFErrorType;};
-        //string GetPDFErrorSize() const{return PDFErrorSize;};
 
         bool Is90PercentErrorSize()const{return f_PDFErrorSize90Percent;}; 
 
         bool GetDoPDFBand() const{return do_PDFBand;};
-        bool GetDoAlphaS() const{return do_AlphaS;};
-        bool GetDoScale() const{return do_Scale;};
-        bool GetDoTotal() const{return do_Total;};
+        bool GetDoAlphaS()  const{return do_AlphaS;};
+        bool GetDoScale()   const{return do_Scale;};
+        bool GetDoTotal()   const{return do_Total;};
+
+        int GetNBands(){return Mapallbands.size();};
+        TGraphAsymmErrors *GetBand(int i);
+        string GetBandType(int i);
 
         int GetAlphaSmemberNumDown() const{return AlphaSmemberNumDown;};
         int GetAlphaSmemberNumUp() const{return AlphaSmemberNumUp;};
         string GetAlphaSPDFSetNameDown() const{return AlphaSPDFSetNameDown;};
         string GetAlphaSPDFSetNameUp() const{return AlphaSPDFSetNameUp;};
-        string GetAlphaSPDFSetHistNameDown() const{return AlphaSPDFSetHistNameDown;};
-        string GetAlphaSPDFSetHistNameUp() const{return AlphaSPDFSetHistNameUp;};
+
+        TH1D * GetPdfdefault() { return hpdfdefault;};
+        TH1D * GetPDFNominal() { return hpdfdefault; };
+
+        TGraphAsymmErrors *GetTotalBand() {
+         return h_Total_results;   
+        }
 
         //mutator methods
         void SetDebug(bool _debug);
@@ -139,8 +138,8 @@ class SPXPDF {
         void SetAlphaSmemberNumUp(int _memberNum);
         void SetAlphaSPDFSetNameDown(string _name);
         void SetAlphaSPDFSetNameUp(string _name);
-        void SetAlphaSPDFSetHistNameDown(string _name);
-        void SetAlphaSPDFSetHistNameUp(string _name);
+        //void SetAlphaSPDFSetHistNameDown(string _name);
+        //void SetAlphaSPDFSetHistNameUp(string _name);
 
         void SetAlphaS_value_worldAverage(double setalpha) {alphaS_value_worldAverage=setalpha;};
         void SetAlphaS_absUnc_worldAverage(double setalpha){alphaS_absUnc_worldAverage=setalpha;};
@@ -148,13 +147,24 @@ class SPXPDF {
 
         void SetScales(std::vector<double> aRenScales,std::vector<double> aFacScales);
 
-        TH1D * GetPdfdefault() { return hpdfdefault;};
-
-        TH1D * GetPDFNominal() { return hpdfdefault; };
+        void ApplyBandCorrection(TGraphAsymmErrors *g, std::string corrlabel, bool includeinband);
 
     private:
         //VARIABLES
         static bool debug;
+
+        // map of bands
+	BandMap_T Mapallbands; // Map to hold uncertainty bands PDF, alphas, scale, total
+        //bool correctedgrid;    // flag to indicated if Mapallbands are corrected
+                               // by hadronisation, electroweak effects etc.
+        // bands for individual uncertainties
+        TGraphAsymmErrors *h_PDFBand_results; // PDF uncertainty
+        TGraphAsymmErrors *h_AlphaS_results;  // alphas uncertainty
+        TGraphAsymmErrors *h_Scale_results;   // scale uncertainty
+        TGraphAsymmErrors *h_Total_results;   // total uncertainty
+
+        //string calc_desc;
+        bool applgridok;
 
         std::string steeringFileName;
 
@@ -174,12 +184,11 @@ class SPXPDF {
         int firstmaxvar;            // first eigenvector to look maximum
         int lastmaxvar;             // last eigenvector  to look for maximum
 
-        int fillStyleCode;
+        int fillStyleCode;          
         int fillColorCode;
-		int markerStyle;            //optional marker style
+	int markerStyle;            // optional marker style
         string PDFBandType;
         string PDFErrorType;
-        //string PDFErrorSize;
 
         bool f_PDFBandType;
         bool f_PDFErrorSize90Percent;
@@ -193,13 +202,10 @@ class SPXPDF {
         bool includeQUAD; // include model variations added in quadrature
         bool includeMAX;  // include parameterisation variations take maximum among those
 
-
         int AlphaSmemberNumDown; //needed if do_AlphaS is set. Can be read from steering or set by mutator
         int AlphaSmemberNumUp;
         string AlphaSPDFSetNameDown;
         string AlphaSPDFSetNameUp;
-        string AlphaSPDFSetHistNameDown;
-        string AlphaSPDFSetHistNameUp;
 
         appl::grid *my_grid;
 
@@ -210,7 +216,6 @@ class SPXPDF {
         TH1D *hpdfdefault;
 
         std::vector<double> alphaS_variations;  // the values of alphaS variations corresponding to the histograms stored in h_errors_AlphaS
-
 
         string gridName;
 

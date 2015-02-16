@@ -61,7 +61,10 @@ grid_divided_by_bin_width = true
 ;==============================================================
 [GRID]								
 grid_file = incljets_rapidity_25_30_R06_P2.root		
-
-generator_id =nlojet++ 		
-ntuple_id = 						
+correction_files = atlas_2011_jet_antiktr06_incljetpt_eta6_hadcorr.txt,atlas_2011_jet_antiktr06_incljetpt_eta6_ewcorr.txt
+;correction_files = test_hadcorr.txt, test_ew.txt
+correction_files_label = k_{had},k_{ew}
+correction_files_reference = arXiv:1410.8857, S. ~Dittmaier~et~al.~JHEP11~(2012)~095
+correction_files_author    = ATLAS, Dittmaier~Huss~Speckner
+correction_files_program = Pythia~and~Herwig~tunes,Feynarts
 lowest_order = 2								

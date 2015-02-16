@@ -33,17 +33,13 @@
 class SPXData {
 
 public:
-	explicit SPXData(const SPXPlotConfigurationInstance &pci) {
-		this->pci = pci;
-		this->dataFormat = pci.dataSteeringFile.GetDataFormat();
-		dividedByBinWidth = this->pci.dataSteeringFile.IsDividedByBinWidth();
-	}
+
+        SPXData(const SPXPlotConfigurationInstance &pci);
 
 	void Parse(void);
 	void Print(void);
 	void Draw(void);
 
-	//CreateGraphs should always be called BEFORE Get_____Graph() is called
 	void CreateGraphs(void);
 
 	static bool GetDebug(void) {
@@ -57,6 +53,22 @@ public:
 	const SPXDataFormat & GetDataFormat(void) {
 		return pci.dataSteeringFile.GetDataFormat();
 	}
+
+        const std::string & GetLegendLabel(void) {
+	 return pci.dataSteeringFile.GetLegendLabel();
+        }
+
+        const double GetSqrtS(void) {
+	 return pci.dataSteeringFile.GetSqrtS();
+        }
+
+        const std::string & GetDatasetYear(void) {
+	 return pci.dataSteeringFile.GetDatasetYear();
+        }
+
+        const std::string & GetDatasetLumi(void) {
+	 return pci.dataSteeringFile.GetDatasetLumi();
+        }
 
 	unsigned int GetNumberOfBins(void) {
 		return numberOfBins;
@@ -98,10 +110,10 @@ public:
 		return data["stat"];
 	}
 
-	//NOTE: Returns only the POSITIVE vector for asymmetric formats
-	std::vector<double> & GetSystematicErrorVector(void) {
-		return data["syst_p"];
-	}
+	//NOTE: Returns average of postive and negative error
+	//std::vector<double> & GetSystematicErrorVector(void) {
+	//  return 0.5*(data["syst_p"]+data["syst_n"]);
+	//}
 
 	std::vector<double> & GetPositiveSystematicErrorVector(void) {
 		return data["syst_p"];
@@ -122,7 +134,7 @@ public:
 
 	TGraphAsymmErrors * GetSystematicErrorGraph(void) {
 
-		if(!this->statisticalErrorGraph) {
+		if(!this->systematicErrorGraph) {
 			throw SPXGraphException("Systematic Error Graph pointer is NULL: You MUST call ::CreateGraphs() before obtaining the graph");
 		}
 
@@ -138,12 +150,14 @@ public:
 		return this->totalErrorGraph;
 	}
 
+        TMatrixT<double>  *GetDataCovarianceMatrix() {return cov_matrixtot;};
+
 private:
-	static bool debug;								//Flag indicating debug mode
-	std::ifstream *dataFile;						//Must declare as pointer... ifstream's copy constructor is private
-	SPXPlotConfigurationInstance pci;				//Frame options instance which contains the data steering file as well as the plot options
-	SPXDataFormat dataFormat;						//Format of this data: Included directly simply to cut down on syntax in implementation
-	bool dividedByBinWidth;							//Flag indicating whether the initial data was already divided by the bin width
+	static bool debug;				//Flag indicating debug mode
+	std::ifstream *dataFile;			//Must declare as pointer... ifstream's copy constructor is private
+	SPXPlotConfigurationInstance pci;		//Frame options instance which contains the data steering file as well as the plot options
+	SPXDataFormat dataFormat;			//Format of this data: Included directly simply to cut down on syntax in implementation
+	bool dividedByBinWidth;				//Flag indicating whether the initial data was already divided by the bin width
 
 	//Number of bins in data map
 	unsigned int numberOfBins;
@@ -163,11 +177,32 @@ private:
 	//Actual data graph containing total errors
 	TGraphAsymmErrors *totalErrorGraph;
 
+        // stuff related to covariance matrix
+	//
+
+        TMatrixT<double>  *cov_matrixtot;
+        TMatrixT<double>  *cov_matrixstat;
+        TMatrixT<double>  *cov_matrixsyst;
+
+        TMatrixT<double>  *corr_matrixtot;
+        TMatrixT<double>  *corr_matrixstat;
+        TMatrixT<double>  *corr_matrixsyst;
+
+        void ReadCorrelationMatrix(string filename);
+	void ReadCorrelation();
+        void CalculateSystematicCovarianceMatrix();
+
+        StringDoubleVectorMap_T SymmetrizeSystemicUncertaintiesMatrix(StringDoubleVectorMap_T syst);
+
+        // parsing and print methods
+
 	void ParseSpectrum(void);
-	void ParseHERAFitter(void);
+	//void ParseHERAFitter(void);
 
 	void PrintSpectrum(void);
-	void PrintHERAFitter(void);
+	//void PrintHERAFitter(void);
+
+        void PrintSystematics(StringDoubleVectorMap_T syst);
 
 	void OpenDataFile(void) {
 		std::string filepath = pci.dataSteeringFile.GetDataFile();

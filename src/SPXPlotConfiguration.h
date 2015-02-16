@@ -58,6 +58,9 @@ struct SPXPlotConfigurationInstance {
 	SPXPDFSteeringFile pdfSteeringFile;
 	int dataMarkerStyle;
 	int dataMarkerColor;
+	int totalFillColor;
+	int totalFillStyle;
+	int totalMarkerStyle;
 	int pdfFillColor;
 	int pdfFillStyle;
 	int pdfMarkerStyle;
@@ -67,6 +70,9 @@ struct SPXPlotConfigurationInstance {
 	int alphasFillColor;
 	int alphasFillStyle;
 	int alphasMarkerStyle;
+	int correctionsFillColor;
+	int correctionsFillStyle;
+	int correctionsMarkerStyle;
 	double xScale;
 	double yScale;
 	unsigned int id;
@@ -83,6 +89,9 @@ struct SPXPlotConfigurationInstance {
 		pdfDirectory = ".";
 		dataMarkerStyle = PC_EMPTY_STYLE;
 		dataMarkerColor = PC_EMPTY_COLOR;
+		totalFillStyle = PC_EMPTY_STYLE;
+		totalFillColor = PC_EMPTY_COLOR;
+		totalMarkerStyle = PC_EMPTY_STYLE;
 		pdfFillStyle = PC_EMPTY_STYLE;
 		pdfFillColor = PC_EMPTY_COLOR;
 		pdfMarkerStyle = PC_EMPTY_STYLE;
@@ -92,6 +101,9 @@ struct SPXPlotConfigurationInstance {
 		alphasFillStyle = PC_EMPTY_STYLE;
 		alphasFillColor = PC_EMPTY_COLOR;
 		alphasMarkerStyle = PC_EMPTY_STYLE;
+		correctionsFillStyle = PC_EMPTY_STYLE;
+		correctionsFillColor = PC_EMPTY_COLOR;
+		correctionsMarkerStyle = PC_EMPTY_STYLE;
 		xScale = 1.0;
 		yScale = 1.0;
 	}
@@ -100,19 +112,36 @@ struct SPXPlotConfigurationInstance {
 	bool IsEmpty(void) const {
 		std::string mn = "IsEmpty: ";
 
+
 		if(!dataSteeringFile.GetFilename().empty()) {
-			//if(debug) std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Data steering file = " << dataSteeringFile.GetFilename() << std::endl;
-			return false;
+		 if(debug) std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Data steering file = " << dataSteeringFile.GetFilename() << std::endl;
+		 //return false;
 		}
 
 		if(!gridSteeringFile.GetFilename().empty()) {
-			//std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Grid steering file = " << gridSteeringFile.GetFilename() << std::endl;
-			return false;
+		  if (debug) std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Grid steering file = " << gridSteeringFile.GetFilename() << std::endl;
+		  //return false;
 		}
 
 		if(!pdfSteeringFile.GetFilename().empty()) {
-			return false;
+		  if (debug) std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: PDF steering file = " << pdfSteeringFile.GetFilename() << std::endl;
+		  //return false;
 		}
+
+		if(dataSteeringFile.GetFilename().empty() && 
+                  (gridSteeringFile.GetFilename().empty()||pdfSteeringFile.GetFilename().empty())) {
+		  if (debug) {
+		   if(dataSteeringFile.GetFilename().empty())
+                    std::cout << "SPXPlotConfigurationInstance::IsEmpty: "<< " no data steering  " << std::endl;
+
+		   if(gridSteeringFile.GetFilename().empty())
+                   std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << " no grid steering  " << std::endl;
+
+		   if(pdfSteeringFile.GetFilename().empty())
+                   std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << " no PDF steering " << std::endl;
+                  }
+		  return false;
+                }
 
 		if(dataMarkerStyle != PC_EMPTY_STYLE) {
 			//std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Marker style = " << dataMarkerStyle << std::endl;
@@ -134,27 +163,32 @@ struct SPXPlotConfigurationInstance {
 
 		//Empty, but valid
 		if(this->IsEmpty()) {
+			if(debug) std::cout << mn << "IsEmpty" << std::endl;
 			return true;
 		}
 
 		//Not empty, but fields are missing
 		if(dataSteeringFile.GetFilename().empty()) {
-			if(debug) std::cout << foicn << mn << "Data Steering Filename field missing from PlotConfigurationInstance Object" << std::endl;
-			return false;
+			if(debug) std::cout << mn << "Data Steering Filename field missing from PlotConfigurationInstance Object" << std::endl;
+			//return false;
 		}
 
 		if(gridSteeringFile.GetFilename().empty()) {
-			if(debug) std::cout << foicn << mn << "Grid Steering Filename field missing from PlotConfigurationInstance Object" << std::endl;
-			return false;
+			if(debug) std::cout << mn << "Grid Steering Filename field missing from PlotConfigurationInstance Object" << std::endl;
+			//return false;
 		}
 
 		if(pdfSteeringFile.GetFilename().empty()) {
-			if(debug) std::cout << foicn << mn << "PDF Steering Filename field missing from PlotConfigurationInstance Object" << std::endl;
-			return false;
+			if(debug) std::cout << mn << "PDF Steering Filename field missing from PlotConfigurationInstance Object" << std::endl;
+			//return false;
 		}
 
-		if(debug) std::cout << foicn << mn << "SPXPlotConfigurationInstance object is VALID" << std::endl;
-		return true;
+                if(!dataSteeringFile.GetFilename().empty() ||
+                   (!(gridSteeringFile.GetFilename().empty()&&pdfSteeringFile.GetFilename().empty()))){
+
+		 if(debug) std::cout << mn << "SPXPlotConfigurationInstance object is VALID" << std::endl;
+		 return true;
+                }
 	}
 
 	const std::string ToString(void) const {
@@ -162,9 +196,21 @@ struct SPXPlotConfigurationInstance {
 
 		tmp << "\t Data Marker Style: " << dataMarkerStyle << std::endl;
 		tmp << "\t Data Marker Color: " << dataMarkerColor << std::endl;
-		tmp << "\t PDF Fill Style: " << pdfFillStyle << std::endl;
-		tmp << "\t PDF Fill Color: " << pdfFillColor << std::endl;
+		tmp << "\t Total Fill Style: "   << totalFillStyle << std::endl;
+		tmp << "\t Total Fill Color: "   << totalFillColor << std::endl;
+		tmp << "\t Total Marker Style: " << totalMarkerStyle << std::endl;
+		tmp << "\t PDF Fill Style: "   << pdfFillStyle << std::endl;
+		tmp << "\t PDF Fill Color: "   << pdfFillColor << std::endl;
 		tmp << "\t PDF Marker Style: " << pdfMarkerStyle << std::endl;
+		tmp << "\t Scale Fill Style: "   << scaleFillStyle << std::endl;
+		tmp << "\t Scale Fill Color: "   << scaleFillColor << std::endl;
+		tmp << "\t Scale Marker Style: " << scaleMarkerStyle << std::endl;
+		tmp << "\t AlphaS Fill Style: "   << alphasFillStyle << std::endl;
+		tmp << "\t AlphaS Fill Color: "   << alphasFillColor << std::endl;
+		tmp << "\t AlphaS Marker Style: " << alphasMarkerStyle << std::endl;
+		tmp << "\t Corrections Fill Style: "  << correctionsFillStyle << std::endl;
+		tmp << "\t Corrections Fill Color: "  << correctionsFillColor << std::endl;
+		tmp << "\t Corrections Marker Style: "<< correctionsMarkerStyle << std::endl;
 		tmp << "\t X Scale: " << xScale << std::endl;
 		tmp << "\t Y Scale: " << yScale << std::endl;
 		return tmp.str();
@@ -193,7 +239,8 @@ public:
 		if(debug) SPXUtilities::PrintMethodHeader(focn, mn);
 
 		if(instance.IsEmpty()) {
-			throw SPXParseException("SPXPlotConfiguration::AddConfigurationInstance: Could not add configuration instance: Instance is empty");
+		  //throw SPXParseException("SPXPlotConfiguration::AddConfigurationInstance: Could not add configuration instance: Instance is empty");
+		  std::cout<<mn<<"INFO instance is EMPTY "<<std::endl;
 		}
 
 		if(!instance.IsValid()) {

@@ -35,11 +35,11 @@ public:
 		this->id = plotNumber;
 
 		if(debug) {
-			SPXData::SetDebug(true);
-			SPXDataFormat::SetDebug(true);
-			SPXCrossSection::SetDebug(true);
-			SPXGridCorrections::SetDebug(true);
-			SPXRatio::SetDebug(true);
+		 SPXData::SetDebug(true);
+		 SPXDataFormat::SetDebug(true);
+		 SPXCrossSection::SetDebug(true);
+		 SPXGridCorrections::SetDebug(true);
+		 SPXRatio::SetDebug(true);
 		}
 	}
 
@@ -50,8 +50,8 @@ public:
 	void SetAxisLabels(void);
 	void ScaleAxes(void);
 	void CreateCanvas(void);
-	void MatchOverlayBinning(void);
-	void ApplyGridCorrections(void);
+	//void MatchOverlayBinning(void);
+
 	void DetermineOverlayFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax);
 	void DetermineRatioFrameBounds(double &xMin, double &xMax, double &yMin, double &yMax);
 	void DivideCanvasIntoPads(void);
@@ -83,12 +83,13 @@ public:
 	}
 
 private:
-	static bool debug;								//Flag indicating debug mode
-	SPXSteeringFile *steeringFile;					//Fully parsed steering file
-	unsigned int id;								//Plot number ID (0-based)
-	std::vector<SPXData> data;						//Vector of data
-	std::vector<SPXCrossSection> crossSections;		//Vector of cross sections
-	std::vector<SPXRatio> ratios;					//Vector of ratios
+	static bool debug;					// Flag indicating debug mode
+	SPXSteeringFile *steeringFile;				// Fully parsed steering file
+	unsigned int id;					// Plot number ID (0-based)
+	//std::vector<SPXData> data;				// Vector of data
+        std::vector<SPXData*> data;				// Vector of data
+	std::vector<SPXCrossSection> crossSections;		// Vector of cross sections
+	std::vector<SPXRatio> ratios;				// Vector of ratios
 
 	//File-to-Graph Maps: Used to facilitate ratio drawing via the SPXRatio class
 	//Each ratio object will maintain a reference to these three maps, allowing it to obtain
@@ -105,7 +106,7 @@ private:
 	//Sets used for eliminating duplicate data/cross section plots, since
 	// different plot configuration instances could share a data/cross section, and we
 	// don't need to plot the same one multiple times
-	std::set<std::string> dataSet;
+	//std::set<std::string> dataSet;
 	std::set<StringPair_T> crossSectionSet;
 
 	//ROOT Components

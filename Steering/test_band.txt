@@ -1,6 +1,6 @@
 ;==============================================================
 ;
-; Description:		
+; Description:
 ; ATLAS inclusive jet cross sections 2010 sqrt(s)=2.76 TeV
 ;--------------------------------------------------------------
 
@@ -16,21 +16,24 @@ debug = true
 [GRAPH]
 plot_band = true
 ; plot_error_ticks = true
-;plot_marker = true
+plot_marker = false
 ;plot_staggered = true
 match_binning = false
-;grid_corr = true
+grid_corr = true
 label_sqrt_s = true
-x_legend = 0.9
-y_legend = 0.9
+;x_legend = 0.95
+;y_legend = 0.95
 
-band_with_pdf = false
-band_with_alphas= false
+band_with_pdf= true
+band_with_alphas= true
 band_with_scale = true
-band_total = false
+band_with_gridcorrection = true
+band_total = true
 
-ren_scales = 5.0,1.0,0.5,1.0,0.5
-fac_scales = 5.0,1.0,0.5,0.5,1.0
+;ren_scales = 1.0
+:fac_scales = 1.0
+;ren_scales = 0.5, 0.5, 1.0, 1.0, 2.0, 2.0
+;fac_scales = 0.5, 1.0, 0.5, 2.0, 1.0, 2.0
 
 ; y_overlay_min =
 ; y_overlay_max =
@@ -55,20 +58,44 @@ pdf_steering_files = CT10.txt
 ;pdf_steering_files = HERAPDF15NLO.txt
 ;pdf_steering_files = NNPDF23nloNoLHC.txt
 
+;data_marker_color=1
+;data_marker_style=20
+
+;
+; colour see Root and remember kYellow=400 kGreen=416 kRed=632 kBlue=600 Grey=416 kOrange=800
+;https://root.cern.ch/root/html/TAttFill.html
+;
+total_fill_style=3002
+total_fill_color=401
+;total_marker_style=21
+
+pdf_fill_style=3005
+pdf_fill_color=801
+;pdf_marker_style=22
+
+;scale_fill_style=3005
+scale_fill_style=3004
+scale_fill_color=399
+;scale_marker_style=23
+
+alphas_fill_style=3001
+alphas_fill_color=803
+alphas_marker_style=24
+
+correction_fill_style = 3003
+correction_fill_color = 3
+correction_marker_style = 24
 
 x_scale = 1.0
-y_scale = 1.0 
+y_scale = 1.0
 x_log=true
 y_log=true
- 
+
 desc = atlas_inclusive_jet_eta1
 ;display_style = overlay,ratio
 display_style = ratio
 overlay_style = data, convolute
 
-ratio_title = NLO QCD/Reference
+ratio_title = NLO QCD/Nominal
 ratio_style_0 = convolute / nominal
 ratio_0 = ([grid_0, pdf_0])
-
-
-

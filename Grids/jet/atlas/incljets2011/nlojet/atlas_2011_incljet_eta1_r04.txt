@@ -4,8 +4,6 @@
 ;	Example Grid Steering File
 ;
 ; Authors:
-;	Jon Doe
-;	Jean Pierre Larousse
 ;	...
 ;
 ; Date:
@@ -39,28 +37,33 @@ debug = true
 ;==============================================================
 [DESC]
 name = atlas_2011_jet_antiktr04_incljetpt_eta1	
-author = Esteban Fullana                       
+author = Esteban~Fullana                       
 lumi_config_file = NONE                        
 scale = Ptjet                                  
 reference_journal_name = NONE                  
-reference_link_to_arxiv=http://arxiv.org/abs/1410.8857 
+reference_link_to_arxiv = http://arxiv.org/abs/1410.8857 
 nlo_program_name = nlojet++                    
 grid_program_name=jetmod                       
 observable_definition_link_to_code = unknown   
-
+;
 ;==============================================================
 ; Graphing Options
 ;==============================================================
 [GRAPH]
 x_units = GeV													
 y_units = pb													
-grid_divided_by_bin_width = true											
-
+grid_divided_by_bin_width = true	
+;reference_divided_by_bin_width = true
 ;==============================================================
 ; Grid Options
 ;==============================================================
 [GRID]								
 grid_file = incljets_rapidity_00_05_R04_P2.root		        
-generator_id =nlojet++ 		           
-; ntuple_id = 						
+correction_files = atlas_2011_jet_antiktr04_incljetpt_eta1_hadcorr.txt,atlas_2011_jet_antiktr04_incljetpt_eta1_ewcorr.txt
+;correction_files = test_hadcorr.txt, test_ew.txt
+correction_files_label = k_{had},k_{ew}
+correction_files_reference = arXiv:1410.8857, S. ~Dittmaier~et~al.~JHEP11~(2012)~095
+correction_files_author    = ATLAS, Dittmaier~Huss~Speckner
+correction_files_program = Pythia~and~Herwig~tunes,Feynarts
+;
 lowest_order = 2								

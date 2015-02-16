@@ -16,20 +16,24 @@ debug = true
 ; Graphing Options
 ;==============================================================
 [GRAPH]
-; plot_band = true
+plot_band = true
+plot_marker = false
+;
 plot_error_ticks = true
-plot_marker = true
 plot_staggered = true
 match_binning = true
-grid_corr = true
+grid_corr = false
 label_sqrt_s = true
-x_legend = 0.9
-y_legend = 0.9
+x_legend = 0.93
+y_legend = 0.93
 ; y_overlay_min =
 ; y_overlay_max =
 ; y_ratio_min =
 ; y_ratio_max =
-
+;band_with_pdf= true
+;band_with_alphas= false
+;band_with_scale = false
+;band_total = false
 ;==============================================================
 ; Plot 0 Options
 ;==============================================================
@@ -45,15 +49,31 @@ x_scale = 1.0
 y_scale = 1.0
 ;data_marker_style = 20
 ;data_marker_color = 1
-;pdf_fill_style = 3005, 3006
-;pdf_fill_color = 600, 810
+;
+;pdf_fill_style = 3006
+;pdf_fill_color = 2
+;pdf_marker_style = 20
+;scale_fill_style=3004
+;scale_fill_color=3
+;alphas_fill_color=4
+;alphas_fill_style=3001
+;
 ;pdf_marker_style = 20, 23
 x_log = false
 y_log = true
 desc = atlas_2011_top_parton_ptt
-display_style = overlay, ratio
+display_style = overlay,ratio
 overlay_style = data, convolute
 ratio_title = NLO QCD / Data
-ratio_style_0 = convolute / data
-ratio_0 = ([grid_0, pdf_0]) / (data_0)
+;ratio_style_0 = convolute / data
+;ratio_0 = ([grid_0, pdf_0]) / (data_0)
+;
+ratio_style_0 = data_tot
+ratio_0 = data_0
+;
+ratio_style_1 = data_stat
+ratio_1 = data_0
+;
+ratio_style_2 = convolute / data
+ratio_2 = ([grid_0, pdf_0]) / (data_0)
 

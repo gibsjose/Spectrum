@@ -33,7 +33,6 @@
 ;==============================================================
 [GEN]
 debug = false
-
 ;==============================================================
 ; Description
 ;==============================================================
@@ -76,5 +75,3 @@ alpha_s_error_number_up = 11
 alpha_s_error_number_down = 9
 alpha_s_pdf_name_up = HERAPDF15NLO_ALPHAS
 alpha_s_pdf_name_down = HERAPDF15NLO_ALPHAS
-alpha_s_pdf_histogram_name_up = HERAPDF15NLOas1156_prenorm
-alpha_s_pdf_histogram_name_down = HERAPDF15NLOasxxx_prenorm

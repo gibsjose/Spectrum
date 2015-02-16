@@ -29,7 +29,7 @@
 ; General Options
 ;==============================================================
 [GEN]
-debug = true
+debug = false
 ;==============================================================
 ; Description
 ;==============================================================
@@ -44,8 +44,8 @@ num_members = 53 ; number of Eigenvectors
 ; Style Options
 ;==============================================================
 [STYLE]
-fill_style = 3005
-fill_color = 600
+fill_style = 3004
+fill_color = 6
 marker_style = 22
 
 ;==============================================================
@@ -57,10 +57,9 @@ default_id_var = 0
 is90Percent = true
 band_type = use_error_band
 ;
-;ErrorPropagationType = 1
-;error_type = scale_band
-error_type = pdf_band
+ErrorPropagationType = 1
 ;error_type = alphas_band
+error_type = pdf_band
 ;
 error_size = one_sigma
 ; PDF set member number
@@ -68,5 +67,3 @@ alpha_s_error_number_up = 7
 alpha_s_error_number_down = 3
 alpha_s_pdf_name_up = CT10as
 alpha_s_pdf_name_down = CT10as
-alpha_s_pdf_histogram_name_up = CT10as120_prenorm
-alpha_s_pdf_histogram_name_down = CT10as116_prenorm

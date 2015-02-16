@@ -49,7 +49,7 @@ num_members = 100
 ;==============================================================
 [STYLE]
 fill_style = 3005
-fill_color = 2
+fill_color = 350
 marker_style = 22
 
 ;==============================================================
@@ -70,6 +70,5 @@ alpha_s_error_number_up = 0
 alpha_s_error_number_down = 0
 alpha_s_pdf_name_up = none
 alpha_s_pdf_name_down = none
-alpha_s_pdf_histogram_name_up = NNPDFAsDown_prenorm
-alpha_s_pdf_histogram_name_down = NNPDFAsUp_prenorm
+
 

@@ -44,7 +44,7 @@ num_members = 41 ; number of Eigenvectors
 ; Style Options
 ;==============================================================
 [STYLE]
-fill_style = 3104
+fill_style = 3004
 fill_color = 632
 marker_style = 23
 
@@ -64,9 +64,7 @@ error_type = pdf_band
 ;
 error_size = one_sigma
 ; PDF set member number
-alpha_s_error_number_up = 0
-alpha_s_error_number_down = 0
-alpha_s_pdf_name_up = none
-alpha_s_pdf_name_down = none
-alpha_s_pdf_histogram_name_up = none
-alpha_s_pdf_histogram_name_down = none
+alpha_s_error_number_up  = 4
+alpha_s_error_number_down= 0
+alpha_s_pdf_name_up  = cteq66alphas.LHgrid
+alpha_s_pdf_name_down= cteq66alphas.LHgrid

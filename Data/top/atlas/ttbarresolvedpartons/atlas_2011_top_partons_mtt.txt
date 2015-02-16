@@ -30,6 +30,8 @@ y_bin_width_units= TeV
 [DATA]
 data_format = spectrum
 data_file =atlas_2011_top_partons_mtt_data.txt
+corr_total_file_name = atlas_2011_top_partons_mtt_total_cov.txt
+corr_statistical_file_name = atlas_2011_top_partons_mtt_stat_corr.txt
 divided_by_bin_width = true
 error_in_percent = true
 normalized_to_total_sigma = true

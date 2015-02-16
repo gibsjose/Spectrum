@@ -63,13 +63,15 @@ private:
 	bool plotMarker;	    //Flag to indicate that data point markers should be plotted
 	bool plotStaggered;	    //Flag to indicate that points should be staggered horizontally for readability
 	bool matchBinning;	    //Flag to indicate that the binning of all graphs on the plot should be matched
-	bool gridCorr;		    //Flag to indicate that, if specified in the grid steering, the grid corrections should be applied
+	bool gridCorr;		    //Flag to indicate that, if specified in the steering, the grid corrections should be applied
 	bool labelSqrtS;	    //Flag to indicate that the Sqrt(s) value should be shown in the legend
 
         bool BandwithPDF;           // show the Uncertainty band with the PDF uncertainties
 	bool BandwithAlphaS;        // show the Uncertainty band with alphas  uncertainties
 	bool BandwithScales;        // show the Uncertainty band with ren&fac scales uncertainties
 	bool BandTotal;             // show the Total uncertainty band
+
+        std::vector<bool> gridcorrections; // flags if grid correction go into band
 
         std::vector<double> RenScales; // vector for renormalisation scale variations
         std::vector<double> FacScales; // vector for factorisation scale variations
@@ -83,7 +85,7 @@ private:
 
 	//[FRAME_n]
 	std::vector<SPXPlotConfiguration> plotConfigurations;	//Options for each plot
-
+	void SetDefaultScales(void);
 	void SetDefaults(void);
 	unsigned int ParseNumberOfPlots(void);
 	unsigned int ParseNumberOfRatios(unsigned int plotNumber);
@@ -93,6 +95,9 @@ public:
 
 	//These functions simplify the main file's interface to parsing
 	// and printing the Steering Files
+        //vector <bool> hasdata;
+        //vector <bool> hasmc;
+ 
 	void PrintAll(void);
 	void ParseAll(bool print);
 
@@ -129,6 +134,7 @@ public:
 		return this->plotBand;
 	}
 
+
 	bool GetPlotErrorTicks(void) const {
 		return this->plotErrorTicks;
 	}
@@ -145,7 +151,7 @@ public:
 		return this->matchBinning;
 	}
 
-	bool GetGridCorr(void) const {
+	bool ApplyGridCorr(void) const {
 		return this->gridCorr;
 	}
 
@@ -192,6 +198,39 @@ public:
 	bool GetBandTotal(void) const {
 		return this->BandTotal;
 	}
+
+	int GetNumberofCorrectionToBand() {
+	 //std::cout<<" gridcorrections.size()= "<<gridcorrections.size()<<std::endl;
+	 return gridcorrections.size(); 
+        }
+	bool GetGridCorrectionToBand(int i) {
+	 if (i>=gridcorrections.size()){  
+	   //std::ostringstream oss;
+	   //oss<<"SPXSteering::GetBandGridCorrection: gridcorrectionsize= "<<gridcorrections.size()<<" but i= "<<i;
+	   //throw SPXParseException(oss.str());
+           return false;
+         } 
+
+	 return gridcorrections.at(i);
+	}
+
+        //bool HasData(int iplot) {
+	// if (iplot>hasdata.size()) {
+	// std::ostringstream oss;
+	//  oss << "SPXSteering:: Something is wrong iplot= "<<iplot<<" but hasdata vector size= "<<hasdata.size();
+	// throw SPXParseException(oss.str());
+	// };
+	// return hasdata.at(iplot);
+	//};
+
+        //bool HasMC(int iplot) {
+	// if (iplot>hasmc.size()) {
+        //  std::ostringstream oss;
+	//  oss << "SPXSteering:: Something is wrong iplot= "<<iplot<<" but hasmc vector size= "<<hasmc.size();
+	//  throw SPXParseException(oss.str());
+        // }
+        // return hasmc.at(iplot);
+        //};
 
 	unsigned int GetNumberOfPlotConfigurations(void) const {
 		return this->plotConfigurations.size();

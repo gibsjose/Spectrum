@@ -159,7 +159,7 @@ void SPXPDFSteeringFile::Print(void) {
         else if (ErrorPropagationType==StyleNNPDF)  
   	 std::cout << "\t\t NNPDF type  "<< std::endl;
         else
-  	 std::cout << "\t\tn UNKNOWN !! "<< std::endl;
+  	 std::cout << "\t\t \n UNKNOWN !! "<< std::endl;
 
 	std::cout << "\t\t Band Type: " << bandType.ToString() << std::endl;
 	std::cout << "\t\t Error Type: " << errorType.ToString() << std::endl;
@@ -176,8 +176,13 @@ void SPXPDFSteeringFile::Parse(void) {
 	std::string mn = "Parse: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 	
+	//Set Defaults
+	this->SetDefaults();
+
 	if(filename.empty()) {
-		throw SPXFileIOException(filename, "Empty file string \"\" was given");
+	 //throw SPXFileIOException(filename, "Empty file string \"\" was given");
+	 std::cout<<cn<<mn<<"WARNING no steering file given, do not know what to do, return "<<std::endl;
+         return;
 	}
 
 	//Initialize reader
@@ -195,7 +200,7 @@ void SPXPDFSteeringFile::Parse(void) {
 	debug = reader->GetBoolean("GEN", "debug", debug);
 
 	//Set Defaults
-	this->SetDefaults();
+	//this->SetDefaults();
 
 	//Enable all debug options if debug is on
 	if(debug) {
@@ -341,8 +346,9 @@ void SPXPDFSteeringFile::Parse(void) {
         ErrorPropagationType=reader->GetInteger("PDF", "ErrorPropagationType", ErrorPropagationType);
 	if (debug) std::cout<<cn<<mn<<"Read in ErrorPropagationType= "<<ErrorPropagationType<<std::endl;
         if (ErrorPropagationType>StyleNNPDF) {
-	  std::cout<<cn<<mn<<"ERROR UNKNOWN Error Propagation type ! "<<ErrorPropagationType<<std::endl;
-          exit (0);
+          std::ostringstream oss;
+          oss << cn << mn << "ERROR UNKNOWN Error Propagation type ! "<<ErrorPropagationType;
+          throw SPXParseException(oss.str());
         }
 	//Parse Band Type
 	tmp = reader->Get("PDF", "band_type", "EMPTY");
@@ -422,19 +428,19 @@ void SPXPDFSteeringFile::Parse(void) {
 		if(debug) std::cout << cn << mn << "Successfully read Alpha S PDF Name Down: " << alphaSPDFNameDown << std::endl;
 	}
 
-	alphaSPDFHistogramNameUp = reader->Get("PDF", "alpha_s_pdf_histogram_name_up", "EMPTY");
-	if(!alphaSPDFHistogramNameUp.compare("EMPTY")) {
-		throw SPXINIParseException("PDF", "alpha_s_pdf_histogram_name_up", "You MUST specify the alpha_s_pdf_histogram_name_up");
-	} else {
-		if(debug) std::cout << cn << mn << "Successfully read Alpha S PDF Histogram Name Up: " << alphaSPDFHistogramNameUp << std::endl;
-	}
+	//alphaSPDFHistogramNameUp = reader->Get("PDF", "alpha_s_pdf_histogram_name_up", "EMPTY");
+	//if(!alphaSPDFHistogramNameUp.compare("EMPTY")) {
+	//	throw SPXINIParseException("PDF", "alpha_s_pdf_histogram_name_up", "You MUST specify the alpha_s_pdf_histogram_name_up");
+	//} else {
+	//	if(debug) std::cout << cn << mn << "Successfully read Alpha S PDF Histogram Name Up: " << alphaSPDFHistogramNameUp << std::endl;
+	//}
 
-	alphaSPDFHistogramNameDown = reader->Get("PDF", "alpha_s_pdf_histogram_name_down", "EMPTY");
-	if(!alphaSPDFHistogramNameDown.compare("EMPTY")) {
-		throw SPXINIParseException("PDF", "alpha_s_pdf_histogram_name_down", "You MUST specify the alpha_s_pdf_histogram_name_down");
-	} else {
-		if(debug) std::cout << cn << mn << "Successfully read Alpha S PDF Histogram Name Down: " << alphaSPDFHistogramNameDown << std::endl;
-	}
+	//alphaSPDFHistogramNameDown = reader->Get("PDF", "alpha_s_pdf_histogram_name_down", "EMPTY");
+	//if(!alphaSPDFHistogramNameDown.compare("EMPTY")) {
+	//	throw SPXINIParseException("PDF", "alpha_s_pdf_histogram_name_down", "You MUST specify the alpha_s_pdf_histogram_name_down");
+	//} else {
+	//	if(debug) std::cout << cn << mn << "Successfully read Alpha S PDF Histogram Name Down: " << alphaSPDFHistogramNameDown << std::endl;
+	//}
 
 	delete reader;
 }

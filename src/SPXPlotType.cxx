@@ -77,14 +77,39 @@ void SPXPlotType::Parse(std::string s) {
 	}
 
 	//Check the parsed type options vector for size errors
-	if(v.size() != 3) {
-		type = PT_INVALID;
-		throw SPXParseException("Incorrect plot type: Configuration string MUST be a combination of ALL three: \"data\", grid, and \"pdf\"");
-	}
+	//if(v.size() != 3) {
+	//	type = PT_INVALID;
+	//	throw SPXParseException("Incorrect plot type: Configuration string MUST be a combination of ALL three: \"data\", grid, and \"pdf\"");
+	//}
 
-	std::string data = v.at(0);
-	std::string grid = v.at(1);
-	std::string pdf = v.at(2);
+	if(v.size() == 0) {
+	 type = PT_INVALID;
+  	 throw SPXParseException("Incorrect plot type: Configuration string is empty Must be \"data\" or grid, and \"pdf\"");
+	}       
+
+	std::string data;
+	std::string grid;
+	std::string pdf;
+
+	if(v.size() == 1) {
+	 data = v.at(0);
+        }
+ 
+	if(v.size() == 2) {
+	 grid = v.at(0);        
+	 pdf  = v.at(1);
+        }
+
+        if(v.size() == 3) {
+  	 data = v.at(0);
+	 grid = v.at(1);        
+	 pdf  = v.at(2);
+        }
+
+        if(v.size() > 3) {
+	 type = PT_INVALID;
+	 throw SPXParseException("Incorrect plot type: Configuration string can not be bigger than three: \"data\", grid, and \"pdf\"");
+	}
 
 	//Parse data
 	if(!data.compare("data")) {
@@ -95,9 +120,9 @@ void SPXPlotType::Parse(std::string s) {
 		if(debug) std::cout << cn << mn << "Successfully matched \"data[]\"" << std::endl;
 		type |= PT_DATA;
 	}
-	else {
-		throw SPXParseException("Incorrect plot type: Data configuration string: Unrecognized option: " + data + ": MUST be either \"data\" or \"data[]\"");
-	}
+	//else {
+	//	throw SPXParseException("Incorrect plot type: Data configuration string: Unrecognized option: " + data + ": MUST be either \"data\" or \"data[]\"");
+	//}
 
 	//Parse grid
 	if(!grid.compare("grid")) {
@@ -108,9 +133,9 @@ void SPXPlotType::Parse(std::string s) {
 		if(debug) std::cout << cn << mn << "Successfully matched \"grid[]\"" << std::endl;
 		type |= PT_GRID;
 	}
-	else {
-		throw SPXParseException("Incorrect plot type: Grid configuration string: Unrecognized option: " + grid + ": MUST be either \"grid\" or \"grid[]\"");
-	}
+	//else {
+	//	throw SPXParseException("Incorrect plot type: Grid configuration string: Unrecognized option: " + grid + ": MUST be either \"grid\" or \"grid[]\"");
+	//}
 
 	//Parse pdf
 	if(!pdf.compare("pdf")) {
@@ -121,9 +146,9 @@ void SPXPlotType::Parse(std::string s) {
 		if(debug) std::cout << cn << mn << "Successfully matched \"pdf[]\"" << std::endl;
 		type |= PT_PDF;
 	}
-	else {
-		throw SPXParseException("Incorrect plot type: PDF configuration string: Unrecognized option: " + pdf + ": MUST be either \"pdf\" or \"pdf[]\"");
-	}
+	//else {
+	//	throw SPXParseException("Incorrect plot type: PDF configuration string: Unrecognized option: " + pdf + ": MUST be either \"pdf\" or \"pdf[]\"");
+	//}
 
 	//Check for incorrect combinations
 	if(!IsValid()) {

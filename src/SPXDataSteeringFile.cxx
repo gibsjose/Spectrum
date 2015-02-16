@@ -96,6 +96,12 @@ void SPXDataSteeringFile::SetDefaults(void) {
 	dataFilepath.clear();
 	if(debug) std::cout << cn << mn << "dataFilepath set to default: \" \"" << std::endl;
 
+	corrtotalfilename.clear();
+	if(debug) std::cout << cn << mn << "corrtotalfilename set to default: \" \"" << std::endl;
+
+	corrstatfilename.clear();
+	if(debug) std::cout << cn << mn << "corrstatfilename set to default: \" \"" << std::endl;
+
 	dividedByBinWidth = false;
 	if(debug) std::cout << cn << mn << "dividedByBinWidth set to default: \"false\"" << std::endl;
 
@@ -138,6 +144,8 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t Data Options [DATA]" << std::endl;
 	std::cout << "\t\t Data Format: " << dataFormat.ToString() << std::endl;
 	std::cout << "\t\t Data File: " << dataFilepath << std::endl;
+	std::cout << "\t\t Total Correlation File: " << corrtotalfilename << std::endl;
+	std::cout << "\t\t Statistical Correlation File: " << corrstatfilename << std::endl;
 	std::cout << "\t\t Data Divided by Bin Width? " << (dividedByBinWidth ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Data Normalized to Total Sigma? " << (normalizedToTotalSigma ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Errors given in percentages? " << (errorInPercent ? "YES" : "NO") << std::endl;
@@ -150,9 +158,14 @@ void SPXDataSteeringFile::Parse(void) {
 	std::string mn = "Parse: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
+	this->SetDefaults();
+
 	if(filename.empty()) {
-		throw SPXFileIOException(filename, "Empty file string \"\" was given");
-	}
+	 //throw SPXFileIOException(filename, "Empty file string \"\" was given");
+	 std::cout<<cn<<mn<<"WARNING no steering file given, do not know what to do, return "<<std::endl;
+         return; 
+	} else
+	 if (debug) std::cout<<cn<<mn<<"Steering file name= "<<filename.c_str()<<std::endl;
 
 	//Initialize reader
 	reader = new INIReader(filename);
@@ -168,7 +181,7 @@ void SPXDataSteeringFile::Parse(void) {
 	if(debug) std::cout << cn << mn << "Debug is ON" << std::endl;
 
 	//Set Defaults
-	this->SetDefaults();
+	//this->SetDefaults();
 
 	std::string tmp;
 
@@ -348,6 +361,25 @@ void SPXDataSteeringFile::Parse(void) {
 	} else {
 		dataFilepath = tmp;
 		if(debug) std::cout << cn << mn << "Successfully read Data File: " << dataFilepath << std::endl;
+	}
+
+	tmp = reader->Get("DATA", "corr_total_file_name", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+	  std::cout<<cn<<mn<<"INFO no total correllation file specified !"<<std::endl;
+	  //throw SPXINIParseException("DATA", "corr_total_file_name", "You MUST specify the data_file");
+	} else {
+		corrtotalfilename = tmp;
+		if(debug) std::cout << cn << mn << "Successfully read total correlation file name: " << corrtotalfilename << std::endl;
+	}
+
+
+	tmp = reader->Get("DATA", "corr_statistical_file_name", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+	  std::cout<<cn<<mn<<"INFO no statistical correllation file specified !"<<std::endl;
+	  //throw SPXINIParseException("DATA", "corr_statistical_file_name", "You MUST specify the data_file");
+	} else {
+		corrstatfilename = tmp;
+		if(debug) std::cout << cn << mn << "Successfully read stat correlation file name: " << corrtotalfilename << std::endl;
 	}
 
 	dividedByBinWidth = reader->GetBoolean("DATA", "divided_by_bin_width", false);
