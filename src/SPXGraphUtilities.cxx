@@ -695,6 +695,8 @@ TH1D *SPXGraphUtilities::GetEdgeHistogram(TGraphAsymmErrors * g, bool low) {
     if (low) name+="LowEdge";
     else     name+="HighEdge";
 
+    std::cout<<cn<<mn<<" name= "<<name<<std::endl;
+  
     int nbin=g->GetN();
 
     Double_t xbins[nbin+1];
