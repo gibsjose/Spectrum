@@ -148,6 +148,7 @@ TGraphAsymmErrors* SPXGraphUtilities::TH1TOTGraphAsymm(TH1 *h1)
 }
 
 
+
 //Match binning of slave graph to the binning of the master graph
 void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmErrors *slave, bool dividedByBinWidth) {
     std::string mn = "MatchBinning: ";
@@ -681,6 +682,59 @@ TH1D *SPXGraphUtilities::GraphToHistogram(TGraphAsymmErrors * g) {
     return h1;
 }
 
+
+TH1D *SPXGraphUtilities::GetEdgeHistogram(TGraphAsymmErrors * g, bool low) {
+    std::string mn =" GetEdgeHistogram: ";
+    //Make sure histogram is valid
+    if(!g) {
+     throw SPXGraphException(cn + mn + "Graph provided was invalid");
+    }
+
+
+    TString name=TString("h")+g->GetName();
+    if (low) name+="LowEdge";
+    else     name+="HighEdge";
+
+    int nbin=g->GetN();
+
+    Double_t xbins[nbin+1];
+    double x, y , exl, exh;
+    for(int ibin = 0; ibin < nbin; ibin++) {
+     g->GetPoint(ibin,x,y);
+     exl=g->GetErrorXlow(ibin);
+     exh=g->GetErrorXhigh(ibin);
+     xbins[ibin]=x-exl;
+     //std::cout << cn<<mn<<"xbins["<<ibin<<"]= "<<xbins[ibin] <<std::endl;
+    }
+
+    //std::cout << cn<<mn<<"x= "<<x<< " exh= "<< exh<<std::endl;
+    xbins[nbin]=x+exh;
+    //std::cout << cn<<mn<<"xbins["<<nbin<<"]= "<<xbins[nbin] <<std::endl;
+
+    TH1D *h1 = new TH1D(name,name,nbin,xbins); 
+
+    for(int ibin = 0; ibin < nbin; ibin++) {
+        double eyh=g->GetErrorYhigh(ibin);
+        double eyl=g->GetErrorYlow(ibin);
+        double x, y;
+        g->GetPoint(ibin,x,y);
+
+        double ey=(eyh+eyl)/2.;
+        if (low) 
+         h1->SetBinContent(ibin+1,y-eyl);
+        else
+         h1->SetBinContent(ibin+1,y+eyh);
+
+        h1->SetBinError  (ibin+1,0.);
+        //std::cout << cn<<mn<<ibin<<" x= " << x <<" y= "<<y<<" ey= "<<ey<< std::endl;
+    }
+
+    //std::cout << cn<<mn<<"Print Histogram: " << h1->GetName()<< std::endl;
+    //h1->Print("all");
+
+    return h1;
+}
+
 void SPXGraphUtilities::ClearGraph(TGraphAsymmErrors * g) {
     for(int i = 0; i < g->GetN(); i++) {
         g->RemovePoint(i);
@@ -955,4 +1009,101 @@ void SPXGraphUtilities::Multiply(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, i
   std::cout << cn << mn << "Print g2 before: " <<g2->GetName()<< std::endl;
   g2->Print();
  }
+}
+
+
+int SPXGraphUtilities::CompareValues(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, bool bandsize) {
+ //
+ // returns number of bins where graph g1 has larger value than graph g2 
+ // 
+ std::string mn = "CompareValues: ";
+ bool debug=false;
+
+ int nBins1 = g1->GetN();
+ int nBins2 = g2->GetN();
+ if (nBins1!=nBins2) {
+  std::ostringstream oss;
+  oss << cn <<mn<<"WARNING Graph g1 "<<g1->GetName()<<" NBin1= "<<nBins1
+                   <<" and graph g2 "<<g2->GetName()<<" NBin2= "<<nBins2
+                   <<" do not have the same lenght ! ";
+  throw SPXParseException(oss.str());
+ }
+
+ double *x1   = g1->GetX();
+ double *y1   = g1->GetY();
+ double *exl1 = g1->GetEXlow();
+ double *exh1 = g1->GetEXhigh();
+ double *eyl1 = g1->GetEYlow();
+ double *eyh1 = g1->GetEYhigh();
+
+ double *x2   = g2->GetX();
+ double *y2   = g2->GetY();
+ double *exl2 = g2->GetEXlow();
+ double *exh2 = g2->GetEXhigh();
+ double *eyl2 = g2->GetEYlow();
+ double *eyh2 = g2->GetEYhigh();
+
+ //Loop over the smallest of the two
+ unsigned int n = (nBins1 < nBins2 ? nBins1 : nBins2);
+
+ if (debug) {
+  std::cout << " " << std::endl;
+  std::cout << cn << mn << "Print g1 before: " <<g1->GetName()<< std::endl;
+  g1->Print();
+
+  std::cout << " " << std::endl;
+  std::cout << cn << mn << "Print g2 before: " <<g2->GetName()<< std::endl;
+  g2->Print();
+
+ }
+
+ int nlargerbins=0;
+
+ for(int i = 0; i < nBins1; i++) {
+   bool nomatch=true;
+  for(int j = 0; j < nBins2; j++) {
+
+   //Check for exact bin match
+   // std::cout<<"Old x1="<<x1[i]  <<" x2="<<x2[j]
+   //          <<" exl1= "<<exl1[i]<<" exh1= "<<exh1[i]
+   //          <<" exl2= "<<exl2[j]<<" exh2= "<<exh2[j]
+   //          << std::endl;
+
+    if(((x1[i] - exl1[i]) == (x2[j]-exl2[j])) && ((x1[i] + exh1[i]) == (x2[j]+exh2[j]))) {
+    //double emean=(dx1+dx2)/2.;
+    //if (fabs(x1-x2)>=emean && fabs(x1-x2)>dx 
+    nomatch=false;
+
+    if (bandsize) {
+     //if (y1[i]+eyh1[i]>y2[j]+eyh2[j] || y1[i]-eyl1[i]<y2[j]-eyl2[j]) nlargerbins++;
+
+    //double yh=max((y1[i]+eyh1[i]),(y2[j]+eyh2[j]));
+    //double yl=max((y1[i]-eyl1[i]),(y2[j]-eyl2[j]));
+
+    double yh=max(eyh1[i],eyh2[j]);
+    double yl=max(eyl1[i],eyl2[j]);
+
+    //std::cout<<i<<" x= "<< x1[i]<<" match yh="<<yh  <<" yl="<<yl<<std::endl;
+     
+     if (fabs(yh)>fabs(yl)) {
+      //if (y1[i]+eyh1[i]>y2[j]+eyh2[j]) nlargerbins++;
+      if (eyh1[i]>eyh2[j]) nlargerbins++;
+      //std::cout<<" high match y1="<<y1[i]+eyh1[i]  <<" y2="<<y2[j]+eyh2[j]<<" nlargerbins= "<<nlargerbins<<std::endl;
+     } else {
+      //if (y1[i]-eyl1[i]>y2[j]-eyl2[j]) nlargerbins++;
+      if (eyl1[i]>eyl2[j]) nlargerbins++;
+      //std::cout<<"low match y1="<<y1[i]-eyl1[i]  <<" y2="<<y2[j]-eyl2[j]<<" nlargerbins= "<<nlargerbins<<std::endl;
+     }
+
+    } else {
+     if (y1[i]>y2[j] ) nlargerbins++;
+     //std::cout<<"match y1="<<y1[i]  <<" y2="<<y2[j]<<" nlargerbins= "<<nlargerbins<<std::endl;
+    }
+    break;
+   }; 
+  };
+  if(nomatch) std::cout << cn << mn << "No Bins Match for bin i= " << i << std::endl;  
+ };
+
+ return nlargerbins;
 }

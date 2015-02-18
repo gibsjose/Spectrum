@@ -45,6 +45,8 @@
 
 const int PC_EMPTY_STYLE = -1;
 const int PC_EMPTY_COLOR = -1;
+const int PC_EMPTY_EDGE = 0;
+
 
 const std::string focn = "SPXPlotConfiguration::";
 const std::string foicn = "SPXPlotConfigurationInstance::";
@@ -58,21 +60,37 @@ struct SPXPlotConfigurationInstance {
 	SPXPDFSteeringFile pdfSteeringFile;
 	int dataMarkerStyle;
 	int dataMarkerColor;
+
 	int totalFillColor;
 	int totalFillStyle;
+	int totalEdgeColor;
+	int totalEdgeStyle;
 	int totalMarkerStyle;
+
 	int pdfFillColor;
 	int pdfFillStyle;
+	int pdfEdgeColor;
+	int pdfEdgeStyle;
 	int pdfMarkerStyle;
+
 	int scaleFillColor;
 	int scaleFillStyle;
+	int scaleEdgeColor;
+	int scaleEdgeStyle;
 	int scaleMarkerStyle;
+
 	int alphasFillColor;
 	int alphasFillStyle;
+	int alphasEdgeColor;
+	int alphasEdgeStyle;
 	int alphasMarkerStyle;
+
 	int correctionsFillColor;
 	int correctionsFillStyle;
+	int correctionsEdgeColor;
+	int correctionsEdgeStyle;
 	int correctionsMarkerStyle;
+
 	double xScale;
 	double yScale;
 	unsigned int id;

@@ -60,6 +60,7 @@ public:
 	void DrawRatioPadFrame(void);
 	void DrawOverlay(void);
 	void DrawRatio(void);
+	void DrawBand(SPXPDF *pdf, string option, SPXPlotConfigurationInstance pc);
 	void DrawLegend();
 	void UpdateCanvas(void);
 	void CanvasToPNG(void);

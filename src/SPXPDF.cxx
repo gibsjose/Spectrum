@@ -76,36 +76,40 @@ SPXPDF::SPXPDF(SPXPDFSteeringFile *psf, int iflpdf, double Q2value, TH1D* h1)
   hpdf->Print("all");
  }
 
- //correctedgrid=false;
-
- //Initialize();
 
  if (debug) cout<<cn<<"SPXPDF: end constructor PDF-only "<<std::endl;
 }
 
 SPXPDF::SPXPDF(SPXPDFSteeringFile *psf, const std::string &_gridName)
 {
- std::string mn = "(): ";
+
+  std::cout<<cn<<" constructor called via name "<<endl;
+
+  spxgrid=0;
+  gridName=_gridName;
+  SetUpParameters(psf);
+}
+
+
+SPXPDF::SPXPDF(SPXPDFSteeringFile *psf, SPXGrid *grid)
+{
+
+  spxgrid=grid;
+  gridName=grid->GetGridName();
+
+  std::cout<<cn<<" constructor called via SPXGrid name= "<<gridName.c_str()<<endl;
+
+  SetUpParameters(psf);
+}
+
+void SPXPDF::SetUpParameters(SPXPDFSteeringFile *psf) {
+ std::string mn = "SetUpParameters: ";
  if (debug) cout<<cn<<mn<<" Start overloaded constructor"<<endl;
 
  SetVariablesDefault();
- gridName=_gridName;
 
  RenScales.clear();
  FacScales.clear();
-
- //RenScales.push_back(2.0);
- //FacScales.push_back(2.0);
- //RenScales.push_back(2.0);
- //FacScales.push_back(1.0);
- //RenScales.push_back(1.0);
- //FacScales.push_back(2.0);
- //RenScales.push_back(0.5);
- //FacScales.push_back(0.5);
- //RenScales.push_back(1.0);
- //FacScales.push_back(0.5);
- //RenScales.push_back(0.5);
- //FacScales.push_back(1.0);
 
  ReadPDFSteeringFile(psf);
 
@@ -114,9 +118,6 @@ SPXPDF::SPXPDF(SPXPDFSteeringFile *psf, const std::string &_gridName)
  h_Scale_results=0;
  h_Total_results=0;
 
- //Initialize();
-
- if (debug)cout<<cn<<mn<<"end constructor with applgrid "<<std::endl;
 }
 
 //This function replaces the ::ReadSteering(), since the PDF Steering file has already been parsed by the
@@ -263,20 +264,26 @@ void SPXPDF::Initialize()
 
  if (debug) std::cout<<cn<<mn<<"Initialize: gridName= "<<gridName.c_str()<<std::endl;
 
- if (gridName.size()==0) {
+ if (spxgrid) {
+  my_grid=spxgrid->GetGrid();
+ } else {
+  std::cout<<"INFO No SPX grid found open via name "<<std::endl;
+  if (gridName.size()==0) {
+   std::cout<<cn<<mn<<"WARNING no gridname given "<<std::endl;
+  } else {
+   if (debug) std::cout<<cn<<mn<<"construct gridname= "<<TString(gridName).Data()<<std::endl;
+   my_grid = new appl::grid(gridName.c_str());
+  }
+ }
+
+ if (!my_grid) {
   std::cout<<cn<<mn<<"No applgrid found ! "<<std::endl;
   applgridok=false;
+  if (debug) std::cout<<cn<<"No applgrid found gridname= "<<TString(gridName).Data()<<std::endl;
+  applgridok=false;
  } else {
-  if (debug) std::cout<<cn<<mn<<"construct gridname= "<<TString(gridName).Data()<<std::endl;
-  my_grid = new appl::grid(gridName.c_str());
-
-  if (!my_grid) {
-   if (debug) std::cout<<cn<<"No applgrid found gridname= "<<TString(gridName).Data()<<std::endl;
-   applgridok=false;
-  } else {
-   if (debug) std::cout<<cn<<"applgrid ok gridname= "<<TString(gridName).Data()<<std::endl;
-   applgridok=true;
-  }
+  if (debug) std::cout<<cn<<"applgrid ok gridname= "<<TString(gridName).Data()<<std::endl;
+  applgridok=true;
  }
 
  if (applgridok) my_grid->trim();
@@ -683,6 +690,7 @@ void SPXPDF::Initialize()
 void SPXPDF::CalcSystErrors()
 {
  std::string mn = "CalcSystErrors: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
  if (debug) {
   std::cout<<cn<<mn<<"Start systematic error calculation for: "<<PDFtype<<std::endl;
   if (do_Scale)  std::cout<<cn<<mn<<"Calculate Scale uncertainty band "<<std::endl;
@@ -703,7 +711,7 @@ void SPXPDF::CalcPDFBandErrors()
  // calculate uncertainty bands
  //
  std::string mn = "CalcPDFBandErrors: ";
-
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
  if (debug) std::cout<<cn<<mn<<"Start calc of PDFBandErrors for: "<<PDFtype<<std::endl;
  if (debug) std::cout<<cn<<mn<<"defaultpdf= "<<defaultpdfid<<std::endl;
 
@@ -907,7 +915,8 @@ void SPXPDF::CalcPDFBandErrors()
 void SPXPDF::CalcAlphaSErrors()
 {
  std::string mn = "CalcAlphaSErrors: ";
- if (debug) std::cout<<cn<<mn<<"Starting calculation of AlphaSErrors for: "<<PDFtype<<std::endl;
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+ if(debug) std::cout<<cn<<mn<<"Starting calculation of AlphaSErrors for: "<<PDFtype<<std::endl;
 
  //assert(h_errors_AlphaS.size() == 3);
  double this_default_val = 0.;
@@ -982,6 +991,8 @@ void SPXPDF::CalcAlphaSErrors()
 void SPXPDF::CalcScaleErrors()
 {
  std::string mn = "CalcScaleErrors:";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
  if (debug) std::cout<<cn<<mn<<" Starting calculation of ScaleErrors for: "<<PDFtype<<std::endl;
 
  if (h_errors_Scale.size()==0){
@@ -1034,6 +1045,7 @@ void SPXPDF::CalcScaleErrors()
 void SPXPDF::CalcTotalErrors()
 {
  std::string mn = "CalcTotalErrors:";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if (!do_Total) {
   std::cout <<cn<<mn<< "WARNING do_total is off, return"<< std::endl;
@@ -1122,6 +1134,8 @@ void SPXPDF::CalcTotalErrors()
 }
 
 void SPXPDF::DrawPDFBand(){
+ std::string mn = "GetPDFBand:";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  TH1D* hpdf=this->GetPdfdefault();
  hpdf->Draw("same");
@@ -1129,7 +1143,7 @@ void SPXPDF::DrawPDFBand(){
  //h_PDFBand_results->Print("all");
  h_PDFBand_results->Draw("E2,same");
 
- if (!hpdf) cout<<cn<<" test histo not found "<<endl;
+ if (!hpdf) cout<<cn<<mn<<" test histo not found "<<endl;
  hpdf->Draw("same");
 
  return;
@@ -1144,14 +1158,15 @@ void SPXPDF::DrawPDFRatio(int iset1, int iset2){
 }
 
 double SPXPDF::GetMaximum(int iset){
-
-	return h_errors_PDFBand[iset]->GetMaximum();
+ return h_errors_PDFBand[iset]->GetMaximum();
 }
 
 
 TH1D* SPXPDF::GetPDFRatio(int iset1, int iset2)
 {
  std::string mn = "GetPDFRatio:";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
  if (debug)
   std::cout<<cn<<mn<<" iset2= "<< iset2<<" iset1= "<<iset1
 	   <<" n_PDFMembers= "<<n_PDFMembers<<std::endl;
@@ -1184,6 +1199,9 @@ TH1D* SPXPDF::GetPDFRatio(int iset1, int iset2)
 
 
 double SPXPDF::GetPDFWeight(int iset1, double x1, double x2){
+ std::string mn = "GetPDFWeight: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
  double w=1.;
 
  TH1D* hpdf=this->GetPdfdefault();
@@ -1195,13 +1213,13 @@ double SPXPDF::GetPDFWeight(int iset1, double x1, double x2){
  double htmpx2=htmp->GetBinContent(htmp->FindBin(x2));
 
  // x1,x2,scale,id1,id2,pdf1,pdf2 0.630916 0.734315 3967.7 21 21 0.000859055 0.000121401
- cout<<" PDF= "<<this->GetPDFName()<<" iset1= "<<iset1<<" ifl= "<<ifl<<endl;
- cout<<" x1= "<<x1<<" x2= "<<x2<<" Q2= "<<Q2<<" pdf1= "<<htmpx1<<" pdf2= "<<htmpx2<<endl;
+ cout<<cn<<mn<<" PDF= "<<this->GetPDFName()<<" iset1= "<<iset1<<" ifl= "<<ifl<<endl;
+ cout<<cn<<mn<<" x1= "<<x1<<" x2= "<<x2<<" Q2= "<<Q2<<" pdf1= "<<htmpx1<<" pdf2= "<<htmpx2<<endl;
 
  w=htmpx1*htmpx2;
  w/=hpdfx1*hpdfx2;
 
- cout<<" GetPDFWeight w= "<<w<<endl;
+ cout<<cn<<mn<<" w= "<<w<<endl;
 
  return w;
 };
@@ -1216,39 +1234,35 @@ void SPXPDF::Print()
  std::string OFF="OFF";       //bool false
 
  cout<<"SPXPDF::Print: >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-		 <<"\n"<<setw(w)<<"debug:"                <<setw(w)<<(debug? "ON":"OFF")
-			//             <<"\n"<<setw(w)<<"steeringFilePath:"     <<setw(w)<<(steeringFilePath.size()>0? steeringFilePath:empty)
-			//             <<"\n"<<setw(w)<<"steeringFileDir:"      <<setw(w)<<(steeringFileDir.size()>0? steeringFileDir:empty)
-		 <<"\n"<<setw(w)<<"steeringFileName:"     <<setw(w)<<(steeringFileName.size()>0? steeringFileName:empty)
-		 <<"\n"<<setw(w)<<"gridName:"             <<setw(w)<<(gridName.size()>0? gridName:empty)
-		 <<"\n"
-		 <<"\n"<<setw(w)<<"PDFtype:"              <<setw(w)<<(PDFtype.size()>0? PDFtype:empty)
-		 <<"\n"<<setw(w)<<"PDFname:"              <<setw(w)<<(PDFname.size()>0? PDFname:empty)
-		 <<"\n"<<setw(w)<<"PDFnamevar:"           <<setw(w)<<(PDFnamevar.size()>0? PDFname:empty)
-		 <<"\n"<<setw(w)<<"numPDFMembers:"        <<setw(w)<<(n_PDFMembers!=DEFAULT? patch::to_string(n_PDFMembers):empty)
-		 <<"\n"<<setw(w)<<"nLoops: "              <<setw(w)<<(nLoops!=DEFAULT? patch::to_string(nLoops):empty)
-		 <<"\n"<<setw(w)<<"fillStyleCode:"        <<setw(w)<<(fillStyleCode!=DEFAULT? patch::to_string(fillStyleCode):empty)
-		 <<"\n"<<setw(w)<<"fillColorCode:"        <<setw(w)<<(fillColorCode!=DEFAULT? patch::to_string(fillColorCode):empty)
-                 <<"\n"<<setw(w)<<"ErrorPropagationType: "<<setw(w)<<(ErrorPropagationType)
-		 <<"\n"<<setw(w)<<"PDFBandType:"          <<setw(w)<<(PDFBandType.size()>0? PDFBandType:empty)
-		 <<"\n"<<setw(w)<<"first Eigenvector: "   <<setw(w)<<(firsteig!=DEFAULT? patch::to_string(firsteig):empty)
-		 <<"\n"<<setw(w)<<"last Eigenvector:   "  <<setw(w)<<(lasteig!=DEFAULT?  patch::to_string(lasteig):empty)
-		 <<"\n"<<setw(w)<<"first component added in quadrature"  <<setw(w)<<(firstquadvar!=DEFAULT?patch::to_string(firstquadvar):empty)
-		 <<"\n"<<setw(w)<<"last component added in quadrature"  <<setw(w)<<(lastquadvar!=DEFAULT?patch::to_string(lastquadvar):empty)
-		 <<"\n"<<setw(w)<<"first component to find maximum"  <<setw(w)<<(firstmaxvar!=DEFAULT?patch::to_string(firstmaxvar):empty)
-		 <<"\n"<<setw(w)<<"last component to find maximum"  <<setw(w)<<(lastmaxvar!=DEFAULT?patch::to_string(lastmaxvar):empty)
-		 //<<"\n"<<setw(w)<<"**PDF ERROR TYPE(s) ACTIVE:"
-                 <<"\n"<<setw(w)<<"f_PDFErrorSize90Percent"         <<setw(w)<<(f_PDFErrorSize90Percent? ON:OFF)
-
-		 <<"\n"<<setw(w)<<"PDFBand:"              <<setw(w)<<(do_PDFBand? ON:OFF)
-		 <<"\n"<<setw(w)<<"AlphaS:"               <<setw(w)<<(do_AlphaS? ON:OFF)
-		 <<"\n"<<setw(w)<<"Scale:" <<setw(w)<<(do_Scale? ON:OFF)
-   //<<"\n"<<setw(w)<<"TotError:"             <<setw(w)<<(do_TotError? ON:OFF)
-		 <<"\n"<<setw(w)<<"includeEIG:"           <<setw(w)<<(includeEIG? ON:OFF)
-		 <<"\n"<<setw(w)<<"includeQUAD:"          <<setw(w)<<(includeQUAD? ON:OFF)
-		 <<"\n"<<setw(w)<<"includeMAX:"           <<setw(w)<<(includeMAX? ON:OFF)
-   //<<"\n"<<setw(w)<<"PDFErrorSize:"         <<setw(w)<<(PDFErrorSize.size()>0? PDFErrorSize:empty)
-		 <<"\n SPXPDF::Print:<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"<<endl;
+     <<"\n"<<setw(w)<<"debug:"                <<setw(w)<<(debug? "ON":"OFF")
+     //             <<"\n"<<setw(w)<<"steeringFilePath:"     <<setw(w)<<(steeringFilePath.size()>0? steeringFilePath:empty)
+     //             <<"\n"<<setw(w)<<"steeringFileDir:"      <<setw(w)<<(steeringFileDir.size()>0? steeringFileDir:empty)
+     <<"\n"<<setw(w)<<"steeringFileName:"     <<setw(w)<<(steeringFileName.size()>0? steeringFileName:empty)
+     <<"\n"<<setw(w)<<"gridName:"             <<setw(w)<<(gridName.size()>0? gridName:empty)
+     <<"\n"
+     <<"\n"<<setw(w)<<"PDFtype:"              <<setw(w)<<(PDFtype.size()>0? PDFtype:empty)
+     <<"\n"<<setw(w)<<"PDFname:"              <<setw(w)<<(PDFname.size()>0? PDFname:empty)
+     <<"\n"<<setw(w)<<"PDFnamevar:"           <<setw(w)<<(PDFnamevar.size()>0? PDFname:empty)
+     <<"\n"<<setw(w)<<"numPDFMembers:"        <<setw(w)<<(n_PDFMembers!=DEFAULT? patch::to_string(n_PDFMembers):empty)
+     <<"\n"<<setw(w)<<"nLoops: "              <<setw(w)<<(nLoops!=DEFAULT? patch::to_string(nLoops):empty)
+     <<"\n"<<setw(w)<<"fillStyleCode:"        <<setw(w)<<(fillStyleCode!=DEFAULT? patch::to_string(fillStyleCode):empty)
+     <<"\n"<<setw(w)<<"fillColorCode:"        <<setw(w)<<(fillColorCode!=DEFAULT? patch::to_string(fillColorCode):empty)
+     <<"\n"<<setw(w)<<"ErrorPropagationType: "<<setw(w)<<(ErrorPropagationType)
+     <<"\n"<<setw(w)<<"PDFBandType:"          <<setw(w)<<(PDFBandType.size()>0? PDFBandType:empty)
+     <<"\n"<<setw(w)<<"first Eigenvector: "   <<setw(w)<<(firsteig!=DEFAULT? patch::to_string(firsteig):empty)
+     <<"\n"<<setw(w)<<"last Eigenvector:   "  <<setw(w)<<(lasteig!=DEFAULT?  patch::to_string(lasteig):empty)
+     <<"\n"<<setw(w)<<"first component added in quadrature"  <<setw(w)<<(firstquadvar!=DEFAULT?patch::to_string(firstquadvar):empty)
+     <<"\n"<<setw(w)<<"last component added in quadrature"  <<setw(w)<<(lastquadvar!=DEFAULT?patch::to_string(lastquadvar):empty)
+     <<"\n"<<setw(w)<<"first component to find maximum"  <<setw(w)<<(firstmaxvar!=DEFAULT?patch::to_string(firstmaxvar):empty)
+     <<"\n"<<setw(w)<<"last component to find maximum"  <<setw(w)<<(lastmaxvar!=DEFAULT?patch::to_string(lastmaxvar):empty)
+     <<"\n"<<setw(w)<<"f_PDFErrorSize90Percent"         <<setw(w)<<(f_PDFErrorSize90Percent? ON:OFF)
+     <<"\n"<<setw(w)<<"PDFBand:"              <<setw(w)<<(do_PDFBand? ON:OFF)
+     <<"\n"<<setw(w)<<"AlphaS:"               <<setw(w)<<(do_AlphaS? ON:OFF)
+     <<"\n"<<setw(w)<<"Scale:" <<setw(w)<<(do_Scale? ON:OFF)
+     <<"\n"<<setw(w)<<"includeEIG:"           <<setw(w)<<(includeEIG? ON:OFF)
+     <<"\n"<<setw(w)<<"includeQUAD:"          <<setw(w)<<(includeQUAD? ON:OFF)
+     <<"\n"<<setw(w)<<"includeMAX:"           <<setw(w)<<(includeMAX? ON:OFF)
+     <<"\n SPXPDF::Print:<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"<<endl;
 }
 
 //default values for variables to avoid crashes and check for proper setup before doing anything
@@ -1358,8 +1372,7 @@ void SPXPDF::SetDoTotError(bool _doit) {
 }
 
 void SPXPDF::SetScales(std::vector<double> aRenScales,std::vector<double> aFacScales) {
-  //RenScales.clear();
-  //FacScales.clear();
+
  for (int i=0; i<aRenScales.size(); i++)
   RenScales.push_back(aRenScales[i]);
  for (int i=0; i<aFacScales.size(); i++)
@@ -1379,70 +1392,67 @@ void SPXPDF::SetAlphaSPDFSetNameDown(string _name) {
 void SPXPDF::SetAlphaSPDFSetNameUp(string _name) {
  AlphaSPDFSetNameUp= _name;
 }
-//void SPXPDF::SetAlphaSPDFSetHistNameDown(string _name) {
-// AlphaSPDFSetHistNameDown= _name;
-//}
-//void SPXPDF::SetAlphaSPDFSetHistNameUp(string _name) {
-// AlphaSPDFSetHistNameUp= _name;
-//}
 
 void SPXPDF::CleanUpSPXPDF() {
-  if (debug) cout<<cn<<" CleanUpSPXPDF: Starting to clean up..."<<std::endl;
+ if (debug) cout<<cn<<" CleanUpSPXPDF: Starting to clean up..."<<std::endl;
 
  if (h_errors_PDFBand.size()>0) {
-	for (int i=0; i<h_errors_PDFBand.size(); ++i) {
-	 delete h_errors_PDFBand.at(i);
-	}
+  for (int i=0; i<h_errors_PDFBand.size(); ++i) {
+   delete h_errors_PDFBand.at(i);
+  }
  }
 
  if (h_errors_AlphaS.size()>0) {
-	for (int i=0; i<h_errors_AlphaS.size(); ++i) {
-	 delete h_errors_AlphaS.at(i);
-	 }
-	}
+  for (int i=0; i<h_errors_AlphaS.size(); ++i) {
+   delete h_errors_AlphaS.at(i);
+  }
+ }
 
-	if (h_errors_AlphaS.size()>0) {
-	 for (int i=0; i<h_errors_AlphaS.size(); ++i) {
-		delete h_errors_AlphaS.at(i);
-	 }
-	}
+ if (h_errors_AlphaS.size()>0) {
+  for (int i=0; i<h_errors_AlphaS.size(); ++i) {
+   delete h_errors_AlphaS.at(i);
+  }
+ }
 
-	if (debug) cout<<cn<<"CleanUpSPXPDF: Finished clean up!"<<std::endl;
+ if (debug) cout<<cn<<"CleanUpSPXPDF: Finished clean up!"<<std::endl;
 }
 
 
 TH1D * SPXPDF::FillPdfHisto(){
+ std::string mn = "FillPdfHisto: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
-  if (!hpdf) cout<<cn<<"FillPdfHistos histo not found "<<endl;
+ if (!hpdf) {
+  throw SPXParseException(cn+mn+"WARNING FillPdfHistos histo not found ");
+ }
+ //const int nstep=1000;
+ const double xmin=hpdf->GetBinCenter(1);
+ const int    nbin=hpdf->GetNbinsX();
+ const double xmax=hpdf->GetBinWidth(nbin)/2.+hpdf->GetBinCenter(nbin);
+ const double binw=hpdf->GetBinWidth(1);
 
-	//const int nstep=1000;
-	const double xmin=hpdf->GetBinCenter(1);
-	const int    nbin=hpdf->GetNbinsX();
-	const double xmax=hpdf->GetBinWidth(nbin)/2.+hpdf->GetBinCenter(nbin);
-	const double binw=hpdf->GetBinWidth(1);
+ if (debug) cout<<cn<<"FillPdfHisto: xmin= "<<xmin<<" xmax= "<<xmax<<" binw= "<<binw<<endl;
+ if (debug) cout<<cn<<"FillPdfHisto: Q2= "<<Q2<<endl;
 
-	if (debug) cout<<cn<<"FillPdfHisto: xmin= "<<xmin<<" xmax= "<<xmax<<" binw= "<<binw<<endl;
-	if (debug) cout<<cn<<"FillPdfHisto: Q2= "<<Q2<<endl;
+ double xfl[13];
+ for (int i=0; i<nbin; i++){
+  double x=xmin+i*(xmax-xmin)/nbin;
+  double Q=sqrt(Q2);
+  getPDF(x, Q,xfl);
 
-	double xfl[13];
-	for (int i=0; i<nbin; i++){
-	 double x=xmin+i*(xmax-xmin)/nbin;
-	 double Q=sqrt(Q2);
-	 getPDF(x, Q,xfl);
+  int ibin=hpdf->FindBin(x);
+  if (debug)
+   cout<<cn<<"FillPdfHisto: ibin= "<<ibin<<" Q2= "<<Q2<<" x= "<<x<<" xfl["<<ifl<<"]= "<<xfl[6+ifl]<<endl;
 
-	 int ibin=hpdf->FindBin(x);
-	 if (debug)
-	   cout<<cn<<"FillPdfHisto: ibin= "<<ibin<<" Q2= "<<Q2<<" x= "<<x<<" xfl["<<ifl<<"]= "<<xfl[6+ifl]<<endl;
+  hpdf->SetBinContent(ibin,x,xfl[6+ifl]);
+ }
 
-	 hpdf->SetBinContent(ibin,x,xfl[6+ifl]);
-	}
-
-	return hpdf;
+ return hpdf;
 };
 
 void SPXPDF::PrintMap(BandMap_T &m) {
  std::string mn = "PrintMap: ";
-
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
  //if (debug) cout<<cn<<mn<<" starting "<<endl;
 
  for(BandMap_T::const_iterator it = m.begin(); it != m.end(); ++it) {

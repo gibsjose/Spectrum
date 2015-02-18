@@ -16,9 +16,9 @@ debug = true
 [GRAPH]
 plot_band = true
 ; plot_error_ticks = true
-;plot_marker = true
+plot_marker = false
 ;plot_staggered = true
-match_binning = false
+match_binning = true
 ;grid_corr = true
 label_sqrt_s = true
 x_legend = 0.9
@@ -43,13 +43,13 @@ band_total = true
 ; Plot 0 Options
 ;==============================================================
 [PLOT_0]
-#plot_type = data[], grid[], pdf
+;plot_type = data[], grid[], pdf
 plot_type = data, grid, pdf
 pdf_directory = PDF
-;data_directory = Data/jet/atlas/incljets2011
-grid_directory = Grids/jet/atlas/incljets2015_13TeV/vojtech
-;data_steering_files = atlas_2011_jet_antiktr04_incljetpt_eta1.txt
-grid_steering_files = atlas_2015_13TeV_incljet_eta1_r04.txt
+data_directory = Data/jet/atlas/incljets2011
+grid_directory = Grids/jet/atlas/incljets2011/nlojet
+data_steering_files = atlas_2011_jet_antiktr06_incljetpt_eta1.txt
+grid_steering_files = atlas_2011_incljet_eta1_r06.txt
 pdf_steering_files = CT10.txt
 ;pdf_steering_files = MRST2008nlo.txt
 ;pdf_steering_files = CTEQ6M.txt
@@ -62,24 +62,31 @@ pdf_steering_files = CT10.txt
 
 ;
 ; colour see Root and remember kYellow=400 kGreen=416 kRed=632 kBlue=600 Grey=416 kOrange=800
-;https://root.cern.ch/root/html/TAttFill.html
 ;
-total_fill_style=3007
-total_fill_color=921
-total_marker_style=21
+;
+total_fill_style=1001
+total_fill_color=800
+total_edge_style=1
+total_edge_color=797
 
-pdf_fill_style=3005
-pdf_fill_color=800
-pdf_marker_style=22
 
-;scale_fill_style=3005
-scale_fill_style=3004
-scale_fill_color=393
-scale_marker_style=23
+pdf_fill_style=1001
+pdf_fill_color=803
+pdf_edge_style=9
+pdf_edge_color=-1
+;pdf_marker_style=22
 
-alphas_fill_style=3001
-alphas_fill_color=793
-alphas_marker_style=24
+scale_fill_style=1001
+scale_fill_color=821
+scale_edge_style=1
+scale_edge_color=823
+;scale_marker_style=23
+
+;alphas_fill_style=3001
+;alphas_fill_color=2
+alphas_edge_style=1
+alphas_edge_color=-2
+;alphas_marker_style=24
 
 x_scale = 1.0
 y_scale = 1.0

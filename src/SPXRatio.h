@@ -152,21 +152,6 @@ public:
     }
      return ratioGraph;
     }
-    //TGraphAsymmErrors *GetRatioGraph(void) {
-    //    if(!ratioGraph) {
-    //        throw SPXGraphException("SPXRatio::GetRatioGraph: Ratio graph is empty");
-    //    }
-    //
-    //    return ratioGraph;
-    //}
-
-    //TGraphAsymmErrors *GetNumeratorGraph(void) {
-    //	if(!numeratorGraph) {
-    //		throw SPXGraphException("SPXRatio::GetNumeratorGraph: Numerator graph is empty");
-    //	}
-    //
-    //	return numeratorGraph;
-    //}
 
     TGraphAsymmErrors *GetDenominatorGraph(void) {
     	if(!denominatorGraph) {
@@ -192,6 +177,8 @@ public:
         pdfDirectory = dir;
     }
 
+    void Draw(string option, int istat, int itot);
+
 private:
     static bool debug;
 
@@ -216,10 +203,6 @@ private:
     std::string denominatorNominalGridFile;         //Grid file if denominator contains nominal
     std::string denominatorDataFile;				//Data file if denominator contains data
 
-    // allow for several numeratorGraphs and ratioGraph (PDF, alphas, scale band)
-    //TGraphAsymmErrors *numeratorGraph;              //TGraph of the numerator
-    //TGraphAsymmErrors *ratioGraph;                  //TGraph: numeratorGraph / denominatorGraph
-
     std::vector<TGraphAsymmErrors *> numeratorGraph;
     std::vector<TGraphAsymmErrors *> ratioGraph;
     TGraphAsymmErrors *denominatorGraph;            //TGraph of the denominator
@@ -230,6 +213,7 @@ private:
     StringPairGraphMap_T * convoluteFileGraphMap;   //Map of grid/pdf file pairs to their convolute TGraph
 
     bool MatchesConvoluteString(std::string &s);
+
 };
 
 #endif

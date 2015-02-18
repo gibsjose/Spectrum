@@ -54,10 +54,14 @@ public:
 	//Creates the Grid and return the reference histogram
 	TH1D * CreateGrid(void);
 
+        appl::grid *GetGrid(){ return grid;};
+
 	//Returns the Grid Reference histogram
 	TH1D * GetReference(void) {
 		return referenceHistogram;
 	}
+
+
 
 	bool IsReferenceHistogramCorrupted(void) {
 		return referenceHistogramCorrupted;

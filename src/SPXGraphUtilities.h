@@ -69,6 +69,8 @@ public:
 
 	static TH1D* GraphToHistogram(TGraphAsymmErrors * g);
 
+	static TH1D* GetEdgeHistogram(TGraphAsymmErrors * g, bool low = false);
+
 	static void HistogramToGraph(TGraphAsymmErrors * g, TH1 *h);
 	static void ClearGraph(TGraphAsymmErrors * g);
 
@@ -84,8 +86,10 @@ public:
 	static void DivideByBinWidth(TGraphAsymmErrors * g);
 
         static TGraphAsymmErrors* TH1TOTGraphAsymm(TH1 *h1);
-	//TGraphAsymmErrors* Multiply(TGraphAsymmErrors * g1,TGraphAsymmErrors * g2);
+
         static void Multiply(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, int noerr=0);
+
+        static int CompareValues(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, bool bandsize=true);
 };
 
 #endif

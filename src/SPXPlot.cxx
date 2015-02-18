@@ -832,30 +832,10 @@ void SPXPlot::DrawOverlay(void) {
 
 			//Draw theory Cross Section 
 			if(os.ContainsConvolute()) {
+
+			 SPXPlotConfigurationInstance &pci = steeringFile->GetPlotConfigurationInstance(id, i);
                          SPXPDF * pdf=crossSections[i].GetPDF();
-                         int nbands=pdf->GetNBands();
-                         if (debug) std::cout << cn << mn <<"Number of bands= " <<nbands<< std::endl;
-                         for (int iband=0; iband<nbands; iband++) {
-		          TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-		          string gtype                =pdf->GetBandType(iband);
-		          if (!gband) {
-                           std::ostringstream oss;
-                           oss << cn <<mn<<"Get bands "<<"Band "<<iband<<" not found at index "<<i;
-                           throw SPXGeneralException(oss.str());
-                          }
-
-			  gband->Draw(csOptions.c_str());
-
-                          if (debug) {
-
-			    std::cout<< cn << mn <<"\n Drew "<<gband->GetName()<< " with options "<<csOptions.c_str()
-                                                 << " fillcolor= " << gband->GetFillColor() 
-                                                 << " fillstyle= " << gband->GetFillStyle() 
-                                                 << " markerstyle= " << gband->GetMarkerStyle() 
-                                     << std::endl;          
-			   gband->Print();
-                          }
-                         }
+     		         this->DrawBand(pdf, csOptions.c_str(), pci);
 			}
 
 			//Draw PDF Nominal, if requested
@@ -921,117 +901,80 @@ void SPXPlot::DrawOverlay(void) {
 }
 
 void SPXPlot::DrawRatio(void) {
-	std::string mn = "DrawRatio: ";
-	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+ std::string mn = "DrawRatio: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
-	if(!ratioPad) {
-		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DrawRatioPadFrame before drawing the ratio graphs");
-	}
+ if(!ratioPad) {
+  throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DrawRatioPadFrame before drawing the ratio graphs");
+ }
 
-	//Do nothing if not drawing ratio
-	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
-	SPXDisplayStyle &ds = pc.GetDisplayStyle();
+ //Do nothing if not drawing ratio
+ SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+ SPXDisplayStyle &ds = pc.GetDisplayStyle();
 
-	if(!ds.ContainsRatio()) {
-		return;
-	}
+ if(!ds.ContainsRatio()) {
+  return;
+ }
 
-	//Change to the ratio pad
-	ratioPad->cd();
+ //Change to the ratio pad
+ ratioPad->cd();
 
-	//Stagger ratio convolute points if requested
-	if(steeringFile->GetPlotStaggered() && !steeringFile->GetPlotBand()) {
-		StaggerConvoluteRatio();
-	}
+ //Stagger ratio convolute points if requested
+ if(steeringFile->GetPlotStaggered() && !steeringFile->GetPlotBand()) {
+  StaggerConvoluteRatio();
+ }
 
-	//Counters for number of stat/tot ratios: Used for darkening stat/tot ratios and also
-	// for sanity checking (data/stat graphs covering up other ratios)
-	unsigned int statRatios = 0;
-	unsigned int totRatios = 0;
+ //Counters for number of stat/tot ratios: Used for darkening stat/tot ratios and also
+ // for sanity checking (data/stat graphs covering up other ratios)
+ unsigned int statRatios = 0;
+ unsigned int totRatios = 0;
 
-	for(int i = 0; i < pc.GetNumberOfRatios(); i++) {
+ for(int i = 0; i < pc.GetNumberOfRatios(); i++) {
+  std::string ratioOptions;
+  if(steeringFile->GetPlotBand()) 
+   ratioOptions = "E2";
 
-		std::string ratioOptions;
+  if(steeringFile->GetPlotMarker() && !steeringFile->GetPlotBand())
+   ratioOptions = "P";
 
-		if(steeringFile->GetPlotBand()) {
-			ratioOptions = "E2";
-		}
+  if(!steeringFile->GetPlotErrorTicks() && !steeringFile->GetPlotBand()) 
+   ratioOptions += "Z";
+		
+  //Set x errors to zero if ratio involves convolute AND is not plot band
+  if(ratios[i].HasConvolute() && !steeringFile->GetPlotBand()) {
+   //Never clear X errors for DataStat or DataTot (extra check: HasConvolute() should already rule out stat/tot...)
+   // if(!ratios[i].IsDataStat() && !ratios[i].IsDataTot()) {
+   //  std::vector<TGraphAsymmErrors *> ratiographs=ratios[i].GetRatioGraph();
+   //  for (int igraph=0; igraph < ratiographs.size(); igraph++) {
+   //   TGraphAsymmErrors *graph = ratiographs[igraph];
+   //  }
+   // if(debug) std::cout << cn << mn << "Set X errors to zero for ratios[" << i << "]" << std::endl;
+  }
 
-		if(steeringFile->GetPlotMarker() && !steeringFile->GetPlotBand()) {
-			ratioOptions = "P";
-		}
+  if(ratios[i].IsDataStat()) {
+   statRatios++;
 
-		if(!steeringFile->GetPlotErrorTicks() && !steeringFile->GetPlotBand()) {
-			ratioOptions += "Z";
-		}
+   //Warn if not the first graph AND first graph is not data_tot: Will possibly cover up points
+   if((i != 0) && !ratios[0].IsDataTot()) {
+    std::cerr << cn << mn << "WARNING: Data Stat band could possibly hide other bands/points plotted underneath it: Move data_stat to ratio_0?" << std::endl;
+   }
+  }
 
-		//Set x errors to zero if ratio involves convolute AND is not plot band
-		if(ratios[i].HasConvolute() && !steeringFile->GetPlotBand()) {
+  if(ratios[i].IsDataTot()) {
+   totRatios++;
+   //Warn if not the first graph: Will possibly cover up points
+   if(i != 0) {
+    std::cerr << cn << mn << "WARNING: Data Tot band could possibly hide other bands/points plotted underneath it: Move data_to to ratio_0?" << std::endl;
+   }
+  }
+   
+  ratios[i].Draw(ratioOptions.c_str(),statRatios, totRatios);
 
-			//Never clear X errors for DataStat or DataTot (extra check: HasConvolute() should already rule out stat/tot...)
-			if(!ratios[i].IsDataStat() && !ratios[i].IsDataTot()) {
- 	                        // TC GetRatioGraph returns now vector of graphs
-			        //SPXGraphUtilities::ClearXErrors(ratios[i].GetRatioGraph());
-	                        std::vector<TGraphAsymmErrors *> ratiographs=ratios[i].GetRatioGraph();
-                                for (int igraph=0; igraph < ratiographs.size(); igraph++) {
-	                         TGraphAsymmErrors *graph = ratiographs[igraph];
-                                 //SPXGraphUtilities::ClearXErrors(graph);
-                                }
-				if(debug) std::cout << cn << mn << "Set X errors to zero for ratios[" << i << "]" << std::endl;
-			}
-		}
+ }
 
-		if(ratios[i].IsDataStat()) {
-			statRatios++;
-
-			//Warn if not the first graph AND first graph is not data_tot: Will possibly cover up points
-			if((i != 0) && !ratios[0].IsDataTot()) {
-				std::cerr << cn << mn << "WARNING: Data Stat band could possibly hide other bands/points plotted underneath it: Move data_stat to ratio_0?" << std::endl;
-			}
-		}
-
-		if(ratios[i].IsDataTot()) {
-			totRatios++;
-
-			//Warn if not the first graph: Will possibly cover up points
-			if(i != 0) {
-				std::cerr << cn << mn << "WARNING: Data Tot band could possibly hide other bands/points plotted underneath it: Move data_to to ratio_0?" << std::endl;
-			}
-		}
-
- 	       // TC GetRatioGraph returns now vector of graphs
- 	       std::vector<TGraphAsymmErrors *> ratiographs=ratios[i].GetRatioGraph();	 
-               for (int igraph=0; igraph < ratiographs.size(); igraph++) {
-	        TGraphAsymmErrors *graph = ratiographs[igraph];
-
-		if(ratios[i].IsDataStat() || ratios[i].IsDataTot()) {
-		 //Incrementally darken the data_stat/data_tot graphs based on their order for increased visibility
- 	         // TC GetRatioGraph returns now vector of graphs
-	         //ratios[i].GetRatioGraph()->SetFillColor(ratios[i].GetRatioGraph()->GetFillColor() + (statRatios + totRatios));
-	         graph->SetFillColor(graph->GetFillColor() + (statRatios + totRatios));
-  		 //TC ratios[i].GetRatioGraph()->Draw("E2");
-                 //graph->Draw("2");
-                 graph->Draw("E2");
-		} else {
-		 //ratios[i].GetRatioGraph()->Draw(ratioOptions.c_str());
-                 graph->Draw(ratioOptions.c_str());
-                 //graph->Draw("hist");
-                }
-		if(debug) {
-		 std::cout << cn << mn << "Successfully drew ratios[" << i << "] with options: " << ratioOptions << std::endl;
-		 std::cout << cn << mn << "Printing ratios[" << i << "] name= "<<graph->GetName() << std::endl;
-		 std::cout << cn << mn << "fillcolor "<<graph->GetFillColor() << std::endl;
-		 std::cout << cn << mn << "fillstyle "<<graph->GetFillStyle() << std::endl;
-		 //ratios[i].GetRatioGraph()->Print();
-                 graph->Print();
-		 std::cout << std::endl;
-		}
-	       }
-	}
-
-	//Draw a line at 1, where ratios are relative to
-	TLine *referenceLine = new TLine(xMinRatio, 1.0, xMaxRatio, 1.0);
-	referenceLine->Draw();
+ //Draw a line at 1, where ratios are relative to
+ TLine *referenceLine = new TLine(xMinRatio, 1.0, xMaxRatio, 1.0);
+ referenceLine->Draw();
 }
 
 void SPXPlot::DrawLegend(void) {
@@ -1104,8 +1047,10 @@ void SPXPlot::DrawLegend(void) {
 
 
        // Look first, if properties of bands are different
-       int old_fill_style=-999, old_fill_color=-999, old_marker_style=-999, old_marker_color=-999;
+       int old_fill_style=-999, old_fill_color=-999;
+       int old_marker_style=-999, old_marker_color=-999;
        bool bandsdifferent=false;
+
        for(int i = 0; i < crossSections.size(); i++) {
         SPXPDF * pdf=crossSections[i].GetPDF();
         int nbands=pdf->GetNBands();
@@ -1363,51 +1308,51 @@ void SPXPlot::CanvasToPNG(void) {
 }
 
 std::string SPXPlot::GetPNGFilename(std::string desc) {
-	std::string mn = "GetPNGFilename: ";
-	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+ std::string mn = "GetPNGFilename: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
-	std::string filename;
+ std::string filename;
 
-	//Fill in dummy description if empty
-	if(desc.empty()) {
-		desc = std::string("general");
-	}
+ //Fill in dummy description if empty
+ if(desc.empty()) {
+  desc = std::string("general");
+ }
 
-	filename = "./plots/" + desc + "_plot_" + (ULong_t)id + ".png";
+ filename = "./plots/" + desc + "_plot_" + (ULong_t)id + ".png";
 
-	if(debug) std::cout << cn << mn << "Created PNG Filename: " << filename << std::endl;
+ if(debug) std::cout << cn << mn << "Created PNG Filename: " << filename << std::endl;
 
-	return filename;
+ return filename;
 }
 
 void SPXPlot::InitializeRatios(void) {
-	std::string mn = "InitializeRatios: ";
-	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+ std::string mn = "InitializeRatios: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
-	//Create a ratio for each ratio instance
-	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+ //Create a ratio for each ratio instance
+ SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 
-	for(int i = 0; i < pc.GetNumberOfRatios(); i++) {
+ for(int i = 0; i < pc.GetNumberOfRatios(); i++) {
 
-		SPXRatioStyle ratioStyle = pc.GetRatioStyle(i);
-		std::string ratioString  = pc.GetRatio(i);
+  SPXRatioStyle ratioStyle = pc.GetRatioStyle(i);
+  std::string ratioString  = pc.GetRatio(i);
 
-		try {
-			SPXRatio ratioInstance = SPXRatio(pc, ratioStyle);
-			ratioInstance.AddDataFileGraphMap(dataFileGraphMap);
-			ratioInstance.AddReferenceFileGraphMap(referenceFileGraphMap);
-			ratioInstance.AddNominalFileGraphMap(nominalFileGraphMap);
-			ratioInstance.AddConvoluteFileGraphMap(convoluteFileGraphMap);
-			ratioInstance.Parse(ratioString);
-			ratioInstance.GetGraphs();
-			ratioInstance.Divide();
+  try {
+   SPXRatio ratioInstance = SPXRatio(pc, ratioStyle);
+   ratioInstance.AddDataFileGraphMap(dataFileGraphMap);
+   ratioInstance.AddReferenceFileGraphMap(referenceFileGraphMap);
+   ratioInstance.AddNominalFileGraphMap(nominalFileGraphMap);
+   ratioInstance.AddConvoluteFileGraphMap(convoluteFileGraphMap);
+   ratioInstance.Parse(ratioString);
+   ratioInstance.GetGraphs();
+   ratioInstance.Divide();
 
-			ratios.push_back(ratioInstance);
+   ratios.push_back(ratioInstance);
 
-		} catch(const SPXException &e) {
-			throw;
-		}
-	}
+  } catch(const SPXException &e) {
+   throw;
+  }
+ }
 }
 
 void SPXPlot::InitializeCrossSections(void) {
@@ -1490,25 +1435,31 @@ void SPXPlot::InitializeCrossSections(void) {
    	        StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), theoryname);
                 convoluteFileGraphMap.insert(StringPairGraphPair_T(convolutePair, gband));
                 // 
-                int markerstyle=-99, fillcolor=-99,fillstyle=-99;
+                int markerstyle=-99, fillcolor=-99,fillstyle=-99, edgecolor=-99, edgestyle;
 
                 if (gtype.compare(string("pdf"))==0){
 		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.pdfMarkerStyle;
                  fillcolor  =pci.pdfFillColor;
                  fillstyle  =pci.pdfFillStyle;
+                 edgecolor  =pci.pdfEdgeColor;
+                 edgestyle  =pci.pdfEdgeStyle;
                 } 
                 if (gtype.compare(string("scale"))==0){
 		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.scaleMarkerStyle;
                  fillcolor  =pci.scaleFillColor;
                  fillstyle  =pci.scaleFillStyle;
+                 edgecolor  =pci.scaleEdgeColor;
+                 edgestyle  =pci.scaleEdgeStyle;
                 } 
                 if (gtype.compare(string("alphas"))==0){
 		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.alphasMarkerStyle;
                  fillcolor  =pci.alphasFillColor;
                  fillstyle  =pci.alphasFillStyle;
+                 edgecolor  =pci.alphasEdgeColor;
+                 edgestyle  =pci.alphasEdgeStyle;
                 }
 
                 int ncorr=pci.gridSteeringFile.GetNumberOfCorrectionFiles();
@@ -1519,6 +1470,8 @@ void SPXPlot::InitializeCrossSections(void) {
                   markerstyle=pci.correctionsMarkerStyle;
                   fillcolor  =pci.correctionsFillColor;
                   fillstyle  =pci.correctionsFillStyle;
+                  edgecolor  =pci.correctionsEdgeColor;
+                  edgestyle  =pci.correctionsEdgeStyle;
                  } 
                 }
                 if (gtype.compare(string("total"))==0){
@@ -1526,13 +1479,15 @@ void SPXPlot::InitializeCrossSections(void) {
                  markerstyle=pci.totalMarkerStyle;
                  fillcolor  =pci.totalFillColor;
                  fillstyle  =pci.totalFillStyle;
+                 edgecolor  =pci.totalEdgeColor;
+                 edgestyle  =pci.totalEdgeStyle;
                 } 
 
                 if (debug) {
 		 std::cout << cn << mn <<" "<<std::endl;
 		 std::cout << cn << mn <<"gband: "<< gband->GetName()<<" Setting: \n"
-                                        <<"\t \t \t \t fillcolor= "<< fillcolor
-                                        <<" fillstyle= "<<fillstyle
+                                        <<"\t \t \t \t fillcolor= "<< fillcolor<<" fillstyle= "<<fillstyle
+                                        <<" edgecolor= "<< edgecolor<<" edgestyle= "<<edgestyle
                                         <<" markerstyle= "<<markerstyle <<std::endl;
 		 std::cout << cn << mn <<" "<<std::endl;
                 }
@@ -1865,4 +1820,42 @@ void SPXPlot::InitializeData(void) {
 			std::cerr << "---> Warning: Unable to add data to map: [" << pci.dataSteeringFile.GetFilename() << "]" << std::endl;
 		}
 	}
+}
+
+
+void SPXPlot::DrawBand(SPXPDF *pdf, string option, SPXPlotConfigurationInstance pci) {
+ std::string mn = "DrawBand: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ if (!pdf) {
+  throw SPXGeneralException(cn+mn+"PDF object not found !");
+  }
+
+ std::cout<<" total edge_color= "<<pci.totalEdgeColor<<" edge_style= "<<pci.totalEdgeStyle<<std::endl;
+
+
+ int nbands=pdf->GetNBands();
+ if (debug) std::cout << cn << mn <<"Number of bands= " <<nbands<< std::endl;
+
+ for (int iband=0; iband<nbands; iband++) {
+  TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+  string gtype                =pdf->GetBandType(iband);
+  if (!gband) {
+   std::ostringstream oss;
+   oss << cn <<mn<<"Get bands "<<"Band "<<iband<<" not found at index for "<< pdf->GetPDFName();
+   throw SPXGeneralException(oss.str());
+  }
+
+  gband->Draw(option.c_str());
+
+  if (debug) {
+
+   std::cout<< cn << mn <<"\n Drew "<<gband->GetName()<< " with options "<<option.c_str()
+                        << " fillcolor= " << gband->GetFillColor() 
+                        << " fillstyle= " << gband->GetFillStyle() 
+                        << " markerstyle= " << gband->GetMarkerStyle() 
+                        << std::endl;          
+   gband->Print();
+  }
+ }
 }

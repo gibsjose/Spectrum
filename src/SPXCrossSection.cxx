@@ -24,108 +24,92 @@ bool SPXCrossSection::debug;
 
 //Create the CrossSection
 void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
-	std::string mn = "Create: ";
-	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+ std::string mn = "Create: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
-        mainsteeringFile=mainsteeringfile;
-        if(!mainsteeringFile)
-	  throw SPXParseException(cn+mn+"main steering file not found !");
+ mainsteeringFile=mainsteeringfile;
+ if(!mainsteeringFile)
+  throw SPXParseException(cn+mn+"main steering file not found !");
 
-	//Attempt to create the Grid
-	try {
-		grid = new SPXGrid(pci);
-	} catch(const SPXException &e) {
-	        throw;
-	 }
+ //Attempt to create the Grid
+ try {
+  grid = new SPXGrid(pci);
+ } catch(const SPXException &e) {
+  throw;
+ }
 
-	if (debug) std::cout<<cn<<mn<<"Attached the GRID "<<endl;
+ if (debug) std::cout<<cn<<mn<<"Attached the GRID "<<endl;
 
-	//Attempt to create the PDF object and perform convolution
-	try {
-	  pdf = new SPXPDF(psf, grid->GetGridName());
-	} catch(const SPXException &e) {
-		throw;
-	}
+ //Attempt to create the PDF object and perform convolution
+ try {
+  //pdf = new SPXPDF(psf, grid->GetGridName());
+  pdf = new SPXPDF(psf, grid);
+ } catch(const SPXException &e) {
+  throw;
+ }
 
-        //@TODO What to do when the grid IS divided but the reference is NOT?
-	dividedByBinWidth = this->pci->gridSteeringFile.IsGridDividedByBinWidth();
+ //@TODO What to do when the grid IS divided but the reference is NOT?
+ dividedByBinWidth = this->pci->gridSteeringFile.IsGridDividedByBinWidth();
 
-	int bncorr=mainsteeringFile->GetNumberofCorrectionToBand();
+ int bncorr=mainsteeringFile->GetNumberofCorrectionToBand();
 
-	if (debug) {
+ if (debug) {
 
-         std::cout<<cn<<mn<<"Created the PDF-class "<<endl;
-	 std::cout<<cn<<mn<<"dividedByBinWidth= " <<dividedByBinWidth<<std::endl;
+  std::cout<<cn<<mn<<"Created the PDF-class "<<endl;
+  std::cout<<cn<<mn<<"dividedByBinWidth= " <<dividedByBinWidth<<std::endl;
 
-	 std::cout<<cn<<mn<<"GetBandwithPDF= "   <<mainsteeringFile->GetBandwithPDF()<<std::endl;
-	 std::cout<<cn<<mn<<"GetBandwithAlphas= "<<mainsteeringFile->GetBandwithAlphaS()<<std::endl;
-	 std::cout<<cn<<mn<<"GetBandwithScales= "<<mainsteeringFile->GetBandwithScales()<<std::endl;
-	 std::cout<<cn<<mn<<"GetBandTotal= "     <<mainsteeringFile->GetBandTotal()<<std::endl;
-         for (int i=0; i<bncorr; i++) {
-	  if (mainsteeringFile->GetGridCorrectionToBand(i))
-	   std::cout<<cn<<mn<<"Grid correction i= "<<i<<" is ON -> include to Map "<<std::endl;
-          else
-	   std::cout<<cn<<mn<<"Grid correction i= "<<i<<" is OFF  "<<std::endl;
-	 }
-        }
+  std::cout<<cn<<mn<<"GetBandwithPDF= "   <<mainsteeringFile->GetBandwithPDF()<<std::endl;
+  std::cout<<cn<<mn<<"GetBandwithAlphas= "<<mainsteeringFile->GetBandwithAlphaS()<<std::endl;
+  std::cout<<cn<<mn<<"GetBandwithScales= "<<mainsteeringFile->GetBandwithScales()<<std::endl;
+  std::cout<<cn<<mn<<"GetBandTotal= "     <<mainsteeringFile->GetBandTotal()<<std::endl;
+  for (int i=0; i<bncorr; i++) {
+   if (mainsteeringFile->GetGridCorrectionToBand(i))
+    std::cout<<cn<<mn<<"Grid correction i= "<<i<<" is ON -> include to Map "<<std::endl;
+   else
+    std::cout<<cn<<mn<<"Grid correction i= "<<i<<" is OFF  "<<std::endl;
+  }
+ }
 
-        int ncorr=pci->gridSteeringFile.GetNumberOfCorrectionFiles(); 
-        if (debug){
-   	 std::cout<<cn<<mn<<"Number of corrections from main steering "<<bncorr<<std::endl;
-   	 std::cout<<cn<<mn<<"Number of corrections from grid steering "<< ncorr<<std::endl;
-        }
-        if (bncorr>ncorr) {
-	 std::cout<<cn<<mn<<"Number of grid correction in Grid file "<<ncorr
-                  <<" and main steering file "<<bncorr<<" do not match"<<std::endl;
-        }
-        // The logic below only works, if we invert the defaults set in
-        // SPXSteering
-        //
-        if (mainsteeringFile->GetBandwithPDF()==false) 
-	 pdf->SetDoPDFBand (mainsteeringFile->GetBandwithPDF()); 
-        if (mainsteeringFile->GetBandwithAlphaS()==true) 
-         pdf->SetDoAlphaS  (mainsteeringFile->GetBandwithAlphaS());
-        if (mainsteeringFile->GetBandwithScales()==false) 
-         pdf->SetDoScale   (mainsteeringFile->GetBandwithScales());
-        if (mainsteeringFile->GetBandTotal()==false) 
-         pdf->SetDoTotError(mainsteeringFile->GetBandTotal());
+ int ncorr=pci->gridSteeringFile.GetNumberOfCorrectionFiles(); 
+ if (debug){
+  std::cout<<cn<<mn<<"Number of corrections from main steering "<<bncorr<<std::endl;
+  std::cout<<cn<<mn<<"Number of corrections from grid steering "<< ncorr<<std::endl;
+ }
 
-        std::vector<double> RenScales=mainsteeringFile->GetRenScales();
-	std::vector<double> FacScales=mainsteeringFile->GetFacScales();
+ if (bncorr>ncorr) {
+  std::cout<<cn<<mn<<"Number of grid correction in Grid file "<<ncorr
+           <<" and main steering file "<<bncorr<<" do not match"<<std::endl;
+  }
 
-	if (RenScales.size()!=FacScales.size()) {
-         std::ostringstream oss;
-         oss << cn << mn << "Different number of values given for rennormalisation and factorisation scale";
-         throw SPXParseException(oss.str());
-	}
+  // The logic below only works, if we invert the defaults set in
+  // SPXSteering
+  //
+  if (mainsteeringFile->GetBandwithPDF()==false) 
+   pdf->SetDoPDFBand (mainsteeringFile->GetBandwithPDF()); 
+  if (mainsteeringFile->GetBandwithAlphaS()==true) 
+   pdf->SetDoAlphaS  (mainsteeringFile->GetBandwithAlphaS());
+  if (mainsteeringFile->GetBandwithScales()==false) 
+   pdf->SetDoScale   (mainsteeringFile->GetBandwithScales());
+  if (mainsteeringFile->GetBandTotal()==false) 
+   pdf->SetDoTotError(mainsteeringFile->GetBandTotal());
 
-        if (RenScales.size()!=0)
-         pdf->SetScales(RenScales,FacScales);
+  std::vector<double> RenScales=mainsteeringFile->GetRenScales();
+  std::vector<double> FacScales=mainsteeringFile->GetFacScales();
 
-        pdf->Initialize();
+  if (RenScales.size()!=FacScales.size()) {
+   std::ostringstream oss;
+   oss << cn << mn << "Different number of values given for rennormalisation and factorisation scale";
+   throw SPXParseException(oss.str());
+  }
+
+  if (RenScales.size()!=0)
+   pdf->SetScales(RenScales,FacScales);
+
+  if (debug) std::cout<<cn<<mn<<" Initialize the PDF "<<std::endl;
+
+  pdf->Initialize();
 }
 
-//        if(mainsteeringFile->GetGridCorr()) {
-//	  this->ParseCorrections();
-//	  this->ApplyCorrections();       
-//        }
-
-        // calculate total uncertainties
-        //pdf->CalcTotalErrors();
-
-	//Convert reference and nominal histograms to graphs and save them
-        //if (!pdf->GetPDFNominal()) {
-        // throw SPXParseException(cn+mn+"nominal PDF histogram not found !");
-        //}
-
-        //if (!grid->GetReference()) {
-        // std::cout<<cn<<mn<<"WARNING: reference histogram not found ! "<<endl;
-        //}
-
-	//SPXGraphUtilities::HistogramToGraph(gridReference, grid->GetReference());
-	//SPXGraphUtilities::HistogramToGraph(nominal,       pdf->GetPDFNominal());
-
-//}
 
 void SPXCrossSection::ParseCorrections(void) {
 	std::string mn = "ParseCorrections: ";
