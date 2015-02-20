@@ -22,8 +22,7 @@ y_label = 1/#sigma d#sigma/dp_{t,Z} [1/GeV]
 x_units = GeV
 y_units = pb
 y_bin_width_units = GeV
-;jet_algorithm_label = antikt
-;jet_algorithm_number = 4
+
 ;==============================================================
 ; Data Options
 ;==============================================================

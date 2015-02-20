@@ -30,8 +30,8 @@
 const std::string cn = "SPXPlotConfiguration::";
 
 //Must define the static debug variable in the implementation
-bool SPXPlotConfiguration::debug=true;
-bool SPXPlotConfigurationInstance::debug=true;
+bool SPXPlotConfiguration::debug=false;
+bool SPXPlotConfigurationInstance::debug=false;
 
 //Constructs an SPXPlotConfiguration object with a map of string vectors, where keys are
 //	options["data_directory"] --> Vector of data directories

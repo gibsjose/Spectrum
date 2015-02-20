@@ -25,7 +25,7 @@ x_units = GeV
 y_units = pb 
 y_bin_width_units= TeV
 ;jet_algorithm_label = Anti_k{t}
-;jet_algorithm_number = 4
+;jet_algorithm_radius = 4
 ;
 [DATA]
 data_format = spectrum

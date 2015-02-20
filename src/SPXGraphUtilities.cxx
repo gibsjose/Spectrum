@@ -412,11 +412,11 @@ TGraphAsymmErrors * SPXGraphUtilities::Divide(TGraphAsymmErrors *g1, TGraphAsymm
 
     //Make sure graphs are valid
     if(!g1) {
-        throw SPXGraphException(cn + mn + "Graph g1 not found");
+     throw SPXGraphException(cn + mn + "Graph g1 not found");
     }
 
     if(!g2) {
-        throw SPXGraphException(cn + mn + "Graph g2 not found");
+     throw SPXGraphException(cn + mn + "Graph g2 not found");
     }
 
     int n1 = g1->GetN();
@@ -429,10 +429,16 @@ TGraphAsymmErrors * SPXGraphUtilities::Divide(TGraphAsymmErrors *g1, TGraphAsymm
 
     //Make sure the two graphs are the same size
     if(n1 != n2) {
-        std::ostringstream oss;
-        oss << cn << mn << "Graphs do not contain the same number of bins: G1 "
-	    << g1->GetName() << " n1= " << n1 <<" G2 "<< g2->GetName() << " n2= " << n2;
-        throw SPXGraphException(oss.str());
+     std::cout<<cn<<mn<<" Graph1: "<<g1->GetName()<<std::endl;
+     g1->Print();
+     std::cout<<cn<<mn<<" Graph2: "<<g2->GetName()<<std::endl;
+     g2->Print();
+
+     std::ostringstream oss;
+     oss << cn << mn << "Graphs do not contain the same number of bins: Graph1 "
+	 << g1->GetName() << " n1= " << n1 <<" Graph2 "<< g2->GetName() << " n2= " << n2;
+
+     throw SPXGraphException(oss.str());
     }
 
     //std::cout << cn<<mn<<" n1= " <<n1<<" n2= "<<n2<< std::endl;

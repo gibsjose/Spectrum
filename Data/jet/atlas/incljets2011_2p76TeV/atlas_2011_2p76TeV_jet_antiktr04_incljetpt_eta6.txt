@@ -22,7 +22,7 @@ x_units = GeV
 y_units = nb
 y_bin_width_units= GeV
 jet_algorithm_label = Anti_k{t}
-jet_algorithm_number = 4
+jet_algorithm_radius = 4
 [DATA]
 data_format = spectrum
 data_file =atlas_2011_2p76TeV_jet_antiktr04_incljetpt_eta6_data.txt

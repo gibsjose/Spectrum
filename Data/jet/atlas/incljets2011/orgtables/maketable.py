@@ -61,7 +61,7 @@ if __name__ == "__main__":
    infoline+='\n'+'y_units = pb'
    infoline+='\n'+'y_bin_width_units= GeV'
    infoline+='\n'+'jet_algorithm_label = Anti_k{t}' 
-   infoline+='\n'+'jet_algorithm_number = 4'
+   infoline+='\n'+'jet_algorithm_radius = 4'
    infoline+='\n'+'[DATA]'
    infoline+='\n'+'data_format = spectrum'
    infoline+='\n'+'data_file ='+dirname+namefiledatafull

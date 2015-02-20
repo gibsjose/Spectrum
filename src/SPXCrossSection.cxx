@@ -159,7 +159,7 @@ void SPXCrossSection::ApplyCorrections() {
   throw SPXParseException(cn+mn+"main steering file not found !");
 
  if(mainsteeringFile->ApplyGridCorr()) {
-   if (debug) std::cout << cn << mn << "INFO: grid corrections will be applied cross sections !" << std::endl;
+   if (debug) std::cout << cn << mn << "INFO: grid corrections will be applied to cross sections !" << std::endl;
  } else {
    if (debug) std::cout << cn << mn << "INFO: No grid correction asked for in steering file ! return " << std::endl;
    return;
