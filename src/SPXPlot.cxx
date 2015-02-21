@@ -522,12 +522,23 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 	xAxisOverlay = overlayFrameHisto->GetXaxis();
 	yAxisOverlay = overlayFrameHisto->GetYaxis();
 
+
+        xAxisOverlay->SetNdivisions(5);
+	//std::cout << cn<<mn<<"INFO change xMin = " << xMinOverlay <<" by small value to better draw axis lables" << std::endl;
+	//std::cout << cn<<mn<<"INFO change xMax = " << xMaxOverlay <<" by small value to better draw axis lables" << std::endl;
+
+        //const double small=1.e-6;
+	//xMinOverlay*=(1-small);
+        //xMaxOverlay*=(1+small);
+
+	xAxisOverlay->SetMoreLogLabels(true);
+
 	if(debug) {
-		std::cout << cn << mn << "Overlay Pad frame drawn with dimensions: " << std::endl;
-		std::cout << "\t xMin = " << xMinOverlay << std::endl;
-		std::cout << "\t xMax = " << xMaxOverlay << std::endl;
-		std::cout << "\t yMin = " << yMinOverlay << std::endl;
-		std::cout << "\t yMax = " << yMaxOverlay << std::endl;
+	 std::cout << cn << mn << "Overlay Pad frame drawn with dimensions: " << std::endl;
+	 std::cout << "\t xMin = " << xMinOverlay << std::endl;
+	 std::cout << "\t xMax = " << xMaxOverlay << std::endl;
+	 std::cout << "\t yMin = " << yMinOverlay << std::endl;
+	 std::cout << "\t yMax = " << yMaxOverlay << std::endl;
 	}
 }
 
@@ -557,8 +568,8 @@ void SPXPlot::DrawRatioPadFrame(void) {
 
 	//Force Ratio X Min/Max to match Overlay, if plotted (should alread match anyway...)
 	if(ds.ContainsOverlay()) {
-		xMinRatio = xMinOverlay;
-		xMaxRatio = xMaxOverlay;
+	 xMinRatio = xMinOverlay;
+	 xMaxRatio = xMaxOverlay;
 	}
 
 	//@TODO What to do here for forcing Y axis within logarithmic limits like I do for overlay? It doesn't matter now, since
@@ -566,10 +577,10 @@ void SPXPlot::DrawRatioPadFrame(void) {
 
 	//Force to non-negative if plotting logarithmic axis
 	if(pc.IsXLog()) {
-		if(xMinRatio < 0) {
-			xMinRatio = 1e-10;
-			if(debug) std::cerr << cn << mn << "WARNING: Forcing non-negative Ratio X Axis since it was specified as Logarithmic" << std::endl;
-		}
+	 if(xMinRatio < 0) {
+	  xMinRatio = 1e-10;
+	  if(debug) std::cerr << cn << mn << "WARNING: Forcing non-negative Ratio X Axis since it was specified as Logarithmic" << std::endl;
+	 }
 	}
 
 	ratioPad->cd();
@@ -577,12 +588,14 @@ void SPXPlot::DrawRatioPadFrame(void) {
 	xAxisRatio = ratioFrameHisto->GetXaxis();
 	yAxisRatio = ratioFrameHisto->GetYaxis();
 
+        //xAxisRatio->SetNdivisions(m_nDivY);
+
 	if(debug) {
-		std::cout << cn << mn << "Ratio Pad frame drawn with dimensions: " << std::endl;
-		std::cout << "\t xMin = " << xMinRatio << std::endl;
-		std::cout << "\t xMax = " << xMaxRatio << std::endl;
-		std::cout << "\t yMin = " << yMinRatio << std::endl;
-		std::cout << "\t yMax = " << yMaxRatio << std::endl;
+	 std::cout << cn << mn << "Ratio Pad frame drawn with dimensions: " << std::endl;
+	 std::cout << "\t xMin = " << xMinRatio << std::endl;
+	 std::cout << "\t xMax = " << xMaxRatio << std::endl;
+	 std::cout << "\t yMin = " << yMinRatio << std::endl;
+	 std::cout << "\t yMax = " << yMaxRatio << std::endl;
 	}
 }
 
@@ -1214,9 +1227,18 @@ void SPXPlot::DrawLegend(void) {
  leg->SetY2NDC(y2);
 
  //if (debug) leg->Print();
+ leg->Draw();
+
+ // Now build second Legend with info
+
+ TLegend *leginfo = new TLegend();
+ leginfo->SetBorderSize(0);
+ leginfo->SetFillColor(0);
+ leginfo->SetMargin(0.2);
 
  double sqrtsval = -1.; 
  double sqrtsvalold = -1.;
+ 
  for(int i = 0; i < data.size(); i++) {                 
   //TString infolabel = "#font[9]{";
   TString infolabel = "";
@@ -1229,8 +1251,10 @@ void SPXPlot::DrawLegend(void) {
   if (int(sqrtsval)%1000==0)
    infolabel.Form("#sqrt{s}= %.f %s",double(sqrtsval)/1000.,"TeV"); 
   else
-   infolabel.Form("#sqrt{s}= %3.2f %s",double(sqrtsval)/1000.,"TeV"); 
+   infolabel.Form("#sqrt{s}= %3.2f %s",double(sqrtsval),"GeV"); 
 
+  leginfo->AddEntry((TObject*)0, infolabel,"");
+  /*
   //if (debug) std::cout<<cn<<mn<<" sqrtsval= "<<sqrtsval<<" infolabel= "<<infolabel.Data()<<std::endl;
   TLatex *text= new TLatex();
   if (ratioonly) text->SetTextSize(0.025);
@@ -1241,9 +1265,34 @@ void SPXPlot::DrawLegend(void) {
   //if (debug) text->Print();
   text->SetNDC(); 
   text->DrawLatex(x1-xshift,y2-2.*csize,infolabel.Data());         
- }
+ */
 
- leg->Draw();
+ sqrtsval = data.at(i)->GetSqrtS();
+ std::cout<<cn<<mn<<" jet algorithm= "<< data.at(i)->GetJetAlgorithmLabel()<<" R= "<< data.at(i)->GetJetAlgorithmRadius()<<std::endl;
+ std::cout<<cn<<mn<<" double bin name= "<<data.at(i)->GetDoubleBinVariableName()
+                  << " min= "<<data.at(i)->GetDoubleBinValueMin()
+                  << " max= "<<data.at(i)->GetDoubleBinValueMax()
+ 	          << std::endl;
+
+ if (data.at(i)->IsDividedByDoubleDiffBinWidth())  std::cout<<cn<<mn<<" Data are divided by bin width of "
+                                                            <<data.at(i)->GetDoubleBinValueWidth()<<std::endl;
+ else std::cout<<cn<<mn<<" Data are divided by bin width of double differential variable "<<std::endl;
+
+ }
+ 
+ double xshift=3;
+ double x1info=x1-xshift;
+ double x2info=x1-xshift;
+ double y1info=y1;
+ double y2info=y2-2*csize*leginfo->GetNRows();
+
+ leginfo->SetX1NDC(x1info);
+ leginfo->SetX2NDC(x2info);
+ leginfo->SetY1NDC(y1info);
+ leginfo->SetY2NDC(y2info);
+
+ //if (debug) leginfo->Print();
+ leginfo->Draw();
 
  return;
 }

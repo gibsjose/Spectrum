@@ -90,6 +90,18 @@ void SPXDataSteeringFile::SetDefaults(void) {
 	jetAlgorithmRadius = 0;
 	if(debug) std::cout << cn << mn << "jetAlgorithmRadius set to default: \" \"" << std::endl;
 
+	doublediffBinname.clear();
+	if(debug) std::cout << cn << mn << "doublediffBinname set to default \" \"" << std::endl;
+
+	doublediffBinValueMin=0.;
+	if(debug) std::cout << cn << mn << "doublediffBinValueMin set to default= "<< doublediffBinValueMin<< std::endl;
+
+	doublediffBinValueMax=0.;
+	if(debug) std::cout << cn << mn << "doublediffBinValueMax set to default= "<< doublediffBinValueMax<< std::endl;
+
+	doublediffBinWidth=1.;
+	if(debug) std::cout << cn << mn << "oublediffBinWidth set to default= "<< doublediffBinWidth<< std::endl;
+
 	dataFormat = SPXDataFormat(DF_SPECTRUM);
 	if(debug) std::cout << cn << mn << "dataFormat set to default: \"Spectrum\"" << std::endl;
 
@@ -101,6 +113,9 @@ void SPXDataSteeringFile::SetDefaults(void) {
 
 	corrstatfilename.clear();
 	if(debug) std::cout << cn << mn << "corrstatfilename set to default: \" \"" << std::endl;
+
+	dividedByDoubleDiffBinWidth = false;
+	if(debug) std::cout << cn << mn << "dividedByDoubleDiffBinWidth set to default: \"false\"" << std::endl;
 
 	dividedByBinWidth = false;
 	if(debug) std::cout << cn << mn << "dividedByBinWidth set to default: \"false\"" << std::endl;
@@ -141,6 +156,14 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t\t Y Bin Width Units: " << yBinWidthUnits << std::endl;
 	std::cout << "\t\t Jet Algorithm Label: " << jetAlgorithmLabel << std::endl;
 	std::cout << "\t\t Jet Algorithm Radius: " << jetAlgorithmRadius << std::endl << std::endl;
+
+        if (doublediffBinname.size()>0) {
+	 std::cout << "\t\t Name of double differential variable: " << doublediffBinname << std::endl << std::endl;
+	 std::cout << "\t\t Minimum value of double differential variable: " << doublediffBinValueMin << std::endl << std::endl;
+	 std::cout << "\t\t Maxmium value of double differential variable: " << doublediffBinValueMax << std::endl << std::endl;
+	 std::cout << "\t\t Bin width double differential variable: " << doublediffBinWidth << std::endl << std::endl;
+        }
+
 	std::cout << "\t Data Options [DATA]" << std::endl;
 	std::cout << "\t\t Data Format: " << dataFormat.ToString() << std::endl;
 	std::cout << "\t\t Data File: " << dataFilepath << std::endl;
@@ -150,6 +173,7 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t\t Data Normalized to Total Sigma? " << (normalizedToTotalSigma ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Errors given in percentages? " << (errorInPercent ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Luminosity Scale Factor: " << lumiScaleFactor << std::endl << std::endl;
+	std::cout << "\t\t Data Divided by Bin Width of double differential variable? " << (dividedByDoubleDiffBinWidth? "YES" : "NO") << std::endl;
 }
 
 //@TODO Create Correlation Matrix Class and parse correlation matrix here if there is one (correlation_matrix = true)!
@@ -341,6 +365,23 @@ void SPXDataSteeringFile::Parse(void) {
 
 	jetAlgorithmRadius = reader->GetInteger("GRAPH", "jet_algorithm_radius", jetAlgorithmRadius);
 
+	tmp = reader->Get("GRAPH", "doublediff_binname", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+	 if(debug) std::cout << cn << mn << "Double differential variable name doublediffBinname was not specified" << std::endl;
+	} else {
+	 doublediffBinname= tmp;
+	 if(debug) std::cout << cn << mn << "Successfully read double differential variable name  doublediffBinname: " << doublediffBinname << std::endl;
+	}
+
+	doublediffBinValueMin = reader->GetReal("GRAPH", "doublediff_bin_value_min", doublediffBinValueMin);
+        if (debug) std::cout << cn << mn << "Double differential variable minimal value= "<<doublediffBinValueMin << std::endl;
+
+	doublediffBinValueMax = reader->GetReal("GRAPH", "doublediff_bin_value_max", doublediffBinValueMax);
+        if (debug) std::cout << cn << mn << "Double differential variable maximal value= "<<doublediffBinValueMax << std::endl;
+
+	doublediffBinWidth    = reader->GetReal("GRAPH", "doublediff_bin_width"    , doublediffBinWidth);
+        if (debug) std::cout << cn << mn << "Double differential variable maximal value= "<<doublediffBinWidth << std::endl;
+
 	//Data Options [DATA]
 	tmp = reader->Get("DATA", "data_format", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
@@ -382,8 +423,11 @@ void SPXDataSteeringFile::Parse(void) {
 		if(debug) std::cout << cn << mn << "Successfully read stat correlation file name: " << corrtotalfilename << std::endl;
 	}
 
+	dividedByDoubleDiffBinWidth= reader->GetBoolean("DATA", "divided_by_doublediff_bin_width", false);
+	if(debug) std::cout << cn << mn << "Divided By Bin Width for suble differential varibale set to: " << (dividedByDoubleDiffBinWidth? "ON" : "OFF") << std::endl;
+
 	dividedByBinWidth = reader->GetBoolean("DATA", "divided_by_bin_width", false);
-	if(debug) std::cout << cn << mn << "Divided By Bin Width set to: " << (dividedByBinWidth ? "ON" : "OFF") << std::endl;
+	if(debug) std::cout << cn << mn << "Divided By Bin Width set to: " << (dividedByBinWidth? "ON" : "OFF") << std::endl;
 
 	normalizedToTotalSigma = reader->GetBoolean("DATA", "normalized_to_total_sigma", false);
 	if(debug) std::cout << cn << mn << "Normalized to Total Sigma set to: " << (normalizedToTotalSigma ? "ON" : "OFF") << std::endl;

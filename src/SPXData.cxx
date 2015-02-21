@@ -723,9 +723,9 @@ void SPXData::PrintSpectrum(void) {
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	std::cout << std::endl << "Spectrum Data File: " << pci.dataSteeringFile.GetDataFile() << std::endl << std::endl;
-
+                                                                                                                 
 	std::cout << "============================================================================================" << std::endl;
-	std::cout << "|         xm |       xlow |      xhigh |      sigma |       stat |     syst + |     syst - |" << std::endl;
+	std::cout << "|   xm       |  xlow      |  xhigh     |   sigma    |   stat     |  syst +    |  syst -    |" << std::endl;
 	std::cout << "--------------------------------------------------------------------------------------------" << std::endl;
 
 	//Iterate over map
@@ -782,9 +782,9 @@ void SPXData::PrintHERAFitter(void) {
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 	
 	std::cout << std::endl << "HERAFitter Data File: " << pci.dataSteeringFile.GetDataFile() << std::endl << std::endl;
-
+                                                                                                                 
 	std::cout << "============================================================================================" << std::endl;
-	std::cout << "|         xm |       xlow |      xhigh |      sigma |       stat |     syst + |     syst - |" << std::endl;
+	std::cout << "|    xm      |  xlow      |  xhigh     |  sigma     |  stat      | syst +     |  syst -    |" << std::endl;                    
 	std::cout << "--------------------------------------------------------------------------------------------" << std::endl;
 
 	//Iterate over map
@@ -1066,13 +1066,17 @@ void SPXData::ReadCorrelation()
 
   if (debug) 
    std::cout <<cn<<mn<<"INFO Calculate systematic covariance matrix from systematic components ! "<< std::endl; 
+
+  if (individualSystematics.size()==0) {
+   std::cout <<cn<<mn<<"WANRING no systematics components found ! "<< std::endl; 
+  } else {
+   this->CalculateSystematicCovarianceMatrix();
+  }
  
-  this->CalculateSystematicCovarianceMatrix();
-
   // add up stat and syst covariance matrice
-
+  std::cout <<cn<<mn<<"INFO  add up stat and syst covariance matrices to be implemented ! "<< std::endl; 
   // calculate total covariance
-
+  std::cout <<cn<<mn<<"INFO calculate total covariance  matrix to be implemented ! "<< std::endl; 
 
  }
 
@@ -1349,6 +1353,9 @@ void SPXData::CalculateSystematicCovarianceMatrix() {
   //for (int i=0; i<syst.size(); i++) {
   // std::cout<<cn<<mn<<" syst["<<i<<"]= "<<syst.at(i)  << std::endl;
   //}
+
+  if (syst.size()==0)
+   std::cout<<cn<<mn<<"WARNING: no systematic components founds ! "<< std::endl;
 
   if (Nbin!=syst.size()) {
    std::ostringstream oss;
