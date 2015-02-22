@@ -74,6 +74,12 @@ void SPXSteeringFile::SetDefaults(void) {
 	yLegend = 0.93;
 	if(debug) std::cout << cn << mn << "yLegend set to default: \"0.93\"" << std::endl;
 
+	xInfoLegend = 0.4;
+	if(debug) std::cout << cn << mn << "xInfoLegend set to default: \"0.2\"" << std::endl;
+
+	yInfoLegend = 0.4;
+	if(debug) std::cout << cn << mn << "yInfoLegend set to default: \"0.4\"" << std::endl;
+
 	yOverlayMin = MIN_EMPTY;
 	if(debug) std::cout << cn << mn << "yOverlayMin set to default: \"" << MIN_EMPTY << "\"" << std::endl;
 
@@ -234,8 +240,10 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Match Binning is: " << (matchBinning ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Grid Corrections are: " << (gridCorr ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Label Sqrt(s) on Legend: " << (labelSqrtS ? "YES" : "NO") << std::endl;
-	std::cout << "\t\t X Legend: " << xLegend << std::endl;
-	std::cout << "\t\t Y Legend: " << yLegend << std::endl;
+	std::cout << "\t\t X main Legend: " << xLegend << std::endl;
+	std::cout << "\t\t Y main Legend: " << yLegend << std::endl;
+	std::cout << "\t\t X information Legend: " << xInfoLegend << std::endl;
+	std::cout << "\t\t Y information Legend: " << yInfoLegend << std::endl;
 	std::cout << "\t\t Y Overlay Min: " << yOverlayMin << std::endl;
 	std::cout << "\t\t Y Overlay Max: " << yOverlayMax << std::endl;
 	std::cout << "\t\t Y Ratio Min: " << yRatioMin << std::endl;
@@ -1578,8 +1586,12 @@ void SPXSteeringFile::Parse(void) {
 	matchBinning = reader->GetBoolean("GRAPH", "match_binning", matchBinning);
 	gridCorr = reader->GetBoolean("GRAPH", "grid_corr", gridCorr);
 	labelSqrtS = reader->GetBoolean("GRAPH", "label_sqrt_s", labelSqrtS);
+
 	xLegend = reader->GetReal("GRAPH", "x_legend", xLegend);
 	yLegend = reader->GetReal("GRAPH", "y_legend", xLegend);
+
+	xInfoLegend = reader->GetReal("GRAPH", "x_info_legend", xInfoLegend);
+	yInfoLegend = reader->GetReal("GRAPH", "y_info_legend", xInfoLegend);
 
 	yOverlayMin = reader->GetReal("GRAPH", "y_overlay_min", yOverlayMin);
 	yOverlayMax = reader->GetReal("GRAPH", "y_overlay_max", yOverlayMax);

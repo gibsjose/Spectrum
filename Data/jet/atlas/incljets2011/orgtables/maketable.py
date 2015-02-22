@@ -60,13 +60,20 @@ if __name__ == "__main__":
    infoline+='\n'+'x_units = GeV'
    infoline+='\n'+'y_units = pb'
    infoline+='\n'+'y_bin_width_units= GeV'
-   infoline+='\n'+'jet_algorithm_label = Anti_k{t}' 
+   infoline+='\n'+'jet_algorithm_label = Anti-k_{t}' 
    infoline+='\n'+'jet_algorithm_radius = 4'
+
+   infoline+='\n'+'doublediff_binname = #leq |y| < '
+   infoline+='\n'+'doublediff_bin_value_min=  '
+   infoline+='\n'+'doublediff_bin_value_max=  '
+   infoline+='\n'+'doublediff_bin_value_width=  '
+
    infoline+='\n'+'[DATA]'
    infoline+='\n'+'data_format = spectrum'
    infoline+='\n'+'data_file ='+dirname+namefiledatafull
    #print 'normalizedToTotalSigma no'
    infoline+='\n'+'divided_by_bin_width = true' 
+   infoline+='\n'+'divided_by_doublediff_bin_width = false' 
    infoline+='\n'+'error_in_percent = true'
    infoline+='\n'+' '
 

@@ -14,7 +14,7 @@ debug = true
 ; Graphing Options
 ;==============================================================
 [GRAPH]
-; plot_band = true
+plot_band = false
 ; plot_error_ticks = true
 plot_marker = true
 plot_staggered = true
@@ -39,13 +39,14 @@ y_legend = 0.9
 ; Plot 0 Options
 ;==============================================================
 [PLOT_0]
+;total_edge_color=800
 ;plot_type = data[], grid[], pdf
 plot_type = data, grid, pdf
 pdf_directory = PDF
 data_directory = Data/jet/atlas/incljets2011
 grid_directory = Grids/jet/atlas/incljets2011/nlojet
-data_steering_files = atlas_2011_jet_antiktr04_incljetpt_eta1.txt
-grid_steering_files = atlas_2011_incljet_eta1_r04.txt
+data_steering_files = atlas_2011_jet_antiktr06_incljetpt_eta1.txt
+grid_steering_files = atlas_2011_incljet_eta1_r06.txt
 pdf_steering_files = CT10.txt
 ;
 x_scale = 1.0

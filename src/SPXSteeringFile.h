@@ -76,8 +76,10 @@ private:
         std::vector<double> RenScales; // vector for renormalisation scale variations
         std::vector<double> FacScales; // vector for factorisation scale variations
 
-	double xLegend;		    //X Position of the legend, based on top-right corner
-	double yLegend;		    //Y Position of the legend, based on top-right corner
+	double xLegend;		    //X Position of the main legend, based on top-right corner
+	double yLegend;		    //Y Position of the main legend, based on top-right corner
+	double xInfoLegend;	    //X Position of the information legend, based on  corner
+	double yInfoLegend;	    //Y Position of the information legend, based on top-right corner
 	double yOverlayMin;	    //Force Y-Axis minimum for overlay section
 	double yOverlayMax;	    //Force Y-Axis maximum for overlay section
 	double yRatioMin;	    //Force Y-Axis minimum for ratio section
@@ -165,6 +167,14 @@ public:
 
 	double GetYLegend(void) const {
 		return this->yLegend;
+	}
+
+	double GetXInfoLegend(void) const {
+		return this->xInfoLegend;
+	}
+
+	double GetYInfoLegend(void) const {
+		return this->yInfoLegend;
 	}
 
 	double GetYOverlayMin(void) const {

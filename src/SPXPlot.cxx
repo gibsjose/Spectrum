@@ -960,12 +960,13 @@ void SPXPlot::DrawLegend(void) {
 
  TLegend *leg = 0;
  int namesize=5;    
- //double csize=0.025;    
- double csize=0.02;    
+ int leginfomax=0;    
+
+ double charactersize=0.01;    
  float linesize=0.05; 
 
- TString mylabel="test";
- int mysize=TString(mylabel).Sizeof(); 
+ //TString mylabel="test";
+ //int mysize=TString(mylabel).Sizeof(); 
 
  leg = new TLegend();
  leg->SetBorderSize(0);
@@ -973,10 +974,10 @@ void SPXPlot::DrawLegend(void) {
  leg->SetMargin(0.2);
 
  if(os.ContainsData()) {
- if (debug) std::cout << cn << mn <<"contains data "<< std::endl;
+  if (debug) std::cout << cn << mn <<"contains data "<< std::endl;
 
- if (data.size()==0)
-  throw SPXGeneralException(cn+mn+"No data object found !");
+  if (data.size()==0)
+   throw SPXGeneralException(cn+mn+"No data object found !");
 
   for(int i = 0; i < data.size(); i++) {                 
 
@@ -1087,6 +1088,7 @@ void SPXPlot::DrawLegend(void) {
       if (debug) std::cout<<cn<<mn<<" grid correction label= "<<label.c_str()<<std::endl;
       text+=TString(label); // do this better
      }
+     if (text.Sizeof()>namesize) namesize=text.Sizeof();
     }
 
     text+=" with:";
@@ -1169,6 +1171,7 @@ void SPXPlot::DrawLegend(void) {
      string              gtype   =pdf->GetBandType(iband);
 
      if (debug) std::cout << cn << mn <<"Same properties iband= "<<iband<<" gtype= "<< gtype.c_str()<< std::endl;
+
      if (gtype.compare(string("pdf"))==0){
       pdffound=true; npdf++;
       if (steeringFile->GetPlotMarker()) {
@@ -1178,10 +1181,10 @@ void SPXPlot::DrawLegend(void) {
       } else
        std::cout << cn << mn <<"WARNING do not know what to do not plotMarker, not plotBand"<< std::endl;
 
-      if (TString(pdftype).Sizeof()>namesize) namesize=TString(pdftype).Sizeof();
+      if (pdftype.Sizeof()>namesize) namesize=pdftype.Sizeof();
      }
 
-     if (debug) std::cout << cn << mn <<"npdf= "<<npdf<< std::endl;
+     //if (debug) std::cout << cn << mn <<"npdf= "<<npdf<< std::endl;
      if (pdffound) {
       if (debug) std::cout << cn << mn <<"PDF found "<< pdftype.Data()<< std::endl;
      } else {
@@ -1200,20 +1203,20 @@ void SPXPlot::DrawLegend(void) {
  }
 
  double x1=0., y1=0., x2=0., y2=0.;
- //double xlegend=0.7; 
- //double ylegend=0.6; 
  double xlegend=steeringFile->GetXLegend();
  double ylegend=steeringFile->GetYLegend();
 
- //int ncol=leg->GetNColumns();
  int nraw=leg->GetNRows();
  if (debug) { 
   std::cout << cn << mn <<"nraw= "<<nraw<<" namesize= "<< namesize<< " linesize= "<<linesize<<std::endl;
  }
 
- x1 = xlegend-(namesize*csize), x2=xlegend;
+ double fac=1.;
+ if (namesize<15) fac=2.;
+
+ x1 = xlegend-(fac*namesize*charactersize), x2=xlegend;
  if (nraw>3) nraw*=0.6;
- y1 = ylegend-(nraw*(linesize));  y2=ylegend;
+ y1 = ylegend-(nraw*linesize);  y2=ylegend;
   
  if (debug) { 
   std::cout<<cn<<mn<<"xlegend= "<<xlegend<<" ylegend= "<<ylegend<<std::endl;
@@ -1240,20 +1243,27 @@ void SPXPlot::DrawLegend(void) {
  double sqrtsvalold = -1.;
  
  for(int i = 0; i < data.size(); i++) {                 
+
   //TString infolabel = "#font[9]{";
   TString infolabel = "";
-  if (i>0) sqrtsvalold=sqrtsval;
-  //sqrtsval = data.at(i).GetSqrtS();
-  sqrtsval = data.at(i)->GetSqrtS();
-  if (i>0&&sqrtsval!=sqrtsvalold)
-   std::cout<<cn<<mn<<"WARNING label not correct"<<" sqrt(s) changed old="<<sqrtsvalold<<" new= "<<sqrtsval<<std::endl;
 
-  if (int(sqrtsval)%1000==0)
-   infolabel.Form("#sqrt{s}= %.f %s",double(sqrtsval)/1000.,"TeV"); 
-  else
-   infolabel.Form("#sqrt{s}= %3.2f %s",double(sqrtsval),"GeV"); 
+  if (steeringFile->GetLabelSqrtS()) {
+   if (i>0) sqrtsvalold=sqrtsval;
 
-  leginfo->AddEntry((TObject*)0, infolabel,"");
+   sqrtsval = data.at(i)->GetSqrtS();
+   if (i>0&&sqrtsval!=sqrtsvalold)
+    std::cout<<cn<<mn<<"WARNING label not correct"<<" sqrt(s) changed old="<<sqrtsvalold<<" new= "<<sqrtsval<<std::endl;
+
+   if (int(sqrtsval)%1000==0)
+    infolabel.Form("#sqrt{s}= %.f %s",double(sqrtsval)/1000.,"TeV"); 
+   else
+    infolabel.Form("#sqrt{s}= %3.0f %s",double(sqrtsval),"GeV"); 
+
+   //if (TString(infolabel).Sizeof()>leginfomax) leginfomax=TString(infolabel).Sizeof();
+   if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
+
+   leginfo->AddEntry((TObject*)0, infolabel,"");
+  }
   /*
   //if (debug) std::cout<<cn<<mn<<" sqrtsval= "<<sqrtsval<<" infolabel= "<<infolabel.Data()<<std::endl;
   TLatex *text= new TLatex();
@@ -1267,31 +1277,59 @@ void SPXPlot::DrawLegend(void) {
   text->DrawLatex(x1-xshift,y2-2.*csize,infolabel.Data());         
  */
 
- sqrtsval = data.at(i)->GetSqrtS();
- std::cout<<cn<<mn<<" jet algorithm= "<< data.at(i)->GetJetAlgorithmLabel()<<" R= "<< data.at(i)->GetJetAlgorithmRadius()<<std::endl;
- std::cout<<cn<<mn<<" double bin name= "<<data.at(i)->GetDoubleBinVariableName()
-                  << " min= "<<data.at(i)->GetDoubleBinValueMin()
-                  << " max= "<<data.at(i)->GetDoubleBinValueMax()
- 	          << std::endl;
+  //sqrtsval = data.at(i)->GetSqrtS();
+  std::cout<<cn<<mn<<" jet algorithm= "<< data.at(i)->GetJetAlgorithmLabel()<<" R= "<< data.at(i)->GetJetAlgorithmRadius()<<std::endl;
+  std::cout<<cn<<mn<< " min= "<<data.at(i)->GetDoubleBinValueMin()
+                   <<" double bin name= "<<data.at(i)->GetDoubleBinVariableName()
+                   << " max= "<<data.at(i)->GetDoubleBinValueMax()
+  	          << std::endl;
 
- if (data.at(i)->IsDividedByDoubleDiffBinWidth())  std::cout<<cn<<mn<<" Data are divided by bin width of "
+  if (data.at(i)->IsDividedByDoubleDiffBinWidth())  std::cout<<cn<<mn<<" Data are divided by bin width of "
                                                             <<data.at(i)->GetDoubleBinValueWidth()<<std::endl;
- else std::cout<<cn<<mn<<" Data are divided by bin width of double differential variable "<<std::endl;
+  else std::cout<<cn<<mn<<" Data are divided by bin width of double differential variable "<<std::endl;
 
+  if (data.at(i)->GetJetAlgorithmLabel().size()>0){
+   infolabel=data.at(i)->GetJetAlgorithmLabel();
+   infolabel+=" R= ";
+   infolabel+=data.at(i)->GetJetAlgorithmRadius();
+   if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
+   leginfo->AddEntry((TObject*)0, infolabel,"");
+
+   if (debug) std::cout<<cn<<mn<<" infolabel= "<<infolabel.Data()<<std::endl;
+  }
+
+  if (data.at(i)->GetDoubleBinVariableName().size()>0) {
+   infolabel="";
+   //infolabel+=
+   infolabel.Form(" %3.2f ",data.at(i)->GetDoubleBinValueMin()); 
+   infolabel+=data.at(i)->GetDoubleBinVariableName();
+   infolabel+=Form(" %3.2f ",data.at(i)->GetDoubleBinValueMax());
+
+   if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
+   if (debug) std::cout<<cn<<mn<<" infolabel= "<<infolabel.Data()<<std::endl;
+
+   leginfo->AddEntry((TObject*)0, infolabel,"");
+  }
  }
  
  double xshift=3;
- double x1info=x1-xshift;
- double x2info=x1-xshift;
- double y1info=y1;
- double y2info=y2-2*csize*leginfo->GetNRows();
+ double x2info=steeringFile->GetXInfoLegend();
+ double y2info=steeringFile->GetYInfoLegend();
+ double x1info=x2info-charactersize*leginfomax;
+ double y1info=y2info-linesize*leginfo->GetNRows();
+
+ if (debug) { 
+  std::cout<<cn<<mn<<"leginfomax= "<<leginfomax<<std::endl;
+  std::cout<<cn<<mn<<"x1info= "<<x1info<<" y1info= "<<y1info<<std::endl;
+  std::cout<<cn<<mn<<"x2info= "<<x2info<<" y2info= "<<y2info<<std::endl;
+ }
 
  leginfo->SetX1NDC(x1info);
  leginfo->SetX2NDC(x2info);
  leginfo->SetY1NDC(y1info);
  leginfo->SetY2NDC(y2info);
 
- //if (debug) leginfo->Print();
+ if (debug) leginfo->Print();
  leginfo->Draw();
 
  return;
@@ -1850,33 +1888,89 @@ void SPXPlot::DrawBand(SPXPDF *pdf, string option, SPXPlotConfigurationInstance 
 
  if (!pdf) {
   throw SPXGeneralException(cn+mn+"PDF object not found !");
-  }
-
- std::cout<<" total edge_color= "<<pci.totalEdgeColor<<" edge_style= "<<pci.totalEdgeStyle<<std::endl;
-
+ }
 
  int nbands=pdf->GetNBands();
  if (debug) std::cout << cn << mn <<"Number of bands= " <<nbands<< std::endl;
 
+ bool detailedband=false;
  for (int iband=0; iband<nbands; iband++) {
   TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-  string gtype                =pdf->GetBandType(iband);
   if (!gband) {
    std::ostringstream oss;
    oss << cn <<mn<<"Get bands "<<"Band "<<iband<<" not found at index for "<< pdf->GetPDFName();
    throw SPXGeneralException(oss.str());
   }
 
-  gband->Draw(option.c_str());
+  string gtype                =pdf->GetBandType(iband);
+  TString gname=gband->GetName();
+
+  if (gname.Contains("_total_")) detailedband=true;
+  if (gname.Contains("_scale_")) detailedband=true;
+  if (gname.Contains("_pdf_"))   detailedband=true;
+  if (gname.Contains("_alphas_"))detailedband=true;
+ }
+
+ if (debug) if (detailedband) std::cout << cn << mn <<"detailedband TRUE" << std::endl;
+
+ if (steeringFile->GetPlotMarker()){
+
+  if (detailedband){
+   std::cout << cn << mn <<"WARNING ask to plot marker and detailedband -> do not know what to do, correct steering " << std::endl;
+  }
+
+  for (int iband=0; iband<nbands; iband++) {
+   TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+   //string gtype                =pdf->GetBandType(iband);
+   //TString gname=gband->GetName();
+   gband->Draw(option.c_str());
+
+   if (debug) {
+    std::cout<< cn << mn <<"\n Drew "<<gband->GetName()<< " with options "<<option.c_str()
+                         << " fillcolor= " << gband->GetFillColor() 
+                         << " fillstyle= " << gband->GetFillStyle() 
+                         << " markerstyle= " << gband->GetMarkerStyle() 
+                         << std::endl;          
+     gband->Print();
+   }
+  };
+  return;
+ }
+
+ std::cout<<" total edge_color= "<<pci.totalEdgeColor<<" edge_style= "<<pci.totalEdgeStyle<<std::endl;
+ double edgecolor=pci.totalEdgeColor;
+ double edgestyle=pci.totalEdgeStyle;
+
+ for (int iband=0; iband<nbands; iband++) {
+  TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+
+  if (edgecolor!=DEFAULT && edgecolor!=0) {
+   TH1D *hedgelow =SPXGraphUtilities::GetEdgeHistogram(gband,true);
+   TH1D *hedgehigh=SPXGraphUtilities::GetEdgeHistogram(gband,false);
+   hedgelow ->SetLineColor(abs(edgecolor));
+   hedgehigh->SetLineColor(abs(edgecolor));
+   if (edgestyle!=DEFAULT) {
+    hedgelow ->SetLineStyle(edgestyle);
+    hedgehigh->SetLineStyle(edgestyle);
+
+    hedgelow ->SetLineWidth(4);
+    hedgehigh->SetLineWidth(4);
+   }
+   hedgelow ->Draw("][,same");
+   hedgehigh->Draw("][,same");
+  }
+
+  if (edgecolor>=0) {
+   gband->Draw(option.c_str());
+  }
 
   if (debug) {
-
    std::cout<< cn << mn <<"\n Drew "<<gband->GetName()<< " with options "<<option.c_str()
-                        << " fillcolor= " << gband->GetFillColor() 
-                        << " fillstyle= " << gband->GetFillStyle() 
+                        << " fillcolor= "   << gband->GetFillColor() 
+                        << " fillstyle= "   << gband->GetFillStyle() 
                         << " markerstyle= " << gband->GetMarkerStyle() 
                         << std::endl;          
-   gband->Print();
   }
+
  }
 }

@@ -898,8 +898,6 @@ void SPXRatio::Draw(string option, int statRatios, int totRatios) {
     if (nbin>nmax) nmax=nbin;
     //std::cout<<cn<<mn<<" "<<graph1->GetName()<<" "<<graph2->GetName()<<" nbin= "<<nbin<<std::endl;
    }
-
-   //std::cout<<cn<<mn<<" "<<graph1->GetName()<<" nmax= "<<nmax<<std::endl;
    //
    // check if key already exists in map -> otherwise look for different locations
    //
@@ -1012,12 +1010,10 @@ void SPXRatio::Draw(string option, int statRatios, int totRatios) {
    }
 
    if (debug) {
-
-     std::cout<<cn<<mn<<" fillcolor= "  << fillcolor   <<std::endl;
-     std::cout<<cn<<mn<<" edgecolor= "  << edgecolor   <<std::endl;
-     std::cout<<cn<<mn<<" edgestyle= "  << edgestyle   <<std::endl;
-     std::cout<<cn<<mn<<" markerstyle= "<< markerstyle <<std::endl;
-
+    std::cout<<cn<<mn<<" fillcolor= "  << fillcolor   <<std::endl;
+    std::cout<<cn<<mn<<" edgecolor= "  << edgecolor   <<std::endl;
+    std::cout<<cn<<mn<<" edgestyle= "  << edgestyle   <<std::endl;
+    std::cout<<cn<<mn<<" markerstyle= "<< markerstyle <<std::endl;
    }
 
  /*

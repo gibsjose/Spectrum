@@ -12,7 +12,7 @@ reference_journal_name= EPJ C73 (2013) 2509
 name = ATLAS_2011_antikt04_2p76TeV_eta7
 experiment = ATLAS
 reaction = p p --> jet jet
-YRAP 3.6 4.5
+
 [GRAPH]
 sqrt_s = 2760.0
 legend_label = ATLAS 2011
@@ -21,11 +21,18 @@ y_label = d#sigma/dp_{T,jet} [pb/GeV]
 x_units = GeV
 y_units = nb
 y_bin_width_units= GeV
-jet_algorithm_label = Anti_k{t}
+jet_algorithm_label = Anti-k_{t}
 jet_algorithm_radius = 4
+
+doublediff_binname = #leq |y| < 
+doublediff_bin_value_min  =  3.6
+doublediff_bin_value_max  =  4.5
+doublediff_bin_width  =  1.8
+
 [DATA]
 data_format = spectrum
 data_file =atlas_2011_2p76TeV_jet_antiktr04_incljetpt_eta7_data.txt
 divided_by_bin_width = true
+divided_by_doublediff_bin_width = false
 error_in_percent = true
  
