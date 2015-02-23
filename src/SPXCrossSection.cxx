@@ -286,11 +286,6 @@ void SPXCrossSection::MatchBinning(StringGraphMap_T dataFileGraphMap) {
    dividedByBinWidth = true;
   }
                                 
-  //
-  // loop over all graphs in Map
-  // 
-  //for(StringPairGraphMap_T::const_iterator it = convoluteFileGraphMap.begin(); it !=  convoluteFileGraphMap.end(); ++it) 
-  //{
   // loop over all Band in pdf
   int nbands=pdf->GetNBands();
   if (debug) std::cout << cn << mn <<"Number of bands= " <<nbands<< std::endl;

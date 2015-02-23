@@ -103,6 +103,7 @@ private:
 	StringPairGraphMap_T referenceFileGraphMap;
 	StringPairGraphMap_T nominalFileGraphMap;
 	StringPairGraphMap_T convoluteFileGraphMap;
+	StringPairPDFMap_T convoluteFilePDFMap;
 
 	//Sets used for eliminating duplicate data/cross section plots, since
 	// different plot configuration instances could share a data/cross section, and we

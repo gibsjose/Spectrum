@@ -10,6 +10,7 @@ data_set_lumi = 4.5
 publication_status = published
 reference_arxiv_number = arXiv:1410.8857
 reference_journal_name = none
+experiment = ATLAS
 
 [GRAPH]
 sqrt_s = 7000.0

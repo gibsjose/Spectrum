@@ -51,6 +51,10 @@ public:
 		return pci->gridSteeringFile.GetGridFilepath();
 	}
 
+	const std::string & GetName(void) const {
+		return pci->gridSteeringFile.GetName();
+	}
+
 	//Creates the Grid and return the reference histogram
 	TH1D * CreateGrid(void);
 
@@ -60,8 +64,6 @@ public:
 	TH1D * GetReference(void) {
 		return referenceHistogram;
 	}
-
-
 
 	bool IsReferenceHistogramCorrupted(void) {
 		return referenceHistogramCorrupted;

@@ -20,10 +20,20 @@
 
 #include "SPXROOT.h"
 
+#include "SPXPDF.h"
+
 #include "SPXPlotConfiguration.h"
 #include "SPXRatioStyle.h"
 #include "SPXUtilities.h"
 #include "SPXException.h"
+
+
+typedef std::map<std::string, SPXPDF *> StringPDFMap_T;
+typedef std::map<std::pair<std::string, std::string>, SPXPDF *> StringPairPDFMap_T;
+
+typedef std::pair<std::string, SPXPDF *> StringPDFPair_T;
+typedef std::pair<StringPair_T, SPXPDF *> StringPairPDFPair_T;
+
 
 class SPXRatio {
 
@@ -39,6 +49,7 @@ public:
     void AddReferenceFileGraphMap(StringPairGraphMap_T &);
     void AddNominalFileGraphMap(StringPairGraphMap_T &);
     void AddConvoluteFileGraphMap(StringPairGraphMap_T &);
+    void AddConvoluteFilePDFMap(StringPairPDFMap_T &);
     void GetGraphs(void);
     void Print(void);
 
@@ -134,6 +145,16 @@ public:
         out << "\t ====================================" << std::endl << std::endl;
     }
 
+    void PrintConvoluteFilePDFMapKeys(std::ostream &out = std::cout) {
+        out << "SPXRatio::PrintConvoluteFilePDFMapKeys: " << std::endl;
+        out << "\t Key Format: [Grid, PDF]" << std::endl;
+        out << "\t ============ KNOWN KEYS ============" << std::endl;
+        for(StringPairPDFMap_T::iterator it = convoluteFilePDFMap->begin(); it != convoluteFilePDFMap->end(); ++it) {
+            out << "\t [" << it->first.first << ", " << it->first.second << "]" << std::endl;
+        }
+        out << "\t ====================================" << std::endl << std::endl;
+    }
+
     void PrintConvoluteFileGraphMapKeys(std::ostream &out = std::cout) {
         out << "SPXRatio::PrintConvoluteFileGraphMapKeys: " << std::endl;
         out << "\t Key Format: [Grid, PDF]" << std::endl;
@@ -208,9 +229,10 @@ private:
     TGraphAsymmErrors *denominatorGraph;            //TGraph of the denominator
 
     StringGraphMap_T * dataFileGraphMap;            //Map of data files to their data TGraph
-    StringPairGraphMap_T * referenceFileGraphMap;   //Map of grid/pdf file pairs to their grid reference TGraph
-    StringPairGraphMap_T * nominalFileGraphMap;     //Map of grid/pdf file pairs to their pdf nominal TGraph
-    StringPairGraphMap_T * convoluteFileGraphMap;   //Map of grid/pdf file pairs to their convolute TGraph
+    StringPairGraphMap_T * referenceFileGraphMap;   //Map of grid/graph file pairs to their grid reference TGraph
+    StringPairGraphMap_T * nominalFileGraphMap;     //Map of grid/graph file pairs to their pdf nominal TGraph
+    StringPairGraphMap_T * convoluteFileGraphMap;   //Map of grid/graph file pairs to their convolute pdf objects
+    StringPairPDFMap_T * convoluteFilePDFMap;     //Map of grid/pdf file pairs to their convolute pdf objects
 
     bool MatchesConvoluteString(std::string &s);
 

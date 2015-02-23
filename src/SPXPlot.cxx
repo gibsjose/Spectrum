@@ -983,6 +983,9 @@ void SPXPlot::DrawLegend(void) {
 
    TString datalabel=data.at(i)->GetLegendLabel();
    if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
+   
+   //std::cout<<cn<<mn<<datalabel.Data()<<" namesize= "<<namesize<<std::endl;
+
    if (!ratioonly) // ratioonly figures have data in the ratio, no separate label
 
    leg->AddEntry(data.at(i)->GetTotalErrorGraph(), datalabel, "P");
@@ -1089,6 +1092,7 @@ void SPXPlot::DrawLegend(void) {
       text+=TString(label); // do this better
      }
      if (text.Sizeof()>namesize) namesize=text.Sizeof();
+     //std::cout<<cn<<mn<<text.Data()<<" namesize= "<<namesize<<std::endl;
     }
 
     text+=" with:";
@@ -1182,6 +1186,7 @@ void SPXPlot::DrawLegend(void) {
        std::cout << cn << mn <<"WARNING do not know what to do not plotMarker, not plotBand"<< std::endl;
 
       if (pdftype.Sizeof()>namesize) namesize=pdftype.Sizeof();
+      //std::cout<<cn<<mn<<pdftype.Data()<<" namesize= "<<namesize<<std::endl;
      }
 
      //if (debug) std::cout << cn << mn <<"npdf= "<<npdf<< std::endl;
@@ -1212,7 +1217,7 @@ void SPXPlot::DrawLegend(void) {
  }
 
  double fac=1.;
- if (namesize<15) fac=2.;
+ if (namesize<20) fac=2.;
 
  x1 = xlegend-(fac*namesize*charactersize), x2=xlegend;
  if (nraw>3) nraw*=0.6;
@@ -1278,15 +1283,15 @@ void SPXPlot::DrawLegend(void) {
  */
 
   //sqrtsval = data.at(i)->GetSqrtS();
-  std::cout<<cn<<mn<<" jet algorithm= "<< data.at(i)->GetJetAlgorithmLabel()<<" R= "<< data.at(i)->GetJetAlgorithmRadius()<<std::endl;
-  std::cout<<cn<<mn<< " min= "<<data.at(i)->GetDoubleBinValueMin()
-                   <<" double bin name= "<<data.at(i)->GetDoubleBinVariableName()
-                   << " max= "<<data.at(i)->GetDoubleBinValueMax()
-  	          << std::endl;
+  //std::cout<<cn<<mn<<" jet algorithm= "<< data.at(i)->GetJetAlgorithmLabel()<<" R= "<< data.at(i)->GetJetAlgorithmRadius()<<std::endl;
+  //std::cout<<cn<<mn<< " min= "<<data.at(i)->GetDoubleBinValueMin()
+  //                 <<" double bin name= "<<data.at(i)->GetDoubleBinVariableName()
+  //                 << " max= "<<data.at(i)->GetDoubleBinValueMax()
+  //	          << std::endl;
 
-  if (data.at(i)->IsDividedByDoubleDiffBinWidth())  std::cout<<cn<<mn<<" Data are divided by bin width of "
-                                                            <<data.at(i)->GetDoubleBinValueWidth()<<std::endl;
-  else std::cout<<cn<<mn<<" Data are divided by bin width of double differential variable "<<std::endl;
+  // if (data.at(i)->IsDividedByDoubleDiffBinWidth())  std::cout<<cn<<mn<<" Data are divided by bin width of "
+  //                                                          <<data.at(i)->GetDoubleBinValueWidth()<<std::endl;
+  //else std::cout<<cn<<mn<<"Data are divided by bin width of double differential variable "<<std::endl;
 
   if (data.at(i)->GetJetAlgorithmLabel().size()>0){
    infolabel=data.at(i)->GetJetAlgorithmLabel();
@@ -1295,7 +1300,7 @@ void SPXPlot::DrawLegend(void) {
    if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
    leginfo->AddEntry((TObject*)0, infolabel,"");
 
-   if (debug) std::cout<<cn<<mn<<" infolabel= "<<infolabel.Data()<<std::endl;
+   //if (debug) std::cout<<cn<<mn<<" infolabel= "<<infolabel.Data()<<std::endl;
   }
 
   if (data.at(i)->GetDoubleBinVariableName().size()>0) {
@@ -1319,7 +1324,7 @@ void SPXPlot::DrawLegend(void) {
  double y1info=y2info-linesize*leginfo->GetNRows();
 
  if (debug) { 
-  std::cout<<cn<<mn<<"leginfomax= "<<leginfomax<<std::endl;
+  //std::cout<<cn<<mn<<"leginfomax= "<<leginfomax<<std::endl;
   std::cout<<cn<<mn<<"x1info= "<<x1info<<" y1info= "<<y1info<<std::endl;
   std::cout<<cn<<mn<<"x2info= "<<x2info<<" y2info= "<<y2info<<std::endl;
  }
@@ -1329,7 +1334,7 @@ void SPXPlot::DrawLegend(void) {
  leginfo->SetY1NDC(y1info);
  leginfo->SetY2NDC(y2info);
 
- if (debug) leginfo->Print();
+ //if (debug) leginfo->Print();
  leginfo->Draw();
 
  return;
@@ -1402,8 +1407,13 @@ void SPXPlot::InitializeRatios(void) {
    ratioInstance.AddReferenceFileGraphMap(referenceFileGraphMap);
    ratioInstance.AddNominalFileGraphMap(nominalFileGraphMap);
    ratioInstance.AddConvoluteFileGraphMap(convoluteFileGraphMap);
+   ratioInstance.AddConvoluteFilePDFMap(convoluteFilePDFMap);
    ratioInstance.Parse(ratioString);
+
+   if (debug) std::cout<<cn<<mn<<"i= "<<i<<" call GetGraphs "<<std::endl; 
    ratioInstance.GetGraphs();
+
+   if (debug) std::cout<<cn<<mn<<"i= "<<i<<" call Divide "<<std::endl; 
    ratioInstance.Divide();
 
    ratios.push_back(ratioInstance);
@@ -1473,13 +1483,27 @@ void SPXPlot::InitializeCrossSections(void) {
 	if(debug) std::cout << cn << mn << "Loop over cross section size=" << crossSections.size() <<std::endl;
 
 	for(int i = 0; i < crossSections.size(); i++) {
-	       SPXPlotConfigurationInstance &pci = pcis[i];
+	      SPXPlotConfigurationInstance &pci = pcis[i];
 
-               int nbands=(crossSections[i].GetPDF())->GetNBands();
-               if (debug) std::cout << cn << mn <<"Number of bands= " <<nbands<< std::endl;
+              SPXPDF *pdf=crossSections[i].GetPDF();
+              if (pdf==0) {
+               throw SPXParseException(cn+mn+"pdf object not found !");
+              }
+              //int nbands=(crossSections[i].GetPDF())->GetNBands();
+              int nbands=pdf->GetNBands();
+
+              if (debug) std::cout << cn << mn <<"Number of bands= " <<nbands<< std::endl;
+
+              if (nbands==0) {
+               throw SPXParseException(cn+mn+"No bands found in pdf");
+              }
+
+   	      //StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), theoryname);
+              StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
+              convoluteFilePDFMap.insert(StringPairPDFPair_T(convolutePair, pdf));
  
               for (int iband=0; iband<nbands; iband++) {
-                SPXPDF * pdf=crossSections[i].GetPDF();
+                //SPXPDF * pdf=crossSections[i].GetPDF();
 		TGraphAsymmErrors * gband   =pdf->GetBand(iband);
 		string              gtype   =pdf->GetBandType(iband);
 		if (!gband) {
@@ -1491,8 +1515,7 @@ void SPXPlot::InitializeCrossSections(void) {
 		//Update the Convolute File Map
 		//string theoryname=pci.pdfSteeringFile.GetFilename()+gband->GetName();
                 string theoryname=gband->GetName();
-   	        StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), theoryname);
-                convoluteFileGraphMap.insert(StringPairGraphPair_T(convolutePair, gband));
+
                 // 
                 int markerstyle=-99, fillcolor=-99,fillstyle=-99, edgecolor=-99, edgestyle;
 
@@ -1560,7 +1583,7 @@ void SPXPlot::InitializeCrossSections(void) {
                 //gband->SetFillColorAlpha  (fillcolor,0.35);
                 if (debug) gband->Print();               
 	       }
-               StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
+	       //StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
 	       //Update the Reference File Map
     	       if(debug) std::cout << cn << mn << i<<" Get refGraph" <<std::endl;
 	       TGraphAsymmErrors *refGraph = crossSections[i].GetGridReference();
@@ -1597,7 +1620,7 @@ void SPXPlot::InitializeCrossSections(void) {
     	       if(debug) std::cout << cn << mn << i<<" ...finished GraphSetting" <<std::endl;
 	       if(convoluteFileGraphMap.count(convolutePair)) {
 		if(debug) {
-		 std::cout << cn << mn << "Added convolute pair to map: [" << convolutePair.first << ", " << convolutePair.second << "]" << std::endl;
+		 std::cout << cn << mn << "convolute pair in map: [" << convolutePair.first << ", " << convolutePair.second << "]" << std::endl;
 		}
 	       } else {
 		 std::cerr <<cn<<mn<< "---> Warning: Unable to add convolute pair to map: [" << convolutePair.first << ", " << convolutePair.second << "]" << std::endl;
@@ -1944,12 +1967,12 @@ void SPXPlot::DrawBand(SPXPDF *pdf, string option, SPXPlotConfigurationInstance 
  for (int iband=0; iband<nbands; iband++) {
   TGraphAsymmErrors * gband   =pdf->GetBand(iband);
 
-  if (edgecolor!=DEFAULT && edgecolor!=0) {
+  if (edgecolor!=0) { // 0 is default in SPXPlotConfiguration.h
    TH1D *hedgelow =SPXGraphUtilities::GetEdgeHistogram(gband,true);
    TH1D *hedgehigh=SPXGraphUtilities::GetEdgeHistogram(gband,false);
    hedgelow ->SetLineColor(abs(edgecolor));
    hedgehigh->SetLineColor(abs(edgecolor));
-   if (edgestyle!=DEFAULT) {
+   if (edgestyle!=-1) { // -1 is default in SPXPlotConfiguration.h
     hedgelow ->SetLineStyle(edgestyle);
     hedgehigh->SetLineStyle(edgestyle);
 

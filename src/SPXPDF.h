@@ -33,7 +33,7 @@
 #include "SPXUtilities.h"
 #include "SPXGrid.h"
 
-#define DEFAULT -1
+//#define DEFAULT -1
 
 //using namespace std;
 typedef std::map<std::string,  TGraphAsymmErrors*>  BandMap_T;
@@ -154,6 +154,8 @@ class SPXPDF {
     private:
         //VARIABLES
         static bool debug;
+
+        int DEFAULT;
 
         // map of bands
 	BandMap_T Mapallbands; // Map to hold uncertainty bands PDF, alphas, scale, total

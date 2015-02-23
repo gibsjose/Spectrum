@@ -36,12 +36,20 @@ typedef enum DivideErrorType_t {
 } DivideErrorType_t;
 
 //Typedefs for SPXPlot and SPXRatio Maps
+//typedef std::map<std::string, TGraphAsymmErrors *> StringGraphMap_T;
+//typedef std::map<std::pair<std::string, std::string>, TGraphAsymmErrors *> StringPairGraphMap_T;
+
+//typedef std::pair<std::string, TGraphAsymmErrors *> StringGraphPair_T;
+//typedef std::pair<std::string, std::string> StringPair_T;
+//typedef std::pair<StringPair_T, TGraphAsymmErrors *> StringPairGraphPair_T;
+
+typedef std::pair<std::string, std::string> StringPair_T;
 typedef std::map<std::string, TGraphAsymmErrors *> StringGraphMap_T;
 typedef std::map<std::pair<std::string, std::string>, TGraphAsymmErrors *> StringPairGraphMap_T;
-
 typedef std::pair<std::string, TGraphAsymmErrors *> StringGraphPair_T;
-typedef std::pair<std::string, std::string> StringPair_T;
 typedef std::pair<StringPair_T, TGraphAsymmErrors *> StringPairGraphPair_T;
+
+
 
 class SPXGraphUtilities {
 

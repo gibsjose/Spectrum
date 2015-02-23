@@ -51,7 +51,7 @@ if __name__ == "__main__":
    infoline+='\n'+'experiment = ATLAS'
    infoline='\n'+'reaction = p p --> jet jet'
    infoline+='\n'+'year = 2011'
-   infoline+='\n'+'YRAP 0.0 0.5'
+#   infoline+='\n'+'YRAP 0.0 0.5'
    infoline='\n'+'[GRAPH]'
    infoline+='\n'+'sqrt_s = 7000.0' 
    infoline+='\n'+'legend_label = ATLAS 2011'

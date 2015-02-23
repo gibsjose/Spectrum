@@ -348,6 +348,7 @@ void SPXRatio::Divide(void) {
 
  if(ratioStyle.IsDataStat()) {
   try {
+
    TGraphAsymmErrors *graph = SPXGraphUtilities::Divide(numeratorGraph.back(), denominatorGraph, ZeroDenGraphErrors);
    graph->SetFillStyle(1001);
    graph->SetFillColor(kGray);
@@ -391,9 +392,15 @@ void SPXRatio::Divide(void) {
 
   //Match the convolute binning to the data binning
   if(ratioStyle.IsConvoluteOverData()) {
+
+   if (numeratorGraph.size()==0)
+    throw SPXGraphException(cn + mn + "No numeratorGraph found !");
+
    for (int i=0; i<numeratorGraph.size(); i++){
     try {
-     if (debug) std::cout<<cn<<mn<<"Match binning for numeratorGraph["<<i<<"]= "<<i<<std::endl;
+      if (debug) std::cout<<cn<<mn<<"Match binning for numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName()
+                          <<" denominatorGraph= "<<denominatorGraph->GetName()<<std::endl;
+
      SPXGraphUtilities::MatchBinning(denominatorGraph, numeratorGraph[i], true);
     } catch(const SPXException &e) {
      std::cerr << e.what() << std::endl;
@@ -411,8 +418,12 @@ void SPXRatio::Divide(void) {
    pci.Print();
   }
 
+   if (numeratorGraph.size()==0)
+    throw SPXGraphException(cn + mn + "No numeratorGraph found !");
+
   //Match the convolute binning to the data binning
   try {
+
    for (int i=0; i<numeratorGraph.size(); i++){
     SPXGraphUtilities::MatchBinning(numeratorGraph[i], denominatorGraph, true);
    }
@@ -444,7 +455,16 @@ void SPXRatio::Divide(void) {
   }
 
   //Divide graphs
+
+  if (numeratorGraph.size()==0)
+   throw SPXGraphException(cn + mn + "No numeratorGraph found !");
+
   for (int i=0; i<numeratorGraph.size(); i++){
+
+   if (debug) {
+     std::cout <<cn<<mn<<"Divide: numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName()
+               <<" denominatorGraph= "<<denominatorGraph->GetName()<<" divideType= "<<divideType<<std::endl;
+   }
 
    TGraphAsymmErrors *graph = SPXGraphUtilities::Divide(numeratorGraph[i], denominatorGraph,divideType); 
 
@@ -540,6 +560,10 @@ void SPXRatio::AddConvoluteFileGraphMap(StringPairGraphMap_T &convoluteFileGraph
  this->convoluteFileGraphMap = &convoluteFileGraphMap;
 }
 
+void SPXRatio::AddConvoluteFilePDFMap(StringPairPDFMap_T &convoluteFilePDFMap) {
+ this->convoluteFilePDFMap = &convoluteFilePDFMap;
+}
+
 void SPXRatio::GetGraphs(void) {
  std::string mn = "GetGraphs: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
@@ -568,10 +592,18 @@ void SPXRatio::GetGraphs(void) {
   denominatorGraph = (*dataFileGraphMap)[key];
 
   //Make sure graphs are valid
-  if(!numeratorGraph.back() || !denominatorGraph) {
+  if(!denominatorGraph) {
    std::ostringstream oss;
-   oss << "TGraph pointer at dataFileGraphMap[" << key << "] is NULL";
+   oss << "TGraph denominatorGraph pointer at dataFileGraphMap[" << key << "] is NULL";
    throw SPXGraphException(cn + mn + oss.str());
+  }
+
+  for (int i=0; i<numeratorGraph.size(); i++) {
+   if(!numeratorGraph[i]) {
+    std::ostringstream oss;
+    oss << "TGraph numeratorGraph["<<i<<"] pointer at dataFileGraphMap[" << key << "] is NULL";
+    throw SPXGraphException(cn + mn + oss.str());
+   }
   }
  }
 
@@ -606,16 +638,29 @@ void SPXRatio::GetGraphs(void) {
    throw SPXGraphException(cn + mn + oss.str());
   }
 
+  //if (debug)std::cout << cn << mn << "\n Key found push in nunmeratorGraph " <<std::endl;
+
   //Keys exist, grab graphs
   numeratorGraph.push_back((*convoluteFileGraphMap)[convoluteKey]);
   denominatorGraph = (*referenceFileGraphMap)[convoluteKey];
 
   //Make sure graphs are valid
-  //if(!numeratorGraph) {
-  if(!numeratorGraph.back()) {
+
+  if(!numeratorGraph.size()==0) {
    std::ostringstream oss;
-   oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
+   oss << "TGraph numeratorGraph has zero size at convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
    throw SPXGraphException(cn + mn + oss.str());
+  }
+
+  if (debug) 
+   std::cout << cn << mn << "\n 1 Number of numeratorGraph " << numeratorGraph.size()<<std::endl;
+
+  for (int i=0; i< numeratorGraph.size(); i++) {
+   if (!numeratorGraph[i]) {
+    std::ostringstream oss;
+    oss << "TGraph numeratorGraph["<<i<<"] pointer at convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
+    throw SPXGraphException(cn + mn + oss.str());
+   }
   }
 
   if(!denominatorGraph) {
@@ -626,11 +671,12 @@ void SPXRatio::GetGraphs(void) {
 
   //Print graphs (debug)
   if(debug) {
-   std::cout << cn << mn << "\n Printing Numerator (convolute) Graph:" << numeratorGraph.back()->GetName()<<std::endl;
-    numeratorGraph.back()->Print();
-
-    std::cout << cn << mn << "\n Printing Denominator (reference) Graph: " << denominatorGraph->GetName()<< std::endl;
-    denominatorGraph->Print();
+   for (int i=0; i<numeratorGraph.size(); i++) {
+    std::cout << cn << mn << "\n Printing  numeratorGraph["<<i<<"] (convolute) Graph: " << numeratorGraph[i]->GetName()<<std::endl;
+    numeratorGraph[i]->Print();
+   }
+   std::cout << cn << mn << "\n Printing Denominator (reference) Graph: "<< denominatorGraph->GetName()<< std::endl;
+   denominatorGraph->Print();
   }
  }
 
@@ -663,14 +709,42 @@ void SPXRatio::GetGraphs(void) {
    throw SPXGraphException(cn + mn + oss.str());
   }
 
-  for(StringPairGraphMap_T::const_iterator it = convoluteFileGraphMap->begin(); it !=  convoluteFileGraphMap->end(); ++it) 
-  {
-   numeratorGraph.push_back(it->second);
-       
-   if(debug) {
-    std::cout << cn << mn << "\n Printing Numerator (convolute) Graph:"<< numeratorGraph.back()->GetName() << std::endl;
-    numeratorGraph.back()->Print();
+  //denominatorGraph =(*convoluteFileGraphMap)[convoluteKey];
 
+  SPXPDF *pdf= (*convoluteFilePDFMap)[convoluteKey];
+
+  if (!pdf) throw SPXGraphException(cn + mn + "PDF not found ");
+  else 
+   std::cout << cn << mn << "Found pdf= " << pdf->GetPDFName() << std::endl;
+  int nbands=pdf->GetNBands();
+   
+  for (int iband=0; iband<nbands; iband++) {
+   TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+   string              gtype   =pdf->GetBandType(iband);
+   if (!gband) throw SPXParseException(cn+mn+" gband not found !");
+   if (debug) cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<endl;
+   numeratorGraph.push_back(gband);
+  }
+
+  if(numeratorGraph.size()==0) {
+   std::ostringstream oss;
+   oss << "TGraph numeratorGraph has zero size at convoluteFileGraphMap[] is NULL";
+   throw SPXGraphException(cn + mn + oss.str());
+  }
+
+  for (int i=0; i< numeratorGraph.size(); i++) {
+   if (!numeratorGraph[i]) {
+    std::ostringstream oss;
+    oss << "TGraph numeratorGraph["<<i<<"] pointer at convoluteFilePDFMap[ ] is NULL";
+    throw SPXGraphException(cn + mn + oss.str());
+   }
+  }       
+
+  if(debug) {
+   for (int i=0; i<numeratorGraph.size(); i++) {
+    std::cout << cn << mn << "\n Printing numeratorGraph["<<i<<"] (convolute) Graph:"<< numeratorGraph[i]->GetName() << std::endl;
+    numeratorGraph[i]->Print();
+    if (!denominatorGraph) std::cout<<"denominatorGraph not found "<<std::endl;
     std::cout << cn << mn << "\n Printing Denominator (nominal) Graph: " << denominatorGraph->GetName() << std::endl;
     denominatorGraph->Print();
    }
@@ -708,12 +782,23 @@ void SPXRatio::GetGraphs(void) {
   numeratorGraph.push_back((*dataFileGraphMap)[dataKey]);
 
   //Make sure graphs are valid
-  if(!numeratorGraph.back()) {
+  if(numeratorGraph.size()==0) {
    std::ostringstream oss;
-   oss << "TGraph pointer at dataFileGraphMap[" << dataKey << "] is NULL";
+   oss << "TGraph numeratorGraph has zero size at dataFileGraphMap[" << dataKey << "]";
    throw SPXGraphException(cn + mn + oss.str());
   }
 
+  for (int i=0; i< numeratorGraph.size(); i++) {
+   if (!numeratorGraph[i]) {
+    std::ostringstream oss;
+    oss << "TGraph numeratorGraph["<<i<<"] pointer at dataFileGraphMap[" << dataKey << "] is zero";
+    throw SPXGraphException(cn + mn + oss.str());
+   }
+  }
+
+  denominatorGraph = (*convoluteFileGraphMap)[convoluteKey];
+
+/*
   for(StringPairGraphMap_T::const_iterator it = convoluteFileGraphMap->begin(); it !=  convoluteFileGraphMap->end(); ++it) 
   {
    TGraphAsymmErrors *denomitatorGraph=it->second;
@@ -723,6 +808,8 @@ void SPXRatio::GetGraphs(void) {
     throw SPXGraphException(cn + mn + oss.str());
    }
   }
+*/
+
  } else if(ratioStyle.IsConvoluteOverData()) {
  //Create keys
   StringPair_T convoluteKey = StringPair_T(numeratorConvoluteGridFile, numeratorConvolutePDFFile);
@@ -748,76 +835,127 @@ void SPXRatio::GetGraphs(void) {
    std::ostringstream oss;
    oss << "dataFileGraphMap[" << dataKey << "] was not found: Invalid key";
    throw SPXGraphException(cn + mn + oss.str());
-  }
+  } else if(debug) std::cout << cn << mn << "dataFileGraphMap["<<dataKey<<"] " << " is  ok " << std::endl;
 
   //Keys exist, grab graphs
   denominatorGraph = (*dataFileGraphMap)[dataKey];
-  for(StringPairGraphMap_T::const_iterator it = convoluteFileGraphMap->begin(); it !=  convoluteFileGraphMap->end(); ++it) 
-  {
-   numeratorGraph.push_back(it->second);
+  if(!denominatorGraph) {
+   std::ostringstream oss;
+   oss << "TGraph pointer at dataFileGraphMap[" << dataKey << "] is NULL";
+   throw SPXGraphException(cn + mn + oss.str());
+  } else
+   if(debug) std::cout << cn << mn << "Found denominatorGraph= " << denominatorGraph->GetName() << std::endl;
 
+
+  if( convoluteFilePDFMap->count(convoluteKey) == 0) {
+   PrintConvoluteFilePDFMapKeys(std::cerr);
+
+   std::ostringstream oss;
+   oss << "convoluteFilePDFMap[" << convoluteKey.first<<","<<convoluteKey.second << "] was not found: Invalid key";
+   throw SPXGraphException(cn + mn + oss.str());
+  } 
+
+  // for(StringPairGraphMap_T::const_iterator it = convoluteFileGraphMap->begin(); it !=  convoluteFileGraphMap->end(); ++it) 
+  //{
+
+  // StringPair_T convoluteKeytmp =it->first;
+  //if(debug) std::cout << cn << mn << "convoluteFileGraphMap["<<convoluteKeytmp.first << ", " << convoluteKeytmp.second << "]"<<std::endl; 
+   //numeratorGraph.push_back((*convoluteFileGraphMap)[convoluteKey]);
+   //numeratorGraph.push_back(it->second);
+
+   SPXPDF *pdf= (*convoluteFilePDFMap)[convoluteKey];
+
+   if (!pdf) throw SPXGraphException(cn + mn + "PDF not found ");
+   else 
+    std::cout << cn << mn << "Found pdf= " << pdf->GetPDFName() << std::endl;
+   int nbands=pdf->GetNBands();
+   
+   for (int iband=0; iband<nbands; iband++) {
+    TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+    string              gtype   =pdf->GetBandType(iband);
+    if (!gband) throw SPXParseException(cn+mn+" gband not found !");
+    if (debug) cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<endl;
+    numeratorGraph.push_back(gband);
+   }
+   
+ 
    //Make sure graphs are valid
-   if(!numeratorGraph.back()) {
+   if(numeratorGraph.size()==0) {
     std::ostringstream oss;
-    oss << "TGraph pointer at convoluteFileGraphMap not found";
+    oss << "TGraph numeratorGraph has zero size at convoluteFileGraphMap[" << dataKey << "]";
     throw SPXGraphException(cn + mn + oss.str());
-    }
+   }
 
-    if(!denominatorGraph) {
+   if(debug) std::cout << cn << mn << "Number of numeratorGraphs= "<<numeratorGraph.size() << std::endl;
+
+   for (int i=0; i< numeratorGraph.size(); i++) {
+    if (!numeratorGraph[i]) {
      std::ostringstream oss;
-     oss << "TGraph pointer at dataFileGraphMap[" << dataKey << "] is NULL";
+     oss << "TGraph numeratorGraph["<<i<<"] pointer at convoluteFileGraphMap [" << dataKey << "] is zero";
      throw SPXGraphException(cn + mn + oss.str());
+    } else {
+     if(debug) std::cout << cn << mn << " numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName() << std::endl;
     }
+
    }
-  } else if(ratioStyle.IsDataOverData()) {
+ //}
+ } else if(ratioStyle.IsDataOverData()) {
   //Create keys
-   std::string numDataKey = numeratorDataFile;
-   std::string denDataKey = denominatorDataFile;
+  std::string numDataKey = numeratorDataFile;
+  std::string denDataKey = denominatorDataFile;
 
-   if(!os.ContainsData()) {
-    throw SPXGraphException(cn + mn + "Overlay Style does NOT contain \"data\", yet a ratio with data is specified: " + ratioStyle.ToString());
-   }
+  if(!os.ContainsData()) {
+   throw SPXGraphException(cn + mn + "Overlay Style does NOT contain \"data\", yet a ratio with data is specified: " + ratioStyle.ToString());
+  }
 
-   if(debug) {
-    std::cout << cn << mn << "Numerator Data Key = [" << numDataKey << "]" << std::endl;
-    std::cout << cn << mn << "Denominator Data Key = [" << denDataKey << "]" << std::endl;
-   }
+  if(debug) {
+   std::cout << cn << mn << "Numerator Data Key = [" << numDataKey << "]" << std::endl;
+   std::cout << cn << mn << "Denominator Data Key = [" << denDataKey << "]" << std::endl;
+  }
 
-   //Check for existence of numerator data key
-   if(dataFileGraphMap->count(numDataKey) == 0) {
-    PrintDataFileGraphMapKeys(std::cerr);
+  //Check for existence of numerator data key
+  if(dataFileGraphMap->count(numDataKey) == 0) {
+   PrintDataFileGraphMapKeys(std::cerr);
+   std::ostringstream oss;
+   oss << "dataFileGraphMap[" << numDataKey << "] was not found: Invalid key";
+   throw SPXGraphException(cn + mn + oss.str());
+  }
+
+  //Check for existence of denominator data key
+  if(dataFileGraphMap->count(denDataKey) == 0) {
+   PrintDataFileGraphMapKeys(std::cerr);
+
+   std::ostringstream oss;
+   oss << "dataFileGraphMap[" << denDataKey << "] was not found: Invalid key";
+   throw SPXGraphException(cn + mn + oss.str());
+  }
+
+  //Keys exist, grab graphs
+  //numeratorGraph = (*dataFileGraphMap)[numDataKey];
+  numeratorGraph.push_back((*dataFileGraphMap)[numDataKey]);
+  denominatorGraph = (*dataFileGraphMap)[denDataKey];
+
+  if(!denominatorGraph) {
+   std::ostringstream oss; 
+   oss << "TGraph pointer at dataFileGraphMap[" << denDataKey << "] is NULL";
+   throw SPXGraphException(cn + mn + oss.str());
+  }
+
+  //Make sure graphs are valid
+  if(numeratorGraph.size()==0) {
+   std::ostringstream oss;
+   oss << "TGraph numeratorGraph has zero size at dataFileGraphMap[" << denDataKey << "]";
+   throw SPXGraphException(cn + mn + oss.str());
+  }
+
+  for (int i=0; i< numeratorGraph.size(); i++) {
+   if (!numeratorGraph[i]) {
     std::ostringstream oss;
-    oss << "dataFileGraphMap[" << numDataKey << "] was not found: Invalid key";
-    throw SPXGraphException(cn + mn + oss.str());
-   }
-
-   //Check for existence of denominator data key
-   if(dataFileGraphMap->count(denDataKey) == 0) {
-    PrintDataFileGraphMapKeys(std::cerr);
-
-    std::ostringstream oss;
-    oss << "dataFileGraphMap[" << denDataKey << "] was not found: Invalid key";
-    throw SPXGraphException(cn + mn + oss.str());
-   }
-
-   //Keys exist, grab graphs
-   //numeratorGraph = (*dataFileGraphMap)[numDataKey];
-   numeratorGraph.push_back((*dataFileGraphMap)[numDataKey]);
-   denominatorGraph = (*dataFileGraphMap)[denDataKey];
-
-   //Make sure graphs are valid
-   if(!numeratorGraph.back()) {
-    std::ostringstream oss;
-    oss << "TGraph pointer at dataFileGraphMap[" << numDataKey << "] is NULL";
-    throw SPXGraphException(cn + mn + oss.str());
-   }
-
-   if(!denominatorGraph) {
-    std::ostringstream oss; 
-    oss << "TGraph pointer at dataFileGraphMap[" << denDataKey << "] is NULL";
+    oss << "TGraph numeratorGraph["<<i<<"] pointer at dataFileGraphMap[" << numDataKey << "] is zero";
     throw SPXGraphException(cn + mn + oss.str());
    }
   }
+ }
 }
 
 bool SPXRatio::MatchesConvoluteString(std::string &s) {

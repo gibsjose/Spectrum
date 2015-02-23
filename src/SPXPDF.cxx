@@ -312,6 +312,8 @@ void SPXPDF::Initialize()
  if (applgridok) {
   temp_hist= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
   TString name="xsec_pdf_"+default_pdf_set_name;
+  if (spxgrid) name+="_"+spxgrid->GetName();
+  //std::cout<<" XXXXX name= "<<name<<std::endl;
   temp_hist->SetName(name);
  } else {
   if (debug) std::cout<<cn<<mn<<"Histogram from PDF not applgrid ! "<<std::endl;
@@ -333,24 +335,21 @@ void SPXPDF::Initialize()
   h_errors_AlphaS.push_back(temp_hist);
   h_AlphaS_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
   TString name="xsec_alphas_"+default_pdf_set_name;
+  if (spxgrid) name+="_"+spxgrid->GetName();
   if (h_AlphaS_results) h_AlphaS_results->SetName(name);
  }
  if (do_Scale)   {
   h_Scale_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
   TString name="xsec_scale_"+default_pdf_set_name;
+  if (spxgrid) name+="_"+spxgrid->GetName();
   if (h_Scale_results) h_Scale_results->SetName(name);
  }
  if (do_PDFBand) {
   h_PDFBand_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
   TString name="xsec_pdf_"+default_pdf_set_name;
+  if (spxgrid) name+="_"+spxgrid->GetName();
   if (h_PDFBand_results) h_PDFBand_results->SetName(name);
  }
-
- //if (do_Total) {
- // h_Total_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
- // TString name="xsec_total_"+default_pdf_set_name;
- // h_Total_results->SetName(name);
- //}
 
  // Now do the scale variations
  if (debug)
@@ -416,6 +415,7 @@ void SPXPDF::Initialize()
      if (!hvar) std::cout<<cn<<mn<<"hvariation["<<iscale<<"] Histogram hvar not found "<<std::endl;
      TString hname=TString("hratio_")+hdef->GetName()+TString("_divided_by_");
      hname+=hvar->GetName();
+     if (spxgrid) hname+="_"+spxgrid->GetName();
      TH1D * hratio=(TH1D*) hvar->Clone(hname);
      hratio->Divide(hdef);
      //std::cout<<cn<<mn<<" hvariation["<<iscale<<"]="<<hvar->GetName()<<std::endl;
@@ -598,6 +598,7 @@ void SPXPDF::Initialize()
     if (debug) std::cout<<cn<<mn<<"Setting up convolute "<<std::endl;
     temp_hist = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
     TString hname=temp_hist->GetName()+TString("_pdf_")+default_pdf_set_name;
+    if (spxgrid) hname+="_"+spxgrid->GetName();
     temp_hist->SetName(hname);
    } else {
     if (debug) std::cout<<cn<<mn<<"Histogram from PDF not applgrid ! "<<std::endl;
@@ -635,11 +636,6 @@ void SPXPDF::Initialize()
     h_PDFBand_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
     h_PDFBand_results->SetName(temp_hist->GetName());
 
-    //h_PDFBand_results->SetFillStyle(fillStyleCode+1);
-    //h_PDFBand_results->SetMarkerColor(fillColorCode+1);
-    //h_PDFBand_results->SetLineColor(fillColorCode+1);
-    //h_PDFBand_results->SetFillColor(fillColorCode+1);
-
     h_PDFBand_results->SetFillStyle(fillStyleCode);
     h_PDFBand_results->SetMarkerColor(fillColorCode);
     h_PDFBand_results->SetLineColor(fillColorCode);
@@ -654,17 +650,30 @@ void SPXPDF::Initialize()
  if (debug) std::cout<<cn<<mn<<"Now calling CalcSystErrors "<<std::endl;
  this->CalcSystErrors();
 
+ if (debug) std::cout<<cn<<mn<<"Now fill map  Mapallbands "<<std::endl;
+
  if (do_PDFBand) if(h_PDFBand_results) {
+  if (debug) std::cout<<cn<<mn<<" Fill in map "<<h_PDFBand_results->GetName()<<std::endl;
+  if (Mapallbands.count("pdf")>0) std::cout<<cn<<mn<<"WARNING Mapallbands[pdf] already filled ! "<<std::endl;
   Mapallbands["pdf"]=h_PDFBand_results;
  }
+
  if (do_Scale) if(h_Scale_results){
+  if (debug) std::cout<<cn<<mn<<" Fill in map "<<h_Scale_results->GetName()<<std::endl;
+  if (Mapallbands.count("scale")>0) std::cout<<cn<<mn<<"WARNING Mapallbands[scale] already filled ! "<<std::endl;
   Mapallbands["scale"]=h_Scale_results;
  }
+
  if (do_AlphaS) if (h_AlphaS_results) {
+  if (debug) std::cout<<cn<<mn<<" Fill in map "<<h_AlphaS_results->GetName()<<std::endl;
+  if (Mapallbands.count("alphas")>0) std::cout<<cn<<mn<<"WARNING Mapallbands[alphas] already filled ! "<<std::endl;
   Mapallbands["alphas"]=h_AlphaS_results;
  }
 
- if (debug) PrintMap(Mapallbands);
+ if (debug) {
+  std::cout<<cn<<mn<<" Print Mapallbands "<<std::endl;
+  PrintMap(Mapallbands);
+ }
 
 /*
  if (debug) {
@@ -1035,7 +1044,7 @@ void SPXPDF::CalcScaleErrors()
  if (debug) {
   cout<<cn<<mn<<" Line Color= "<<h_Scale_results->GetLineColor()<<std::endl;
   cout<<cn<<mn<<" Fill Color= "<<h_Scale_results->GetFillColor()<<std::endl;
-  cout<<cn<<mn<<" h_Scale_results "<<std::endl;
+  cout<<cn<<mn<<" h_Scale_results "<< h_Scale_results->GetName()<<std::endl;
   h_Scale_results->Print("all");
  }
 
@@ -1060,7 +1069,7 @@ void SPXPDF::CalcTotalErrors()
  int nbin=0; 
  int nbinold=(Mapallbands.begin()->second)->GetN();
  for(BandMap_T::const_iterator it = Mapallbands.begin(); it != Mapallbands.end(); ++it) {
-  if (debug) std::cout <<cn<<mn<< " Do= " <<  it->second->GetName() << std::endl;
+  if (debug) std::cout <<cn<<mn<< "Do: " <<  it->second->GetName() << std::endl;
 
   nbin=it->second->GetN();
 
@@ -1080,6 +1089,8 @@ void SPXPDF::CalcTotalErrors()
 
  // Create total uncertainty graph
  TString name="xsec_total_"+default_pdf_set_name;
+ if (spxgrid) name+="_"+spxgrid->GetName();
+
  h_Total_results=(TGraphAsymmErrors *) (Mapallbands.begin()->second)->Clone(name);
  if (!h_Total_results) {
   throw SPXGraphException(cn+mn+"Could not create h_Total_results !");
@@ -1120,7 +1131,7 @@ void SPXPDF::CalcTotalErrors()
  }
 
  if (debug) {
-  std::cout <<cn<<mn<<"Calculated total uncertainty"<< std::endl;
+  std::cout <<cn<<mn<<"Calculated total uncertainty "<< h_Total_results->GetName()<< std::endl;
   h_Total_results->Print();
  }
 
@@ -1271,6 +1282,8 @@ void SPXPDF::SetVariablesDefault()
  if (debug) cout<<"SPXPDF::setVariablesDefault: Start default values being set."<<std::endl;
  string defaultString="";
  //int defaultInt=-1;
+
+ DEFAULT=-1;
 
  //debug=false;
  //steeringFileDir=defaultString;
@@ -1453,7 +1466,8 @@ TH1D * SPXPDF::FillPdfHisto(){
 void SPXPDF::PrintMap(BandMap_T &m) {
  std::string mn = "PrintMap: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
- //if (debug) cout<<cn<<mn<<" starting "<<endl;
+
+ if (debug) cout<<cn<<mn<<" Map size= "<<Mapallbands.size()<<endl;
 
  for(BandMap_T::const_iterator it = m.begin(); it != m.end(); ++it) {
   std::cout <<cn<<mn<< " " << std::endl;
@@ -1661,7 +1675,7 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
  }
 
  if (debug) {
-  std::cout <<cn<<mn<< "Print new Map: "<< std::endl;
+  std::cout <<cn<<mn<< "Print new Map: Mapallbands"<< std::endl;
   PrintMap(Mapallbands);
  }
 
