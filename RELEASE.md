@@ -6,6 +6,8 @@
 
 ## Change Log
 
+ -convoluteFileMap now contains PDF-object and not TGraph
+
  -new SPXPDF constructor
   can give name -> class open applgrid
   can give SPXGrid pointer -> applgrid is hold in SPXClass

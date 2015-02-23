@@ -570,6 +570,9 @@ void SPXRatio::GetGraphs(void) {
 
  SPXOverlayStyle &os = plotConfiguration.GetOverlayStyle();
 
+ if(debug) std::cout << cn << mn << "Ratio style is: " << ratioStyle.ToString() << " (" << ratioStyle.GetNumerator() \
+                     << " / " << ratioStyle.GetDenominator() << ")" << std::endl;
+
  if(ratioStyle.IsDataStat() || ratioStyle.IsDataTot()) {
 
   if(!os.ContainsData()) {
@@ -606,6 +609,8 @@ void SPXRatio::GetGraphs(void) {
    }
   }
  }
+
+ if(debug) std::cout << cn << mn << "data style passed" << std::endl;
 
  if(ratioStyle.IsConvoluteOverReference()) {
   StringPair_T convoluteKey = StringPair_T(numeratorConvoluteGridFile, numeratorConvolutePDFFile);
@@ -680,6 +685,8 @@ void SPXRatio::GetGraphs(void) {
   }
  }
 
+ if(debug) std::cout << cn << mn << "data over reference passed" << std::endl;
+
  if(ratioStyle.IsConvoluteOverNominal()) {
   StringPair_T convoluteKey = StringPair_T(numeratorConvoluteGridFile, numeratorConvolutePDFFile);
 
@@ -708,8 +715,6 @@ void SPXRatio::GetGraphs(void) {
    oss << "TGraph pointer at nominalFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
    throw SPXGraphException(cn + mn + oss.str());
   }
-
-  //denominatorGraph =(*convoluteFileGraphMap)[convoluteKey];
 
   SPXPDF *pdf= (*convoluteFilePDFMap)[convoluteKey];
 
@@ -744,17 +749,21 @@ void SPXRatio::GetGraphs(void) {
    for (int i=0; i<numeratorGraph.size(); i++) {
     std::cout << cn << mn << "\n Printing numeratorGraph["<<i<<"] (convolute) Graph:"<< numeratorGraph[i]->GetName() << std::endl;
     numeratorGraph[i]->Print();
-    if (!denominatorGraph) std::cout<<"denominatorGraph not found "<<std::endl;
+    //if (!denominatorGraph) std::cout<<"denominatorGraph not found "<<std::endl;
     std::cout << cn << mn << "\n Printing Denominator (nominal) Graph: " << denominatorGraph->GetName() << std::endl;
     denominatorGraph->Print();
    }
   }
  }
 
+ if(debug) std::cout << cn << mn << "data over nominal passed" << std::endl;
+
  if(ratioStyle.IsDataOverConvolute()) {
   //Create keys
   std::string dataKey = numeratorDataFile;
   StringPair_T convoluteKey = StringPair_T(denominatorConvoluteGridFile, denominatorConvolutePDFFile);
+
+  if(debug) std::cout << cn << mn << "Data over Convolute" << std::endl;
 
   if(!os.ContainsData()) {
    throw SPXGraphException(cn + mn + "Overlay Style does NOT contain \"data\", yet a ratio with data is specified: " + ratioStyle.ToString());
@@ -794,21 +803,38 @@ void SPXRatio::GetGraphs(void) {
     oss << "TGraph numeratorGraph["<<i<<"] pointer at dataFileGraphMap[" << dataKey << "] is zero";
     throw SPXGraphException(cn + mn + oss.str());
    }
+   if (debug) std::cout << cn << mn << "data graph is  "<< numeratorGraph[i]->GetName() << std::endl;
   }
 
-  denominatorGraph = (*convoluteFileGraphMap)[convoluteKey];
+  //denominatorGraph = (*convoluteFileGraphMap)[convoluteKey];
+  SPXPDF *pdf= (*convoluteFilePDFMap)[convoluteKey];
 
-/*
-  for(StringPairGraphMap_T::const_iterator it = convoluteFileGraphMap->begin(); it !=  convoluteFileGraphMap->end(); ++it) 
-  {
-   TGraphAsymmErrors *denomitatorGraph=it->second;
-   if(!denominatorGraph) {
-    std::ostringstream oss;
-    oss << "TGraph pointer at convoluteFileGraphMap[" << convoluteKey.first << ", " << convoluteKey.second << "] is NULL";
-    throw SPXGraphException(cn + mn + oss.str());
-   }
+  if (!pdf) throw SPXGraphException(cn + mn + "PDF not found ");
+  else 
+   std::cout << cn << mn << "Found pdf= " << pdf->GetPDFName() << std::endl;
+
+  int nbands=pdf->GetNBands();
+  if (nbands==0)  std::cout << cn << mn << "No bands found " << std::endl;   
+  else std::cout << cn << mn << "Number of band nbands= " << nbands << std::endl;   
+
+  TGraphAsymmErrors * mygband=0;
+  for (int iband=0; iband<nbands; iband++) {
+   TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+   string              gtype   =pdf->GetBandType(iband);
+   if (!gband) throw SPXParseException(cn+mn+" gband not found !");
+   if (debug) cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<endl;
+   TString gname=gband->GetName();
+   if (gname.Contains("_total_")) mygband=gband; 
   }
-*/
+
+  if (!mygband) {
+   if (!pdf->GetBand(0)) throw SPXParseException(cn+mn+"no band found in PDF !");
+   mygband=pdf->GetBand(0);
+  }
+
+  if (debug) std::cout << cn << mn << "use as denominator graph " << mygband->GetName() << std::endl;
+
+  denominatorGraph=mygband;
 
  } else if(ratioStyle.IsConvoluteOverData()) {
  //Create keys
