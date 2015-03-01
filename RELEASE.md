@@ -6,6 +6,9 @@
 
 ## Change Log
 
+
+### release-0.96
+
  -convoluteFileMap now contains PDF-object and not TGraph
 
  -new SPXPDF constructor

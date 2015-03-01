@@ -11,7 +11,14 @@ name = atlas_2010_inclZpt_mm_born
 year = 2010
 experiment = ATLAS
 reaction = P P --> Z
-;==============================================================
+data_set_year = 2010
+data_set_lumi = 35 pb^{-1}					;[Optional] Dataset luminosity
+reference_journal_name = Phys. Lett. B 705 (2011) 41            ;[Optional] Journal name
+reference_journal_year = 2011					;[Optional] Journal year
+reference_arxiv_number = arXiv:1107.2381			;[Optional] ArXiv number
+reference_arxiv_year = 2011					;[Optional] ArXiv year
+publication_status = published	
+;============================================================== 
 ; Graphing Options
 ;==============================================================
 [GRAPH]

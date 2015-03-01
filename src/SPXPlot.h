@@ -108,7 +108,7 @@ private:
 	//Sets used for eliminating duplicate data/cross section plots, since
 	// different plot configuration instances could share a data/cross section, and we
 	// don't need to plot the same one multiple times
-	//std::set<std::string> dataSet;
+	std::set<std::string> dataSet;
 	std::set<StringPair_T> crossSectionSet;
 
 	//ROOT Components
