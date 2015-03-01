@@ -56,7 +56,8 @@ x_units = TeV													;[REQUIRED] X Units for scaling
 y_units = pb													;[REQUIERD] Y Units for scaling
 y_scale = 1.0                                                   ;[Optional] Artificial Y Scale
 divided_by_bin_width = true										;[Optional] Note if grid's reference histogram has already been divided by the bin width
-
+grid_divided_by_doublediff_bin_width = false ; [Optional] indicate if Grid are divided by bin width of double differential bin 
+reference_divided_by_doublediff_bin_width = false ; [Optional] indicate if Grid are divided by bin width of double differential bin 
 ;==============================================================
 ; Grid Options
 ;==============================================================

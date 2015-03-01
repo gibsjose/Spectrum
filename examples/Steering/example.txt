@@ -32,25 +32,27 @@
 ; General Options
 ;==============================================================
 [GEN]
-debug = true													;[Optional] Turn on/off debug statements - [default = false]
+debug = true					;[Optional] Turn on/off debug statements - [default = false]
 
 ;==============================================================
 ; Graphing Options
 ;==============================================================
 [GRAPH]
-; plot_band = 													;[Optional] Plot error bands on top of data points - [default = false]
-; plot_error_ticks = 											;[Optional] Use small 'ticks' at end of error  bars - [default = false]
-plot_marker = true												;[Optional] Plot a marker on data points - [default = false]
-plot_staggered = true											;[Optional] Stagger points horizontally to improve readability - [default = false]
-match_binning = true											;[Optional] Match the binning for all graphs in the plot - [default = true]
-grid_corr = true												;[Optional] Apply the grid corrections for all grids if true
-label_sqrt_s = true												;[Optional] Specify to show the Sqrt(s) on the legend - [default = false]
-x_legend = 0.9													;[Optional] X(Right)-Position of Legend, based on top right side
-y_legend = 0.9													;[Optional]	Y(Top)-Position of legend, based on top right side
-; y_overlay_min = 												;[Optional] Force Y-Axis minimum for overlay section
-; y_overlay_max = 												;[Optional] Force Y-Axis maximum for overlay section
-; y_ratio_min =													;[Optional] Force Y-Axis minimum for ratio section
-; y_ratio_max = 												;[Optional] Force Y-Axis maximum for ratio section
+; plot_band = 					;[Optional] Plot error bands on top of data points - [default = false]
+; plot_error_ticks = 				;[Optional] Use small 'ticks' at end of error  bars - [default = false]
+plot_marker = true				;[Optional] Plot a marker on data points - [default = false]
+plot_staggered = true		                ;[Optional] Stagger points horizontally to improve readability - [default = false]
+match_binning = true				;[Optional] Match the binning for all graphs in the plot - [default = true]
+grid_corr = true				;[Optional] Apply the grid corrections for all grids if true
+label_sqrt_s = true				;[Optional] Specify to show the Sqrt(s) on the legend - [default = false]
+x_legend = 0.9				        ;[Optional] X(Right)-Position of main Legend, based on top right side
+y_legend = 0.9					;[Optional] Y(Top)-Position of main legend, based on top right side
+x_info_legend = 0.9				;[Optional] X(Right)-Position of information Legend, based on top right side
+y_info_legend = 0.9			        ;[Optional] Y(Top)-Position of information legend, based on top right side
+; y_overlay_min = 				;[Optional] Force Y-Axis minimum for overlay section
+; y_overlay_max = 				;[Optional] Force Y-Axis maximum for overlay section
+; y_ratio_min =					;[Optional] Force Y-Axis minimum for ratio section
+; y_ratio_max = 			        ;[Optional] Force Y-Axis maximum for ratio section
 
 ;--------------------------------------------------------------
 ; NOTE:
@@ -104,28 +106,52 @@ y_legend = 0.9													;[Optional]	Y(Top)-Position of legend, based on top r
 ; Plot 0 Options : A Simple data, grid, pdf plot
 ;==============================================================
 [PLOT_0]
-plot_type = data, grid, pdf 									;[REQUIRED] The plot type
-desc = atlas_mtt_5fb											;[REQUIRED] Description of plot (used as the plot title)
-pdf_directory = PDF 											;[Optional] See note above: "NOTE: Regarding Directories"
-data_directory = Data/datanew									;[Optional] See note above: "NOTE: Regarding Directories"
-grid_directory = Grids/top/mcfm									;[Optional] See note above: "NOTE: Regarding Directories"
+plot_type = data, grid, pdf 						;[REQUIRED] The plot type
+desc = atlas_mtt_5fb						        ;[REQUIRED] Description of plot (used as the plot title)
+pdf_directory = PDF 							;[Optional] See note above: "NOTE: Regarding Directories"
+data_directory = Data/datanew						;[Optional] See note above: "NOTE: Regarding Directories"
+grid_directory = Grids/top/mcfm						;[Optional] See note above: "NOTE: Regarding Directories"
 data_steering_files = atlas2012_5fb_top_mtt_ljet.txt			;[REQUIRED] List of all data steering files
-grid_steering_files = grid--TTbar_mttatlas.txt					;[REQUIRED] List of all grid steering files
-pdf_steering_files = CT10.txt									;[REQUIRED] List of all PDF steering files
-data_marker_style = 20											;[REQUIRED] List of data marker styles
-data_marker_color = 1											;[REQUIRED] List of data marker colors
-pdf_fill_style = 3005											;[Optional] List of PDF fill style OVERRIDES
-pdf_fill_color = 600											;[Optional] List of PDF fill color OVERRIDES
-pdf_marker_style = 20											;[Optional] List of PDF marker style OVERRIDES
-; ref_line_style =												;[Optional] List of reference line styles
-; ref_line_color = 												;[Optional] List of reference line colors
-; x_scale =														;[Optional] List: Artificially scale each data plot's X-Axis
-; y_scale =														;[Optional] List: Artificially scale each data plot's Y-Axis
-x_log = true													;[Optional] Plot the X Axis logarithmically
-y_log = true													;[Optional] Plot the Y Axis logarithmically
-display_style =	overlay, ratio									;[REQUIRED] What to display: overlay and/or ratio
-overlay_style = data, convolute									;[REQUIRED]	What to plot in the overlay section:
-																;			data, reference, and/or convolute
+grid_steering_files = grid--TTbar_mttatlas.txt				;[REQUIRED] List of all grid steering files
+pdf_steering_files = CT10.txt						;[REQUIRED] List of all PDF steering files
+;
+data_marker_style = 20							;[REQUIRED] List of data marker styles
+data_marker_color = 1							;[REQUIRED] List of data marker colors
+;
+;total_fill_style=1001							;[Optional] List of Total marker style OVERRIDES
+;total_fill_color=800                                                   :[Optional] root color code and style https://root.cern.ch/root/html/TAttFill.html
+;total_edge_color=800                                                   ;[Optional] Plots edges of band as think line                          
+                                                                        ;[Optional] >0 color code of root for band edges
+                                                                        ;[Optional] 0 no edge drawn
+                                                                        ;[Optional] <0 only edge plotted no bands overwrites fill_style
+                                                                        :[Optional] color -1*root color code  
+;total_edge_style = 1                                                   ;[Optional] style of line edges
+;total_marker_style=21                                                  ;[Optional] maker style
+;pdf_fill_style=3005                                                    ;[Optional] same as above for pdf scale and alphas
+;pdf_fill_color=800                                                     ;           everything defaults to pdf_color
+;pdf_edge_color=800
+;pdf_marker_style=22
+;
+;scale_fill_style=3004
+;scale_fill_color=820
+;scale_edge_color=820
+;scale_marker_style=23
+;
+;alphas_fill_style=3001
+;alphas_fill_color=793
+;alphas_edge_color=1
+;alphas_marker_style=24
+
+;
+; ref_line_style =							;[Optional] List of reference line styles
+; ref_line_color = 							;[Optional] List of reference line colors
+; x_scale =								;[Optional] List: Artificially scale each data plot's X-Axis
+; y_scale =							        ;[Optional] List: Artificially scale each data plot's Y-Axis
+x_log = true								;[Optional] Plot the X Axis logarithmically
+y_log = true								;[Optional] Plot the Y Axis logarithmically
+display_style =	overlay, ratio						;[REQUIRED] What to display: overlay and/or ratio
+overlay_style = data, convolute						;[REQUIRED]	What to plot in the overlay section:
+;data, reference, and/or convolute
 
 ;--------------------------------------------------------------
 ; NOTE:

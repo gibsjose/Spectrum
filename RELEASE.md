@@ -6,6 +6,50 @@
 
 ## Change Log
 
+ -convoluteFileMap now contains PDF-object and not TGraph
+
+ -new SPXPDF constructor
+  can give name -> class open applgrid
+  can give SPXGrid pointer -> applgrid is hold in SPXClass
+
+ -introduced edge_style and edge_color 
+  allows for Atlas style on theory uncertainties
+
+ -Draw function in SPXRatio and SPXPlot
+
+###v0.95
+
+-changes in SPXPlotConfiguration to allow for data-only figures 
+
+ -implemented detailed uncertainty bands (scale, pdf etc)
+
+- SPXPlot:
+  -moved MatchBinning to Cross section class
+   data vector has now pointers, needed to call SPXData constructed
+   to incorporate reading in correlations matrix
+   (ensure that graphs are created at the beginning)
+ -add reading legend
+
+
+-SPXData 
+  -reading correlation matrix
+   statistical and total
+
+ - calculation correllation matrix from systematic uncertainty components
+
+  -introduced explicit constructor to make sure
+   that graphs are created before reading in the correlation matrix
+   (graph needed to transform covariance in correllation matrix)
+
+- SPXCrossSection:
+
+  -split CrossSectionInitialize into
+   Initialize, ApplyCorrections, UpdateBandandHist
+   (allow for total uncertainty to be calculated0
+
+- introduced SPXChi2 for chi2 calculations
+  (needs further testing)
+
 ### v0.8.1
 * Fixed a bug with the INIH Library having too small of a buffer for plots with 5+ data/grid files
 * The INIH Library is now compiled alongside Spectrum, so it is cross-platform and any changes made propagate throughout

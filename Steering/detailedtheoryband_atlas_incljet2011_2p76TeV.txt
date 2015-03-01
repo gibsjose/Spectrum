@@ -64,22 +64,35 @@ pdf_steering_files = CT10.txt
 ; colour see Root and remember kYellow=400 kGreen=416 kRed=632 kBlue=600 Grey=416 kOrange=800
 ;https://root.cern.ch/root/html/TAttFill.html
 ;
-total_fill_style=3007
-total_fill_color=921
+total_fill_style=1001
+total_fill_color=800
+total_edge_style=1
+total_edge_color=797
 total_marker_style=21
 
-pdf_fill_style=3005
-pdf_fill_color=800
-pdf_marker_style=22
+pdf_fill_style=1001
+pdf_fill_color=803
+pdf_edge_style=9
+pdf_edge_color=-1
+;pdf_marker_style=22
 
 ;scale_fill_style=3005
-scale_fill_style=3004
-scale_fill_color=393
+scale_fill_color=821
+scale_fill_style=1001
+scale_edge_style=1
+scale_edge_color=823
 scale_marker_style=23
 
+
 alphas_fill_style=3001
-alphas_fill_color=793
+alphas_fill_color=2
+alphas_edge_style=5
+alphas_edge_color=-2
 alphas_marker_style=24
+
+
+
+
 
 x_scale = 1.0
 y_scale = 1.0

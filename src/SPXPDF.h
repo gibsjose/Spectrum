@@ -31,8 +31,9 @@
 #include "SPXPDFSteeringFile.h"
 #include "SPXException.h"
 #include "SPXUtilities.h"
+#include "SPXGrid.h"
 
-#define DEFAULT -1
+//#define DEFAULT -1
 
 //using namespace std;
 typedef std::map<std::string,  TGraphAsymmErrors*>  BandMap_T;
@@ -45,6 +46,7 @@ class SPXPDF {
         SPXPDF() {};
         SPXPDF(SPXPDFSteeringFile *psf, int ifl, double q2, TH1D *h1);
         SPXPDF(SPXPDFSteeringFile *psf, const std::string &_gridName);
+        SPXPDF(SPXPDFSteeringFile *psf, SPXGrid *grid);
 
         virtual ~SPXPDF() { CleanUpSPXPDF(); }; //destructor
 
@@ -153,6 +155,8 @@ class SPXPDF {
         //VARIABLES
         static bool debug;
 
+        int DEFAULT;
+
         // map of bands
 	BandMap_T Mapallbands; // Map to hold uncertainty bands PDF, alphas, scale, total
         //bool correctedgrid;    // flag to indicated if Mapallbands are corrected
@@ -209,6 +213,8 @@ class SPXPDF {
 
         appl::grid *my_grid;
 
+        SPXGrid *spxgrid;
+
         std::vector<TH1D*> h_errors_AlphaS;
         std::vector<TH1D*> h_errors_PDFBand;
         std::vector<TH1D*> h_errors_Scale;
@@ -227,6 +233,7 @@ class SPXPDF {
 
         //METHODS
         void SetVariablesDefault();
+        void SetUpParameters(SPXPDFSteeringFile *psf);
         //void SetSteeringFileNameAndDir(const string _path);
         string GetEnv( const string & var);
 

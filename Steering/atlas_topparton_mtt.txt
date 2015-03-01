@@ -38,43 +38,27 @@ plot_type = data, grid, pdf
 pdf_directory = PDF
 data_directory = Data/top/atlas/ttbarresolvedpartons
 grid_directory = Grids/top/atlas/mcfm/ttbarresolvedpartons
+
 data_steering_files = atlas_2011_top_partons_mtt.txt
 grid_steering_files = atlas_2011_top_partons_mtt.txt
+
 pdf_steering_files = CT10.txt
 x_scale = 1.0
 y_scale = 1.0
+
 ;data_marker_style = 20
 ;data_marker_color = 1
 ;pdf_fill_style = 3005, 3006
 ;pdf_fill_color = 600, 810
 ;pdf_marker_style = 20, 23
-x_log = true
+
+x_log = false
 y_log = true
 desc = atlas_2011_top_parton_mtt
 display_style = overlay, ratio
 overlay_style = data, convolute
+;
 ratio_title = NLO QCD / Data
-;ratio_style_0 = convolute / data
-;ratio_0 = ([grid_0, pdf_0]) / (data_0)
-[PLOT_1]
-plot_type = data, grid, pdf
-;plot_type = data, grid, pdf
-data_directory = Data/jet/atlas/incljets2011
-data_steering_files = atlas_2011_jet_antiktr04_incljetpt_eta2.txt
-grid_directory = Grids/jet/atlas/incljets2011/nlojet
-grid_steering_files = atlas_2011_incljet_eta2_r04.txt
-pdf_directory = PDF
-pdf_steering_files = CT10.txt
-;
-x_log = true
-y_log = true
-; 
-desc = atlas_inclusive_jet
-display_style = overlay, ratio
-;
-overlay_style = data, convolute
-;
-ratio_title =NLO QCD/Data
 ;ratio_style_0 = convolute / data
 ;ratio_0 = ([grid_0, pdf_0]) / (data_0)
 ;
@@ -86,4 +70,3 @@ ratio_1 = data_0
 ;
 ratio_style_2 = convolute / data
 ratio_2 = ([grid_0, pdf_0]) / (data_0)
-

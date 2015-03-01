@@ -64,14 +64,20 @@ private:
 	std::string jetAlgorithmLabel;	        //Jet algorithm label
 	int jetAlgorithmRadius;			//Jet algorithm radius
 
+        std::string doublediffBinname;          // name of double differential bin variable
+        double doublediffBinValueMin;           // minimum value of double differential variable
+        double doublediffBinValueMax;           // maximum value of double differential variable
+        double doublediffBinWidth;              // bin width of double differential variable
+
 	//[DATA]
 	SPXDataFormat dataFormat;		//The format of the data: Current supported formats are: Spectrum, HERAPDF
 	std::string dataFilepath;		//The data filepath
         std::string corrtotalfilename;          // name of correlation file
         std::string corrstatfilename;           // name of correlation file
 
+        bool dividedByDoubleDiffBinWidth;      //Flag to indicate if data are divided by double differential bin width 
 	bool dividedByBinWidth;			//Flag to indicate that data has been divided by the bin width
-	bool normalizedToTotalSigma;	//Flag to indicate that cross section data is normalized to the total cross section
+	bool normalizedToTotalSigma;	        //Flag to indicate that cross section data is normalized to the total cross section
 	bool errorInPercent;			//Flag to indicate the errors in the data file are given in percents
 	double lumiScaleFactor;			//Luminosity scale factor: Default to 1.0
 
@@ -168,9 +174,29 @@ public:
 		return jetAlgorithmLabel;
 	}
 
-
 	int GetJetAlgorithmRadius(void) const {
 		return jetAlgorithmRadius;
+	}
+
+	const std::string & GetDoubleBinVariableName(void) const {
+		return doublediffBinname;
+	}
+
+	double GetDoubleBinValueMin(void) const {
+		return doublediffBinValueMin;
+	}
+
+	double GetDoubleBinValueMax(void) const {
+		return doublediffBinValueMax;
+	}
+
+	bool IsDividedByDoubleDiffBinWidth(void) const {
+		return dividedByDoubleDiffBinWidth;
+	}
+
+
+	double GetDoubleBinValueWidth(void) const {
+		return doublediffBinWidth;
 	}
 
 	const SPXDataFormat & GetDataFormat(void) const {
@@ -218,6 +244,7 @@ public:
 	bool IsDividedByBinWidth(void) const {
 		return dividedByBinWidth;
 	}
+
 
 	bool IsNormalizedToTotalSigma(void) const {
 		return normalizedToTotalSigma;

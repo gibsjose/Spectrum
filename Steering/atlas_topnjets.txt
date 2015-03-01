@@ -26,7 +26,7 @@ legend_label = ATLAS 2011
 ;y_units = pb
 ;y_bin_width_units= GeV
 ;jet_algorithm_label = Anti_k{t}
-;jet_algorithm_number = 4
+;jet_algorithm_radius = 4
 
 ;plot_band = true
 ; plot_error_ticks = 

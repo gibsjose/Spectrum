@@ -62,6 +62,34 @@ public:
 	 return pci.dataSteeringFile.GetSqrtS();
         }
 
+        const std::string GetJetAlgorithmLabel(void) {
+	 return pci.dataSteeringFile.GetJetAlgorithmLabel();
+        }
+
+        const int GetJetAlgorithmRadius(void) {
+	 return pci.dataSteeringFile.GetJetAlgorithmRadius();
+        }
+
+        const std::string GetDoubleBinVariableName(void) {
+	  return pci.dataSteeringFile.GetDoubleBinVariableName();
+        }
+
+        const double GetDoubleBinValueMin(void) {
+	 return pci.dataSteeringFile.GetDoubleBinValueMin();
+        }
+
+	const bool IsDividedByDoubleDiffBinWidth(void) const {
+	  return pci.dataSteeringFile.IsDividedByDoubleDiffBinWidth();
+	}
+
+        const double GetDoubleBinValueMax(void) {
+	 return pci.dataSteeringFile.GetDoubleBinValueMax();
+        }
+
+        const double GetDoubleBinValueWidth(void) {
+	 return pci.dataSteeringFile.GetDoubleBinValueWidth();
+        }
+
         const std::string & GetDatasetYear(void) {
 	 return pci.dataSteeringFile.GetDatasetYear();
         }
@@ -74,9 +102,10 @@ public:
 		return numberOfBins;
 	}
 
-	bool IsDividedByBinWidth(void) const {
+	const bool IsDividedByBinWidth(void) const {
 		return dividedByBinWidth;
 	}
+
 
 	unsigned int GetNumberOfIndividualSystematicErrors(void) const {
 		return individualSystematics.size();
@@ -125,29 +154,25 @@ public:
 
 	TGraphAsymmErrors * GetStatisticalErrorGraph(void) {
 
-		if(!this->statisticalErrorGraph) {
-			throw SPXGraphException("Statistical Error Graph pointer is NULL: You MUST call ::CreateGraphs() before obtaining the graph");
-		}
-
-		return this->statisticalErrorGraph;
+	if(!this->statisticalErrorGraph) {
+	 throw SPXGraphException("Statistical Error Graph pointer is NULL: You MUST call ::CreateGraphs() before obtaining the graph");
+	 }
+         return this->statisticalErrorGraph;
 	}
 
 	TGraphAsymmErrors * GetSystematicErrorGraph(void) {
 
-		if(!this->systematicErrorGraph) {
-			throw SPXGraphException("Systematic Error Graph pointer is NULL: You MUST call ::CreateGraphs() before obtaining the graph");
-		}
-
-		return this->systematicErrorGraph;
+	 if(!this->systematicErrorGraph) {
+	  throw SPXGraphException("Systematic Error Graph pointer is NULL: You MUST call ::CreateGraphs() before obtaining the graph");
+	  }
+	  return this->systematicErrorGraph;
 	}
 
 	TGraphAsymmErrors * GetTotalErrorGraph(void) {
-
-		if(!this->totalErrorGraph) {
-			throw SPXGraphException("Total Error Graph pointer is NULL: You MUST call ::CreateGraphs() before obtaining the graph");
-		}
-
-		return this->totalErrorGraph;
+	 if(!this->totalErrorGraph) {
+	  throw SPXGraphException("Total Error Graph pointer is NULL: You MUST call ::CreateGraphs() before obtaining the graph");
+	  }
+	  return this->totalErrorGraph;
 	}
 
         TMatrixT<double>  *GetDataCovarianceMatrix() {return cov_matrixtot;};
@@ -178,7 +203,6 @@ private:
 	TGraphAsymmErrors *totalErrorGraph;
 
         // stuff related to covariance matrix
-	//
 
         TMatrixT<double>  *cov_matrixtot;
         TMatrixT<double>  *cov_matrixstat;
@@ -205,34 +229,34 @@ private:
         void PrintSystematics(StringDoubleVectorMap_T syst);
 
 	void OpenDataFile(void) {
-		std::string filepath = pci.dataSteeringFile.GetDataFile();
+	 std::string filepath = pci.dataSteeringFile.GetDataFile();
 
-		if(filepath.empty()) {
-			throw SPXFileIOException("Data Filepath is empty");
-		}
+	 if(filepath.empty()) {
+	  throw SPXFileIOException("Data Filepath is empty");
+	 }
 
-		try {
-			dataFile = new std::ifstream();
-			dataFile->open(filepath.c_str());
+	 try {
+	  dataFile = new std::ifstream();
+	  dataFile->open(filepath.c_str());
 
-			if(*dataFile) {
-				if(debug) std::cout << "SPXData::OpenDataFile: Successfully opened data file: " << filepath << std::endl;
-			} else {
-				throw SPXFileIOException(filepath, "Unable to open data file");
-			}
-		} catch(const std::exception &e) {
-			throw;
-		}
+	  if(*dataFile) {
+	   if(debug) std::cout << "SPXData::OpenDataFile: Successfully opened data file: " << filepath << std::endl;
+	  } else {
+	   throw SPXFileIOException(filepath, "Unable to open data file");
+	  }
+	 } catch(const std::exception &e) {
+	  throw;
+	 }
 	}
 
 	void CheckVectorSize(const std::vector<double> & vector, const std::string & name, unsigned int masterSize) {
-		if(vector.size() != masterSize) {
-			std::ostringstream oss;
-			oss << "Size error: \"" << name << "\" vector has different size (" << vector.size() << ") than master size (" << masterSize << ")" << std::endl;
-			throw SPXParseException(pci.dataSteeringFile.GetDataFile(), oss.str());
-		} else {
-			if(debug) std::cout << "SPXData::" << "CheckVectorSize: " << "\t -->  Success: \"" << name << "\" vector size matches master size" << std::endl;
-		}
+	 if(vector.size() != masterSize) {
+	  std::ostringstream oss;
+	  oss << "Size error: \"" << name << "\" vector has different size (" << vector.size() << ") than master size (" << masterSize << ")" << std::endl;
+	  throw SPXParseException(pci.dataSteeringFile.GetDataFile(), oss.str());
+	 } else {
+	  if(debug) std::cout << "SPXData::" << "CheckVectorSize: " << "\t -->  Success: \"" << name << "\" vector size matches master size" << std::endl;
+	 }
 	}
 };
 

@@ -10,6 +10,7 @@ data_set_lumi = 4.5
 publication_status = published
 reference_arxiv_number = arXiv:1410.8857
 reference_journal_name = none
+experiment = ATLAS
 
 [GRAPH]
 sqrt_s = 7000.0
@@ -19,14 +20,19 @@ y_label = d#sigma/dp_{T,jet} [pb/GeV]
 x_units = GeV
 y_units = pb
 y_bin_width_units= GeV
-jet_algorithm_label = Anti_k{t}
-jet_algorithm_number = 4
+jet_algorithm_label = Anti-k_{t}
+jet_algorithm_radius = 4
+doublediff_binname = #leq |y| < 
+doublediff_bin_value_min  =  0.0
+doublediff_bin_value_max  =  0.5
+doublediff_bin_width  =  1.0
 
 [DATA]
 data_format = spectrum
 data_file = atlas_2011_jet_antiktr04_incljetpt_eta1_data.txt
 divided_by_bin_width = true
+divided_by_doublediff_bin_width = false
 error_in_percent = true
 lumi_scale_factor = 1.0
-; YRAP 0.0 0.5
+; 
  

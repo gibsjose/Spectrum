@@ -51,8 +51,14 @@ public:
 		return pci->gridSteeringFile.GetGridFilepath();
 	}
 
+	const std::string & GetName(void) const {
+		return pci->gridSteeringFile.GetName();
+	}
+
 	//Creates the Grid and return the reference histogram
 	TH1D * CreateGrid(void);
+
+        appl::grid *GetGrid(){ return grid;};
 
 	//Returns the Grid Reference histogram
 	TH1D * GetReference(void) {

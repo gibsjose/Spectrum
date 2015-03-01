@@ -74,6 +74,12 @@ void SPXSteeringFile::SetDefaults(void) {
 	yLegend = 0.93;
 	if(debug) std::cout << cn << mn << "yLegend set to default: \"0.93\"" << std::endl;
 
+	xInfoLegend = 0.4;
+	if(debug) std::cout << cn << mn << "xInfoLegend set to default: \"0.2\"" << std::endl;
+
+	yInfoLegend = 0.4;
+	if(debug) std::cout << cn << mn << "yInfoLegend set to default: \"0.4\"" << std::endl;
+
 	yOverlayMin = MIN_EMPTY;
 	if(debug) std::cout << cn << mn << "yOverlayMin set to default: \"" << MIN_EMPTY << "\"" << std::endl;
 
@@ -234,8 +240,10 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Match Binning is: " << (matchBinning ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Grid Corrections are: " << (gridCorr ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Label Sqrt(s) on Legend: " << (labelSqrtS ? "YES" : "NO") << std::endl;
-	std::cout << "\t\t X Legend: " << xLegend << std::endl;
-	std::cout << "\t\t Y Legend: " << yLegend << std::endl;
+	std::cout << "\t\t X main Legend: " << xLegend << std::endl;
+	std::cout << "\t\t Y main Legend: " << yLegend << std::endl;
+	std::cout << "\t\t X information Legend: " << xInfoLegend << std::endl;
+	std::cout << "\t\t Y information Legend: " << yInfoLegend << std::endl;
 	std::cout << "\t\t Y Overlay Min: " << yOverlayMin << std::endl;
 	std::cout << "\t\t Y Overlay Max: " << yOverlayMax << std::endl;
 	std::cout << "\t\t Y Ratio Min: " << yRatioMin << std::endl;
@@ -674,6 +682,50 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 
 		}
 
+		//Get the pdf_edge_color
+       	        if(debug) std::cout << cn << mn << "Start parsing pdf_edge_color " << std::endl;
+		tmp = reader->Get(plotSection, "pdf_edge_color", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 if(debug) std::cout << cn << mn << "No plot options for pdf_edge_color found" << std::endl;
+		} else {
+			//Parse into vector
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				std::cout << cn << mn << "pdf_edge_color configuration string: " << tmp << " parsed into:" << std::endl;
+				for(int j = 0; j < tmpVector.size(); j++) {
+					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+				}
+			}
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("pdf_edge_color", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[pdf_edge_color] = " << \
+			SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_edge_color"]) << std::endl;
+
+		}
+
+		//Get the pdf_edge_style
+       	        if(debug) std::cout << cn << mn << "Start parsing pdf_edge_style " << std::endl;
+		tmp = reader->Get(plotSection, "pdf_edge_style", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 if(debug) std::cout << cn << mn << "No plot options for pdf_edge_style found" << std::endl;
+		} else {
+			//Parse into vector
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				std::cout << cn << mn << "pdf_edge_style configuration string: " << tmp << " parsed into:" << std::endl;
+				for(int j = 0; j < tmpVector.size(); j++) {
+					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+				}
+			}
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("pdf_edge_style", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[pdf_edge_style] = " << \
+			SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_edge_style"]) << std::endl;
+
+		}
+
 		//Get the pdf_marker_style
        	        if(debug) std::cout << cn << mn << "Start parsing pdf_marker_style " << std::endl;
 		tmp = reader->Get(plotSection, "pdf_marker_style", "EMPTY");
@@ -749,6 +801,59 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		 if(debug) std::cout << cn << mn << "configurations[total_fill_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["total_fill_color"]) << std::endl;
                 }
 
+		//Get the total_edge_style
+       	        if(debug) std::cout << cn << mn << "Start parsing total_edge_style " << std::endl;
+		tmpVector.clear();
+		tmp = reader->Get(plotSection, "total_edge_style", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout << cn << mn << "WARNING: No plot option for total_edge_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_style" << std::endl;
+
+                 if (configurations.count("pdf_edge_style")!=0)
+		  tmpVector = configurations["pdf_edge_style"];
+		} else {
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		}
+
+		if(debug) {
+		 std::cout << cn << mn << "total_edge_style configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+		//Add to configurations map
+                if (tmpVector.size()!=0) {
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("total_edge_style", tmpVector));
+		 if(debug) std::cout << cn << mn << "configurations[total_edge_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["total_edge_style"]) << std::endl;
+                }
+
+		//Get the total_edge_color
+       	        if(debug) std::cout << cn << mn << "Start parsing total_edge_color " << std::endl;
+		tmpVector.clear();
+		tmp = reader->Get(plotSection, "total_edge_color", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout << cn << mn << "WARNING: No plot option for total_edge_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_edge_color" << std::endl;
+
+                 if (configurations.count("pdf_edge_color")!=0)
+		  tmpVector = configurations["pdf_edge_color"];
+		} else {
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		}
+
+		if(debug) {
+		 std::cout << cn << mn << "total_edge_color configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+
+		//Add to configurations map
+                if (tmpVector.size()!=0) {
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("total_edge_color", tmpVector));
+		 if(debug) std::cout << cn << mn << "configurations[total_edge_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["total_edge_color"]) << std::endl;
+                }
+
 		//Get the total_marker_style
        	        if(debug) std::cout << cn << mn << "Start parsing total_marker_style " << std::endl;
 		tmpVector.clear();
@@ -777,6 +882,64 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		 configurations.insert(std::pair<std::string, std::vector<std::string> >("total_marker_style", tmpVector));
 		 if(debug) std::cout << cn << mn << "configurations[total_marker_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["total_marker_style"]) << std::endl;		
                 }
+
+		//-----
+		//Get the scale_fill_color
+       	        if(debug) std::cout << cn << mn << "Start parsing scale_edge_color " << std::endl;
+		tmpVector.clear();
+		tmp = reader->Get(plotSection, "scale_edge_color", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout << cn << mn << "WARNING: No plot option for scale_edge_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_edge_color" << std::endl;
+
+		if (configurations.count("pdf_edge_color")!=0)
+		 tmpVector = configurations["pdf_edge_color"];
+
+		} else {
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		}
+
+		if(debug) {
+		 std::cout << cn << mn << "scale_edge_color configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+
+		//Add to configurations map
+                if (tmpVector.size()!=0) {
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("scale_edge_color", tmpVector));
+		 if(debug) std::cout << cn << mn << "configurations[scale_edge_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["scale_edge_color"]) << std::endl;
+                }
+
+		//Get the scale_edge_style
+       	        if(debug) std::cout << cn << mn << "Start parsing scale_edge_style " << std::endl;
+		tmpVector.clear();
+		tmp = reader->Get(plotSection, "scale_edge_style", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout << cn << mn << "WARNING: No plot option for scale_edge_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_edge_style" << std::endl;
+
+		if (configurations.count("pdf_edge_style")!=0)
+		 tmpVector = configurations["pdf_edge_style"];
+
+		} else {
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		}
+
+		if(debug) {
+		 std::cout << cn << mn << "scale_edge_style configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+ 
+		//Add to configurations map
+                if (tmpVector.size()!=0) {
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("scale_edge_style", tmpVector));
+		 if(debug) std::cout << cn << mn << "configurations[scale_edge_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["scale_edge_style"]) << std::endl;
+                }
+		//-------
 
 		//Get the scale_fill_color
        	        if(debug) std::cout << cn << mn << "Start parsing scale_fill_color " << std::endl;
@@ -889,6 +1052,36 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		 configurations.insert(std::pair<std::string, std::vector<std::string> >("alphas_fill_style", tmpVector));
 		if(debug) std::cout << cn << mn << "configurations[alphas_fill_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["alphas_fill_style"]) << std::endl;
 
+		//------
+
+		//Get the alphas_edge_color
+       	        if(debug) std::cout << cn << mn << "Start parsing alphas_edge_color " << std::endl;
+		tmpVector.clear();
+		tmp = reader->Get(plotSection, "alphas_edge_color", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout << cn << mn << "WARNING: No plot option for alphas_edge_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_edge_color" << std::endl;
+
+		if (configurations.count("pdf_edge_color")!=0)
+		 tmpVector = configurations["pdf_edge_color"];
+		} else {
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		}
+
+		if(debug) {
+		 std::cout << cn << mn << "alphas_edge_color configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+
+		//Add to configurations map
+		if (tmpVector.size()!=0)
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("alphas_edge_color", tmpVector));
+		if(debug) std::cout << cn << mn << "configurations[alphas_edge_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["alphas_edge_color"]) << std::endl;
+
+
+		//------
 
 		//Get the alphas_fill_color
        	        if(debug) std::cout << cn << mn << "Start parsing alphas_fill_color " << std::endl;
@@ -971,6 +1164,35 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		 configurations.insert(std::pair<std::string, std::vector<std::string> >("corrections_fill_style", tmpVector));
 		if(debug) std::cout << cn << mn << "configurations[corrections_fill_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["corrections_fill_style"]) << std::endl;
 
+
+		//------
+		//Get the corrections_edge_color
+       	        if(debug) std::cout << cn << mn << "Start parsing corrections_edge_color " << std::endl;
+		tmpVector.clear();
+		tmp = reader->Get(plotSection, "corrections_edge_color", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout << cn << mn << "WARNING: No plot option for corrections_edge_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_edge_color" << std::endl;
+
+		if (configurations.count("corrections_edge_color")!=0)
+		 tmpVector = configurations["corrections_edge_color"];
+		} else {
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		}
+
+		if(debug) {
+		 std::cout << cn << mn << "corrections_edge_color configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+
+		//Add to configurations map
+		if (tmpVector.size()!=0)
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("corrections_edge_color", tmpVector));
+		if(debug) std::cout << cn << mn << "configurations[corrections_edge_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["corrections_fill_color"]) << std::endl;
+
+		//------
 
 		//Get the corrections_fill_color
        	        if(debug) std::cout << cn << mn << "Start parsing corrections_fill_color " << std::endl;
@@ -1364,8 +1586,12 @@ void SPXSteeringFile::Parse(void) {
 	matchBinning = reader->GetBoolean("GRAPH", "match_binning", matchBinning);
 	gridCorr = reader->GetBoolean("GRAPH", "grid_corr", gridCorr);
 	labelSqrtS = reader->GetBoolean("GRAPH", "label_sqrt_s", labelSqrtS);
+
 	xLegend = reader->GetReal("GRAPH", "x_legend", xLegend);
 	yLegend = reader->GetReal("GRAPH", "y_legend", xLegend);
+
+	xInfoLegend = reader->GetReal("GRAPH", "x_info_legend", xInfoLegend);
+	yInfoLegend = reader->GetReal("GRAPH", "y_info_legend", xInfoLegend);
 
 	yOverlayMin = reader->GetReal("GRAPH", "y_overlay_min", yOverlayMin);
 	yOverlayMax = reader->GetReal("GRAPH", "y_overlay_max", yOverlayMax);

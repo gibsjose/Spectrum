@@ -13,7 +13,7 @@ name = ATLAS_2011_antikt06_2p76TeV_eta6
 experiment = ATLAS
 reaction = p p --> jet jet
 year = 2010
-YRAP 2.8 3.6
+
 ;
 [GRAPH]
 sqrt_s = 2760.0
@@ -23,12 +23,18 @@ y_label = d#sigma/dp_{T,jet} [nb/GeV]
 x_units = GeV
 y_units = nb
 y_bin_width_units= GeV
-jet_algorithm_label = Anti_k{t}
-jet_algorithm_number = 6
+jet_algorithm_label = Anti-k_{t}
+jet_algorithm_radius = 6
 ;
+doublediff_binname = #leq |y| < 
+doublediff_bin_value_min  =  2.8
+doublediff_bin_value_max  =  3.6
+doublediff_bin_width  =  1.6
+
 [DATA]
 data_format = spectrum
 data_file =atlas_2011_2p76TeV_jet_antiktr06_incljetpt_eta6_data.txt
 divided_by_bin_width = true
+divided_by_doublediff_bin_width = false
 error_in_percent = true
  

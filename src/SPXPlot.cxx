@@ -522,12 +522,23 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 	xAxisOverlay = overlayFrameHisto->GetXaxis();
 	yAxisOverlay = overlayFrameHisto->GetYaxis();
 
+
+        xAxisOverlay->SetNdivisions(5);
+	//std::cout << cn<<mn<<"INFO change xMin = " << xMinOverlay <<" by small value to better draw axis lables" << std::endl;
+	//std::cout << cn<<mn<<"INFO change xMax = " << xMaxOverlay <<" by small value to better draw axis lables" << std::endl;
+
+        //const double small=1.e-6;
+	//xMinOverlay*=(1-small);
+        //xMaxOverlay*=(1+small);
+
+	xAxisOverlay->SetMoreLogLabels(true);
+
 	if(debug) {
-		std::cout << cn << mn << "Overlay Pad frame drawn with dimensions: " << std::endl;
-		std::cout << "\t xMin = " << xMinOverlay << std::endl;
-		std::cout << "\t xMax = " << xMaxOverlay << std::endl;
-		std::cout << "\t yMin = " << yMinOverlay << std::endl;
-		std::cout << "\t yMax = " << yMaxOverlay << std::endl;
+	 std::cout << cn << mn << "Overlay Pad frame drawn with dimensions: " << std::endl;
+	 std::cout << "\t xMin = " << xMinOverlay << std::endl;
+	 std::cout << "\t xMax = " << xMaxOverlay << std::endl;
+	 std::cout << "\t yMin = " << yMinOverlay << std::endl;
+	 std::cout << "\t yMax = " << yMaxOverlay << std::endl;
 	}
 }
 
@@ -557,8 +568,8 @@ void SPXPlot::DrawRatioPadFrame(void) {
 
 	//Force Ratio X Min/Max to match Overlay, if plotted (should alread match anyway...)
 	if(ds.ContainsOverlay()) {
-		xMinRatio = xMinOverlay;
-		xMaxRatio = xMaxOverlay;
+	 xMinRatio = xMinOverlay;
+	 xMaxRatio = xMaxOverlay;
 	}
 
 	//@TODO What to do here for forcing Y axis within logarithmic limits like I do for overlay? It doesn't matter now, since
@@ -566,10 +577,10 @@ void SPXPlot::DrawRatioPadFrame(void) {
 
 	//Force to non-negative if plotting logarithmic axis
 	if(pc.IsXLog()) {
-		if(xMinRatio < 0) {
-			xMinRatio = 1e-10;
-			if(debug) std::cerr << cn << mn << "WARNING: Forcing non-negative Ratio X Axis since it was specified as Logarithmic" << std::endl;
-		}
+	 if(xMinRatio < 0) {
+	  xMinRatio = 1e-10;
+	  if(debug) std::cerr << cn << mn << "WARNING: Forcing non-negative Ratio X Axis since it was specified as Logarithmic" << std::endl;
+	 }
 	}
 
 	ratioPad->cd();
@@ -577,12 +588,14 @@ void SPXPlot::DrawRatioPadFrame(void) {
 	xAxisRatio = ratioFrameHisto->GetXaxis();
 	yAxisRatio = ratioFrameHisto->GetYaxis();
 
+        //xAxisRatio->SetNdivisions(m_nDivY);
+
 	if(debug) {
-		std::cout << cn << mn << "Ratio Pad frame drawn with dimensions: " << std::endl;
-		std::cout << "\t xMin = " << xMinRatio << std::endl;
-		std::cout << "\t xMax = " << xMaxRatio << std::endl;
-		std::cout << "\t yMin = " << yMinRatio << std::endl;
-		std::cout << "\t yMax = " << yMaxRatio << std::endl;
+	 std::cout << cn << mn << "Ratio Pad frame drawn with dimensions: " << std::endl;
+	 std::cout << "\t xMin = " << xMinRatio << std::endl;
+	 std::cout << "\t xMax = " << xMaxRatio << std::endl;
+	 std::cout << "\t yMin = " << yMinRatio << std::endl;
+	 std::cout << "\t yMax = " << yMaxRatio << std::endl;
 	}
 }
 
@@ -674,70 +687,6 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 //Matches the overlay binning if the match_binning flag is set
 //NOTE: Ratios are automatically matched, since they must align in order
 //		to use the SPXGraphUtilities::Divide function
-/*
-void SPXPlot::MatchOverlayBinning(void) {
-	std::string mn = "MatchOverlayBinning: ";
-	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
-
-	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
-	SPXPlotType          &pt = pc.GetPlotType();
-	SPXDisplayStyle      &ds = pc.GetDisplayStyle();
-	SPXOverlayStyle      &os = pc.GetOverlayStyle();
-
-	//Do nothing if not drawing overlay
-	if(!ds.ContainsOverlay()) {
-		return;
-	}
-
-	//Match binning of all graphs within each PCI, if matchBinning set
-	if(steeringFile->GetMatchBinning()) {
-
-		TGraphAsymmErrors *master;
-		TGraphAsymmErrors *slave;
-
-		//Match all convolutes to it's data (if data is plotted)
-		if(os.ContainsConvolute() && os.ContainsData()) {
-
-			if(debug) std::cout << cn << mn << "Matching overlay convolutes to data master" << std::endl;
-
-			for(int i = 0; i < steeringFile->GetNumberOfConfigurationInstances(id); i++) {
-				SPXPlotConfigurationInstance &pci = steeringFile->GetPlotConfigurationInstance(id, i);
-
-				std::string dataKey = pci.dataSteeringFile.GetFilename();
-				std::string gridKey = pci.gridSteeringFile.GetFilename();
-				std::string pdfKey  = pci.pdfSteeringFile.GetFilename();
-
-				StringPair_T convoluteKey(gridKey, pdfKey);
-
-         			if(debug) std::cout << cn << mn << "dataKey= "<<dataKey
-                                                    <<" gridKey= "<<gridKey <<" pdfKey= "<<pdfKey<< std::endl;
-
-				master = dataFileGraphMap[dataKey];
-                                //
-				//Check if data master is divided by bin width
-				bool dividedByBinWidth = false;
-				//TC if(pci.dataSteeringFile.IsDividedByBinWidth() && !pci.gridSteeringFile.IsGridDividedByBinWidth()) {
-                                if(pci.dataSteeringFile.IsDividedByBinWidth() && pci.gridSteeringFile.IsGridDividedByBinWidth()) {
-				 dividedByBinWidth = true;
-                                }
-                                
-                                //
-                                // loop over all graphs in Map
-                                // 
-                                for(StringPairGraphMap_T::const_iterator it = convoluteFileGraphMap.begin(); it !=  convoluteFileGraphMap.end(); ++it) 
-                                {
-				 TGraphAsymmErrors *slave=it->second;
-				 if (!slave) throw SPXParseException("slave graph not found ! ");                                
-				 if (debug) std::cout << cn <<mn<<"match binning for graph "<<slave->GetName()<<std::endl;
-                                 if (debug) if (dividedByBinWidth)  std::cout << cn <<mn<<"Divided by binwidth is ON "<<std::endl;
- 				 SPXGraphUtilities::MatchBinning(master, slave, dividedByBinWidth);
-                                 if (debug) slave->Print();
-                                }
-			}
-		}
-	}
-}
-*/
 
 void SPXPlot::DrawOverlay(void) {
 	std::string mn = "DrawOverlay: ";
@@ -756,7 +705,6 @@ void SPXPlot::DrawOverlay(void) {
 	if(!ds.ContainsOverlay()) {
 		return;
 	}
-
 
         if (debug) {
 	 if (steeringFile->GetPlotBand())   std::cout<<cn<<mn<<" plotBand ON ! "<<std::endl;
@@ -832,30 +780,10 @@ void SPXPlot::DrawOverlay(void) {
 
 			//Draw theory Cross Section 
 			if(os.ContainsConvolute()) {
+
+			 SPXPlotConfigurationInstance &pci = steeringFile->GetPlotConfigurationInstance(id, i);
                          SPXPDF * pdf=crossSections[i].GetPDF();
-                         int nbands=pdf->GetNBands();
-                         if (debug) std::cout << cn << mn <<"Number of bands= " <<nbands<< std::endl;
-                         for (int iband=0; iband<nbands; iband++) {
-		          TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-		          string gtype                =pdf->GetBandType(iband);
-		          if (!gband) {
-                           std::ostringstream oss;
-                           oss << cn <<mn<<"Get bands "<<"Band "<<iband<<" not found at index "<<i;
-                           throw SPXGeneralException(oss.str());
-                          }
-
-			  gband->Draw(csOptions.c_str());
-
-                          if (debug) {
-
-			    std::cout<< cn << mn <<"\n Drew "<<gband->GetName()<< " with options "<<csOptions.c_str()
-                                                 << " fillcolor= " << gband->GetFillColor() 
-                                                 << " fillstyle= " << gband->GetFillStyle() 
-                                                 << " markerstyle= " << gband->GetMarkerStyle() 
-                                     << std::endl;          
-			   gband->Print();
-                          }
-                         }
+     		         this->DrawBand(pdf, csOptions.c_str(), pci);
 			}
 
 			//Draw PDF Nominal, if requested
@@ -921,418 +849,499 @@ void SPXPlot::DrawOverlay(void) {
 }
 
 void SPXPlot::DrawRatio(void) {
-	std::string mn = "DrawRatio: ";
-	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+ std::string mn = "DrawRatio: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
-	if(!ratioPad) {
-		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DrawRatioPadFrame before drawing the ratio graphs");
-	}
+ if(!ratioPad) {
+  throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DrawRatioPadFrame before drawing the ratio graphs");
+ }
 
-	//Do nothing if not drawing ratio
-	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
-	SPXDisplayStyle &ds = pc.GetDisplayStyle();
+ //Do nothing if not drawing ratio
+ SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+ SPXDisplayStyle &ds = pc.GetDisplayStyle();
 
-	if(!ds.ContainsRatio()) {
-		return;
-	}
+ if(!ds.ContainsRatio()) {
+  return;
+ }
 
-	//Change to the ratio pad
-	ratioPad->cd();
+ //Change to the ratio pad
+ ratioPad->cd();
 
-	//Stagger ratio convolute points if requested
-	if(steeringFile->GetPlotStaggered() && !steeringFile->GetPlotBand()) {
-		StaggerConvoluteRatio();
-	}
+ //Stagger ratio convolute points if requested
+ if(steeringFile->GetPlotStaggered() && !steeringFile->GetPlotBand()) {
+  StaggerConvoluteRatio();
+ }
 
-	//Counters for number of stat/tot ratios: Used for darkening stat/tot ratios and also
-	// for sanity checking (data/stat graphs covering up other ratios)
-	unsigned int statRatios = 0;
-	unsigned int totRatios = 0;
+ //Counters for number of stat/tot ratios: Used for darkening stat/tot ratios and also
+ // for sanity checking (data/stat graphs covering up other ratios)
+ unsigned int statRatios = 0;
+ unsigned int totRatios = 0;
 
-	for(int i = 0; i < pc.GetNumberOfRatios(); i++) {
+ for(int i = 0; i < pc.GetNumberOfRatios(); i++) {
+  std::string ratioOptions;
+  if(steeringFile->GetPlotBand()) 
+   ratioOptions = "E2";
 
-		std::string ratioOptions;
+  if(steeringFile->GetPlotMarker() && !steeringFile->GetPlotBand())
+   ratioOptions = "P";
 
-		if(steeringFile->GetPlotBand()) {
-			ratioOptions = "E2";
-		}
+  if(!steeringFile->GetPlotErrorTicks() && !steeringFile->GetPlotBand()) 
+   ratioOptions += "Z";
+		
+  //Set x errors to zero if ratio involves convolute AND is not plot band
+  if(ratios[i].HasConvolute() && !steeringFile->GetPlotBand()) {
+   //Never clear X errors for DataStat or DataTot (extra check: HasConvolute() should already rule out stat/tot...)
+   // if(!ratios[i].IsDataStat() && !ratios[i].IsDataTot()) {
+   //  std::vector<TGraphAsymmErrors *> ratiographs=ratios[i].GetRatioGraph();
+   //  for (int igraph=0; igraph < ratiographs.size(); igraph++) {
+   //   TGraphAsymmErrors *graph = ratiographs[igraph];
+   //  }
+   // if(debug) std::cout << cn << mn << "Set X errors to zero for ratios[" << i << "]" << std::endl;
+  }
 
-		if(steeringFile->GetPlotMarker() && !steeringFile->GetPlotBand()) {
-			ratioOptions = "P";
-		}
+  if(ratios[i].IsDataStat()) {
+   statRatios++;
 
-		if(!steeringFile->GetPlotErrorTicks() && !steeringFile->GetPlotBand()) {
-			ratioOptions += "Z";
-		}
+   //Warn if not the first graph AND first graph is not data_tot: Will possibly cover up points
+   if((i != 0) && !ratios[0].IsDataTot()) {
+    std::cerr << cn << mn << "WARNING: Data Stat band could possibly hide other bands/points plotted underneath it: Move data_stat to ratio_0?" << std::endl;
+   }
+  }
 
-		//Set x errors to zero if ratio involves convolute AND is not plot band
-		if(ratios[i].HasConvolute() && !steeringFile->GetPlotBand()) {
+  if(ratios[i].IsDataTot()) {
+   totRatios++;
+   //Warn if not the first graph: Will possibly cover up points
+   if(i != 0) {
+    std::cerr << cn << mn << "WARNING: Data Tot band could possibly hide other bands/points plotted underneath it: Move data_to to ratio_0?" << std::endl;
+   }
+  }
+   
+  ratios[i].Draw(ratioOptions.c_str(),statRatios, totRatios);
 
-			//Never clear X errors for DataStat or DataTot (extra check: HasConvolute() should already rule out stat/tot...)
-			if(!ratios[i].IsDataStat() && !ratios[i].IsDataTot()) {
- 	                        // TC GetRatioGraph returns now vector of graphs
-			        //SPXGraphUtilities::ClearXErrors(ratios[i].GetRatioGraph());
-	                        std::vector<TGraphAsymmErrors *> ratiographs=ratios[i].GetRatioGraph();
-                                for (int igraph=0; igraph < ratiographs.size(); igraph++) {
-	                         TGraphAsymmErrors *graph = ratiographs[igraph];
-                                 //SPXGraphUtilities::ClearXErrors(graph);
-                                }
-				if(debug) std::cout << cn << mn << "Set X errors to zero for ratios[" << i << "]" << std::endl;
-			}
-		}
+ }
 
-		if(ratios[i].IsDataStat()) {
-			statRatios++;
-
-			//Warn if not the first graph AND first graph is not data_tot: Will possibly cover up points
-			if((i != 0) && !ratios[0].IsDataTot()) {
-				std::cerr << cn << mn << "WARNING: Data Stat band could possibly hide other bands/points plotted underneath it: Move data_stat to ratio_0?" << std::endl;
-			}
-		}
-
-		if(ratios[i].IsDataTot()) {
-			totRatios++;
-
-			//Warn if not the first graph: Will possibly cover up points
-			if(i != 0) {
-				std::cerr << cn << mn << "WARNING: Data Tot band could possibly hide other bands/points plotted underneath it: Move data_to to ratio_0?" << std::endl;
-			}
-		}
-
- 	       // TC GetRatioGraph returns now vector of graphs
- 	       std::vector<TGraphAsymmErrors *> ratiographs=ratios[i].GetRatioGraph();	 
-               for (int igraph=0; igraph < ratiographs.size(); igraph++) {
-	        TGraphAsymmErrors *graph = ratiographs[igraph];
-
-		if(ratios[i].IsDataStat() || ratios[i].IsDataTot()) {
-		 //Incrementally darken the data_stat/data_tot graphs based on their order for increased visibility
- 	         // TC GetRatioGraph returns now vector of graphs
-	         //ratios[i].GetRatioGraph()->SetFillColor(ratios[i].GetRatioGraph()->GetFillColor() + (statRatios + totRatios));
-	         graph->SetFillColor(graph->GetFillColor() + (statRatios + totRatios));
-  		 //TC ratios[i].GetRatioGraph()->Draw("E2");
-                 //graph->Draw("2");
-                 graph->Draw("E2");
-		} else {
-		 //ratios[i].GetRatioGraph()->Draw(ratioOptions.c_str());
-                 graph->Draw(ratioOptions.c_str());
-                 //graph->Draw("hist");
-                }
-		if(debug) {
-		 std::cout << cn << mn << "Successfully drew ratios[" << i << "] with options: " << ratioOptions << std::endl;
-		 std::cout << cn << mn << "Printing ratios[" << i << "] name= "<<graph->GetName() << std::endl;
-		 std::cout << cn << mn << "fillcolor "<<graph->GetFillColor() << std::endl;
-		 std::cout << cn << mn << "fillstyle "<<graph->GetFillStyle() << std::endl;
-		 //ratios[i].GetRatioGraph()->Print();
-                 graph->Print();
-		 std::cout << std::endl;
-		}
-	       }
-	}
-
-	//Draw a line at 1, where ratios are relative to
-	TLine *referenceLine = new TLine(xMinRatio, 1.0, xMaxRatio, 1.0);
-	referenceLine->Draw();
+ //Draw a line at 1, where ratios are relative to
+ TLine *referenceLine = new TLine(xMinRatio, 1.0, xMaxRatio, 1.0);
+ referenceLine->Draw();
 }
 
 void SPXPlot::DrawLegend(void) {
-	std::string mn = "DrawLegend: ";
-	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
-        //
+ std::string mn = "DrawLegend: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+ //
 
-	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
-	//SPXPlotType        &pt = pc.GetPlotType();
-	SPXDisplayStyle      &ds = pc.GetDisplayStyle();
-	SPXOverlayStyle      &os = pc.GetOverlayStyle();
+ SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+ //SPXPlotType        &pt = pc.GetPlotType();
+ SPXDisplayStyle      &ds = pc.GetDisplayStyle();
+ SPXOverlayStyle      &os = pc.GetOverlayStyle();
 
-        // Why zero here, Where to the the PlotConfiguriotninstance
-        cout<<cn<<mn<<"HuHu fix me 0 is not good ! "<<endl;
-        SPXGridSteeringFile gridsteeringFile=pc.GetPlotConfigurationInstance(0).gridSteeringFile;
+ // Why zero here, Where to the the PlotConfiguriotninstance ??
+ cout<<cn<<mn<<"HuHu fix me pc.GetPlotConfigurationInstance(0) is not good ! "<<endl;
+ SPXPlotConfigurationInstance pci=pc.GetPlotConfigurationInstance(0);
+ SPXGridSteeringFile gridsteeringFile=pci.gridSteeringFile;
 
-        bool overlay=ds.ContainsOverlay();  
-	bool ratioonly=ds.ContainsRatio()&&!overlay;
+ bool overlay=ds.ContainsOverlay();  
+ bool ratioonly=ds.ContainsRatio()&&!overlay;
 
-	if(!overlay&&!ratioonly){
-	 return;
-	}
+ if(!overlay&&!ratioonly){
+  return;
+ }
 
-	if(overlay&&!overlayPad) {
-	throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DrawRatioPadFrame before drawing the overlay graphs");
-	}
+ if(overlay&&!overlayPad) {
+  throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DrawRatioPadFrame before drawing the overlay graphs");
+ }
 
-	if(ratioonly&&!ratioPad) {
-	 throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DrawRatioPadFrame before drawing the ratio graphs");
-	}
+ if(ratioonly&&!ratioPad) {
+  throw SPXROOTException(cn + mn + "You MUST call SPXPlot::DrawRatioPadFrame before drawing the ratio graphs");
+ }
 
-	if (overlay) overlayPad->cd();
-        if (ratioonly) ratioPad->cd();
+ if (overlay) overlayPad->cd();
+ if (ratioonly) ratioPad->cd();
 
-	TLegend *leg = 0;
-        int namesize=5;    
-        //double csize=0.025;    
-        double csize=0.02;    
-        float linesize=0.05; 
+ TLegend *leg = 0;
+ int namesize=5;    
+ int leginfomax=0;    
 
-        TString mylabel="test";
-        int mysize=TString(mylabel).Sizeof(); 
+ double charactersize=0.01;    
+ float linesize=0.05; 
 
-        leg = new TLegend();
-        leg->SetBorderSize(0);
-        leg->SetFillColor(0);
-        leg->SetMargin(0.2);
+ //TString mylabel="test";
+ //int mysize=TString(mylabel).Sizeof(); 
 
-       if(os.ContainsData()) {
-        if (debug) std::cout << cn << mn <<"contains data "<< std::endl;
+ leg = new TLegend();
+ leg->SetBorderSize(0);
+ leg->SetFillColor(0);
+ leg->SetMargin(0.2);
 
-        if (data.size()==0)
-         throw SPXGeneralException(cn+mn+"No data object found !");
+ if(os.ContainsData()) {
+  if (debug) std::cout << cn << mn <<"contains data "<< std::endl;
 
-        for(int i = 0; i < data.size(); i++) {                 
-	  //TString datalabel=data.at(i).GetLegendLabel();
-         TString datalabel=data.at(i)->GetLegendLabel();
-         if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
-         if (!ratioonly) // ratioonly figures have data in the ratio, no separate label
-	   //leg->AddEntry(data.at(i).GetTotalErrorGraph(), datalabel, "P");
-           leg->AddEntry(data.at(i)->GetTotalErrorGraph(), datalabel, "P");
+  if (data.size()==0)
+   throw SPXGeneralException(cn+mn+"No data object found !");
 
-          //TString datalabel =" L=";
-          //datalabel+=data.at(i).GetDatasetLumi();
-          //if (TString(infolabel).Sizeof()>namesize) namesize=TString(infolabel).Sizeof();
-	  //leg->AddEntry((TObject*)0, infolabel, "");           
+  for(int i = 0; i < data.size(); i++) {                 
 
-        }
-       }
+   TString datalabel=data.at(i)->GetLegendLabel();
+   if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
+   
+   //std::cout<<cn<<mn<<datalabel.Data()<<" namesize= "<<namesize<<std::endl;
 
+   if (!ratioonly) // ratioonly figures have data in the ratio, no separate label
 
-       // Look first, if properties of bands are different
-       int old_fill_style=-999, old_fill_color=-999, old_marker_style=-999, old_marker_color=-999;
-       bool bandsdifferent=false;
-       for(int i = 0; i < crossSections.size(); i++) {
-        SPXPDF * pdf=crossSections[i].GetPDF();
-        int nbands=pdf->GetNBands();
-        for (int iband=0; iband<nbands; iband++) {
-         TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-	 string              gtype   =pdf->GetBandType(iband);
+   leg->AddEntry(data.at(i)->GetTotalErrorGraph(), datalabel, "P");
 
-         if (debug) std::cout << cn << mn <<"iband= "<< iband<<" gband= "<<gband->GetName()<< std::endl;
+  }
+ }
 
-         if (debug) std::cout << cn << mn <<"old_fill_style= "<< old_fill_style<<" gband= "<<gband->GetFillStyle()<< std::endl;
-         if (debug) std::cout << cn << mn <<"old_fill_color= "<< old_fill_color<<" gband= "<<gband->GetFillColor()<< std::endl;
-         if (debug) std::cout << cn << mn <<"old_marker_color= "<< old_marker_color<<" gband= "<<gband->GetMarkerColor()<< std::endl;
-         if (debug) std::cout << cn << mn <<"old_marker_style= "<< old_fill_style<<" gband= "<<gband->GetMarkerStyle()<< std::endl;
+ // Look first, if properties of bands are different
+ int old_fill_style=-999, old_fill_color=-999;
+ int old_marker_style=-999, old_marker_color=-999;
+ bool bandsdifferent=false;
 
-         if (iband>0) {
-	  if (steeringFile->GetPlotBand()) {
-	   if (old_fill_style  !=gband->GetFillStyle())   bandsdifferent=true;
-	   if (old_fill_color  !=gband->GetFillColor())   bandsdifferent=true;
-          }
-          if (steeringFile->GetPlotMarker()) { 
-	   if (old_marker_style!=gband->GetMarkerStyle()) bandsdifferent=true;
-	   if (old_marker_color!=gband->GetMarkerColor()) bandsdifferent=true;           
-          }
-	 } else {
-	  old_fill_style=gband->GetFillStyle();
-	  old_fill_color=gband->GetFillColor();
-	  old_marker_style=gband->GetMarkerStyle();
-	  old_marker_color=gband->GetMarkerColor();
-         }
-        }
-       }
+ for(int i = 0; i < crossSections.size(); i++) {
+  SPXPDF * pdf=crossSections[i].GetPDF();
+  int nbands=pdf->GetNBands();
+  for (int iband=0; iband<nbands; iband++) {
+   TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+   string              gtype   =pdf->GetBandType(iband);
+   //
+   //if (debug) std::cout << cn << mn <<"iband= "<< iband<<" gband= "<<gband->GetName()<< std::endl;
+   //
+   // edge color are not taken into account
+   //if (debug) std::cout << cn << mn <<"old_fill_style= "<< old_fill_style<<" gband= "<<gband->GetFillStyle()<< std::endl;
+   //if (debug) std::cout << cn << mn <<"old_fill_color= "<< old_fill_color<<" gband= "<<gband->GetFillColor()<< std::endl;
+   //if (debug) std::cout << cn << mn <<"old_marker_color= "<< old_marker_color<<" gband= "<<gband->GetMarkerColor()<< std::endl;
+   //if (debug) std::cout << cn << mn <<"old_marker_style= "<< old_fill_style<<" gband= "<<gband->GetMarkerStyle()<< std::endl;
 
-       if (debug) {
-        if (bandsdifferent) std::cout << cn << mn <<"Bands have different properties !"<< std::endl;
-        else                std::cout << cn << mn <<"bands have same properties ! "<< std::endl;
-       }
+   if (iband>0) {
+    if (steeringFile->GetPlotBand()) {
+     if (old_fill_style  !=gband->GetFillStyle())   bandsdifferent=true;
+     if (old_fill_color  !=gband->GetFillColor())   bandsdifferent=true;
+    }
 
-       if(os.ContainsConvolute()) {
+    if (steeringFile->GetPlotMarker()) { 
+     if (old_marker_style!=gband->GetMarkerStyle()) bandsdifferent=true;
+     if (old_marker_color!=gband->GetMarkerColor()) bandsdifferent=true;           
+    }
+   } else {
+    old_fill_style=gband->GetFillStyle();
+    old_fill_color=gband->GetFillColor();
+    old_marker_style=gband->GetMarkerStyle();
+    old_marker_color=gband->GetMarkerColor();
+   }
+  }
+ }
 
-	if (debug) std::cout << cn << mn <<"contains convolute "<< std::endl;
-        int npdf=0; int iold=-1;
-	for(int i = 0; i < crossSections.size(); i++) {
-	  //Get PDF object
-         SPXPDF * pdf=crossSections[i].GetPDF();
-         int nbands=pdf->GetNBands();
-         if (nbands<1) throw SPXGeneralException(cn+mn+"no band found !");
+ if (debug) {
+  if (bandsdifferent) std::cout << cn << mn <<"Bands have different properties !"<< std::endl;
+  else                std::cout << cn << mn <<"bands have same properties ! "<< std::endl;
+ }
 
-         // look if it only grid corrections
-	 bool gridcorrectionfound=false;
-         if(steeringFile->ApplyGridCorr()) {
-          std::vector<string> corrlabel=crossSections[i].GetCorrectionLabels();
-          for (int iband=0; iband<nbands; iband++) {
-           for(int ic = 0; ic < corrlabel.size(); ic++) {
-            string gtype   =pdf->GetBandType(iband);
-            if (gtype.compare(corrlabel[ic])==0) gridcorrectionfound=true;	   
-           }
-          }
-         }
-         if (debug) {
-          if (gridcorrectionfound) std::cout << cn << mn <<"Grid corrections found !"<< std::endl;
-         }
+ if(os.ContainsConvolute()) {
 
-	 // look of NLO uncertainties are in the band
-         TString pdftype = pdf->GetPDFtype();
-         bool pdffound=false;
-         bool nlouncertainty=false;
-         for (int iband=0; iband<nbands; iband++) {
-          TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-	  string              gtype   =pdf->GetBandType(iband);
-          if (gtype.compare(string("pdf"))==0) {
-           pdffound=true; nlouncertainty=true;
-          }
-          if (gtype.compare(string("alphas"))==0) nlouncertainty=true;
-          if (gtype.compare(string("scale"))==0)  nlouncertainty=true;
-         }
+  if (debug) std::cout << cn << mn <<"contains convolute "<< std::endl;
+  int npdf=0; int iold=-1;
+  for(int i = 0; i < crossSections.size(); i++) {
+   //Get PDF object
+   SPXPDF * pdf=crossSections[i].GetPDF();
+   int nbands=pdf->GetNBands();
+   if (nbands<1) throw SPXGeneralException(cn+mn+"no band found !"); 
+
+   // look if it only grid corrections
+   bool gridcorrectionfound=false;
+   if(steeringFile->ApplyGridCorr()) {
+    std::vector<string> corrlabel=crossSections[i].GetCorrectionLabels();
+    for (int iband=0; iband<nbands; iband++) {
+     for(int ic = 0; ic < corrlabel.size(); ic++) {
+      string gtype   =pdf->GetBandType(iband);
+      if (gtype.compare(corrlabel[ic])==0) gridcorrectionfound=true;	   
+     }
+    }
+   }
+
+   if (debug) {
+    if (gridcorrectionfound) std::cout << cn << mn <<"Grid corrections found !"<< std::endl;
+   }
+
+   // look of NLO uncertainties are in the band
+   TString pdftype = pdf->GetPDFtype();
+   bool pdffound=false;
+   bool nlouncertainty=false;
+   for (int iband=0; iband<nbands; iband++) {
+    TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+    string              gtype   =pdf->GetBandType(iband);
+    if (gtype.compare(string("pdf"))==0) {
+     pdffound=true; nlouncertainty=true;
+    }
+    if (gtype.compare(string("alphas"))==0) nlouncertainty=true;
+    if (gtype.compare(string("scale"))==0)  nlouncertainty=true;
+   }
          
-         if (debug) {
-          if (nlouncertainty) std::cout << cn << mn <<"Band contains NLO uncertainty !"<< std::endl;
-         }
+   if (debug) {
+    if (nlouncertainty) std::cout << cn << mn <<"Band contains NLO uncertainty !"<< std::endl;
+   }
 
-         if (!bandsdifferent) {
-          TString text="NLO QCD";
-          if(steeringFile->ApplyGridCorr()) {
-	   std::vector<string> corrlabel=crossSections[i].GetCorrectionLabels();
-           if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
- 	   for(int ic = 0; ic < corrlabel.size(); ic++) {
-            string label=" #otimes "+corrlabel[ic];
-            if (debug) std::cout<<cn<<mn<<" grid correction label= "<<label.c_str()<<std::endl;
-            text+=TString(label); // do this better
-           }
-          }
-          text+=" with:";
-          // Draw nothing
-          if (gridcorrectionfound&&!nlouncertainty) text="";
-          if (nlouncertainty) leg->AddEntry((TObject*)0, text, "");
-         } else {
-          if (nlouncertainty)
-           leg->AddEntry((TObject*)0,"NLO QCD Uncertainties", "");
-          if (gridcorrectionfound&&!nlouncertainty)
-           leg->AddEntry((TObject*)0,"Uncertainties", "");
-	 }
+   if (!bandsdifferent) {
+    TString text="NLO QCD";
+    if(steeringFile->ApplyGridCorr()) {
+     std::vector<string> corrlabel=crossSections[i].GetCorrectionLabels();
+     if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
+     for(int ic = 0; ic < corrlabel.size(); ic++) {
+      string label=" #otimes "+corrlabel[ic];
+      if (debug) std::cout<<cn<<mn<<" grid correction label= "<<label.c_str()<<std::endl;
+      text+=TString(label); // do this better
+     }
+     if (text.Sizeof()>namesize) namesize=text.Sizeof();
+     //std::cout<<cn<<mn<<text.Data()<<" namesize= "<<namesize<<std::endl;
+    }
 
-         if (bandsdifferent) { // uncertainty bands have different properties
-          for (int iband=0; iband<nbands; iband++) {
-           TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-	   string              gtype   =pdf->GetBandType(iband);
+    text+=" with:";
+    // Draw nothing
+    if (gridcorrectionfound&&!nlouncertainty) text="";
+    if (nlouncertainty) leg->AddEntry((TObject*)0, text, "");
+   } else {
+    if (nlouncertainty)
+     leg->AddEntry((TObject*)0,"NLO QCD Uncertainties", "");
+    if (gridcorrectionfound&&!nlouncertainty)
+     leg->AddEntry((TObject*)0,"Uncertainties", "");
+   }
 
-           if (debug) std::cout << cn << mn <<"Different properties iband= "<<iband<<" gtype= "<< gtype.c_str()<< std::endl;
+   if (bandsdifferent) { // uncertainty bands have different properties
+    for (int iband=0; iband<nbands; iband++) {
+     TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+     string              gtype   =pdf->GetBandType(iband);
 
-           TString label="";
-           TString bandtype=TString(gtype);
-           bandtype.ToUpper();
-           if (bandtype.Contains("ALPHAS")) bandtype="#alpha_{s}";
-           if (gtype.compare(string("pdf"))==0)
-	    label=pdftype+" "+bandtype;
-           else
-	    label=bandtype;
+     if (debug) std::cout << cn << mn <<"Different properties iband= "<<iband<<" gtype= "<< gtype.c_str()<< std::endl;
 
-           if (steeringFile->GetPlotMarker()) { 
-	     //std::cout<<cn<<mn<<" Plot marker "<<std::endl;
-            leg->AddEntry(gband, label, "P");
-	   } else if (steeringFile->GetPlotBand()) {
-	     //std::cout<<cn<<mn<<" Plot band "<<std::endl;
-            leg->AddEntry(gband, label, "LF");
-	   } else
-            std::cout << cn << mn <<"WARNING do not know what to do not plotMarker, not plotBand"<< std::endl;
-          }
-         } else { // uncertainty bands have the same properties
+     TString label="";
+     TString bandtype=TString(gtype);
+     bandtype.ToUpper();
+     if (bandtype.Contains("ALPHAS")) bandtype="#alpha_{s}";
+     if (gtype.compare(string("pdf"))==0)
+      label=pdftype+" "+bandtype;
+     else
+      label=bandtype;
 
-          for (int iband=0; iband<nbands; iband++) {
-           TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-	   string              gtype   =pdf->GetBandType(iband);
+     if (steeringFile->GetPlotMarker()) { 
+      //std::cout<<cn<<mn<<" Plot marker "<<std::endl;
+      leg->AddEntry(gband, label, "P");
+     } else if (steeringFile->GetPlotBand()) {
+      std::cout<<cn<<mn<<" Plot type "<<bandtype<<std::endl;
+      std::cout<<cn<<mn<<" gband Name "<<gband->GetName()<<std::endl;
+      string opt="LF";
+      int edgecolor=-1; 
+      TString gname=gband->GetName();
+     
+      //std::cout<<cn<<mn<<" pci.alphasFillColor= "<<pci.alphasFillColor<<std::endl;      
+      //std::cout<<cn<<mn<<" pci.scaleFillColor= " <<pci.scaleFillColor <<std::endl;      
+      //std::cout<<cn<<mn<<" pci.pdfFillColor= "   <<pci.pdfFillColor   <<std::endl;      
+      //std::cout<<cn<<mn<<" pci.totalFillColor= " <<pci.totalFillColor <<std::endl;      
 
-           if (debug) std::cout << cn << mn <<"Same properties iband= "<<iband<<" gtype= "<< gtype.c_str()<< std::endl;
-           if (gtype.compare(string("pdf"))==0){
-            pdffound=true; npdf++;
-            if (steeringFile->GetPlotMarker()) {
-             leg->AddEntry(gband, pdftype, "PE");
-            } else if (steeringFile->GetPlotBand()) {
-             leg->AddEntry(gband, pdftype, "LF");
-	    } else
-             std::cout << cn << mn <<"WARNING do not know what to do not plotMarker, not plotBand"<< std::endl;
+      //std::cout<<cn<<mn<<" pci.alphasEdgeColor= "<<pci.alphasEdgeColor<<std::endl;      
+      //std::cout<<cn<<mn<<" pci.scaleEdgeColor= " <<pci.scaleEdgeColor <<std::endl;      
+      //std::cout<<cn<<mn<<" pci.pdfEdgeColor= "   <<pci.pdfEdgeColor   <<std::endl;      
+      //std::cout<<cn<<mn<<" pci.totalEdgeColor= " <<pci.totalEdgeColor <<std::endl;      
 
-            if (TString(pdftype).Sizeof()>namesize) namesize=TString(pdftype).Sizeof();
-           }
+      if(gname.Contains("_alphas_")) edgecolor=pci.alphasEdgeColor;
+      if(gname.Contains("_scale_"))  edgecolor=pci.scaleEdgeColor;
+      if(gname.Contains("_pdf_"))    edgecolor=pci.pdfEdgeColor;
+      if(gname.Contains("_total_"))  edgecolor=pci.totalEdgeColor;
 
-           if (debug) std::cout << cn << mn <<"npdf= "<<npdf<< std::endl;
-	   if (pdffound) {if (debug) std::cout << cn << mn <<"PDF found "<< pdftype.Data()<< std::endl;
-           } else {
-	    if (debug) std::cout << cn << mn <<"No PDF band found "<< std::endl;
-            if(steeringFile->ApplyGridCorr()) {
-	     std::vector<string> corrlabel=crossSections[i].GetCorrectionLabels();
-             if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
- 	     for(int ic = 0; ic < corrlabel.size(); ic++) {
-	      leg->AddEntry(gband, TString(corrlabel[ic]), "LF");
-             }
-            } else if (debug) std::cout << cn << mn <<"No grid corrections specified "<< std::endl;
-           }
-          }
-         }
-        }
+      //int edgestyle  =pci.correctionsEdgeStyle;
+      std::cout<<cn<<mn<<" edgecolor= "<<edgecolor<<std::endl;      
+      if (edgecolor<0) {
+       opt="L";
+       TString hname="h";
+       hname+=gband->GetName();
+       hname+="LowEdge";
+       TH1D *hedge=(TH1D*)gDirectory->Get(hname);
+       if (hedge) {
+        std::cout<<cn<<mn<<" hedge line= "<<hedge->GetLineWidth()<<std::endl;      
+        leg->AddEntry(hedge, label, TString(opt));
+       } else {
+	std::cout<<cn<<mn<<" hedge= "<<hname<<" not found. Fill band "<<std::endl;      
+        leg->AddEntry(gband, label, TString(opt));
        }
+      } else {
+       leg->AddEntry(gband, label, TString(opt));
+      }
+     } else
+      std::cout << cn << mn <<"WARNING do not know what to do not plotMarker, not plotBand"<< std::endl;
+    }
+   } else { // uncertainty bands have the same properties
 
-       double x1=0., y1=0., x2=0., y2=0.;
-       //double xlegend=0.7; 
-       //double ylegend=0.6; 
-       double xlegend=steeringFile->GetXLegend();
-       double ylegend=steeringFile->GetYLegend();
+    for (int iband=0; iband<nbands; iband++) {
+     TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+     string              gtype   =pdf->GetBandType(iband);
 
-       //int ncol=leg->GetNColumns();
-       int nraw=leg->GetNRows();
-       if (debug) { 
-	std::cout << cn << mn <<"nraw= "<<nraw<<" namesize= "<< namesize<< " linesize= "<<linesize<<std::endl;
+     if (debug) std::cout << cn << mn <<"Same properties iband= "<<iband<<" gtype= "<< gtype.c_str()<< std::endl;
+
+     if (gtype.compare(string("pdf"))==0){
+      pdffound=true; npdf++;
+      if (steeringFile->GetPlotMarker()) {
+       leg->AddEntry(gband, pdftype, "PE");
+      } else if (steeringFile->GetPlotBand()) {
+       leg->AddEntry(gband, pdftype, "LF");
+      } else
+       std::cout << cn << mn <<"WARNING do not know what to do not plotMarker, not plotBand"<< std::endl;
+
+      if (pdftype.Sizeof()>namesize) namesize=pdftype.Sizeof();
+      //std::cout<<cn<<mn<<pdftype.Data()<<" namesize= "<<namesize<<std::endl;
+     }
+
+     //if (debug) std::cout << cn << mn <<"npdf= "<<npdf<< std::endl;
+     if (pdffound) {
+      if (debug) std::cout << cn << mn <<"PDF found "<< pdftype.Data()<< std::endl;
+     } else {
+      if (debug) std::cout << cn << mn <<"No PDF band found "<< std::endl;
+      if(steeringFile->ApplyGridCorr()) {
+       std::vector<string> corrlabel=crossSections[i].GetCorrectionLabels();
+       if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
+       for(int ic = 0; ic < corrlabel.size(); ic++) {
+        leg->AddEntry(gband, TString(corrlabel[ic]), "LF");
        }
+      } else if (debug) std::cout << cn << mn <<"No grid corrections specified "<< std::endl;
+     }
+    }
+   }
+  }
+ }
 
-       x1 = xlegend-(namesize*csize), x2=xlegend;
-       if (nraw>3) nraw*=0.6;
-       y1 = ylegend-(nraw*(linesize));  y2=ylegend;
+ double x1=0., y1=0., x2=0., y2=0.;
+ double xlegend=steeringFile->GetXLegend();
+ double ylegend=steeringFile->GetYLegend();
+
+ int nraw=leg->GetNRows();
+ if (debug) { 
+  std::cout << cn << mn <<"nraw= "<<nraw<<" namesize= "<< namesize<< " linesize= "<<linesize<<std::endl;
+ }
+
+ double fac=1.;
+ if (namesize<20) fac=2.;
+
+ x1 = xlegend-(fac*namesize*charactersize), x2=xlegend;
+ if (nraw>3) nraw*=0.6;
+ y1 = ylegend-(nraw*linesize);  y2=ylegend;
   
-       if (debug) { 
-	std::cout<<cn<<mn<<"xlegend= "<<xlegend<<" ylegend= "<<ylegend<<std::endl;
-	std::cout<<cn<<mn<<"x1= "<<x1<<" y1= "<<y1<<std::endl;
-	std::cout<<cn<<mn<<"x2= "<<x2<<" y2= "<<y2<<std::endl;
-       }
+ if (debug) { 
+  std::cout<<cn<<mn<<"xlegend= "<<xlegend<<" ylegend= "<<ylegend<<std::endl;
+  std::cout<<cn<<mn<<"x1= "<<x1<<" y1= "<<y1<<std::endl;
+  std::cout<<cn<<mn<<"x2= "<<x2<<" y2= "<<y2<<std::endl;
+ }
 
-       leg->SetX1NDC(x1);
-       leg->SetX2NDC(x2);
-       leg->SetY1NDC(y1);
-       leg->SetY2NDC(y2);
+ leg->SetX1NDC(x1);
+ leg->SetX2NDC(x2);
+ leg->SetY1NDC(y1);
+ leg->SetY2NDC(y2);
 
-       //if (debug) leg->Print();
+ //if (debug) leg->Print();
+ leg->Draw();
 
-       double sqrtsval = -1.; 
-       double sqrtsvalold = -1.;
-       for(int i = 0; i < data.size(); i++) {                 
-	 //TString infolabel = "#font[9]{";
-        TString infolabel = "";
-        if (i>0) sqrtsvalold=sqrtsval;
-        //sqrtsval = data.at(i).GetSqrtS();
-        sqrtsval = data.at(i)->GetSqrtS();
-        if (i>0&&sqrtsval!=sqrtsvalold)
-         std::cout<<cn<<mn<<"WARNING label not correct"<<" sqrt(s) changed old="<<sqrtsvalold<<" new= "<<sqrtsval<<std::endl;
+ // Now build second Legend with info
 
-        if (int(sqrtsval)%1000==0)
-         infolabel.Form("#sqrt{s}= %.f %s",double(sqrtsval)/1000.,"TeV"); 
-        else
-         infolabel.Form("#sqrt{s}= %3.2f %s",double(sqrtsval)/1000.,"TeV"); 
+ TLegend *leginfo = new TLegend();
+ leginfo->SetBorderSize(0);
+ leginfo->SetFillColor(0);
+ leginfo->SetMargin(0.2);
 
-        //if (debug) std::cout<<cn<<mn<<" sqrtsval= "<<sqrtsval<<" infolabel= "<<infolabel.Data()<<std::endl;
-        TLatex *text= new TLatex();
-        if (ratioonly) text->SetTextSize(0.025);
-        else           text->SetTextSize(0.04);
-        double xshift=6.*text->GetTextSize();
-        //double xshift=1.5*text->GetTextSize();
-        if (debug) std::cout<<cn<<mn<<"xshift= "<<xshift<<std::endl;
-        //if (debug) text->Print();
-        text->SetNDC(); 
-	text->DrawLatex(x1-xshift,y2-2.*csize,infolabel.Data());         
-       }
+ double sqrtsval = -1.; 
+ double sqrtsvalold = -1.;
+ 
+ for(int i = 0; i < data.size(); i++) {                 
 
-       leg->Draw();
+  //TString infolabel = "#font[9]{";
+  TString infolabel = "";
 
-       return;
+  if (steeringFile->GetLabelSqrtS()) {
+   if (i>0) sqrtsvalold=sqrtsval;
+
+   sqrtsval = data.at(i)->GetSqrtS();
+   if (i>0&&sqrtsval!=sqrtsvalold)
+    std::cout<<cn<<mn<<"WARNING label not correct"<<" sqrt(s) changed old="<<sqrtsvalold<<" new= "<<sqrtsval<<std::endl;
+
+   if (int(sqrtsval)%1000==0)
+    infolabel.Form("#sqrt{s}= %.f %s",double(sqrtsval)/1000.,"TeV"); 
+   else
+    infolabel.Form("#sqrt{s}= %3.0f %s",double(sqrtsval),"GeV"); 
+
+   //if (TString(infolabel).Sizeof()>leginfomax) leginfomax=TString(infolabel).Sizeof();
+   if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
+
+   leginfo->AddEntry((TObject*)0, infolabel,"");
+  }
+  /*
+  //if (debug) std::cout<<cn<<mn<<" sqrtsval= "<<sqrtsval<<" infolabel= "<<infolabel.Data()<<std::endl;
+  TLatex *text= new TLatex();
+  if (ratioonly) text->SetTextSize(0.025);
+  else           text->SetTextSize(0.04);
+  double xshift=6.*text->GetTextSize();
+  //double xshift=1.5*text->GetTextSize();
+  if (debug) std::cout<<cn<<mn<<"xshift= "<<xshift<<std::endl;
+  //if (debug) text->Print();
+  text->SetNDC(); 
+  text->DrawLatex(x1-xshift,y2-2.*csize,infolabel.Data());         
+ */
+
+  //sqrtsval = data.at(i)->GetSqrtS();
+  //std::cout<<cn<<mn<<" jet algorithm= "<< data.at(i)->GetJetAlgorithmLabel()<<" R= "<< data.at(i)->GetJetAlgorithmRadius()<<std::endl;
+  //std::cout<<cn<<mn<< " min= "<<data.at(i)->GetDoubleBinValueMin()
+  //                 <<" double bin name= "<<data.at(i)->GetDoubleBinVariableName()
+  //                 << " max= "<<data.at(i)->GetDoubleBinValueMax()
+  //	          << std::endl;
+
+  // if (data.at(i)->IsDividedByDoubleDiffBinWidth())  std::cout<<cn<<mn<<" Data are divided by bin width of "
+  //                                                          <<data.at(i)->GetDoubleBinValueWidth()<<std::endl;
+  //else std::cout<<cn<<mn<<"Data are divided by bin width of double differential variable "<<std::endl;
+
+  if (data.at(i)->GetJetAlgorithmLabel().size()>0){
+   infolabel=data.at(i)->GetJetAlgorithmLabel();
+   infolabel+=" R= ";
+   infolabel+=data.at(i)->GetJetAlgorithmRadius();
+   if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
+   leginfo->AddEntry((TObject*)0, infolabel,"");
+
+   //if (debug) std::cout<<cn<<mn<<" infolabel= "<<infolabel.Data()<<std::endl;
+  }
+
+  if (data.at(i)->GetDoubleBinVariableName().size()>0) {
+   infolabel="";
+   //infolabel+=
+   infolabel.Form(" %3.2f ",data.at(i)->GetDoubleBinValueMin()); 
+   infolabel+=data.at(i)->GetDoubleBinVariableName();
+   infolabel+=Form(" %3.2f ",data.at(i)->GetDoubleBinValueMax());
+
+   if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
+   if (debug) std::cout<<cn<<mn<<" infolabel= "<<infolabel.Data()<<std::endl;
+
+   leginfo->AddEntry((TObject*)0, infolabel,"");
+  }
+ }
+ 
+ double xshift=3;
+ double x2info=steeringFile->GetXInfoLegend();
+ double y2info=steeringFile->GetYInfoLegend();
+ double x1info=x2info-charactersize*leginfomax;
+ double y1info=y2info-linesize*leginfo->GetNRows();
+
+ if (debug) { 
+  //std::cout<<cn<<mn<<"leginfomax= "<<leginfomax<<std::endl;
+  std::cout<<cn<<mn<<"x1info= "<<x1info<<" y1info= "<<y1info<<std::endl;
+  std::cout<<cn<<mn<<"x2info= "<<x2info<<" y2info= "<<y2info<<std::endl;
+ }
+
+ leginfo->SetX1NDC(x1info);
+ leginfo->SetX2NDC(x2info);
+ leginfo->SetY1NDC(y1info);
+ leginfo->SetY2NDC(y2info);
+
+ //if (debug) leginfo->Print();
+ leginfo->Draw();
+
+ return;
 }
 
 void SPXPlot::UpdateCanvas(void) {
-	std::string mn = "UpdateCanvas: ";
+        std::string mn = "UpdateCanvas: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(!canvas) {
@@ -1363,51 +1372,56 @@ void SPXPlot::CanvasToPNG(void) {
 }
 
 std::string SPXPlot::GetPNGFilename(std::string desc) {
-	std::string mn = "GetPNGFilename: ";
-	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+ std::string mn = "GetPNGFilename: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
-	std::string filename;
+ std::string filename;
 
-	//Fill in dummy description if empty
-	if(desc.empty()) {
-		desc = std::string("general");
-	}
+ //Fill in dummy description if empty
+ if(desc.empty()) {
+  desc = std::string("general");
+ }
 
-	filename = "./plots/" + desc + "_plot_" + (ULong_t)id + ".png";
+ filename = "./plots/" + desc + "_plot_" + (ULong_t)id + ".png";
 
-	if(debug) std::cout << cn << mn << "Created PNG Filename: " << filename << std::endl;
+ if(debug) std::cout << cn << mn << "Created PNG Filename: " << filename << std::endl;
 
-	return filename;
+ return filename;
 }
 
 void SPXPlot::InitializeRatios(void) {
-	std::string mn = "InitializeRatios: ";
-	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+ std::string mn = "InitializeRatios: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
-	//Create a ratio for each ratio instance
-	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+ //Create a ratio for each ratio instance
+ SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 
-	for(int i = 0; i < pc.GetNumberOfRatios(); i++) {
+ for(int i = 0; i < pc.GetNumberOfRatios(); i++) {
 
-		SPXRatioStyle ratioStyle = pc.GetRatioStyle(i);
-		std::string ratioString  = pc.GetRatio(i);
+  SPXRatioStyle ratioStyle = pc.GetRatioStyle(i);
+  std::string ratioString  = pc.GetRatio(i);
 
-		try {
-			SPXRatio ratioInstance = SPXRatio(pc, ratioStyle);
-			ratioInstance.AddDataFileGraphMap(dataFileGraphMap);
-			ratioInstance.AddReferenceFileGraphMap(referenceFileGraphMap);
-			ratioInstance.AddNominalFileGraphMap(nominalFileGraphMap);
-			ratioInstance.AddConvoluteFileGraphMap(convoluteFileGraphMap);
-			ratioInstance.Parse(ratioString);
-			ratioInstance.GetGraphs();
-			ratioInstance.Divide();
+  try {
+   SPXRatio ratioInstance = SPXRatio(pc, ratioStyle);
+   ratioInstance.AddDataFileGraphMap(dataFileGraphMap);
+   ratioInstance.AddReferenceFileGraphMap(referenceFileGraphMap);
+   ratioInstance.AddNominalFileGraphMap(nominalFileGraphMap);
+   ratioInstance.AddConvoluteFileGraphMap(convoluteFileGraphMap);
+   ratioInstance.AddConvoluteFilePDFMap(convoluteFilePDFMap);
+   ratioInstance.Parse(ratioString);
 
-			ratios.push_back(ratioInstance);
+   if (debug) std::cout<<cn<<mn<<"i= "<<i<<" call GetGraphs "<<std::endl; 
+   ratioInstance.GetGraphs();
 
-		} catch(const SPXException &e) {
-			throw;
-		}
-	}
+   if (debug) std::cout<<cn<<mn<<"i= "<<i<<" call Divide "<<std::endl; 
+   ratioInstance.Divide();
+
+   ratios.push_back(ratioInstance);
+
+  } catch(const SPXException &e) {
+   throw;
+  }
+ }
 }
 
 void SPXPlot::InitializeCrossSections(void) {
@@ -1469,13 +1483,27 @@ void SPXPlot::InitializeCrossSections(void) {
 	if(debug) std::cout << cn << mn << "Loop over cross section size=" << crossSections.size() <<std::endl;
 
 	for(int i = 0; i < crossSections.size(); i++) {
-	       SPXPlotConfigurationInstance &pci = pcis[i];
+	      SPXPlotConfigurationInstance &pci = pcis[i];
 
-               int nbands=(crossSections[i].GetPDF())->GetNBands();
-               if (debug) std::cout << cn << mn <<"Number of bands= " <<nbands<< std::endl;
+              SPXPDF *pdf=crossSections[i].GetPDF();
+              if (pdf==0) {
+               throw SPXParseException(cn+mn+"pdf object not found !");
+              }
+              //int nbands=(crossSections[i].GetPDF())->GetNBands();
+              int nbands=pdf->GetNBands();
+
+              if (debug) std::cout << cn << mn <<"Number of bands= " <<nbands<< std::endl;
+
+              if (nbands==0) {
+               throw SPXParseException(cn+mn+"No bands found in pdf");
+              }
+
+   	      //StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), theoryname);
+              StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
+              convoluteFilePDFMap.insert(StringPairPDFPair_T(convolutePair, pdf));
  
               for (int iband=0; iband<nbands; iband++) {
-                SPXPDF * pdf=crossSections[i].GetPDF();
+                //SPXPDF * pdf=crossSections[i].GetPDF();
 		TGraphAsymmErrors * gband   =pdf->GetBand(iband);
 		string              gtype   =pdf->GetBandType(iband);
 		if (!gband) {
@@ -1487,28 +1515,33 @@ void SPXPlot::InitializeCrossSections(void) {
 		//Update the Convolute File Map
 		//string theoryname=pci.pdfSteeringFile.GetFilename()+gband->GetName();
                 string theoryname=gband->GetName();
-   	        StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), theoryname);
-                convoluteFileGraphMap.insert(StringPairGraphPair_T(convolutePair, gband));
+
                 // 
-                int markerstyle=-99, fillcolor=-99,fillstyle=-99;
+                int markerstyle=-99, fillcolor=-99,fillstyle=-99, edgecolor=-99, edgestyle;
 
                 if (gtype.compare(string("pdf"))==0){
 		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.pdfMarkerStyle;
                  fillcolor  =pci.pdfFillColor;
                  fillstyle  =pci.pdfFillStyle;
+                 edgecolor  =pci.pdfEdgeColor;
+                 edgestyle  =pci.pdfEdgeStyle;
                 } 
                 if (gtype.compare(string("scale"))==0){
 		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.scaleMarkerStyle;
                  fillcolor  =pci.scaleFillColor;
                  fillstyle  =pci.scaleFillStyle;
+                 edgecolor  =pci.scaleEdgeColor;
+                 edgestyle  =pci.scaleEdgeStyle;
                 } 
                 if (gtype.compare(string("alphas"))==0){
 		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.alphasMarkerStyle;
                  fillcolor  =pci.alphasFillColor;
                  fillstyle  =pci.alphasFillStyle;
+                 edgecolor  =pci.alphasEdgeColor;
+                 edgestyle  =pci.alphasEdgeStyle;
                 }
 
                 int ncorr=pci.gridSteeringFile.GetNumberOfCorrectionFiles();
@@ -1519,6 +1552,8 @@ void SPXPlot::InitializeCrossSections(void) {
                   markerstyle=pci.correctionsMarkerStyle;
                   fillcolor  =pci.correctionsFillColor;
                   fillstyle  =pci.correctionsFillStyle;
+                  edgecolor  =pci.correctionsEdgeColor;
+                  edgestyle  =pci.correctionsEdgeStyle;
                  } 
                 }
                 if (gtype.compare(string("total"))==0){
@@ -1526,13 +1561,15 @@ void SPXPlot::InitializeCrossSections(void) {
                  markerstyle=pci.totalMarkerStyle;
                  fillcolor  =pci.totalFillColor;
                  fillstyle  =pci.totalFillStyle;
+                 edgecolor  =pci.totalEdgeColor;
+                 edgestyle  =pci.totalEdgeStyle;
                 } 
 
                 if (debug) {
 		 std::cout << cn << mn <<" "<<std::endl;
 		 std::cout << cn << mn <<"gband: "<< gband->GetName()<<" Setting: \n"
-                                        <<"\t \t \t \t fillcolor= "<< fillcolor
-                                        <<" fillstyle= "<<fillstyle
+                                        <<"\t \t \t \t fillcolor= "<< fillcolor<<" fillstyle= "<<fillstyle
+                                        <<" edgecolor= "<< edgecolor<<" edgestyle= "<<edgestyle
                                         <<" markerstyle= "<<markerstyle <<std::endl;
 		 std::cout << cn << mn <<" "<<std::endl;
                 }
@@ -1546,7 +1583,7 @@ void SPXPlot::InitializeCrossSections(void) {
                 //gband->SetFillColorAlpha  (fillcolor,0.35);
                 if (debug) gband->Print();               
 	       }
-               StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
+	       //StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
 	       //Update the Reference File Map
     	       if(debug) std::cout << cn << mn << i<<" Get refGraph" <<std::endl;
 	       TGraphAsymmErrors *refGraph = crossSections[i].GetGridReference();
@@ -1583,7 +1620,7 @@ void SPXPlot::InitializeCrossSections(void) {
     	       if(debug) std::cout << cn << mn << i<<" ...finished GraphSetting" <<std::endl;
 	       if(convoluteFileGraphMap.count(convolutePair)) {
 		if(debug) {
-		 std::cout << cn << mn << "Added convolute pair to map: [" << convolutePair.first << ", " << convolutePair.second << "]" << std::endl;
+		 std::cout << cn << mn << "convolute pair in map: [" << convolutePair.first << ", " << convolutePair.second << "]" << std::endl;
 		}
 	       } else {
 		 std::cerr <<cn<<mn<< "---> Warning: Unable to add convolute pair to map: [" << convolutePair.first << ", " << convolutePair.second << "]" << std::endl;
@@ -1865,4 +1902,98 @@ void SPXPlot::InitializeData(void) {
 			std::cerr << "---> Warning: Unable to add data to map: [" << pci.dataSteeringFile.GetFilename() << "]" << std::endl;
 		}
 	}
+}
+
+
+void SPXPlot::DrawBand(SPXPDF *pdf, string option, SPXPlotConfigurationInstance pci) {
+ std::string mn = "DrawBand: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ if (!pdf) {
+  throw SPXGeneralException(cn+mn+"PDF object not found !");
+ }
+
+ int nbands=pdf->GetNBands();
+ if (debug) std::cout << cn << mn <<"Number of bands= " <<nbands<< std::endl;
+
+ bool detailedband=false;
+ for (int iband=0; iband<nbands; iband++) {
+  TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+  if (!gband) {
+   std::ostringstream oss;
+   oss << cn <<mn<<"Get bands "<<"Band "<<iband<<" not found at index for "<< pdf->GetPDFName();
+   throw SPXGeneralException(oss.str());
+  }
+
+  string gtype                =pdf->GetBandType(iband);
+  TString gname=gband->GetName();
+
+  if (gname.Contains("_total_")) detailedband=true;
+  if (gname.Contains("_scale_")) detailedband=true;
+  if (gname.Contains("_pdf_"))   detailedband=true;
+  if (gname.Contains("_alphas_"))detailedband=true;
+ }
+
+ if (debug) if (detailedband) std::cout << cn << mn <<"detailedband TRUE" << std::endl;
+
+ if (steeringFile->GetPlotMarker()){
+
+  if (detailedband){
+   std::cout << cn << mn <<"WARNING ask to plot marker and detailedband -> do not know what to do, correct steering " << std::endl;
+  }
+
+  for (int iband=0; iband<nbands; iband++) {
+   TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+   //string gtype                =pdf->GetBandType(iband);
+   //TString gname=gband->GetName();
+   gband->Draw(option.c_str());
+
+   if (debug) {
+    std::cout<< cn << mn <<"\n Drew "<<gband->GetName()<< " with options "<<option.c_str()
+                         << " fillcolor= " << gband->GetFillColor() 
+                         << " fillstyle= " << gband->GetFillStyle() 
+                         << " markerstyle= " << gband->GetMarkerStyle() 
+                         << std::endl;          
+     gband->Print();
+   }
+  };
+  return;
+ }
+
+ std::cout<<" total edge_color= "<<pci.totalEdgeColor<<" edge_style= "<<pci.totalEdgeStyle<<std::endl;
+ double edgecolor=pci.totalEdgeColor;
+ double edgestyle=pci.totalEdgeStyle;
+
+ for (int iband=0; iband<nbands; iband++) {
+  TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+
+  if (edgecolor!=0) { // 0 is default in SPXPlotConfiguration.h
+   TH1D *hedgelow =SPXGraphUtilities::GetEdgeHistogram(gband,true);
+   TH1D *hedgehigh=SPXGraphUtilities::GetEdgeHistogram(gband,false);
+   hedgelow ->SetLineColor(abs(edgecolor));
+   hedgehigh->SetLineColor(abs(edgecolor));
+   if (edgestyle!=-1) { // -1 is default in SPXPlotConfiguration.h
+    hedgelow ->SetLineStyle(edgestyle);
+    hedgehigh->SetLineStyle(edgestyle);
+
+    hedgelow ->SetLineWidth(4);
+    hedgehigh->SetLineWidth(4);
+   }
+   hedgelow ->Draw("][,same");
+   hedgehigh->Draw("][,same");
+  }
+
+  if (edgecolor>=0) {
+   gband->Draw(option.c_str());
+  }
+
+  if (debug) {
+   std::cout<< cn << mn <<"\n Drew "<<gband->GetName()<< " with options "<<option.c_str()
+                        << " fillcolor= "   << gband->GetFillColor() 
+                        << " fillstyle= "   << gband->GetFillStyle() 
+                        << " markerstyle= " << gband->GetMarkerStyle() 
+                        << std::endl;          
+  }
+
+ }
 }

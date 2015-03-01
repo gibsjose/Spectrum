@@ -56,6 +56,9 @@ private:
 	std::string yUnits;
 	bool gridDividedByBinWidth;
 	bool referenceDividedByBinWidth;
+
+	bool gridDividedByDoubleDiffBinWidth;
+	bool referenceDividedByDoubleDiffBinWidth;
 	double yScale;
 
 	//[GRID]
