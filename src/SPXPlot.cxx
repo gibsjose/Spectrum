@@ -973,33 +973,13 @@ void SPXPlot::DrawLegend(void) {
  leg->SetFillColor(0);
  leg->SetMargin(0.2);
 
- if(os.ContainsData()) {
-  if (debug) std::cout << cn << mn <<"contains data "<< std::endl;
-
-  if (data.size()==0)
-   throw SPXGeneralException(cn+mn+"No data object found !");
-
-  for(int i = 0; i < data.size(); i++) {                 
-
-   TString datalabel=data.at(i)->GetLegendLabel();
-   if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
-   
-   //std::cout<<cn<<mn<<datalabel.Data()<<" namesize= "<<namesize<<std::endl;
-
-   if (!ratioonly) // ratioonly figures have data in the ratio, no separate label
-
-   leg->AddEntry(data.at(i)->GetTotalErrorGraph(), datalabel, "P");
-
-  }
- }
-
  // Look first, if properties of bands are different
  int old_fill_style=-999, old_fill_color=-999;
  int old_marker_style=-999, old_marker_color=-999;
  bool bandsdifferent=false;
 
- for(int i = 0; i < crossSections.size(); i++) {
-  SPXPDF * pdf=crossSections[i].GetPDF();
+ for(int icross = 0; icross < crossSections.size(); icross++) {
+  SPXPDF * pdf=crossSections[icross].GetPDF();
   int nbands=pdf->GetNBands();
   for (int iband=0; iband<nbands; iband++) {
    TGraphAsymmErrors * gband   =pdf->GetBand(iband);
@@ -1037,20 +1017,45 @@ void SPXPlot::DrawLegend(void) {
   else                std::cout << cn << mn <<"bands have same properties ! "<< std::endl;
  }
 
+
+ if(os.ContainsData()) {
+  if (debug) std::cout << cn << mn <<"contains data "<< std::endl;
+
+  if (data.size()==0)
+   throw SPXGeneralException(cn+mn+"No data object found !");
+
+  std::cout<<" data.size()= "<< data.size()<<std::endl;
+
+  for(int idata = 0; idata < data.size(); idata++) {                 
+
+   TString datalabel=data.at(idata)->GetLegendLabel();
+   if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
+   
+   std::cout<<cn<<mn<<datalabel.Data()<<" namesize= "<<namesize<<std::endl;
+
+   if (!ratioonly) // ratioonly figures have data in the ratio, no separate label
+
+   leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
+
+  }
+ }
+
+
+
  if(os.ContainsConvolute()) {
 
   if (debug) std::cout << cn << mn <<"contains convolute "<< std::endl;
   int npdf=0; int iold=-1;
-  for(int i = 0; i < crossSections.size(); i++) {
+  for(int icross = 0; icross < crossSections.size(); icross++) {
    //Get PDF object
-   SPXPDF * pdf=crossSections[i].GetPDF();
+   SPXPDF * pdf=crossSections[icross].GetPDF();
    int nbands=pdf->GetNBands();
    if (nbands<1) throw SPXGeneralException(cn+mn+"no band found !"); 
 
    // look if it only grid corrections
    bool gridcorrectionfound=false;
    if(steeringFile->ApplyGridCorr()) {
-    std::vector<string> corrlabel=crossSections[i].GetCorrectionLabels();
+    std::vector<string> corrlabel=crossSections[icross].GetCorrectionLabels();
     for (int iband=0; iband<nbands; iband++) {
      for(int ic = 0; ic < corrlabel.size(); ic++) {
       string gtype   =pdf->GetBandType(iband);
@@ -1082,23 +1087,26 @@ void SPXPlot::DrawLegend(void) {
    }
 
    if (!bandsdifferent) {
-    TString text="NLO QCD";
-    if(steeringFile->ApplyGridCorr()) {
-     std::vector<string> corrlabel=crossSections[i].GetCorrectionLabels();
-     if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
-     for(int ic = 0; ic < corrlabel.size(); ic++) {
-      string label=" #otimes "+corrlabel[ic];
-      if (debug) std::cout<<cn<<mn<<" grid correction label= "<<label.c_str()<<std::endl;
-      text+=TString(label); // do this better
+    TString text="";
+    if (icross==0) { //only Draw text for the first cross section
+     text+="NLO QCD";
+     if(steeringFile->ApplyGridCorr()) {
+      std::vector<string> corrlabel=crossSections[icross].GetCorrectionLabels();
+      if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
+      for(int ic = 0; ic < corrlabel.size(); ic++) {
+       string label=" #otimes "+corrlabel[ic];
+       if (debug) std::cout<<cn<<mn<<" grid correction label= "<<label.c_str()<<std::endl;
+       text+=TString(label); // do this better
+      }
+      if (text.Sizeof()>namesize) namesize=text.Sizeof();
+      //std::cout<<cn<<mn<<text.Data()<<" namesize= "<<namesize<<std::endl;
      }
-     if (text.Sizeof()>namesize) namesize=text.Sizeof();
-     //std::cout<<cn<<mn<<text.Data()<<" namesize= "<<namesize<<std::endl;
-    }
-
-    text+=" with:";
+ 
+     text+=" with:";
     // Draw nothing
-    if (gridcorrectionfound&&!nlouncertainty) text="";
-    if (nlouncertainty) leg->AddEntry((TObject*)0, text, "");
+     if (gridcorrectionfound&&!nlouncertainty) text="";
+     if (nlouncertainty) leg->AddEntry((TObject*)0, text, "");
+    }
    } else {
     if (nlouncertainty)
      leg->AddEntry((TObject*)0,"NLO QCD Uncertainties", "");
@@ -1195,7 +1203,7 @@ void SPXPlot::DrawLegend(void) {
      } else {
       if (debug) std::cout << cn << mn <<"No PDF band found "<< std::endl;
       if(steeringFile->ApplyGridCorr()) {
-       std::vector<string> corrlabel=crossSections[i].GetCorrectionLabels();
+       std::vector<string> corrlabel=crossSections[icross].GetCorrectionLabels();
        if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
        for(int ic = 0; ic < corrlabel.size(); ic++) {
         leg->AddEntry(gband, TString(corrlabel[ic]), "LF");
@@ -1246,42 +1254,33 @@ void SPXPlot::DrawLegend(void) {
 
  double sqrtsval = -1.; 
  double sqrtsvalold = -1.;
+ double jetR    = -1.;
+ double jetRold = -1.;
  
- for(int i = 0; i < data.size(); i++) {                 
+ for(int idata = 0; idata < data.size(); idata++) {                 
 
   //TString infolabel = "#font[9]{";
   TString infolabel = "";
 
   if (steeringFile->GetLabelSqrtS()) {
-   if (i>0) sqrtsvalold=sqrtsval;
 
-   sqrtsval = data.at(i)->GetSqrtS();
-   if (i>0&&sqrtsval!=sqrtsvalold)
-    std::cout<<cn<<mn<<"WARNING label not correct"<<" sqrt(s) changed old="<<sqrtsvalold<<" new= "<<sqrtsval<<std::endl;
+   sqrtsval = data.at(idata)->GetSqrtS();
+   //std:cout<<cn<<mn<<"idata= "<<idata<<" sqrtsval= "<<sqrtsval<<" sqrtsvalold= "<<sqrtsvalold<<std::endl;
 
-   if (int(sqrtsval)%1000==0)
-    infolabel.Form("#sqrt{s}= %.f %s",double(sqrtsval)/1000.,"TeV"); 
-   else
-    infolabel.Form("#sqrt{s}= %3.0f %s",double(sqrtsval),"GeV"); 
+   if (sqrtsval!=sqrtsvalold) {
+    sqrtsvalold=sqrtsval;
 
-   //if (TString(infolabel).Sizeof()>leginfomax) leginfomax=TString(infolabel).Sizeof();
-   if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
+    if (int(sqrtsval)%1000==0)
+     infolabel.Form("#sqrt{s}= %.f %s",double(sqrtsval)/1000.,"TeV"); 
+    else
+     infolabel.Form("#sqrt{s}= %3.0f %s",double(sqrtsval),"GeV"); 
 
-   leginfo->AddEntry((TObject*)0, infolabel,"");
+    //if (TString(infolabel).Sizeof()>leginfomax) leginfomax=TString(infolabel).Sizeof();
+    if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
+
+    leginfo->AddEntry((TObject*)0, infolabel,"");
+   }
   }
-  /*
-  //if (debug) std::cout<<cn<<mn<<" sqrtsval= "<<sqrtsval<<" infolabel= "<<infolabel.Data()<<std::endl;
-  TLatex *text= new TLatex();
-  if (ratioonly) text->SetTextSize(0.025);
-  else           text->SetTextSize(0.04);
-  double xshift=6.*text->GetTextSize();
-  //double xshift=1.5*text->GetTextSize();
-  if (debug) std::cout<<cn<<mn<<"xshift= "<<xshift<<std::endl;
-  //if (debug) text->Print();
-  text->SetNDC(); 
-  text->DrawLatex(x1-xshift,y2-2.*csize,infolabel.Data());         
- */
-
   //sqrtsval = data.at(i)->GetSqrtS();
   //std::cout<<cn<<mn<<" jet algorithm= "<< data.at(i)->GetJetAlgorithmLabel()<<" R= "<< data.at(i)->GetJetAlgorithmRadius()<<std::endl;
   //std::cout<<cn<<mn<< " min= "<<data.at(i)->GetDoubleBinValueMin()
@@ -1293,22 +1292,25 @@ void SPXPlot::DrawLegend(void) {
   //                                                          <<data.at(i)->GetDoubleBinValueWidth()<<std::endl;
   //else std::cout<<cn<<mn<<"Data are divided by bin width of double differential variable "<<std::endl;
 
-  if (data.at(i)->GetJetAlgorithmLabel().size()>0){
-   infolabel=data.at(i)->GetJetAlgorithmLabel();
-   infolabel+=" R= ";
-   infolabel+=data.at(i)->GetJetAlgorithmRadius();
-   if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
-   leginfo->AddEntry((TObject*)0, infolabel,"");
-
+  if (data.at(idata)->GetJetAlgorithmLabel().size()>0){
+   jetR=data.at(idata)->GetJetAlgorithmRadius();
+   if (jetR!=jetRold) {
+    jetRold=jetR;
+    infolabel=data.at(idata)->GetJetAlgorithmLabel();
+    infolabel+=" R= ";
+    infolabel+=jetR;
+    if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
+    leginfo->AddEntry((TObject*)0, infolabel,"");
+   }
    //if (debug) std::cout<<cn<<mn<<" infolabel= "<<infolabel.Data()<<std::endl;
   }
 
-  if (data.at(i)->GetDoubleBinVariableName().size()>0) {
+  if (data.at(idata)->GetDoubleBinVariableName().size()>0) {
    infolabel="";
    //infolabel+=
-   infolabel.Form(" %3.2f ",data.at(i)->GetDoubleBinValueMin()); 
-   infolabel+=data.at(i)->GetDoubleBinVariableName();
-   infolabel+=Form(" %3.2f ",data.at(i)->GetDoubleBinValueMax());
+   infolabel.Form(" %3.2f ",data.at(idata)->GetDoubleBinValueMin()); 
+   infolabel+=data.at(idata)->GetDoubleBinVariableName();
+   infolabel+=Form(" %3.2f ",data.at(idata)->GetDoubleBinValueMax());
 
    if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
    if (debug) std::cout<<cn<<mn<<" infolabel= "<<infolabel.Data()<<std::endl;
@@ -1806,15 +1808,15 @@ void SPXPlot::InitializeData(void) {
 
 		//Check if data with the same steering file has already been added to the data vector (same data...)
 		// Don't add to vector if it already exists
-		//if(dataSet.count(key) != 0) {
-		//	if(debug) std::cout << cn << mn << "Data with filename \"" << pci.dataSteeringFile.GetFilename() << \
+		if(dataSet.count(key) != 0) {
+			if(debug) std::cout << cn << mn << "Data with filename \"" << pci.dataSteeringFile.GetFilename() << \
 				"\" has already been processed: Will not process duplicate" << std::endl;
 
-		//	continue;
-		//}
+			continue;
+		}
 
 		//Add data steering file to data set
-		//dataSet.insert(key);
+		dataSet.insert(key);
 
 		if(debug) std::cout << cn << mn << "Added data with key = [" << key << "] to dataSet" << std::endl;
 
