@@ -1024,14 +1024,29 @@ void SPXPlot::DrawLegend(void) {
   if (data.size()==0)
    throw SPXGeneralException(cn+mn+"No data object found !");
 
-  std::cout<<" data.size()= "<< data.size()<<std::endl;
+  if (debug) std::cout<<" data.size()= "<< data.size()<<std::endl;
 
   for(int idata = 0; idata < data.size(); idata++) {                 
 
    TString datalabel=data.at(idata)->GetLegendLabel();
+
+   if (steeringFile->GetAddJournalLabel()) {
+    datalabel+=" "+data.at(idata)->GetJournalLegendLabel();
+   }
+
+   if (debug) std::cout<<" Add journal year ? "<<steeringFile->GetAddJournalYear()<<std::endl;
+
+   if (steeringFile->GetAddJournalYear()) {
+    std::cout<<" Add journal year= "<<data.at(idata)->GetJournalYear()<<std::endl;
+    //datalabel+=" "+data.at(idata)->GetJournalYear();
+    datalabel=" #splitline{"+datalabel+"}{";
+    datalabel+=data.at(idata)->GetJournalYear();
+    datalabel+="}";
+   }
+
    if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
+   if (debug) std::cout<<cn<<mn<<datalabel.Data()<<" namesize= "<<namesize<<std::endl;
    
-   std::cout<<cn<<mn<<datalabel.Data()<<" namesize= "<<namesize<<std::endl;
 
    if (!ratioonly) // ratioonly figures have data in the ratio, no separate label
 
@@ -1068,7 +1083,7 @@ void SPXPlot::DrawLegend(void) {
     if (gridcorrectionfound) std::cout << cn << mn <<"Grid corrections found !"<< std::endl;
    }
 
-   // look of NLO uncertainties are in the band
+   // look for NLO uncertainties are in the band
    TString pdftype = pdf->GetPDFtype();
    bool pdffound=false;
    bool nlouncertainty=false;
@@ -1256,6 +1271,10 @@ void SPXPlot::DrawLegend(void) {
  double sqrtsvalold = -1.;
  double jetR    = -1.;
  double jetRold = -1.;
+ string lumiold ="NOVALUE";
+
+ double doublebbinminold = -999.;
+ double doublebinmaxold  = -999.;
  
  for(int idata = 0; idata < data.size(); idata++) {                 
 
@@ -1297,7 +1316,10 @@ void SPXPlot::DrawLegend(void) {
    if (jetR!=jetRold) {
     jetRold=jetR;
     infolabel=data.at(idata)->GetJetAlgorithmLabel();
-    infolabel+=" R= ";
+    if (jetR<10)
+     infolabel+=" R= 0.";
+    else
+     infolabel+=" R= ";
     infolabel+=jetR;
     if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
     leginfo->AddEntry((TObject*)0, infolabel,"");
@@ -1306,17 +1328,37 @@ void SPXPlot::DrawLegend(void) {
   }
 
   if (data.at(idata)->GetDoubleBinVariableName().size()>0) {
-   infolabel="";
-   //infolabel+=
-   infolabel.Form(" %3.2f ",data.at(idata)->GetDoubleBinValueMin()); 
-   infolabel+=data.at(idata)->GetDoubleBinVariableName();
-   infolabel+=Form(" %3.2f ",data.at(idata)->GetDoubleBinValueMax());
+   double binmin = data.at(idata)->GetDoubleBinValueMin();
+   double binmax = data.at(idata)->GetDoubleBinValueMax();
+   if (binmin!=doublebbinminold && binmax!=doublebinmaxold) {
 
-   if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
-   if (debug) std::cout<<cn<<mn<<" infolabel= "<<infolabel.Data()<<std::endl;
+    doublebbinminold =  binmin;
+    doublebinmaxold  = binmax;
 
-   leginfo->AddEntry((TObject*)0, infolabel,"");
+    infolabel="";
+
+    infolabel.Form(" %3.2f ",binmin); 
+    infolabel+=data.at(idata)->GetDoubleBinVariableName();
+    infolabel+=Form(" %3.2f ",binmax);
+
+    if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
+    if (debug) std::cout<<cn<<mn<<" infolabel= "<<infolabel.Data()<<std::endl;
+
+    leginfo->AddEntry((TObject*)0, infolabel,"");
+   }
   }
+
+  if (steeringFile->GetAddLumiLabel()) {
+   string lumi = data.at(idata)-> GetDatasetLumi();
+   //std::cout<<"data set lumi= "<<lumi.c_str()<<std::endl;
+
+   if (lumi!=lumiold) {
+    lumiold=lumi; 
+    std::cout<<" add dataset lumi= "<<lumi.c_str()<<std::endl;
+    leginfo->AddEntry((TObject*)0, TString(lumi),"");
+   }
+  }
+
  }
  
  double xshift=3;

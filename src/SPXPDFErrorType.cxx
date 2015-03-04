@@ -21,7 +21,7 @@
 const std::string cn = "SPXPDFErrorType::";
 
 //Must define the static debug variable in the implementation
-bool SPXPDFErrorType::debug=true;
+bool SPXPDFErrorType::debug=false;
 
 //Constructs an SPXPDFErrorType object with a given string (effectively
 //	calls the Parse() method on the input string)

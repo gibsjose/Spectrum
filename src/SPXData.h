@@ -58,6 +58,15 @@ public:
 	 return pci.dataSteeringFile.GetLegendLabel();
         }
 
+        const std::string & GetJournalLegendLabel(void) {
+	 return pci.dataSteeringFile.GetReferenceJournalName();
+        }
+
+        const std::string & GetJournalYear(void) {
+	 return pci.dataSteeringFile.GetReferenceJournalYear();
+        }
+
+
         const double GetSqrtS(void) {
 	 return pci.dataSteeringFile.GetSqrtS();
         }
@@ -175,6 +184,16 @@ public:
 	  return this->totalErrorGraph;
 	}
 
+        void SetReadinCorrellationInformation(bool setReadin){
+         ReadInCorrelationInformation=setReadin;
+         return;
+        }
+
+        bool GetReadinCorrellationInformation(){
+         return ReadInCorrelationInformation;
+        }
+
+
         TMatrixT<double>  *GetDataCovarianceMatrix() {return cov_matrixtot;};
 
 private:
@@ -203,6 +222,8 @@ private:
 	TGraphAsymmErrors *totalErrorGraph;
 
         // stuff related to covariance matrix
+
+        bool ReadInCorrelationInformation; // if set covariance matrices are created
 
         TMatrixT<double>  *cov_matrixtot;
         TMatrixT<double>  *cov_matrixstat;

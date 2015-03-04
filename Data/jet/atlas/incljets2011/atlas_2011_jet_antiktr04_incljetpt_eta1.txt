@@ -1,5 +1,5 @@
 [GEN]
-debug = true
+debug = false
 
 [DESC]
 comments = This is a test comment

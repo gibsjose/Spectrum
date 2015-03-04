@@ -85,6 +85,12 @@ private:
 	double yRatioMin;	    //Force Y-Axis minimum for ratio section
 	double yRatioMax;	    //Force Y-Axis maximum for ratio section
 
+        double CalculateChi2;      // Calculate Chi2
+
+        bool AddLumi;             // add luminosity label in info legend
+        bool AddJournal;          // add journal label in legend
+        bool AddJournalYear;      // add journal year  in legend
+
 	//[FRAME_n]
 	std::vector<SPXPlotConfiguration> plotConfigurations;	//Options for each plot
 	void SetDefaultScales(void);
@@ -192,6 +198,28 @@ public:
 	double GetYRatioMax(void) const {
 		return this->yRatioMax;
 	}
+
+	bool GetAddLumiLabel(void) const {
+		return this->AddLumi;
+	}
+
+	bool GetAddJournalLabel(void) const {
+		return this->AddJournal;
+	}
+
+	bool GetAddJournalYear(void) const {
+		return this->AddJournalYear;
+	}
+
+	double GetCalculateChi2(void) const {
+		return this->CalculateChi2;
+	}
+
+	double SetCalculateChi2(double newchi2) {
+		CalculateChi2= newchi2;
+	}
+
+
 
 	bool GetBandwithPDF(void) const {
 		return this->BandwithPDF;

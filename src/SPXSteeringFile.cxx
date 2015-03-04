@@ -75,7 +75,7 @@ void SPXSteeringFile::SetDefaults(void) {
 	if(debug) std::cout << cn << mn << "yLegend set to default: \"0.93\"" << std::endl;
 
 	xInfoLegend = 0.4;
-	if(debug) std::cout << cn << mn << "xInfoLegend set to default: \"0.2\"" << std::endl;
+	if(debug) std::cout << cn << mn << "xInfoLegend set to default: \"0.4\"" << std::endl;
 
 	yInfoLegend = 0.4;
 	if(debug) std::cout << cn << mn << "yInfoLegend set to default: \"0.4\"" << std::endl;
@@ -91,6 +91,19 @@ void SPXSteeringFile::SetDefaults(void) {
 
 	yRatioMax = MAX_EMPTY;
 	if(debug) std::cout << cn << mn << "yRatioMax set to default: \"" << MAX_EMPTY << "\"" << std::endl;
+
+	CalculateChi2 = 0.0;
+	if(debug) std::cout << cn << mn << " CalculateChi2 set to default: OFF" << std::endl;
+
+        AddLumi=false;
+	if(debug) std::cout << cn << mn << " Addlumi set to default: OFF" << std::endl;
+
+        AddJournal=false;
+	if(debug) std::cout << cn << mn << " AddJournal set to default: OFF" << std::endl;
+
+        AddJournalYear=false;
+	if(debug) std::cout << cn << mn << " AddJournalYear set to default: OFF" << std::endl;
+
 }
 
 void SPXSteeringFile::PrintAll(void) {
@@ -238,8 +251,14 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Plot Marker is: " << (plotMarker ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Staggered is: " << (plotStaggered ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Match Binning is: " << (matchBinning ? "ON" : "OFF") << std::endl;
+        if (CalculateChi2==0) std::cout << "\t\t Calculate Chi2: OFF" << std::endl;
+        if (CalculateChi2==1) std::cout << "\t\t Calculate Simple Chi2" << std::endl;
 	std::cout << "\t\t Grid Corrections are: " << (gridCorr ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Label Sqrt(s) on Legend: " << (labelSqrtS ? "YES" : "NO") << std::endl;
+	std::cout << "\t\t Add luminosity label on Legend: " << (AddLumi ? "YES" : "NO") << std::endl;
+	std::cout << "\t\t Add journal label on Legend: " << (AddJournal ? "YES" : "NO") << std::endl;
+	std::cout << "\t\t Add journal year on Legend: " << (AddJournalYear ? "YES" : "NO") << std::endl;
+
 	std::cout << "\t\t X main Legend: " << xLegend << std::endl;
 	std::cout << "\t\t Y main Legend: " << yLegend << std::endl;
 	std::cout << "\t\t X information Legend: " << xInfoLegend << std::endl;
@@ -601,7 +620,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		//Get the data_marker_style
 		tmp = reader->Get(plotSection, "data_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			std::cout << cn << mn << "WARNING: No plot option for data_marker_style found: Defaulting to pre-defined settings (" << DEFAULT_DATA_MARKER_STYLE << ")" << std::endl;
+			std::cout << cn << mn << "INFO: No plot option for data_marker_style found: Defaulting to pre-defined settings (" << DEFAULT_DATA_MARKER_STYLE << ")" << std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -622,7 +641,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
        	        if(debug) std::cout << cn << mn << "Start parsing data_marker_color " << std::endl;
 		tmp = reader->Get(plotSection, "data_marker_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			std::cout << cn << mn << "WARNING: No plot option for data_marker_color found: Defaulting to pre-defined settings (" << DEFAULT_DATA_MARKER_COLOR << ")" << std::endl;
+			std::cout << cn << mn << "INFO: No plot option for data_marker_color found: Defaulting to pre-defined settings (" << DEFAULT_DATA_MARKER_COLOR << ")" << std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -753,7 +772,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "total_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "WARNING: No plot option for total_fill_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_style" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for total_fill_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_style" << std::endl;
 
                  if (configurations.count("pdf_fill_style")!=0)
 		  tmpVector = configurations["pdf_fill_style"];
@@ -779,7 +798,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "total_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "WARNING: No plot option for total_fill_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_color" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for total_fill_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_color" << std::endl;
 
                  if (configurations.count("pdf_fill_color")!=0)
 		  tmpVector = configurations["pdf_fill_color"];
@@ -806,7 +825,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "total_edge_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "WARNING: No plot option for total_edge_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_style" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for total_edge_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_style" << std::endl;
 
                  if (configurations.count("pdf_edge_style")!=0)
 		  tmpVector = configurations["pdf_edge_style"];
@@ -832,7 +851,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "total_edge_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "WARNING: No plot option for total_edge_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_edge_color" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for total_edge_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_edge_color" << std::endl;
 
                  if (configurations.count("pdf_edge_color")!=0)
 		  tmpVector = configurations["pdf_edge_color"];
@@ -859,7 +878,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "total_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "WARNING: No plot option for total_marker_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_marker_style" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for total_marker_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_marker_style" << std::endl;
 
 
 		 if (configurations.count("pdf_marker_style")!=0)
@@ -889,7 +908,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "scale_edge_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "WARNING: No plot option for scale_edge_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_edge_color" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for scale_edge_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_edge_color" << std::endl;
 
 		if (configurations.count("pdf_edge_color")!=0)
 		 tmpVector = configurations["pdf_edge_color"];
@@ -917,7 +936,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "scale_edge_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "WARNING: No plot option for scale_edge_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_edge_style" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for scale_edge_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_edge_style" << std::endl;
 
 		if (configurations.count("pdf_edge_style")!=0)
 		 tmpVector = configurations["pdf_edge_style"];
@@ -946,7 +965,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "scale_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "WARNING: No plot option for scale_fill_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_color" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for scale_fill_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_color" << std::endl;
 
 		if (configurations.count("pdf_fill_color")!=0)
 		 tmpVector = configurations["pdf_fill_color"];
@@ -974,7 +993,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "scale_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "WARNING: No plot option for scale_fill_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_color" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for scale_fill_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_color" << std::endl;
 
 		if (configurations.count("pdf_fill_style")!=0)
 		 tmpVector = configurations["pdf_fill_style"];
@@ -1003,7 +1022,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "scale_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "WARNING: No plot option for scale_marker_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_marker_color" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for scale_marker_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_marker_color" << std::endl;
 
 		if (configurations.count("pdf_marker_style")!=0)
 		 tmpVector = configurations["pdf_marker_style"];
@@ -1030,7 +1049,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "alphas_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "WARNING: No plot option for alphas_fill_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_style" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for alphas_fill_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_style" << std::endl;
 
 		if (configurations.count("pdf_fill_style")!=0)
 		 tmpVector = configurations["pdf_fill_style"];
@@ -1059,7 +1078,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "alphas_edge_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "WARNING: No plot option for alphas_edge_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_edge_color" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for alphas_edge_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_edge_color" << std::endl;
 
 		if (configurations.count("pdf_edge_color")!=0)
 		 tmpVector = configurations["pdf_edge_color"];
@@ -1088,7 +1107,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "alphas_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "WARNING: No plot option for alphas_fill_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_color" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for alphas_fill_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_color" << std::endl;
 
 		if (configurations.count("pdf_fill_color")!=0)
 		 tmpVector = configurations["pdf_fill_color"];
@@ -1114,7 +1133,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "alphas_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "WARNING: No plot option for alphas_marker_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_marker_style" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for alphas_marker_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_marker_style" << std::endl;
 
 		if (configurations.count("pdf_marker_style")!=0)
 		 tmpVector = configurations["pdf_marker_style"];
@@ -1142,7 +1161,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "corrections_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "WARNING: No plot option for corrections_fill_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_style" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for corrections_fill_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_style" << std::endl;
 
 		if (configurations.count("pdf_fill_style")!=0)
 		 tmpVector = configurations["pdf_fill_style"];
@@ -1171,7 +1190,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "corrections_edge_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "WARNING: No plot option for corrections_edge_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_edge_color" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for corrections_edge_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_edge_color" << std::endl;
 
 		if (configurations.count("corrections_edge_color")!=0)
 		 tmpVector = configurations["corrections_edge_color"];
@@ -1199,7 +1218,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "corrections_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "WARNING: No plot option for corrections_fill_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_color" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for corrections_fill_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_color" << std::endl;
 
 		if (configurations.count("corrections_fill_color")!=0)
 		 tmpVector = configurations["corrections_fill_color"];
@@ -1225,7 +1244,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "corrections_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "WARNING: No plot option for corrections_marker_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_marker_style" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for corrections_marker_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_marker_style" << std::endl;
 
 		if (configurations.count("pdf_marker_style")!=0)
 		 tmpVector = configurations["pdf_marker_style"];
@@ -1598,6 +1617,11 @@ void SPXSteeringFile::Parse(void) {
 	yRatioMin = reader->GetReal("GRAPH", "y_ratio_min", yRatioMin);
 	yRatioMax = reader->GetReal("GRAPH", "y_ratio_max", yRatioMax);
 
+
+	CalculateChi2 = reader->GetReal("GRAPH", "calculate_chi2", CalculateChi2);
+	AddLumi       = reader->GetBoolean("GRAPH", "label_lumi", AddLumi);
+	AddJournal    = reader->GetBoolean("GRAPH", "label_journalreference", AddJournal);
+	AddJournalYear= reader->GetBoolean("GRAPH", "label_journalyear", AddJournalYear);
 
 	if(debug) std::cout << cn << mn << "Start with ParsePlotConfigurations " << std::endl;
 
