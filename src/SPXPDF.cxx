@@ -1053,11 +1053,11 @@ void SPXPDF::CalcScaleErrors()
 
 void SPXPDF::CalcTotalErrors()
 {
- std::string mn = "CalcTotalErrors:";
+ std::string mn = "CalcTotalErrors: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if (!do_Total) {
-  std::cout <<cn<<mn<< "WARNING do_total is off, return"<< std::endl;
+  std::cout <<cn<<mn<< "WARNING do_total is off, will not calculate total error"<< std::endl;
   return;
  }
 
@@ -1512,7 +1512,7 @@ string SPXPDF::GetBandType(int i){
 };
 
 void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel, bool includeinband){
- std::string mn = "ApplybandCorrections: ";
+ std::string mn = "ApplyBandCorrections: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if (!gcorr) {
@@ -1650,7 +1650,7 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
   double x=0., y=0.;
   gband2->GetPoint(ibin,x,y);
 
-  std::cout <<cn<<mn<< "ibin= "<<ibin<<" y= "<<y<<" reyl= "<<reyl<<" reyh= "<<reyh<< std::endl;
+  if (debug) std::cout <<cn<<mn<< "ibin= "<<ibin<<" y= "<<y<<" reyl= "<<reyl<<" reyh= "<<reyh<< std::endl;
 
   double eyl2 = reyl*y, eyh2 = reyh*y;
 

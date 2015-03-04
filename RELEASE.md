@@ -6,6 +6,8 @@
 
 ## Change Log
 
+do not calculate correlation information if not needed, no debug ON per default (code and steering)
+introduce journal, data etc in information legend
 
 ### release-0.96
 

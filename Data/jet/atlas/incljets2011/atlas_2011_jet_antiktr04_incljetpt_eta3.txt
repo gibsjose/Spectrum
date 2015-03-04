@@ -1,5 +1,5 @@
 [GEN]
-debug = true
+debug = false
 
 [DESC]
 reference_journal_year=

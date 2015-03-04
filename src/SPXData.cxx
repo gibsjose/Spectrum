@@ -51,9 +51,14 @@ SPXData::SPXData(const SPXPlotConfigurationInstance &pci) {
  if (debug) std::cout<<cn<<mn<<"Create graphs"<<std::endl;
  this->CreateGraphs();
 
- if (debug) std::cout<<cn<<mn<<"Read correlation matrix"<<std::endl;
- this->ReadCorrelation(); 
+ ReadInCorrelationInformation=false; // implement that this can be set from outside via SetReadinCorrellationInformation
 
+ if (ReadInCorrelationInformation) {
+  if (debug) std::cout<<cn<<mn<<"Read correlation matrix"<<std::endl;
+  this->ReadCorrelation(); 
+ } else {
+   if (debug) std::cout<<cn<<mn<<"Reading in information on correlation turned off !"<<std::endl;
+ }
  return;
 }
 
@@ -382,13 +387,15 @@ void SPXData::ParseSpectrum(void) {
 				if(percentDifference_p > INDIV_VS_TOT_ACCEPTABLE_ERROR) {
 					std::cerr << cn << mn << "WARNING: Bin " << i << ": Sum of POSITIVE individual errors (" << syst_p_t << \
 					 	") does not agree within " << (INDIV_VS_TOT_ACCEPTABLE_ERROR * 100) << \
-							"% with the given POSITIVE total systematic error (" << given_total_p << ")" << std::endl;
+							"% with the given POSITIVE tot syst error (" << given_total_p << ")"
+						  <<" percent difference is= "<<percentDifference_p*100. << std::endl;
 				}
 
 				if(percentDifference_n > INDIV_VS_TOT_ACCEPTABLE_ERROR) {
 					std::cerr << cn << mn << "WARNING: Bin " << i << ": Sum of NEGATIVE individual errors (" << syst_n_t << \
 						") does not agree within " << (INDIV_VS_TOT_ACCEPTABLE_ERROR * 100) << \
-							"% with the given NEGATIVE total systematic error (" << given_total_n << ")" << std::endl;
+							"% with the given NEGATIVE tot syst error (" << given_total_n << ")"
+						  <<" percent difference is= "<<percentDifference_n*100. << std::endl;
 				}
 			}
 		}
@@ -732,7 +739,7 @@ void SPXData::PrintSpectrum(void) {
 	for(int i = 0; i < numberOfBins; i++) {
 		//Show 4 decimal places
 		std::cout << std::fixed;
-		std::cout.precision(4);
+		std::cout.precision(6);
 
 		std::cout << "| ";
 		std::cout.width(10);

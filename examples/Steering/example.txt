@@ -45,6 +45,9 @@ plot_staggered = true		                ;[Optional] Stagger points horizontally t
 match_binning = true				;[Optional] Match the binning for all graphs in the plot - [default = true]
 grid_corr = true				;[Optional] Apply the grid corrections for all grids if true
 label_sqrt_s = true				;[Optional] Specify to show the Sqrt(s) on the legend - [default = false]
+;label_lumi                                     ;[Optional] Add luminosity label 
+;label_journalreference                         ;[Optional] Add journal reference label
+label_journalyear = true                        ;[Optional] Add journal year 
 x_legend = 0.9				        ;[Optional] X(Right)-Position of main Legend, based on top right side
 y_legend = 0.9					;[Optional] Y(Top)-Position of main legend, based on top right side
 x_info_legend = 0.9				;[Optional] X(Right)-Position of information Legend, based on top right side
@@ -54,6 +57,9 @@ y_info_legend = 0.9			        ;[Optional] Y(Top)-Position of information legend,
 ; y_ratio_min =					;[Optional] Force Y-Axis minimum for ratio section
 ; y_ratio_max = 			        ;[Optional] Force Y-Axis maximum for ratio section
 
+;
+calculate_chi2 0 ;[Optional] calculate chi2 0=off [default]
+;                                           1 simple chi2 CalculateSimpleChi2                             
 ;--------------------------------------------------------------
 ; NOTE:
 ;

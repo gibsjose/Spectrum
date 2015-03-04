@@ -9,7 +9,7 @@
 ; General Options
 ;==============================================================
 [GEN]
-debug = true
+debug = false
 pdf_directory = PDF
 data_directory = Data/top/atlas/ttbarnjets
 grid_directory = Grids/top/sherpa/ttbarnjets/applgridsherpa

@@ -101,7 +101,7 @@ SPXPlotConfiguration::SPXPlotConfiguration(std::map<std::string, std::vector<std
 void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> > &options) {
 	std::string mn = "Parse: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
-	
+
 	//Vectors for creating the actual instances
 	std::vector<std::string> ddr;	//Data directories
 	std::vector<std::string> gdr;	//Grid directories
@@ -812,6 +812,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		for(int i = 0; i < numberOfConfigurationInstances; i++) {
 
 
+
   	          //if(debug) std::cout << cn << mn << "data_steering_files count= " <<
 		  //	      options.count("data_steering_files")<< std::endl;
 
@@ -1231,7 +1232,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		if(sfsSize) pci.scaleFillStyle = atoi(sfs.at(i).c_str());
 		else 		pci.scaleFillStyle = PC_EMPTY_STYLE;
 
-		if(sfcSize) pci.scaleFillColor = atoi(sfc.at(i).c_str());
+		if(sfcSize) pci.scaleFillColor = atoi(sfc.at(i).c_str()); 
 		else 		pci.scaleFillColor = PC_EMPTY_COLOR;
 
 		if(sesSize) pci.scaleEdgeStyle = atoi(ses.at(i).c_str());
@@ -1260,7 +1261,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		if(cfsSize) pci.correctionsFillStyle = atoi(cfs.at(i).c_str());
 		else 		pci.correctionsFillStyle = PC_EMPTY_STYLE;
-
+  
 		if(cfcSize) pci.correctionsFillColor = atoi(cfc.at(i).c_str());
 		else 		pci.correctionsFillColor = PC_EMPTY_COLOR;
 
