@@ -1024,7 +1024,7 @@ void SPXPlot::DrawLegend(void) {
   if (data.size()==0)
    throw SPXGeneralException(cn+mn+"No data object found !");
 
-  if (debug) std::cout<<" data.size()= "<< data.size()<<std::endl;
+  if (debug) std::cout<<cn<<mn<<" data.size()= "<< data.size()<<std::endl;
 
   for(int idata = 0; idata < data.size(); idata++) {                 
 
@@ -1034,14 +1034,14 @@ void SPXPlot::DrawLegend(void) {
     datalabel+=" "+data.at(idata)->GetJournalLegendLabel();
    }
 
-   if (debug) std::cout<<" Add journal year ? "<<steeringFile->GetAddJournalYear()<<std::endl;
+   if (steeringFile->GetAddJournalYear()) if (debug) std::cout<<cn<<mn<<" Add journal year  "<<std::endl;
 
    if (steeringFile->GetAddJournalYear()) {
-    std::cout<<" Add journal year= "<<data.at(idata)->GetJournalYear()<<std::endl;
-    //datalabel+=" "+data.at(idata)->GetJournalYear();
-    datalabel=" #splitline{"+datalabel+"}{";
-    datalabel+=data.at(idata)->GetJournalYear();
-    datalabel+="}";
+     if (debug) std::cout<<" Add journal year= "<<data.at(idata)->GetJournalYear()<<std::endl;
+    datalabel+=" "+data.at(idata)->GetJournalYear();
+    //datalabel=" #splitline{"+datalabel+"}{";
+    //datalabel+=data.at(idata)->GetJournalYear();
+    //datalabel+="}";
    }
 
    if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
@@ -1049,31 +1049,38 @@ void SPXPlot::DrawLegend(void) {
    
 
    if (!ratioonly) // ratioonly figures have data in the ratio, no separate label
-
-   leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
+    leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
 
   }
  }
-
-
 
  if(os.ContainsConvolute()) {
 
   if (debug) std::cout << cn << mn <<"contains convolute "<< std::endl;
   int npdf=0; int iold=-1;
   for(int icross = 0; icross < crossSections.size(); icross++) {
+   // Now analyze PDF-object
    //Get PDF object
    SPXPDF * pdf=crossSections[icross].GetPDF();
    int nbands=pdf->GetNBands();
-   if (nbands<1) throw SPXGeneralException(cn+mn+"no band found !"); 
-
-   // look if it only grid corrections
+   TString pdftype = pdf->GetPDFtype();
+   if (nbands<1) throw SPXGeneralException(cn+mn+"No band found, but PDF object exist !"); 
+   bool pdffound=false;
+   bool nlouncertainty=false;
    bool gridcorrectionfound=false;
-   if(steeringFile->ApplyGridCorr()) {
-    std::vector<string> corrlabel=crossSections[icross].GetCorrectionLabels();
-    for (int iband=0; iband<nbands; iband++) {
+
+   for (int iband=0; iband<nbands; iband++) {
+    string gtype    = pdf->GetBandType(iband);
+    TGraphAsymmErrors * gband = pdf->GetBand(iband);
+
+    if (gtype.compare(string("alphas"))==0) nlouncertainty=true;
+    if (gtype.compare(string("scale"))==0)  nlouncertainty=true;
+    if (gtype.compare(string("pdf"))==0) {
+     pdffound=true; nlouncertainty=true;
+    }
+    if(steeringFile->ApplyGridCorr()) {
+     std::vector<string> corrlabel=crossSections[icross].GetCorrectionLabels();
      for(int ic = 0; ic < corrlabel.size(); ic++) {
-      string gtype   =pdf->GetBandType(iband);
       if (gtype.compare(corrlabel[ic])==0) gridcorrectionfound=true;	   
      }
     }
@@ -1081,24 +1088,8 @@ void SPXPlot::DrawLegend(void) {
 
    if (debug) {
     if (gridcorrectionfound) std::cout << cn << mn <<"Grid corrections found !"<< std::endl;
-   }
-
-   // look for NLO uncertainties are in the band
-   TString pdftype = pdf->GetPDFtype();
-   bool pdffound=false;
-   bool nlouncertainty=false;
-   for (int iband=0; iband<nbands; iband++) {
-    TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-    string              gtype   =pdf->GetBandType(iband);
-    if (gtype.compare(string("pdf"))==0) {
-     pdffound=true; nlouncertainty=true;
-    }
-    if (gtype.compare(string("alphas"))==0) nlouncertainty=true;
-    if (gtype.compare(string("scale"))==0)  nlouncertainty=true;
-   }
-         
-   if (debug) {
-    if (nlouncertainty) std::cout << cn << mn <<"Band contains NLO uncertainty !"<< std::endl;
+    if (nlouncertainty)      std::cout << cn << mn <<"Band contains NLO uncertainty !"<< std::endl;
+    if (pdffound)            std::cout << cn << mn <<"Band contains PDF !"<< std::endl;
    }
 
    if (!bandsdifferent) {
@@ -1110,7 +1101,7 @@ void SPXPlot::DrawLegend(void) {
       if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
       for(int ic = 0; ic < corrlabel.size(); ic++) {
        string label=" #otimes "+corrlabel[ic];
-       if (debug) std::cout<<cn<<mn<<" grid correction label= "<<label.c_str()<<std::endl;
+       //if (debug) std::cout<<cn<<mn<<"grid correction label= "<<label.c_str()<<std::endl;
        text+=TString(label); // do this better
       }
       if (text.Sizeof()>namesize) namesize=text.Sizeof();
@@ -1140,6 +1131,8 @@ void SPXPlot::DrawLegend(void) {
      TString bandtype=TString(gtype);
      bandtype.ToUpper();
      if (bandtype.Contains("ALPHAS")) bandtype="#alpha_{s}";
+     if (bandtype.Contains("SCALE"))  bandtype="Scale";
+     if (bandtype.Contains("TOTAL"))  bandtype="Total";
      if (gtype.compare(string("pdf"))==0)
       label=pdftype+" "+bandtype;
      else
@@ -1147,28 +1140,20 @@ void SPXPlot::DrawLegend(void) {
 
      if (steeringFile->GetPlotMarker()) { 
       //std::cout<<cn<<mn<<" Plot marker "<<std::endl;
+      if (debug) std::cout<<cn<<mn<<"0 add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<std::endl;
       leg->AddEntry(gband, label, "P");
      } else if (steeringFile->GetPlotBand()) {
-      std::cout<<cn<<mn<<" Plot type "<<bandtype<<std::endl;
-      std::cout<<cn<<mn<<" gband Name "<<gband->GetName()<<std::endl;
+      if (debug) std::cout<<cn<<mn<<"Plot type "<<bandtype<<std::endl;
+      if (debug) std::cout<<cn<<mn<<"gband Name= "<<gband->GetName()<<std::endl;
       string opt="LF";
       int edgecolor=-1; 
       TString gname=gband->GetName();
      
-      //std::cout<<cn<<mn<<" pci.alphasFillColor= "<<pci.alphasFillColor<<std::endl;      
-      //std::cout<<cn<<mn<<" pci.scaleFillColor= " <<pci.scaleFillColor <<std::endl;      
-      //std::cout<<cn<<mn<<" pci.pdfFillColor= "   <<pci.pdfFillColor   <<std::endl;      
-      //std::cout<<cn<<mn<<" pci.totalFillColor= " <<pci.totalFillColor <<std::endl;      
-
-      //std::cout<<cn<<mn<<" pci.alphasEdgeColor= "<<pci.alphasEdgeColor<<std::endl;      
-      //std::cout<<cn<<mn<<" pci.scaleEdgeColor= " <<pci.scaleEdgeColor <<std::endl;      
-      //std::cout<<cn<<mn<<" pci.pdfEdgeColor= "   <<pci.pdfEdgeColor   <<std::endl;      
-      //std::cout<<cn<<mn<<" pci.totalEdgeColor= " <<pci.totalEdgeColor <<std::endl;      
-
       if(gname.Contains("_alphas_")) edgecolor=pci.alphasEdgeColor;
       if(gname.Contains("_scale_"))  edgecolor=pci.scaleEdgeColor;
       if(gname.Contains("_pdf_"))    edgecolor=pci.pdfEdgeColor;
       if(gname.Contains("_total_"))  edgecolor=pci.totalEdgeColor;
+      if(gname.Contains("_corrections_")) edgecolor=pci.correctionsEdgeColor;
 
       //int edgestyle  =pci.correctionsEdgeStyle;
       std::cout<<cn<<mn<<" edgecolor= "<<edgecolor<<std::endl;      
@@ -1179,13 +1164,15 @@ void SPXPlot::DrawLegend(void) {
        hname+="LowEdge";
        TH1D *hedge=(TH1D*)gDirectory->Get(hname);
        if (hedge) {
-        std::cout<<cn<<mn<<" hedge line= "<<hedge->GetLineWidth()<<std::endl;      
+	if (debug) std::cout<<cn<<mn<<" hedge line= "<<hedge->GetLineWidth()<<std::endl;      
         leg->AddEntry(hedge, label, TString(opt));
        } else {
-	std::cout<<cn<<mn<<" hedge= "<<hname<<" not found. Fill band "<<std::endl;      
+	if (debug) std::cout<<cn<<mn<<" hedge= "<<hname<<" not found. Fill band "<<std::endl;      
+        if (debug) std::cout<<cn<<mn<<"1 add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<std::endl;
         leg->AddEntry(gband, label, TString(opt));
        }
       } else {
+       if (debug) std::cout<<cn<<mn<<"add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<std::endl;
        leg->AddEntry(gband, label, TString(opt));
       }
      } else
@@ -1198,12 +1185,14 @@ void SPXPlot::DrawLegend(void) {
      string              gtype   =pdf->GetBandType(iband);
 
      if (debug) std::cout << cn << mn <<"Same properties iband= "<<iband<<" gtype= "<< gtype.c_str()<< std::endl;
-
+      
      if (gtype.compare(string("pdf"))==0){
       pdffound=true; npdf++;
       if (steeringFile->GetPlotMarker()) {
+       if (debug) std::cout<<cn<<mn<<"in PDF Plot marker add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<std::endl;
        leg->AddEntry(gband, pdftype, "PE");
       } else if (steeringFile->GetPlotBand()) {
+       if (debug) std::cout<<cn<<mn<<"in pdf add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<std::endl;
        leg->AddEntry(gband, pdftype, "LF");
       } else
        std::cout << cn << mn <<"WARNING do not know what to do not plotMarker, not plotBand"<< std::endl;
@@ -1212,15 +1201,22 @@ void SPXPlot::DrawLegend(void) {
       //std::cout<<cn<<mn<<pdftype.Data()<<" namesize= "<<namesize<<std::endl;
      }
 
-     //if (debug) std::cout << cn << mn <<"npdf= "<<npdf<< std::endl;
-     if (pdffound) {
-      if (debug) std::cout << cn << mn <<"PDF found "<< pdftype.Data()<< std::endl;
+     if (nbands==1) { // band has same properties because there is only one uncertainty
+      if (debug) std::cout<<cn<<mn<<"nbands=1 add in legend iband= "<<iband<<" gtype= "<<gtype.c_str()<<std::endl;
+      leg->AddEntry(gband, TString(gtype), "LF");
      } else {
-      if (debug) std::cout << cn << mn <<"No PDF band found "<< std::endl;
-      if(steeringFile->ApplyGridCorr()) {
+      //if (debug) std::cout << cn << mn <<"npdf= "<<npdf<< std::endl;
+      //if (pdffound) {
+      // if (debug) std::cout << cn << mn <<"PDF found "<< pdftype.Data()<< std::endl;
+      //} else {
+      // if (debug) std::cout << cn << mn <<"No PDF band found "<< std::endl;
+      //if(steeringFile->ApplyGridCorr()) {
+      TString gname=gband->GetName();
+      if (gname.Contains("_corrections_")) {
        std::vector<string> corrlabel=crossSections[icross].GetCorrectionLabels();
        if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
        for(int ic = 0; ic < corrlabel.size(); ic++) {
+        if (debug) std::cout<<cn<<mn<<"add in legend ic= "<<std::endl;
         leg->AddEntry(gband, TString(corrlabel[ic]), "LF");
        }
       } else if (debug) std::cout << cn << mn <<"No grid corrections specified "<< std::endl;
@@ -1337,12 +1333,20 @@ void SPXPlot::DrawLegend(void) {
 
     infolabel="";
 
-    infolabel.Form(" %3.2f ",binmin); 
-    infolabel+=data.at(idata)->GetDoubleBinVariableName();
+    TString varname=data.at(idata)->GetDoubleBinVariableName();
+
+    if (binmin!=0) {
+     infolabel.Form(" %3.2f ",binmin); 
+    } else {
+     //std::cout<<" varname= "<<varname.Data()<<std::endl;
+     varname.ReplaceAll("#leq","");
+     varname.ReplaceAll("","");
+    }
+    infolabel+=varname;
     infolabel+=Form(" %3.2f ",binmax);
 
     if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
-    if (debug) std::cout<<cn<<mn<<" infolabel= "<<infolabel.Data()<<std::endl;
+    if (debug) std::cout<<cn<<mn<<"infolabel= "<<infolabel.Data()<<std::endl;
 
     leginfo->AddEntry((TObject*)0, infolabel,"");
    }
@@ -1965,11 +1969,11 @@ void SPXPlot::DrawBand(SPXPDF *pdf, string option, SPXPlotConfigurationInstance 
   TGraphAsymmErrors * gband   =pdf->GetBand(iband);
   if (!gband) {
    std::ostringstream oss;
-   oss << cn <<mn<<"Get bands "<<"Band "<<iband<<" not found at index for "<< pdf->GetPDFName();
+   oss << cn <<mn<<"Band "<<iband<<" not found at index "<<iband<<" for "<< pdf->GetPDFName();
    throw SPXGeneralException(oss.str());
   }
 
-  string gtype                =pdf->GetBandType(iband);
+  string gtype =pdf->GetBandType(iband);
   TString gname=gband->GetName();
 
   if (gname.Contains("_total_")) detailedband=true;
@@ -1996,7 +2000,7 @@ void SPXPlot::DrawBand(SPXPDF *pdf, string option, SPXPlotConfigurationInstance 
     std::cout<< cn << mn <<"\n Drew "<<gband->GetName()<< " with options "<<option.c_str()
                          << " fillcolor= " << gband->GetFillColor() 
                          << " fillstyle= " << gband->GetFillStyle() 
-                         << " markerstyle= " << gband->GetMarkerStyle() 
+                         << " markerstyle= "<<gband->GetMarkerStyle() 
                          << std::endl;          
      gband->Print();
    }
@@ -2004,12 +2008,64 @@ void SPXPlot::DrawBand(SPXPDF *pdf, string option, SPXPlotConfigurationInstance 
   return;
  }
 
- std::cout<<" total edge_color= "<<pci.totalEdgeColor<<" edge_style= "<<pci.totalEdgeStyle<<std::endl;
- double edgecolor=pci.totalEdgeColor;
- double edgestyle=pci.totalEdgeStyle;
+ double edgecolor  =pci.totalEdgeColor;
+ double edgestyle  =pci.totalEdgeStyle;
+ double fillcolor  =pci.totalFillColor;
+ double fillstyle  =pci.totalFillStyle;
+ double markerstyle=pci.totalMarkerStyle;
+ //double fillcolor  =pci.correctionsFillColor;
+ //double fillstyle  =pci.correctionsFillStyle;
+ //double markerstyle=pci.correctionsMarkerStyle;
 
  for (int iband=0; iband<nbands; iband++) {
   TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+  TString gname=gband->GetName();
+  string  gtype=pdf->GetBandType(iband);
+
+  if (debug) std::cout<<cn<<mn<<"gname= "<<gname.Data()<<" type= "<<gtype.c_str()<<std::endl;
+
+  if (gname.Contains("_total_")) { 
+   fillcolor  =pci.totalFillColor;
+   edgecolor  =pci.totalEdgeColor;
+   edgestyle  =pci.totalEdgeStyle;
+   fillstyle  =pci.totalFillStyle;
+   markerstyle=pci.totalMarkerStyle;
+  }
+
+  if (gname.Contains("_scale_")) { 
+   fillcolor  =pci.scaleFillColor;
+   edgecolor  =pci.scaleEdgeColor;
+   edgestyle  =pci.scaleEdgeStyle;
+   fillstyle  =pci.scaleFillStyle;
+   markerstyle=pci.scaleMarkerStyle;
+  }
+
+  if (gname.Contains("_alphas_")) { 
+   fillcolor  =pci.alphasFillColor;
+   edgecolor  =pci.alphasEdgeColor;
+   edgestyle  =pci.alphasEdgeStyle;
+   fillstyle  =pci.alphasFillStyle;
+   markerstyle=pci.alphasMarkerStyle;
+  }
+
+  if (gname.Contains("_pdf_")) { 
+   fillcolor  =pci.pdfFillColor;
+   edgecolor  =pci.pdfEdgeColor;
+   fillstyle  =pci.pdfFillStyle;
+   edgestyle  =pci.pdfEdgeStyle;
+   markerstyle=pci.pdfMarkerStyle;
+  }
+
+  if (gname.Contains("_corrections_")) { 
+   fillcolor  =pci.correctionsFillColor;
+   edgecolor  =pci.correctionsEdgeColor;
+   fillstyle  =pci.correctionsFillStyle;
+   edgestyle  =pci.correctionsEdgeStyle;
+   markerstyle=pci.correctionsMarkerStyle;
+  }
+
+  if (debug) std::cout<<cn<<mn<<"edgecolor= "<<edgecolor<<" edgestyle= "<<edgestyle
+                              <<"fillcolor= "<<fillcolor<<" fillstyle= "<<fillstyle<<std::endl;
 
   if (edgecolor!=0) { // 0 is default in SPXPlotConfiguration.h
    TH1D *hedgelow =SPXGraphUtilities::GetEdgeHistogram(gband,true);

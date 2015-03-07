@@ -43,7 +43,7 @@ divided_by_bin_width = true
 [GRID]								 
 grid_file = atlas-incljets-R06-eta6.root
 correction_files = atlas_2011_2p76TeV_jet_antiktr06_incljetpt_eta6_hadcorr.txt
-correction_files_label = k_{had}
+correction_files_label = k_{NP}
 correction_files_reference = EPJ C73 (2013) 2509   
 correction_files_author    = ATLAS
 correction_files_program = Pythia and Herwig tunes

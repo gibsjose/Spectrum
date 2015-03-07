@@ -392,7 +392,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		if(options.count("scale_fill_color")) {
 			tmpVector = options["scale_fill_color"];
-			std::cout << "\tscale_fill_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+			std::cout << cn<<mn<<"\tscale_fill_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
 			if(debug) std::cout << cn << mn << "No scale_fill_color option specified" << std::endl;
 		}
@@ -406,7 +406,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		if(options.count("scale_edge_color")) {
 			tmpVector = options["scale_edge_color"];
-			std::cout << "\tscale_edge_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+			std::cout << cn<<mn<<"\tscale_edge_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
 			if(debug) std::cout << cn << mn << "No scale_edge_color option specified" << std::endl;
 		}
@@ -572,7 +572,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		cecSize = options["corrections_edge_color"].size();
 	}
 	if(options.count("corrections_marker_style")) {
-		cfsSize = options["corrections_marker_style"].size();
+		cmsSize = options["corrections_marker_style"].size();
 	}
 
 	if(options.count("x_scale")) {
@@ -929,8 +929,8 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		  if(cfsSize) cfs.push_back(options["corrections_fill_style"].at(0));	   
 		  if(cfcSize) cfc.push_back(options["corrections_fill_color"].at(0));        //Just one instance of correction fill style
-		  if(cesSize) cfs.push_back(options["corrections_edge_style"].at(0));	   
-		  if(cecSize) cfc.push_back(options["corrections_edge_color"].at(0));        //Just one instance of correction edge style
+		  if(cesSize) ces.push_back(options["corrections_edge_style"].at(0));	   
+		  if(cecSize) cec.push_back(options["corrections_edge_color"].at(0));        //Just one instance of correction edge style
 		  if(cmsSize) cms.push_back(options["corrections_marker_style"].at(0));	   
 
 		  if(xsSize > 1) 			xsc.push_back(options["x_scale"].at(i));

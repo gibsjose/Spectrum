@@ -19,7 +19,7 @@ plot_band = true
 plot_marker = false
 ;plot_staggered = true
 match_binning = true
-;grid_corr = true
+;apply_grid_corr = true
 label_sqrt_s = true
 x_legend = 0.9
 y_legend = 0.9
@@ -69,17 +69,20 @@ total_fill_color=800
 total_edge_style=1
 total_edge_color=797
 
+correction_fill_style = 3003
+correction_fill_color = 416
+;correction_marker_style = 24
 
 pdf_fill_style=1001
 pdf_fill_color=803
-pdf_edge_style=9
-pdf_edge_color=-1
+pdf_edge_style=1
+pdf_edge_color=804
 ;pdf_marker_style=22
 
-scale_fill_style=1001
-scale_fill_color=821
-scale_edge_style=1
-scale_edge_color=823
+;scale_fill_style=1001
+;scale_fill_color=821
+;scale_edge_style=1
+;scale_edge_color=823
 ;scale_marker_style=23
 
 ;alphas_fill_style=3001

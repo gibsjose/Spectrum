@@ -19,7 +19,7 @@ plot_band = true
 plot_marker = false
 ;plot_staggered = true
 match_binning = false
-grid_corr = true
+apply_grid_corr = true
 label_sqrt_s = true
 ;x_legend = 0.95
 ;y_legend = 0.95
@@ -96,6 +96,6 @@ desc = atlas_inclusive_jet_eta1
 display_style = ratio
 overlay_style = data, convolute
 
-ratio_title = NLO QCD/Nominal
+ratio_title = hadronisation uncertainty
 ratio_style_0 = convolute / nominal
 ratio_0 = ([grid_0, pdf_0])

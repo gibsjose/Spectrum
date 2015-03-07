@@ -1491,6 +1491,7 @@ TGraphAsymmErrors * SPXPDF::GetBand(int i){
     return it->second;
   } else j++;
  }
+ return 0;
 };
 
 string SPXPDF::GetBandType(int i){ 
@@ -1509,6 +1510,8 @@ string SPXPDF::GetBandType(int i){
     return it->first;
   } else j++;
  }
+ string empty="";
+ return empty;
 };
 
 void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel, bool includeinband){
@@ -1522,8 +1525,7 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
  }
 
  if (debug) { 
-  std::cout<<cn<<mn<<"Apply "<<corrLabel.c_str()<<" correction from graph: "
-		   <<gcorr->GetName()<<std::endl;
+  std::cout<<cn<<mn<<"Apply "<<corrLabel.c_str()<<" correction from graph: "<<gcorr->GetName()<<std::endl;
   gcorr->Print();
  }
 
@@ -1544,7 +1546,7 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
   TGraphAsymmErrors *gband=it->second;
   if (!gband) {
    std::ostringstream oss;
-   oss << cn << mn << "Graph in band not found ";
+   oss << cn << mn << "Graph in band not found !";
    throw SPXParseException(oss.str());
   }
 
@@ -1557,6 +1559,11 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
   //gcorr->Print();
 
   if (gband->GetN()!=gcorr->GetN()) {
+   SPXGraphUtilities::MatchBinning(gband, gcorr, false);
+  }
+
+  if (gband->GetN()!=gcorr->GetN()) {
+    std::cout<<cn<<mn<<"Was not able to match graphs ! "<<endl;
    std::ostringstream oss;
    oss << cn << mn << "Graph "<<gband->GetName()<<" has different nbin= "<<gband->GetN()<<" than graph"<<gcorr->GetName()<<" nbin= "<<gcorr->GetN();
    throw SPXParseException(oss.str());
@@ -1564,10 +1571,11 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
 
   SPXGraphUtilities::Multiply(gband,gcorr,1);
 
-  //std::cout <<cn<<mn<< "After multiply: gcorr: " << gcorr->GetName()<< std::endl;
+  if (debug) std::cout <<cn<<mn<< "After multiply: gcorr: " << gcorr->GetName()<< std::endl;
   //gcorr->Print();
 
   TString newname=gband->GetName(); 
+  if (debug) std::cout <<cn<<mn<< " gband name: " << gband->GetName()<< std::endl;
   newname+="_"+corrLabel;
   gband->SetName(newname);
 
@@ -1620,7 +1628,7 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
   throw SPXParseException(oss.str());
  }
 
- gband2->SetName(TString(corrLabel));
+ gband2->SetName(TString("_corrections_")+TString(corrLabel));
  
  int nbin=gband2->GetN();
  if (debug) std::cout <<cn<<mn<< "nbin= "<<nbin<< std::endl;

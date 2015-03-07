@@ -1192,8 +1192,8 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		if(!tmp.compare("EMPTY")) {
 		 std::cout << cn << mn << "INFO: No plot option for corrections_edge_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_edge_color" << std::endl;
 
-		if (configurations.count("corrections_edge_color")!=0)
-		 tmpVector = configurations["corrections_edge_color"];
+		if (configurations.count("pdf_edge_color")!=0)
+		 tmpVector = configurations["pdf_edge_color"];
 		} else {
 		   //Parse into vector
 		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -1209,7 +1209,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		//Add to configurations map
 		if (tmpVector.size()!=0)
 		 configurations.insert(std::pair<std::string, std::vector<std::string> >("corrections_edge_color", tmpVector));
-		if(debug) std::cout << cn << mn << "configurations[corrections_edge_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["corrections_fill_color"]) << std::endl;
+		if(debug) std::cout << cn << mn << "configurations[corrections_edge_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["corrections_edge_color"]) << std::endl;
 
 		//------
 
@@ -1220,8 +1220,8 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		if(!tmp.compare("EMPTY")) {
 		 std::cout << cn << mn << "INFO: No plot option for corrections_fill_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_color" << std::endl;
 
-		if (configurations.count("corrections_fill_color")!=0)
-		 tmpVector = configurations["corrections_fill_color"];
+		if (configurations.count("pdf_fill_color")!=0)
+		 tmpVector = configurations["pdf_fill_color"];
 		} else {
 		   //Parse into vector
 		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -1538,7 +1538,7 @@ void SPXSteeringFile::Parse(void) {
 
 	tmp = reader->Get("GRAPH","band_with_gridcorrection", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
-	 if(debug) std::cout << cn << mn << "No grid_correction in band " << std::endl;       
+	 if(debug) std::cout << cn << mn << "No grid correction included in band " << std::endl;       
 	}else{
 	 //Parse into vector
          gridcorrections.clear();
@@ -1603,7 +1603,7 @@ void SPXSteeringFile::Parse(void) {
 	plotMarker = reader->GetBoolean("GRAPH", "plot_marker", plotMarker);
 	plotStaggered = reader->GetBoolean("GRAPH", "plot_staggered", plotStaggered);
 	matchBinning = reader->GetBoolean("GRAPH", "match_binning", matchBinning);
-	gridCorr = reader->GetBoolean("GRAPH", "grid_corr", gridCorr);
+	gridCorr = reader->GetBoolean("GRAPH", "apply_grid_corr", gridCorr);
 	labelSqrtS = reader->GetBoolean("GRAPH", "label_sqrt_s", labelSqrtS);
 
 	xLegend = reader->GetReal("GRAPH", "x_legend", xLegend);

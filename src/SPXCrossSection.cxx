@@ -20,7 +20,7 @@
 const std::string cn = "SPXCrossSection::";
 
 //Must define the static debug variable in the implementation
-bool SPXCrossSection::debug;
+bool SPXCrossSection::debug=true;
 
 //Create the CrossSection
 void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
@@ -71,9 +71,9 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
  }
 
  int ncorr=pci->gridSteeringFile.GetNumberOfCorrectionFiles(); 
- if (debug){
-  std::cout<<cn<<mn<<"Number of corrections from main steering "<<bncorr<<std::endl;
-  std::cout<<cn<<mn<<"Number of corrections from grid steering "<< ncorr<<std::endl;
+ if (debug){                                                      // start counting at 0
+  std::cout<<cn<<mn<<"Number of corrections from main steering "<<bncorr+1<<std::endl;
+  std::cout<<cn<<mn<<"Number of corrections from grid steering "<< ncorr+1<<std::endl;
  }
 
  if (bncorr>ncorr) {
@@ -306,6 +306,9 @@ void SPXCrossSection::MatchBinning(StringGraphMap_T dataFileGraphMap) {
     gband->Print();
    }
   }
+
+
  }
+
 }
 

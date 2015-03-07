@@ -19,7 +19,7 @@ plot_band = false
 plot_marker = true
 plot_staggered = true
 ;match_binning = true
-grid_corr = true
+apply_grid_corr = true
 label_sqrt_s = true
 
 ;band_with_pdf= false

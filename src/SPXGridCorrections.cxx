@@ -71,6 +71,8 @@ void SPXGridCorrections::Parse(void) {
                     continue;
                 }
 
+                
+
                 //Read in line if it starts with a digit
                 if(isdigit((int)SPXStringUtilities::LeftTrim(line).at(0))) {
 
@@ -118,14 +120,16 @@ void SPXGridCorrections::Parse(void) {
                     xmin.push_back(tmp[1]);
                     xmax.push_back(tmp[2]);
 
-                    if(numberOfColumns == 4) {
+                    if(numberOfColumns == 4) { // no uncertainties given
                         y.push_back(tmp[3]);
-                        eyl.push_back(tmp[3]);
-                        eyh.push_back(tmp[3]);
+			//eyl.push_back(tmp[3]);
+                        //eyh.push_back(tmp[3]);
+			  eyl.push_back(0.);
+                          eyh.push_back(0.);
                     } else if(numberOfColumns == 6) {
                         y.push_back(tmp[3]);
-                        eyl.push_back(tmp[4]);
-                        eyh.push_back(tmp[5]);
+                        eyh.push_back(tmp[4]);
+                        eyl.push_back(tmp[5]);
                     }
                 }
             }
@@ -306,7 +310,7 @@ TGraphAsymmErrors * SPXGridCorrections::GetCorrectionGraph(std::string &filename
 
  TGraphAsymmErrors* gcorr= new TGraphAsymmErrors();
  if (!gcorr) throw SPXGraphException(cn + mn + "ERROR creating graph ");
- gcorr->SetName(TString(filename));
+ gcorr->SetName(TString("_corrections_"+filename));
 
  if (corrections.empty())
   throw SPXGraphException(cn + mn + "ERROR correction map is empty ! ");
