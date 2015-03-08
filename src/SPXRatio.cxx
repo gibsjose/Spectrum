@@ -1040,6 +1040,9 @@ void SPXRatio::Draw(string option, int statRatios, int totRatios) {
    }
   }
 
+  //---------
+  std::map<int, TGraphAsymmErrors * > bands=  SPXUtilities::OrderBandMap(ratioGraph);
+/*
   //
   // now order bands such that largest band is plotted first
   //
@@ -1095,7 +1098,10 @@ void SPXRatio::Draw(string option, int statRatios, int totRatios) {
     bands[nmax]=graph1;
    }
   } 
+*/
+  //----
 
+  
   SPXPlotConfigurationInstance pci=plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
 
   // now plot graph: largest first

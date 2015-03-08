@@ -40,6 +40,9 @@ typedef StringDoubleMatrixMap_T::iterator StringDoubleMatrixMapIterator_T;
 
 class SPXUtilities {
 public:
+
+    static std::map<int, TGraphAsymmErrors * > OrderBandMap(std::vector< TGraphAsymmErrors *> inputgraph);
+
     static void PrintMethodHeader(const std::string &className, const std::string &methodName) {
         std::cout << std::endl;
         std::cout << "================================================================" << std::endl;

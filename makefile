@@ -39,7 +39,7 @@ PLT_DIR = ./plots
 INI_SRC =	$(INI_DIR)/ini.c $(INI_DIR)/INIReader.cpp
 INI_OBJ = 	$(OBJ_DIR)/ini.o $(OBJ_DIR)/INIReader.o
 
-RAW_SRC = 	SPXGraphUtilities.cxx Spectrum.cxx SPXSteeringFile.cxx SPXRatioStyle.cxx SPXDisplayStyle.cxx SPXOverlayStyle.cxx \
+RAW_SRC = SPXGraphUtilities.cxx SPXUtilities.cxx Spectrum.cxx SPXSteeringFile.cxx SPXRatioStyle.cxx SPXDisplayStyle.cxx SPXOverlayStyle.cxx \
 	SPXPDFBandType.cxx SPXPDFErrorType.cxx SPXPDFErrorSize.cxx SPXPlotConfiguration.cxx SPXPDFSteeringFile.cxx \
 	SPXGridSteeringFile.cxx SPXDataSteeringFile.cxx SPXDataFormat.cxx SPXData.cxx SPXPlot.cxx SPXCrossSection.cxx \
 	SPXGrid.cxx SPXPDF.cxx SPXRatio.cxx SPXPlotType.cxx SPXAtlasStyle.cxx SPXGridCorrections.cxx SPXChi2.cxx
