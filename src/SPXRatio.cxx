@@ -1040,68 +1040,9 @@ void SPXRatio::Draw(string option, int statRatios, int totRatios) {
    }
   }
 
-  //---------
+  // order bands for better plotting
   std::map<int, TGraphAsymmErrors * > bands=  SPXUtilities::OrderBandMap(ratioGraph);
-/*
-  //
-  // now order bands such that largest band is plotted first
-  //
-  std::map<int, TGraphAsymmErrors * > bands;
 
-  for (int igraph1=0; igraph1 < ratioGraph.size(); igraph1++) {
-   TGraphAsymmErrors *graph1 = ratioGraph[igraph1];
-   if (!graph1) {
-    throw SPXGraphException(cn + mn + "graph not found");
-   }
-   //
-   // fill map to order graph according to their maximal values
-   // i.e. number of bins for which first graph has larger band
-   //
-   int nmax=-1;
-   for (int igraph2=0; igraph2 < ratioGraph.size(); igraph2++) {
-    if (igraph1==igraph2) continue;
-    TGraphAsymmErrors *graph2 = ratioGraph[igraph2];
-    int nbin=SPXGraphUtilities::CompareValues(graph1, graph2);
-    if (nbin>nmax) nmax=nbin;
-    //std::cout<<cn<<mn<<" "<<graph1->GetName()<<" "<<graph2->GetName()<<" nbin= "<<nbin<<std::endl;
-   }
-   //
-   // check if key already exists in map -> otherwise look for different locations
-   //
-   if (bands.count(nmax)) {
-    //std::cout<<cn<<mn<<" key nmax= "<<nmax<<" is occupied for " <<graph1->GetName()<<std::endl;
-    TGraphAsymmErrors *graphold=bands[nmax]; 
-    int nold=SPXGraphUtilities::CompareValues(graph1, graphold);
-    //std::cout<<cn<<mn<<" key nold= "<<nold<<" " <<std::endl;
-    bool filled=false;
-    int nbin=graphold->GetN();
-    for (int ibin=1; ibin<nbin; ibin++) { // can not have more location than nbin
-     int inew=0;
-
-     if (nold>nbin/2) inew=nmax+ibin;      // fill graph1 with index larger than graphold
-     else             inew=nmax-ibin;      // fill graph1 with index larger than graphold
-
-     //std::cout<<cn<<mn<<" inew= "<<inew<<std::endl;
-
-     for(std::map<int, TGraphAsymmErrors *>::reverse_iterator it=bands.rbegin(); it!=bands.rend(); ++it) {
-      //std:cout<<cn<<mn<<it->first<<" "<<it->second->GetName()<<std::endl;
-      if (bands.count(inew)==0) {
-       filled=true;
-       //std::cout<<cn<<mn<<" fill new locations inew= "<<inew<<std::endl;
-       bands[inew]=graph1;
-       break;
-      }
-     }
-     if (filled) break;
-    }
-   } else {
-    bands[nmax]=graph1;
-   }
-  } 
-*/
-  //----
-
-  
   SPXPlotConfigurationInstance pci=plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
 
   // now plot graph: largest first

@@ -1987,12 +1987,12 @@ void SPXPlot::DrawBand(SPXPDF *pdf, string option, SPXPlotConfigurationInstance 
  if (steeringFile->GetPlotMarker()){
 
   if (detailedband){
-   std::cout << cn << mn <<"WARNING ask to plot marker and detailedband -> do not know what to do, correct steering " << std::endl;
+   std::cout << cn << mn <<"WARNING can not plot detailedband with marker option " << std::endl;
   }
 
   for (int iband=0; iband<nbands; iband++) {
    TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-   //string gtype                =pdf->GetBandType(iband);
+   //string gtype =pdf->GetBandType(iband);
    //TString gname=gband->GetName();
    gband->Draw(option.c_str());
 
@@ -2013,9 +2013,9 @@ void SPXPlot::DrawBand(SPXPDF *pdf, string option, SPXPlotConfigurationInstance 
  double fillcolor  =pci.totalFillColor;
  double fillstyle  =pci.totalFillStyle;
  double markerstyle=pci.totalMarkerStyle;
- //double fillcolor  =pci.correctionsFillColor;
- //double fillstyle  =pci.correctionsFillStyle;
- //double markerstyle=pci.correctionsMarkerStyle;
+
+
+ vector < TGraphAsymmErrors *> graphs;
 
  for (int iband=0; iband<nbands; iband++) {
   TGraphAsymmErrors * gband   =pdf->GetBand(iband);
@@ -2023,6 +2023,20 @@ void SPXPlot::DrawBand(SPXPDF *pdf, string option, SPXPlotConfigurationInstance 
   string  gtype=pdf->GetBandType(iband);
 
   if (debug) std::cout<<cn<<mn<<"gname= "<<gname.Data()<<" type= "<<gtype.c_str()<<std::endl;
+
+  graphs.push_back(gband);
+ }
+
+ // order bands for better plotting
+ std::map<int, TGraphAsymmErrors * > bands=  SPXUtilities::OrderBandMap(graphs);
+
+ // now plot graph: largest first
+ //std::cout<<cn<<mn<<" \n iterate over map " <<std::endl;
+ for(std::map<int, TGraphAsymmErrors *>::reverse_iterator it=bands.rbegin(); it!=bands.rend(); ++it) {
+  std::cout<<cn<<mn<<it->first<<" "<<it->second->GetName()<<std::endl;
+
+  TGraphAsymmErrors *gband = it->second;
+  TString gname=gband->GetName();
 
   if (gname.Contains("_total_")) { 
    fillcolor  =pci.totalFillColor;
@@ -2066,7 +2080,7 @@ void SPXPlot::DrawBand(SPXPDF *pdf, string option, SPXPlotConfigurationInstance 
 
   if (debug) std::cout<<cn<<mn<<"edgecolor= "<<edgecolor<<" edgestyle= "<<edgestyle
                               <<"fillcolor= "<<fillcolor<<" fillstyle= "<<fillstyle<<std::endl;
-
+ 
   if (edgecolor!=0) { // 0 is default in SPXPlotConfiguration.h
    TH1D *hedgelow =SPXGraphUtilities::GetEdgeHistogram(gband,true);
    TH1D *hedgehigh=SPXGraphUtilities::GetEdgeHistogram(gband,false);
