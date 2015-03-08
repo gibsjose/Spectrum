@@ -62,6 +62,7 @@ band_with_pdf= true                             ;[Optional] Include PDF uncertai
 band_with_alphas= true                          ;[Optional] Include alphas uncertainty in band
 band_with_scale = true                          ;[Optional] Include scale uncertainty in band
 band_total = true                               ;[Optional] Include total uncertainty in band
+band_with_gridcorrection = true                 ;[Optional] include grid correction in band
 ;
 ;ren_scales = 0.5, 0.5, 1.0, 1.0, 2.0, 2.0      ;[Optional] renormalisation scales to be used for band
 ;fac_scales = 0.5, 1.0, 0.5, 2.0, 1.0, 2.0      ;[Optional] factorization scales to be used for band

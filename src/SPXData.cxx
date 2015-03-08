@@ -330,7 +330,7 @@ void SPXData::ParseSpectrum(void) {
 
 			        if (i>=syst.size()) { 
 				 std::ostringstream oss;
-				 oss << cn << mn << "Systematic uncertainty vector too small syst.size()= "<<syst.size()<<" i= "<<i<<" Check number of bins in systematic text file";
+				 oss << cn << mn << "Systematic uncertainty vector too small syst.size()= "<<syst.size()<<" i= "<<i<<" Check number of bins in systematic text file name= "<<name.c_str();
 				 throw SPXParseException(oss.str());
                                 }
 

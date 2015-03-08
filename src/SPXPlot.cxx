@@ -1027,7 +1027,7 @@ void SPXPlot::DrawLegend(void) {
   if (data.size()==0)
    throw SPXGeneralException(cn+mn+"No data object found !");
 
-  if (debug) std::cout<<cn<<mn<<" data.size()= "<< data.size()<<std::endl;
+  if (debug) std::cout<<cn<<mn<<"Number of data objects= "<< data.size()+1<<std::endl;
 
   for(int idata = 0; idata < data.size(); idata++) {                 
 
@@ -1051,7 +1051,7 @@ void SPXPlot::DrawLegend(void) {
    if (debug) std::cout<<cn<<mn<<datalabel.Data()<<" namesize= "<<namesize<<std::endl;
    
 
-   if (!ratioonly) // ratioonly figures have data in the ratio, no separate label
+   if (!ratioonly || data.size()>0) // ratioonly figures have data in the ratio, no separate label
     leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
 
   }
@@ -1368,7 +1368,7 @@ void SPXPlot::DrawLegend(void) {
 
  }
  
- double xshift=3;
+ //double xshift=3;
  double x2info=steeringFile->GetXInfoLegend();
  double y2info=steeringFile->GetYInfoLegend();
  double x1info=x2info-charactersize*leginfomax;

@@ -224,7 +224,7 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
 
         if(debug) {
             std::cout << std::endl;
-            std::cout << cn << mn << "Checking master bin number " << i << std::endl;
+            std::cout << cn << mn << "Checking master bin number " << i <<" xmin= "<<m_exl<<" xmax= "<< m_exh<< std::endl;
         }
 
         //Recompute number of slave bins

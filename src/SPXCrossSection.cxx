@@ -276,7 +276,7 @@ void SPXCrossSection::MatchBinning(StringGraphMap_T dataFileGraphMap) {
   }
 
   if (debug)
-   std::cout << cn << mn << "data master file name "<<master->GetName()<<std::endl;
+   std::cout << cn << mn << "master file name "<<master->GetName()<<std::endl;
 
   //
   // Check if data master is divided by bin width
@@ -297,7 +297,7 @@ void SPXCrossSection::MatchBinning(StringGraphMap_T dataFileGraphMap) {
     oss << cn <<mn<<"get bands "<<"Band "<<iband<<" not found at index "<<iband;
     throw SPXGeneralException(oss.str());
    }
-   if (debug) std::cout << cn <<mn<<"Match binning for graph "<<gband->GetName()<<std::endl;
+   if (debug) std::cout << cn <<mn<<"Match binning for slave graph "<<gband->GetName()<<std::endl;
    //if (debug) if (dividedByBinWidth)  std::cout << cn <<mn<<"Divided by binwidth is ON "<<std::endl;
 
    SPXGraphUtilities::MatchBinning(master, gband, dividedByBinWidth);
