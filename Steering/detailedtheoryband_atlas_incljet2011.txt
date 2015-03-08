@@ -95,8 +95,8 @@ x_scale = 1.0
 y_scale = 1.0
 x_log=true
 y_log=true
+desc = atlas_inclusive_jet2011_detailedband_r06_eta1
 
-desc = atlas_inclusive_jet_eta1
 ;display_style = overlay,ratio
 display_style = ratio
 overlay_style = data, convolute

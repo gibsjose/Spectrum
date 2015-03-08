@@ -47,7 +47,7 @@ y_scale = 1.0
 x_log=true
 y_log=true
  
-desc = atlas_inclusive_jet_eta1
+desc = pdf_only
 ;display_style = overlay,ratio
 display_style = ratio
 overlay_style = data, convolute

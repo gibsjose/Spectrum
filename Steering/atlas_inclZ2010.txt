@@ -52,7 +52,7 @@ data_marker_color=1,1
 ;pdf_marker_style = 20,21
 ;total_marker_style = 20,21
 ;
-desc = atlas_inclusive_Zptmm
+desc = atlas_inclusive_Zptmm_Zptee
 display_style = overlay,ratio
 ;
 overlay_style = convolute,data

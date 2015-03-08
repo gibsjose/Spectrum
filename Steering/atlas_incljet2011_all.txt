@@ -46,7 +46,7 @@ y_log = true
 ;data_marker_style = 20
 ;data_marker_color = 1
 ; 
-desc = atlas_inclusive_jet
+desc = atlas_inclusive_jet2011_r04_eta1
 display_style = overlay, ratio
 ;
 overlay_style = data, convolute
@@ -79,7 +79,7 @@ pdf_steering_files = CT10.txt
 x_log = true
 y_log = true
 ; 
-desc = atlas_inclusive_jet
+desc = atlas_inclusive_jet2011_r04_eta2
 display_style = overlay, ratio
 ;
 overlay_style = data, convolute
@@ -110,7 +110,7 @@ pdf_steering_files = CT10.txt
 x_log = true
 y_log = true
 ; 
-desc = atlas_inclusive_jet
+desc = atlas_inclusive_jet2011_r04_eta3
 display_style = overlay, ratio
 ;
 overlay_style = data, convolute
@@ -141,7 +141,7 @@ pdf_steering_files = CT10.txt
 x_log = true
 y_log = true
 ; 
-desc = atlas_inclusive_jet
+desc = atlas_inclusive_jet2011_r04_eta4
 display_style = overlay, ratio
 ;
 overlay_style = data, convolute
@@ -172,7 +172,7 @@ pdf_steering_files = CT10.txt
 x_log = true
 y_log = true
 ; 
-desc = atlas_inclusive_jet
+desc = atlas_inclusive_jet2011_r04_eta5
 display_style = overlay, ratio
 ;
 overlay_style = data, convolute
@@ -203,7 +203,7 @@ pdf_steering_files = CT10.txt
 x_log = true
 y_log = true
 ; 
-desc = atlas_inclusive_jet
+desc = atlas_inclusive_jet2011_r04_eta6
 display_style = overlay, ratio
 ;
 overlay_style = data, convolute

@@ -56,8 +56,8 @@ y_log=true
 ;
 data_marker_style = 20
 data_marker_color = 1
-; 
-desc = atlas_inclusive_jet
+;
+desc = atlas_inclusive_jet2011_r06_eta1
 display_style = overlay,ratio
 ;
 overlay_style = data, convolute

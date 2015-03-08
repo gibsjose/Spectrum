@@ -46,7 +46,7 @@ y_scale = 1.0
 x_log=true
 y_log=true
  
-desc = atlas_inclusive_jet_eta1
+desc = ratio_test
 display_style = overlay, ratio
 overlay_style = data, convolute
 
