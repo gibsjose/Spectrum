@@ -918,6 +918,9 @@ void SPXPlot::DrawRatio(void) {
    
   ratios[i].Draw(ratioOptions.c_str(),statRatios, totRatios);
 
+  //double xmin=0.2, bwidth=0.1, ymin=0.2, bhigh=0.1;
+  
+
  }
 
  //Draw a line at 1, where ratios are relative to

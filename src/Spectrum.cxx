@@ -30,6 +30,15 @@ int main(int argc, char *argv[]) {
 		std::cout << "@usage: Spectrum [-p] <steering_file>" << std::endl;
 		exit(0);
 	}
+ 
+        if (!std::string(argv[1]).compare("-h")){
+	 std::cout << "Spectrum help " << std::endl;
+	 std::cout << "Spectrum -p DrawApplication " << std::endl;
+	 std::cout << "Spectrum -t Testfeatures " << std::endl;
+	 std::cout << "Spectrum -m write metadata to text file " << std::endl;
+	 std::cout << "Spectrum -latex_table not yet implemented " << std::endl;
+	 exit(0);
+	}
 
 	std::string file;
 
@@ -59,6 +68,11 @@ int main(int argc, char *argv[]) {
 		else if(!arg.compare("-m")) {
 			Options::Metadata = true;
 		}
+                else if(!arg.compare("-latex_table")) {
+		  std::cout<<" option latex_table not yet implemented "<<endl;
+                  exit (0);
+ 		}
+
 
 		//No known flag: Treat as file name
 		else {
@@ -104,8 +118,8 @@ int main(int argc, char *argv[]) {
 	}
 
     //=========================================================
-	//     Analysis
-	//=========================================================
+    //     Analysis
+    //=========================================================
     try {
     	SPXAnalysis analysis = SPXAnalysis(&steeringFile);
     	analysis.Run();

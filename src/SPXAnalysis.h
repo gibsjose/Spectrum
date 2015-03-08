@@ -3,7 +3,7 @@
 //	Analysis Header
 //
 //	Outlines the SPXAnalysis class, which connects all of the
-//  other non-configuration classes (non-steering/options) and
+//      other non-configuration classes (non-steering/options) and
 //	manages the plotting, drawing, and ROOT configuration via
 //	the SPXPlot class.
 //

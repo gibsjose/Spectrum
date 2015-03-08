@@ -1009,6 +1009,8 @@ void SPXRatio::Draw(string option, int statRatios, int totRatios) {
  if ( ratioGraph.size()==0)
   std::cout<<cn<<mn<<"WARNING: Ratio graph is empty "<<std::endl;
 
+ double xmin=0.22, ymin=0.95, boxsize=0.025;
+
  // plot data if requested
  if(IsDataStat() || IsDataTot()) {
   for (int igraph=0; igraph < ratioGraph.size(); igraph++) {
@@ -1019,6 +1021,19 @@ void SPXRatio::Draw(string option, int statRatios, int totRatios) {
    //Incrementally darken the data_stat/data_tot graphs based on their order for increased visibility
    graph->SetFillColor(graph->GetFillColor() + (statRatios + totRatios));
    graph->Draw("E2");
+
+   int mcolor=graph->GetFillColor();
+   if(IsDataStat()) {
+    string datastat="Data stat uncertainty";
+    SPXDrawUtilities::BoxText(xmin, ymin, boxsize, mcolor, datastat);
+   }
+
+   if(IsDataTot()) {
+    string datastat="Data tot uncertainty";
+    ymin-=0.05;
+    SPXDrawUtilities::BoxText(xmin, ymin, boxsize, mcolor, datastat);
+   }
+
   }
  } else {
   // look if detailed band is requested
