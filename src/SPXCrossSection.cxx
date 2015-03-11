@@ -105,7 +105,7 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
   if (RenScales.size()!=0)
    pdf->SetScales(RenScales,FacScales);
 
-  if (debug) std::cout<<cn<<mn<<" Initialize the PDF "<<std::endl;
+  if (debug) std::cout<<cn<<mn<<"Initialize the PDF "<<std::endl;
 
   pdf->Initialize();
 }

@@ -58,7 +58,7 @@ marker_style = 21
 ;==============================================================
 [PDF]
 default_id = 0
-default_id_var = 0
+;default_id_var = 0
 band_type = use_error_band
 ;
 ErrorPropagationType = 1

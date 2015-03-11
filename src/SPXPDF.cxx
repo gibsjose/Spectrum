@@ -236,14 +236,9 @@ void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
   AlphaSPDFSetNameUp   = psf->GetAlphaSPDFNameUp();
   if (TString(AlphaSPDFSetNameUp).Contains("none") ||
       TString(AlphaSPDFSetNameDown).Contains("none") ){
-    //std::ostringstream oss;
-    //oss << cn << mn << "Need to provide AlphaSPDFSetNameUp and AlphaSPDFSetNameDown to evaluate alphas uncertainty ";
-    //throw SPXParseException(oss.str());
     std::cout<<cn<<mn<<"WARNING Need to provide AlphaSPDFSetNameUp and AlphaSPDFSetNameDown to evaluate alphas uncertainty, do_Alphas turned off ";
     do_AlphaS=false;
   }
-  //AlphaSPDFSetHistNameDown = psf->GetAlphaSPDFHistogramNameDown();
-  //AlphaSPDFSetHistNameUp   = psf->GetAlphaSPDFHistogramNameUp();
 
   if (debug) {
    std::cout<<cn<<mn<<"finished"<< std::endl;
@@ -346,8 +341,6 @@ void SPXPDF::Initialize()
   std::cout<<cn<<mn<<"Running on LHAPDF6: "<<std::endl;
   std::cout<<cn<<mn<<"  "<<std::endl;
  
-
-
   if(debug) std::cout<<cn<<mn<<"Read PDF= "<<default_pdf_set_name.c_str()<<std::endl;
 
   const LHAPDF::PDFInfo info(default_pdf_set_name.c_str(), 2);
@@ -357,7 +350,6 @@ void SPXPDF::Initialize()
   vector<int> pids = info.get_entry_as< vector<int> >("Flavors");
  }
  
-
  mypdf=LHAPDF::mkPDF(default_pdf_set_name.c_str(),defaultpdfid);
  // std::cout<<mypdf.description()<<std::endl;
  // double x=0.1, Q=10.;
@@ -374,13 +366,12 @@ void SPXPDF::Initialize()
  LHAPDF::initPDFSet(default_pdf_set_name.c_str(), defaultpdfid);
 #endif
  if (debug) 
-  std::cout<<cn<<mn<<"...finshed initPDF set up: "<<default_pdf_set_name<<std::endl;
+  std::cout<<cn<<mn<<"...finished PDF set up: name= "<<default_pdf_set_name<<std::endl;
 
  if (applgridok) {
   temp_hist= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
   TString name="xsec_pdf_"+default_pdf_set_name;
   if (spxgrid) name+="_"+spxgrid->GetName();
-  //std::cout<<" XXXXX name= "<<name<<std::endl;
   temp_hist->SetName(name);
  } else {
   if (debug) std::cout<<cn<<mn<<"Histogram from PDF not applgrid ! "<<std::endl;
@@ -497,6 +488,14 @@ void SPXPDF::Initialize()
   else           std::cout<<cn<<mn<<"do_AlphaS is OFF "<<std::endl;
  }
 
+ if (AlphaSPDFSetNameUp.compare("")==0   || AlphaSPDFSetNameUp.compare("none")==0 ||
+     AlphaSPDFSetNameDown.compare("")==0 || AlphaSPDFSetNameDown.compare("none")==0 ) {
+
+  std::cout<<cn<<mn<<"WARNING: can not calculated AlphaS uncertainty, no PDF member found "<<std::endl; 
+  do_AlphaS=false;
+
+ }
+
  if (do_AlphaS) {
 
   //check for necessary names before continuing
@@ -523,18 +522,6 @@ void SPXPDF::Initialize()
    oss << cn << mn << "ERROR 'AlphaSPDFSetNameDown' not provided in steer file: "<<steeringFileName;
    throw SPXParseException(oss.str());
   }
-
-  //if (AlphaSPDFSetHistNameUp.compare("")==0) {
-  // std::ostringstream oss;
-  // oss << cn << mn << "ERROR 'AlphaSPDFSetHistNameUp' not provided in steer file: "<<steeringFileName<<std::endl;
-  // throw SPXParseException(oss.str());
-  //}
-
-  //if(AlphaSPDFSetHistNameDown.compare("")==0) {
-  // std::ostringstream oss;
-  // oss << cn << mn << "ERROR 'AlphaSPDFSetHistNameDown' not provided in steer file: "<<steeringFileName<<std::endl;
-  // throw SPXParseException(oss.str());
-  //}
 
 // alphaS central
   std::cout<<cn<<mn<<"PDFset getting alphaS uncertainty for "<<default_pdf_set_name<<" PDF with Scale= "<<alphaS_scale_worldAverage<<std::endl;
@@ -587,7 +574,7 @@ void SPXPDF::Initialize()
 
   if (debug) std::cout<<cn<<mn<<"Setting up alphas up PDF-name= "<<AlphaSPDFSetNameUp<<" member= "<<AlphaSmemberNumUp<<std::endl;
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
- mypdf=LHAPDF::mkPDF(AlphaSPDFSetNameDown.c_str(),AlphaSmemberNumDown);
+ mypdf=LHAPDF::mkPDF(AlphaSPDFSetNameUp.c_str(),AlphaSmemberNumDown);
 #else
   LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+AlphaSPDFSetNameUp+".LHgrid")).c_str(), AlphaSmemberNumUp);
   // Peter's comment: for LHAPDF v 6.1, this line has to be used
@@ -619,13 +606,14 @@ void SPXPDF::Initialize()
      std::cout<<i<<" value= "<<alphaS_variations[i]<<std::endl;
    }
   }
+
   if (alphaS_variations.size()>2) {
    if(alphaS_variations[0]==alphaS_variations[1] ||
       alphaS_variations[1]==alphaS_variations[2] ||
       alphaS_variations[0]==alphaS_variations[2]) {
-    std::cout<<"WARNING alphaS_variations should be different ! "<<std::endl;
+     std::cout<<cn<<mn<<"WARNING alphaS_variations should be different ! "<<std::endl;
     for (int i=0; i<3; i++){
-     std::cout<<i<<" value= "<<alphaS_variations[i]<<std::endl;
+      std::cout<<cn<<mn<<i<<" value= "<<alphaS_variations[i]<<std::endl;
     }
    }
   }
@@ -681,7 +669,7 @@ void SPXPDF::Initialize()
      //Band-aid for accounting for no error bands - This needs to be handled better
      if(PDFnamevar.empty() == false) {
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
-      if (debug) cout<<cn<<mn<<"Initialize: initPDF name= "<<PDFnamevar.c_str()<<" set= "<<defaultpdfidvar<<endl;
+      if (debug) cout<<cn<<mn<<"Initialize: mkPDF name= "<<PDFnamevar.c_str()<<" set= "<<defaultpdfidvar<<endl;
       mypdf=LHAPDF::mkPDF(PDFnamevar.c_str(), defaultpdfidvar);
 #else
       TString pdfname=TString(pdfSetPath)+"/"+PDFnamevar+".LHgrid";
@@ -697,9 +685,6 @@ void SPXPDF::Initialize()
 #else
      LHAPDF::initPDF(pdfset);
 #endif
-     //if (debug) std::cout<<cn<<mn<<"initPDF set= "<<pdferri-lasteig<<std::endl;
-     //LHAPDF::initPDF(pdferri - lasteig);
-     //<<
     }
    } else {
     if (debug) std::cout<<cn<<mn<<"Initialize normal PDF set= "<<pdferri<<std::endl;
@@ -841,7 +826,7 @@ void SPXPDF::CalcPDFBandErrors()
  // calculate uncertainty bands
  //
  std::string mn = "CalcPDFBandErrors: ";
- if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+ if (debug) SPXUtilities::PrintMethodHeader(cn, mn);
  if (debug) std::cout<<cn<<mn<<"Start calc of PDFBandErrors for: "<<PDFtype<<std::endl;
  if (debug) std::cout<<cn<<mn<<"defaultpdf= "<<defaultpdfid<<std::endl;
 
@@ -906,9 +891,9 @@ void SPXPDF::CalcPDFBandErrors()
    this_err_down = this_err_up;
 
   } else if (ErrorPropagationType==EigenvectorAsymmetricHessian) {
- //
- // Asymmetric hessian
- //
+  //
+  // Asymmetric hessian
+  //
    central_val = h_errors_PDFBand.at(defaultpdfid)->GetBinContent(bi);
    //https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/TopPdfUncertainty
    //>>>> modifications by P. Berta 28th August
@@ -941,7 +926,7 @@ void SPXPDF::CalcPDFBandErrors()
 
    central_val = h_errors_PDFBand.at(defaultpdfid)->GetBinContent(bi);
 
-   if (debug) cout<<cn<<mn<<"Default sample id= "<<defaultpdfid<<" "<<" central_val= "<<central_val<<endl;
+   if (debug) std::cout<<cn<<mn<<"Default sample id= "<<defaultpdfid<<" "<<" central_val= "<<central_val<<std::endl;
    if (includeEIG) {
     for (int pdferri = firsteig; pdferri <=lasteig; pdferri += 2) {   //// experimental errors
      this_err_up += pow( 0.5*(h_errors_PDFBand.at(pdferri+1)->GetBinContent(bi)
@@ -956,6 +941,8 @@ void SPXPDF::CalcPDFBandErrors()
 		    <<std::endl;
     }
    }
+ 
+   if (debug) std::cout<<cn<<mn<<" finished includeEIG "<<std::endl;
 
    this_err_down = this_err_up;
 

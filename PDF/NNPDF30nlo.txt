@@ -41,7 +41,7 @@ debug = false
 name = NNPDF30_nlo_as_0118
 type = NNPDF30nlo ; general name used for printing etc
 order = 1
-num_members = 100
+num_members = 101
 ; pdf_set_path =
 
 ;==============================================================
@@ -68,7 +68,7 @@ error_type = pdf_band
 ; PDF set member number
 alpha_s_error_number_up = 0
 alpha_s_error_number_down = 0
-alpha_s_pdf_name_up = none
-alpha_s_pdf_name_down = none
+alpha_s_pdf_name_up = NNPDF30_nlo_as_0119
+alpha_s_pdf_name_down = NNPDF30_nlo_as_0115
 
 

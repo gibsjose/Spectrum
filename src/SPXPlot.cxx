@@ -1685,14 +1685,16 @@ void SPXPlot::InitializeCrossSections(void) {
 	        nomGraph->SetFillColor(pci.pdfFillColor);
                }
 
+	      /*
     	       if(debug) std::cout << cn << mn << i<<" ...finished GraphSetting" <<std::endl;
-	       if(convoluteFileGraphMap.count(convolutePair)) {
+	       if(convoluteFileGraphMap.count(convolutePair)>0) {
 		if(debug) {
 		 std::cout << cn << mn << "convolute pair in map: [" << convolutePair.first << ", " << convolutePair.second << "]" << std::endl;
 		}
 	       } else {
 		 std::cerr <<cn<<mn<< "---> Warning: Unable to add convolute pair to map: [" << convolutePair.first << ", " << convolutePair.second << "]" << std::endl;
 	       }
+	      */
 	}
         if(debug) std::cout << cn << mn <<" ...finished !" <<std::endl;
 }

@@ -288,7 +288,7 @@ void SPXPDFSteeringFile::Parse(void) {
 
 	defaultIDVar = reader->GetInteger("PDF", "default_id_var", -1);
 	if(defaultIDVar == -1) {
-		throw SPXINIParseException("PDF", "default_id_var", "You MUST specify the default_id");
+	        throw SPXINIParseException("PDF", "default_id_var", "You MUST specify the default_id_var");
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Default ID Variation: " << defaultIDVar << std::endl;
 	}

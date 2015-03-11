@@ -10,6 +10,8 @@
 
 - corrected staggered error bars 
 
+- do not require presence of alphas variation PDF sample
+
 - help in Spectrum
 
 - first version of SPXDrawUtilities with BoxText
