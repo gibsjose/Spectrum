@@ -10,7 +10,7 @@
 ; General Options
 ;==============================================================
 [GEN]
-debug = false
+debug = true
 
 ;==============================================================
 ; Graphing Options
@@ -34,7 +34,7 @@ y_legend = 0.9
 ; Plot 0 Options
 ;==============================================================
 [PLOT_0]
-plot_type = data, grid, pdf
+plot_type = data, grid, pdf[]
 pdf_directory = PDF
 data_directory = Data/top/atlas/ttbarresolvedpartons
 grid_directory = Grids/top/atlas/mcfm/ttbarresolvedpartons
@@ -42,9 +42,10 @@ grid_directory = Grids/top/atlas/mcfm/ttbarresolvedpartons
 data_steering_files = atlas_2011_top_partons_mtt.txt
 grid_steering_files = atlas_2011_top_partons_mtt.txt
 
-pdf_steering_files = CT10.txt
-x_scale = 1.0
-y_scale = 1.0
+pdf_steering_files = MRST2008nlo.txt,CT10.txt,HERAPDF15NLO.txt,NNPDF23nlo.txt
+;pdf_steering_files = CT10.txt
+;x_scale = 1.0
+;y_scale = 1.0
 
 ;data_marker_style = 20
 ;data_marker_color = 1
@@ -70,3 +71,12 @@ ratio_1 = data_0
 ;
 ratio_style_2 = convolute / data
 ratio_2 = ([grid_0, pdf_0]) / (data_0)
+;
+ratio_style_3 = convolute / data
+ratio_3 = ([grid_0, pdf_1]) / (data_0)
+:
+ratio_style_4 = convolute / data
+ratio_4 = ([grid_0, pdf_2] / (data_0)
+:
+ratio_style_5 = convolute / data
+ratio_5 = ([grid_0, pdf_3]) / (data_0)

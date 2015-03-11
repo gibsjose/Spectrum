@@ -46,7 +46,7 @@ num_members = 41 ; number of Eigenvectors
 [STYLE]
 fill_style = 3004
 fill_color = 632
-marker_style = 23
+marker_style = 21
 
 ;==============================================================
 ; PDF Options

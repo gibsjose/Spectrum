@@ -26,7 +26,10 @@
 
 //LHAPDF
 #include "LHAPDF/LHAPDF.h"
+
+#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 5
 #include "SPXLHAPDF.h"
+#endif
 
 #include "SPXPDFSteeringFile.h"
 #include "SPXException.h"

@@ -1673,7 +1673,7 @@ void SPXSteeringFile::ParseDataSteeringFiles(void) {
 
 				if(pci.dataMarkerColor == PC_EMPTY_COLOR) {
 					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
-						" Data Marker Color was empty: Defaulting to Blac (1)" << std::endl;
+						" Data Marker Color was empty: Defaulting to Black (1)" << std::endl;
 					pci.dataMarkerColor = DEFAULT_DATA_MARKER_COLOR;	//DEFAULT TO BLACK
 				}
 

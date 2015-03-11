@@ -18,7 +18,7 @@
 //       supported.
 
 #ifndef __LHAPDF_h__
-#define __LHAPDF_h__  1
+#define __LHAPDF_h__  1 
 
 #include<string>
 using namespace std;
@@ -45,4 +45,5 @@ inline double alphasUnity(const double & Q) {return 1.0000000;}
 inline void   evolvePDF(const double & x, const double & Q, double * f) {
   evolvepdf_(&x , &Q, f);
 }
+
 #endif /* __LHAPDF_h__ */

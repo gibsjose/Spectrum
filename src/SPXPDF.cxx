@@ -34,9 +34,6 @@ const std::string cn = "SPXPDF::";
 //Must define the static debug variable in the implementation
 bool SPXPDF::debug;
 
-void getPDF(const double& x, const double& Q, double* xf) {
-		evolvepdf_(&x, &Q, xf);
-}
 
 string SPXPDF::GetEnv( const string & var ) {
 		const char* res= getenv( var.c_str() );
@@ -45,6 +42,40 @@ string SPXPDF::GetEnv( const string & var ) {
 		if (debug) cout<<"s: "<<s<<endl;
 		return s;
 }
+
+#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 5
+void getPDF(const double& x, const double& Q, double* xf) {
+  std::cout<<cn<<" LHAPDF5: getpdf: X= "<<X<<" Q= "<<Q<<std::endl;
+		evolvepdf_(&x, &Q, xf);
+}
+
+#else
+// version 6
+LHAPDF::PDF* mypdf=0;
+//void getPDF(const double &X, const double &Q, double xfs[13]) {
+void getPDF(const double &X, const double &Q, double *xfs) {
+  vector <double> xf; xf.resize(13);
+
+  //std::cout<<"getpdf: X= "<<X<<" Q= "<<Q<<std::endl;
+  if (!mypdf) std::cout<<" getpdf mypdf not found !"<<std::endl;
+
+  double x=X;
+  if (x>=1) x-=1.e-12;
+  mypdf->xfxQ(x, Q, xf);
+ 
+  //std::cout<<"LHAPDF6 getpdf: number of pdfs= "<<xf.size()<<std::endl;
+
+  for (int i=0; i<xf.size(); i++) {
+   xfs[i]=xf.at(i);
+  //std::cout<<cn<<"getpdf: xfs["<<i<<"]= "<<xfs[i]<<std::endl;
+  }
+  return; 
+}
+double alphasPDF(const double & Q) {
+  
+  return mypdf->alphasQ(Q); 
+}
+#endif
 
 
 /******************************************************************
@@ -205,9 +236,11 @@ void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
   AlphaSPDFSetNameUp   = psf->GetAlphaSPDFNameUp();
   if (TString(AlphaSPDFSetNameUp).Contains("none") ||
       TString(AlphaSPDFSetNameDown).Contains("none") ){
-   std::ostringstream oss;
-   oss << cn << mn << "Need to provide AlphaSPDFSetNameUp and AlphaSPDFSetNameDown to evaluate alphas uncertainty ";
-   throw SPXParseException(oss.str());
+    //std::ostringstream oss;
+    //oss << cn << mn << "Need to provide AlphaSPDFSetNameUp and AlphaSPDFSetNameDown to evaluate alphas uncertainty ";
+    //throw SPXParseException(oss.str());
+    std::cout<<cn<<mn<<"WARNING Need to provide AlphaSPDFSetNameUp and AlphaSPDFSetNameDown to evaluate alphas uncertainty, do_Alphas turned off ";
+    do_AlphaS=false;
   }
   //AlphaSPDFSetHistNameDown = psf->GetAlphaSPDFHistogramNameDown();
   //AlphaSPDFSetHistNameUp   = psf->GetAlphaSPDFHistogramNameUp();
@@ -299,15 +332,49 @@ void SPXPDF::Initialize()
   std::cout<<cn<<mn<<"Fill PDF errors for PDFType: "
       <<PDFtype<<", PDFName: "<<PDFname<<", from PDFPath: "<<pdfSetPath<<std::endl;
 
+#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+ default_pdf_set_name = (std::string) (PDFname);
+#else
  default_pdf_set_name = (std::string) (pdfSetPath+"/"+PDFname+".LHgrid");
-
- std::cout<<cn<<mn<<"init PDF set called: "<<default_pdf_set_name.c_str()<<std::endl;
+#endif
 
  std::cout<<cn<<mn<<"PDFset looking up: "<<default_pdf_set_name<<" default-id= "<<defaultpdfid<<std::endl;
 
- //LHAPDF::initPDFSet(default_pdf_set_name.c_str(), 0);
+#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+ if (debug) {
+  std::cout<<cn<<mn<<"  "<<std::endl;
+  std::cout<<cn<<mn<<"Running on LHAPDF6: "<<std::endl;
+  std::cout<<cn<<mn<<"  "<<std::endl;
+ 
+
+
+  if(debug) std::cout<<cn<<mn<<"Read PDF= "<<default_pdf_set_name.c_str()<<std::endl;
+
+  const LHAPDF::PDFInfo info(default_pdf_set_name.c_str(), 2);
+  if (info.has_key("PdfDesc")) cout << "PdfDesc: " << info.get_entry("PdfDesc") << endl;
+  cout << "PdfType: " << info.get_entry("PdfType") << endl;
+  cout << "Verbosity from PDF: " << info.get_entry("Verbosity") << endl;
+  vector<int> pids = info.get_entry_as< vector<int> >("Flavors");
+ }
+ 
+
+ mypdf=LHAPDF::mkPDF(default_pdf_set_name.c_str(),defaultpdfid);
+ // std::cout<<mypdf.description()<<std::endl;
+ // double x=0.1, Q=10.;
+ // std::cout << "xf_g = " << mypdf->xfxQ(21, x, Q) << std::endl;
+
+#else
+ if (debug) {
+  std::cout<<cn<<mn<<"  "<<std::endl;
+  std::cout<<cn<<mn<<"Running on LHAPDF5: "<<std::endl;
+  std::cout<<cn<<mn<<"  "<<std::endl;
+ }
+
+ std::cout<<cn<<mn<<"init PDF set called: "<<default_pdf_set_name.c_str()<<std::endl;
  LHAPDF::initPDFSet(default_pdf_set_name.c_str(), defaultpdfid);
- if (debug) std::cout<<cn<<mn<<"...finshed initPDF set up: "<<default_pdf_set_name<<std::endl;
+#endif
+ if (debug) 
+  std::cout<<cn<<mn<<"...finshed initPDF set up: "<<default_pdf_set_name<<std::endl;
 
  if (applgridok) {
   temp_hist= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
@@ -472,15 +539,24 @@ void SPXPDF::Initialize()
 // alphaS central
   std::cout<<cn<<mn<<"PDFset getting alphaS uncertainty for "<<default_pdf_set_name<<" PDF with Scale= "<<alphaS_scale_worldAverage<<std::endl;
 
-
-  double value_alphaS=LHAPDF::alphasPDF(alphaS_scale_worldAverage);
+#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+  double value_alphaS=mypdf->alphasQ(alphaS_scale_worldAverage);
+#else
+   double value_alphaS=LHAPDF::alphasPDF(alphaS_scale_worldAverage);
+#endif
   alphaS_variations.push_back(value_alphaS);
   if (debug) std::cout <<cn<<mn<< "Added central histogram with alphaS value: " << value_alphaS << std::endl ;
 
 // alphaS down
   if (debug) std::cout<<cn<<mn<<"Setting up alphas down PDF-name= "<<AlphaSPDFSetNameDown<<" member= "<<AlphaSmemberNumDown<<std::endl;
-  LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+AlphaSPDFSetNameDown+".LHgrid")).c_str(), AlphaSmemberNumDown);
+#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+ mypdf=LHAPDF::mkPDF(AlphaSPDFSetNameDown.c_str(),AlphaSmemberNumDown);
 
+ if (!mypdf) std::cout<<"PDF not found name= "<<AlphaSPDFSetNameDown.c_str()<<" member= "<<AlphaSmemberNumDown<<std::endl;
+ //else if (debug) mypdf->print();
+#else
+  LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+AlphaSPDFSetNameDown+".LHgrid")).c_str(), AlphaSmemberNumDown);
+#endif
   TString AlphaSPDFSetHistNameDown=AlphaSPDFSetNameDown+"value_alphas= ";
   TString AlphaSPDFSetHistNameUp  =AlphaSPDFSetNameUp+"value_alphas= ";
   AlphaSPDFSetHistNameDown+=value_alphaS;
@@ -498,17 +574,26 @@ void SPXPDF::Initialize()
   if (!temp_hist) std::cout<<cn<<mn<<"temp_hist not found ! "<<std::endl;
 
   h_errors_AlphaS.push_back(temp_hist);
+
+#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+  double value_alphaS_down=mypdf->alphasQ(alphaS_scale_worldAverage);
+#else
   double value_alphaS_down=LHAPDF::alphasPDF(alphaS_scale_worldAverage);
+#endif
   alphaS_variations.push_back(value_alphaS_down);
   if (debug) std::cout << cn<<mn<<"Added down variation histogram with alphaS value: " << value_alphaS_down <<std::endl ;
 
 // alphaS up
 
   if (debug) std::cout<<cn<<mn<<"Setting up alphas up PDF-name= "<<AlphaSPDFSetNameUp<<" member= "<<AlphaSmemberNumUp<<std::endl;
+#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+ mypdf=LHAPDF::mkPDF(AlphaSPDFSetNameDown.c_str(),AlphaSmemberNumDown);
+#else
   LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+AlphaSPDFSetNameUp+".LHgrid")).c_str(), AlphaSmemberNumUp);
   // Peter's comment: for LHAPDF v 6.1, this line has to be used
   // LHAPDF::initPDFSet(((std::string) (AlphaSPDFSetNameUp+".LHgrid")).c_str(), AlphaSmemberNumUp);
   //}
+#endif
 
   if (applgridok) {
    temp_hist= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
@@ -520,7 +605,11 @@ void SPXPDF::Initialize()
   }
 
   h_errors_AlphaS.push_back(temp_hist);
+#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+  double value_alphaS_up=mypdf->alphasQ(alphaS_scale_worldAverage);
+#else
   double value_alphaS_up=LHAPDF::alphasPDF(alphaS_scale_worldAverage);
+#endif
   alphaS_variations.push_back(value_alphaS_up);
   if (debug) std::cout <<cn<<mn<<"Added up variation histogram with alphaS value: " << value_alphaS_up << std::endl ;
 
@@ -552,11 +641,20 @@ void SPXPDF::Initialize()
   std::cout<<cn<<mn<<"Calculate PDF errors for: "<<default_pdf_set_name
 	       <<" w/ defaultpdfid: "<<defaultpdfid<<std::endl;
 
-  // LHAPDF::initPDFSet(default_pdf_set_name.c_str(), 0);
+#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+  if (debug) {
+   std::cout<<cn<<mn<<" "<<std::endl;
+   std::cout<<cn<<mn<<"Running LHAPDF6 mkPDF for "<<default_pdf_set_name.c_str()<<std::endl;
+  }
+  mypdf=LHAPDF::mkPDF(default_pdf_set_name.c_str(), defaultpdfid);
+  
+  if (debug) std::cout<<cn<<mn<<"...mkPDF finished for PDFBand"<<std::endl;
+#else
   LHAPDF::initPDFSet(default_pdf_set_name.c_str(), defaultpdfid);
   if (debug) std::cout<<cn<<mn<<"...initPDFSet finished for PDFBand"<<std::endl;
+#endif
 
-  // update this to put into steering
+  // 
   TH1D *hdefault=0;
   for (int pdferri = 0; pdferri < n_PDFMembers; pdferri++) {
    if (debug) std::cout<<cn<<mn<<"pdferri: "<<pdferri<<" of "<<n_PDFMembers
@@ -565,32 +663,55 @@ void SPXPDF::Initialize()
    // if (TString(PDFtype).Contains("HERA") || TString(PDFtype).Contains("ATLAS") ){
    if (ErrorPropagationType==StyleHeraPDF) {
     if (!includeEIG&&!includeQUAD&&!includeMAX) std::cout<<cn<<mn<<" no error band included !! "<<std::endl;
-    if (debug) std::cout<<cn<<mn<<"...initPDFSet "<<PDFname.c_str()<<" pdferri= "<<pdferri<<std::endl;
-    if (defaultpdfidvar<0) std::cout<<cn<<mn<<" No default PDF id found in steering. Check steering for missing 'defaultpdfidvar'. pdferri= "<<pdferri<<std::endl;
+
+    if (defaultpdfidvar<0) std::cout<<cn<<mn<<"WARNING No default PDF id found in steering. Check steering for missing 'defaultpdfidvar'. pdferri= "<<pdferri<<std::endl;
     if (pdferri <= lasteig ) {
-     LHAPDF::initPDF(pdferri);
+#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+      if (debug) std::cout<<cn<<mn<<"...mkPDF "<<PDFname.c_str()<<" pdferri= "<<pdferri<<std::endl;
+      mypdf=LHAPDF::mkPDF(PDFname.c_str(), pdferri);
+#else
+      if (debug) std::cout<<cn<<mn<<"...initPDFSet "<<PDFname.c_str()<<" pdferri= "<<pdferri<<std::endl;
+      LHAPDF::initPDF(pdferri);
+#endif
     } else if( pdferri == lasteig+1 ) {
      //account for PDF set "ATLAS.txt" and "ATLAS3jet" with no error bands?
      if (debug) std::cout<<cn<<mn<<"A 'PDFnamevar' was "
-			 <<(PDFnamevar.empty()? "":"NOT")<<" found."<<std::endl;
+			 <<(PDFnamevar.empty()? "":"NOT")<<" found name= "<<PDFnamevar.c_str()<<std::endl;
 
      //Band-aid for accounting for no error bands - This needs to be handled better
      if(PDFnamevar.empty() == false) {
+#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+      if (debug) cout<<cn<<mn<<"Initialize: initPDF name= "<<PDFnamevar.c_str()<<" set= "<<defaultpdfidvar<<endl;
+      mypdf=LHAPDF::mkPDF(PDFnamevar.c_str(), defaultpdfidvar);
+#else
       TString pdfname=TString(pdfSetPath)+"/"+PDFnamevar+".LHgrid";
       LHAPDF::initPDFSet(pdfname.Data(), defaultpdfidvar);
+#endif
      }
     } else if ( pdferri > lasteig+1 ) {
       //>> modification P Berta 28.8.14>>
      int pdfset=pdferri - lasteig-1;
-     if (debug) cout<<" MyPDF::Initialize: initPDF "<<PDFnamevar.c_str()<<" set= "<<pdfset<<endl;
+     if (debug) cout<<cn<<mn<<"Initialize: pdferri> lasteig+1 initPDF name= "<<PDFnamevar.c_str()<<" set= "<<pdfset<<endl;
+#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+      mypdf=LHAPDF::mkPDF(PDFnamevar.c_str(), pdfset);
+#else
      LHAPDF::initPDF(pdfset);
+#endif
      //if (debug) std::cout<<cn<<mn<<"initPDF set= "<<pdferri-lasteig<<std::endl;
      //LHAPDF::initPDF(pdferri - lasteig);
      //<<
     }
    } else {
     if (debug) std::cout<<cn<<mn<<"Initialize normal PDF set= "<<pdferri<<std::endl;
+#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+    if (debug) {
+     std::cout<<cn<<mn<<" "<<std::endl;
+     std::cout<<cn<<mn<<"Running LHAPDF6 mkPDF for "<<default_pdf_set_name.c_str()<<std::endl;
+    }
+    mypdf=LHAPDF::mkPDF(default_pdf_set_name.c_str(), pdferri);
+#else
     LHAPDF::initPDF(pdferri);
+#endif
    }
 
    TH1D* temp_hist = 0;
@@ -1285,7 +1406,7 @@ void SPXPDF::SetVariablesDefault()
 
  DEFAULT=-1;
 
- //debug=false;
+ debug=false;
  //steeringFileDir=defaultString;
  steeringFileName=defaultString;
  PDFtype=defaultString;

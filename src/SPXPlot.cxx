@@ -622,17 +622,23 @@ void SPXPlot::StaggerConvoluteOverlay(void) {
                if (debug) std::cout << cn << mn <<"Stagger Graph " <<graph->GetName()<< std::endl;
 	       for(int j = 0; j < graph->GetN(); j++) {
 		//Loop over bins
-		double x = 0, y = 0, range = 0, error = 0;
-		double xh = 0, xl = 0, dr = 0, newX = 0;
+		double x = 0., y = 0., range = 0., error = 0.;
+		double exh = 0., exl = 0., dr = 0., newX = 0., dx=0.;
 
 		graph->GetPoint(j, x, y);
 		error = graph->GetErrorX(j);
 		range = error / FRAC_RANGE;
 		dr = range / graph->GetN();
-		newX = x + (pow(-1, (i + 1)) * (dr *  (i + 1)));
+		//newX = x + (pow(-1, (i + 1)) * (dr *  (i + 1)));
+		dx= pow(-1, (i + 1)) * (dr *  (i + 1));
+		newX = x + dx;
+                exh=graph->GetErrorXhigh(j)-dx;
+                exl=graph->GetErrorXlow(j)+dx;
 
 		graph->SetPoint(j, newX, y);
-	       }
+                graph->SetPointEXhigh(j, exh);
+		graph->SetPointEXlow (j, exl);
+	       }	
               }
 	}
 }
@@ -676,9 +682,17 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 			double error = graph->GetErrorX(j);
 			double range = error / FRAC_RANGE;
 			double dr = range / graph->GetN();
-			double newX = x + (pow(-1, (i + 1)) * (dr *  (i + 1)));
+			//double newX = x + (pow(-1, (i + 1)) * (dr *  (i + 1)));
+    		        double dx= pow(-1, (i + 1)) * (dr *  (i + 1));
+		        double newX = x + dx;
+                        double exh=graph->GetErrorXhigh(j)-dx;
+                        double exl=graph->GetErrorXlow(j)+dx;
 
 			graph->SetPoint(j, newX, y);
+
+                        graph->SetPointEXhigh(j, exh);
+	     	        graph->SetPointEXlow (j, exl);
+
 		}
 	  }
 	}
@@ -965,8 +979,8 @@ void SPXPlot::DrawLegend(void) {
  int namesize=5;    
  int leginfomax=0;    
 
- double charactersize=0.01;    
- float linesize=0.05; 
+ double charactersize=0.04;    
+ float linesize=0.07; 
 
  //TString mylabel="test";
  //int mysize=TString(mylabel).Sizeof(); 
@@ -975,6 +989,7 @@ void SPXPlot::DrawLegend(void) {
  leg->SetBorderSize(0);
  leg->SetFillColor(0);
  leg->SetMargin(0.2);
+ leg->SetTextSize(charactersize); 
 
  // Look first, if properties of bands are different
  int old_fill_style=-999, old_fill_color=-999;
@@ -1238,10 +1253,10 @@ void SPXPlot::DrawLegend(void) {
   std::cout << cn << mn <<"nraw= "<<nraw<<" namesize= "<< namesize<< " linesize= "<<linesize<<std::endl;
  }
 
- double fac=1.;
- if (namesize<20) fac=2.;
-
+ double fac=0.1;
+ if (namesize<20) fac=0.4;
  x1 = xlegend-(fac*namesize*charactersize), x2=xlegend;
+ //x1 = xlegend-(namesize*charactersize), x2=xlegend;
  if (nraw>3) nraw*=0.6;
  y1 = ylegend-(nraw*linesize);  y2=ylegend;
   
@@ -1265,6 +1280,8 @@ void SPXPlot::DrawLegend(void) {
  leginfo->SetBorderSize(0);
  leginfo->SetFillColor(0);
  leginfo->SetMargin(0.2);
+ leginfo->SetTextSize(charactersize);
+
 
  double sqrtsval = -1.; 
  double sqrtsvalold = -1.;
@@ -1371,11 +1388,11 @@ void SPXPlot::DrawLegend(void) {
  //double xshift=3;
  double x2info=steeringFile->GetXInfoLegend();
  double y2info=steeringFile->GetYInfoLegend();
- double x1info=x2info-charactersize*leginfomax;
+ double x1info=x2info-0.5*fac*charactersize*leginfomax;
  double y1info=y2info-linesize*leginfo->GetNRows();
 
  if (debug) { 
-  //std::cout<<cn<<mn<<"leginfomax= "<<leginfomax<<std::endl;
+  std::cout<<cn<<mn<<"leginfomax= "<<leginfomax<<std::endl;
   std::cout<<cn<<mn<<"x1info= "<<x1info<<" y1info= "<<y1info<<std::endl;
   std::cout<<cn<<mn<<"x2info= "<<x2info<<" y2info= "<<y2info<<std::endl;
  }
@@ -1636,9 +1653,9 @@ void SPXPlot::InitializeCrossSections(void) {
 	       }
 	       //StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
 	       //Update the Reference File Map
-    	       if(debug) std::cout << cn << mn << i<<" Get refGraph" <<std::endl;
+    	       if(debug) std::cout << cn << mn << i<<"Get reference Graph" <<std::endl;
 	       TGraphAsymmErrors *refGraph = crossSections[i].GetGridReference();
-               if (!refGraph) std::cout << cn << mn << i<<" refGraph not found !" <<std::endl;
+               if (!refGraph) std::cout << cn << mn << i<<" reference Graph not found !" <<std::endl;
 	       referenceFileGraphMap.insert(StringPairGraphPair_T(convolutePair, refGraph));
 
 	       //Update the Nominal File Map
@@ -1945,7 +1962,7 @@ void SPXPlot::InitializeData(void) {
 		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename(), totGraph));
 		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename() + "_stat", statGraph));
 
-		if(dataFileGraphMap.count(pci.dataSteeringFile.GetFilename())) {
+		if(dataFileGraphMap.count(pci.dataSteeringFile.GetFilename())>0) {
 			if(debug) {
 				std::cout << cn << mn << "Added data to map: [" << pci.dataSteeringFile.GetFilename() << "]" << std::endl;
 			}

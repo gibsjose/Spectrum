@@ -418,8 +418,8 @@ void SPXRatio::Divide(void) {
    pci.Print();
   }
 
-   if (numeratorGraph.size()==0)
-    throw SPXGraphException(cn + mn + "No numeratorGraph found !");
+  if (numeratorGraph.size()==0)
+   throw SPXGraphException(cn + mn + "No numeratorGraph found !");
 
   //Match the convolute binning to the data binning
   try {
@@ -472,7 +472,7 @@ void SPXRatio::Divide(void) {
    if(debug) std::cout << "\t Fill Style = " << graph->GetFillStyle() << std::endl;
    if(debug) std::cout << "\t Fill Color = " << graph->GetFillColor() << std::endl;
    if(debug) std::cout << "\t Marker Style= "<< graph->GetMarkerStyle() << std::endl;
-   if (debug) graph->Print();
+   if(debug) graph->Print();
 
    ratioGraph.push_back(graph);
   }
@@ -1112,7 +1112,7 @@ void SPXRatio::Draw(string option, int statRatios, int totRatios) {
     graph->SetFillStyle(fillstyle);
    }
    if (markerstyle!=DEFAULT) {
-    graph->SetMarkerStyle(fillstyle);
+    graph->SetMarkerStyle(markerstyle);
    }
 
    if (edgecolor!=DEFAULT && edgecolor!=0) {

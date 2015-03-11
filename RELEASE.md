@@ -6,6 +6,10 @@
 
 ## Change Log
 
+- interface to LHAPDF6
+
+- corrected staggered error bars 
+
 - help in Spectrum
 
 - first version of SPXDrawUtilities with BoxText
