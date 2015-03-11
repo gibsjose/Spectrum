@@ -1074,6 +1074,8 @@ void SPXPlot::DrawLegend(void) {
 
  if(os.ContainsConvolute()) {
 
+  std::vector<TString> vpdf;
+
   if (debug) std::cout << cn << mn <<"contains convolute "<< std::endl;
   int npdf=0; int iold=-1;
   for(int icross = 0; icross < crossSections.size(); icross++) {
@@ -1206,12 +1208,23 @@ void SPXPlot::DrawLegend(void) {
       
      if (gtype.compare(string("pdf"))==0){
       pdffound=true; npdf++;
+
+      
+      int pdfcount=std::count (vpdf.begin(), vpdf.end(), pdftype);
+      if (debug) std::cout<<" icross= "<<icross<<" pdf= "<<pdftype<<" pdfcount= "<<pdfcount<<std::endl;
+
       if (steeringFile->GetPlotMarker()) {
        if (debug) std::cout<<cn<<mn<<"in PDF Plot marker add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<std::endl;
-       leg->AddEntry(gband, pdftype, "PE");
+       if (pdfcount<1) {
+        leg->AddEntry(gband, pdftype, "PE");
+        vpdf.push_back(pdftype);
+       }
       } else if (steeringFile->GetPlotBand()) {
        if (debug) std::cout<<cn<<mn<<"in pdf add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<std::endl;
-       leg->AddEntry(gband, pdftype, "LF");
+       if (pdfcount<1) {
+        leg->AddEntry(gband, pdftype, "LF");
+        vpdf.push_back(pdftype);
+       }
       } else
        std::cout << cn << mn <<"WARNING do not know what to do not plotMarker, not plotBand"<< std::endl;
 
@@ -1389,7 +1402,7 @@ void SPXPlot::DrawLegend(void) {
  double x2info=steeringFile->GetXInfoLegend();
  double y2info=steeringFile->GetYInfoLegend();
  double x1info=x2info-0.5*fac*charactersize*leginfomax;
- double y1info=y2info-linesize*leginfo->GetNRows();
+ double y1info=y2info-0.6*linesize*leginfo->GetNRows();
 
  if (debug) { 
   std::cout<<cn<<mn<<"leginfomax= "<<leginfomax<<std::endl;

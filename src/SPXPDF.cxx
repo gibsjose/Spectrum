@@ -336,19 +336,27 @@ void SPXPDF::Initialize()
  std::cout<<cn<<mn<<"PDFset looking up: "<<default_pdf_set_name<<" default-id= "<<defaultpdfid<<std::endl;
 
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+ const LHAPDF::PDFInfo info(default_pdf_set_name.c_str(), 2);
+
+ LHAPDF::Info& cfg = LHAPDF::getConfig();
+
+ cfg.set_entry("Verbosity",0);
+
  if (debug) {
   std::cout<<cn<<mn<<"  "<<std::endl;
   std::cout<<cn<<mn<<"Running on LHAPDF6: "<<std::endl;
   std::cout<<cn<<mn<<"  "<<std::endl;
  
-  if(debug) std::cout<<cn<<mn<<"Read PDF= "<<default_pdf_set_name.c_str()<<std::endl;
+  std::cout<<cn<<mn<<"Read PDF= "<<default_pdf_set_name.c_str()<<std::endl;
 
-  const LHAPDF::PDFInfo info(default_pdf_set_name.c_str(), 2);
-  if (info.has_key("PdfDesc")) cout << "PdfDesc: " << info.get_entry("PdfDesc") << endl;
-  cout << "PdfType: " << info.get_entry("PdfType") << endl;
-  cout << "Verbosity from PDF: " << info.get_entry("Verbosity") << endl;
-  vector<int> pids = info.get_entry_as< vector<int> >("Flavors");
+  cfg.set_entry("Verbosity",1);
+
+  if (info.has_key("PdfDesc")) std::cout << "PdfDesc: " << info.get_entry("PdfDesc") << std::endl;
+  std::cout << "PdfType: " << info.get_entry("PdfType") << std::endl;
+  std::cout << "Verbosity from PDF: " << info.get_entry("Verbosity") << std::endl;
+  //vector<int> pids = info.get_entry_as< vector<int> >("Flavors");
  }
+
  
  mypdf=LHAPDF::mkPDF(default_pdf_set_name.c_str(),defaultpdfid);
  // std::cout<<mypdf.description()<<std::endl;
