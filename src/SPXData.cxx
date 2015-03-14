@@ -51,16 +51,9 @@ SPXData::SPXData(const SPXPlotConfigurationInstance &pci) {
  if (debug) std::cout<<cn<<mn<<"Create graphs"<<std::endl;
  this->CreateGraphs();
 
- ReadInCorrelationInformation=false; // implement that this can be set from outside via SetReadinCorrellationInformation
-
- if (ReadInCorrelationInformation) {
-  if (debug) std::cout<<cn<<mn<<"Read correlation matrix"<<std::endl;
-  this->ReadCorrelation(); 
- } else {
-   if (debug) std::cout<<cn<<mn<<"Reading in information on correlation turned off !"<<std::endl;
- }
  return;
 }
+
 
 //Public helper method to parse the data file based on the type
 void SPXData::Parse(void) {

@@ -85,7 +85,7 @@ private:
 	double yRatioMin;	    //Force Y-Axis minimum for ratio section
 	double yRatioMax;	    //Force Y-Axis maximum for ratio section
 
-        double CalculateChi2;      // Calculate Chi2
+        int CalculateChi2;      // Calculate Chi2
 
         bool AddLumi;             // add luminosity label in info legend
         bool AddJournal;          // add journal label in legend
@@ -211,11 +211,11 @@ public:
 		return this->AddJournalYear;
 	}
 
-	double GetCalculateChi2(void) const {
+	int GetCalculateChi2(void) const {
 		return this->CalculateChi2;
 	}
 
-	double SetCalculateChi2(double newchi2) {
+	void SetCalculateChi2(int newchi2) {
 		CalculateChi2= newchi2;
 	}
 

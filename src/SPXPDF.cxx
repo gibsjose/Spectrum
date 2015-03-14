@@ -582,7 +582,7 @@ void SPXPDF::Initialize()
 
   if (debug) std::cout<<cn<<mn<<"Setting up alphas up PDF-name= "<<AlphaSPDFSetNameUp<<" member= "<<AlphaSmemberNumUp<<std::endl;
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
- mypdf=LHAPDF::mkPDF(AlphaSPDFSetNameUp.c_str(),AlphaSmemberNumDown);
+ mypdf=LHAPDF::mkPDF(AlphaSPDFSetNameUp.c_str(),AlphaSmemberNumUp);
 #else
   LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+AlphaSPDFSetNameUp+".LHgrid")).c_str(), AlphaSmemberNumUp);
   // Peter's comment: for LHAPDF v 6.1, this line has to be used
@@ -1090,7 +1090,8 @@ void SPXPDF::CalcAlphaSErrors()
              <<" +"<<this_err_up<<" -"<<this_err_down<<std::endl;
 
   // now interpolate for alpha_s uncertainty wanted
-  error_up = (this_err_up-this_default_val)*alphaS_absUnc/(alphaS_variations.at(2)-alphaS_variations.at(0));
+  // 0 is default variations
+  error_up =   (this_err_up-this_default_val)  *alphaS_absUnc/(alphaS_variations.at(2)-alphaS_variations.at(0));
   error_down = (this_default_val-this_err_down)*alphaS_absUnc/(alphaS_variations.at(0)-alphaS_variations.at(1));
 
   if (debug) cout<<cn<<mn<<"bin = "<<bi<<" error_up = "<<error_up<<" error_down = "<<error_down<<std::endl;

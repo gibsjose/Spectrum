@@ -6,6 +6,12 @@
 
 ## Change Log
 
+- corrected bug adding errors in quadrature in Matchbinning
+
+- Change code order, UpdateBand now does not re-calculate nominal from pdf->GetNominal()
+  (was in conflict with Matchbinning)
+  nominal graph now does not have the grid-corrections applied
+
 - interface to LHAPDF6
 
 - corrected staggered error bars 

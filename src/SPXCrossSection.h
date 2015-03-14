@@ -89,7 +89,7 @@ public:
         std::vector<std::string> GetCorrectionLabels();
 
         void MatchBinning(StringGraphMap_T dataFileGraphMap);
-        void UpdateBandandHisto(void);
+        void UpdateBand(void);
 
 
 private:

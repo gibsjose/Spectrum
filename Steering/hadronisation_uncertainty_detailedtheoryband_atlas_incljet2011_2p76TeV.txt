@@ -21,8 +21,12 @@ plot_marker = false
 match_binning = false
 apply_grid_corr = true
 label_sqrt_s = true
-;x_legend = 0.95
-;y_legend = 0.95
+x_legend = 0.75
+y_legend = 0.90
+
+x_info_legend = 0.35
+y_info_legend = 0.90
+
 
 band_with_pdf= false
 band_with_alphas= false
@@ -95,6 +99,6 @@ desc = atlas_inclusive_jet2011_2p76TeV_hadronisationcorrections_r06_eta1
 display_style = ratio
 overlay_style = data, convolute
 
-ratio_title = hadronisation uncertainty
+ratio_title = hadronisation correction
 ratio_style_0 = convolute / nominal
 ratio_0 = ([grid_0, pdf_0])

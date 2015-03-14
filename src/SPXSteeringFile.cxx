@@ -92,7 +92,7 @@ void SPXSteeringFile::SetDefaults(void) {
 	yRatioMax = MAX_EMPTY;
 	if(debug) std::cout << cn << mn << "yRatioMax set to default: \"" << MAX_EMPTY << "\"" << std::endl;
 
-	CalculateChi2 = 0.0;
+	CalculateChi2 = 0;
 	if(debug) std::cout << cn << mn << " CalculateChi2 set to default: OFF" << std::endl;
 
         AddLumi=false;
@@ -1618,7 +1618,8 @@ void SPXSteeringFile::Parse(void) {
 	yRatioMax = reader->GetReal("GRAPH", "y_ratio_max", yRatioMax);
 
 
-	CalculateChi2 = reader->GetReal("GRAPH", "calculate_chi2", CalculateChi2);
+	CalculateChi2 = reader->GetInteger("GRAPH", "calculate_chi2", CalculateChi2);
+
 	AddLumi       = reader->GetBoolean("GRAPH", "label_lumi", AddLumi);
 	AddJournal    = reader->GetBoolean("GRAPH", "label_journalreference", AddJournal);
 	AddJournalYear= reader->GetBoolean("GRAPH", "label_journalyear", AddJournalYear);

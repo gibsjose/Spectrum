@@ -21,8 +21,11 @@ plot_marker = false
 match_binning = true
 ;apply_grid_corr = true
 label_sqrt_s = true
-x_legend = 0.9
-y_legend = 0.9
+x_legend = 0.4
+y_legend = 0.93
+
+x_info_legend = 0.3
+y_info_legend = 0.3
 
 band_with_pdf= true
 band_with_alphas= true
@@ -68,28 +71,30 @@ total_fill_style=1001
 total_fill_color=800
 total_edge_style=1
 total_edge_color=797
-
-correction_fill_style = 3003
-correction_fill_color = 416
-;correction_marker_style = 24
+total_marker_style=21
 
 pdf_fill_style=1001
 pdf_fill_color=803
-pdf_edge_style=1
-pdf_edge_color=804
+pdf_edge_style=9
+pdf_edge_color=-1
 ;pdf_marker_style=22
 
 ;scale_fill_style=1001
-;scale_fill_color=821
-;scale_edge_style=1
-;scale_edge_color=823
-;scale_marker_style=23
+scale_fill_color=821
+scale_edge_style=1
+scale_edge_color=823
+scale_marker_style=23
 
-;alphas_fill_style=3001
-;alphas_fill_color=2
-alphas_edge_style=1
+alphas_fill_style=3001
+alphas_fill_color=2
+alphas_edge_style=5
 alphas_edge_color=-2
-;alphas_marker_style=24
+alphas_marker_style=24
+
+
+;correction_fill_style = 3003
+;correction_fill_color = 416
+;correction_marker_style = 24
 
 x_scale = 1.0
 y_scale = 1.0
@@ -101,6 +106,9 @@ desc = atlas_inclusive_jet2011_detailedband_r06_eta1
 display_style = ratio
 overlay_style = data, convolute
 
-ratio_title = NLO QCD/Reference
-ratio_style_0 = convolute / nominal
+ratio_title = NLO QCD uncertainties
+ratio_style_0 = convolute / !nominal
 ratio_0 = ([grid_0, pdf_0])
+
+;ratio_style_0 = convolute / !data
+;ratio_0 = ([grid_0, pdf_0]) / data_0

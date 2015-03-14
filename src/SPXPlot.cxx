@@ -41,9 +41,6 @@ void SPXPlot::Initialize(void) {
 		NormalizeCrossSections();
                 if (debug) std::cout << cn << mn << "finished NormalizeCrossSections id= " << id << std::endl;
 
-		//MatchOverlayBinning();
-                //if (debug) std::cout << cn << mn << "finished MatchOverlayBinning id= " << id << std::endl;
-
 		InitializeRatios();
                 if (debug) std::cout << cn << mn << "finished  	InitializeRatios id= " << id << std::endl;
 
@@ -952,6 +949,8 @@ void SPXPlot::DrawLegend(void) {
  SPXDisplayStyle      &ds = pc.GetDisplayStyle();
  SPXOverlayStyle      &os = pc.GetOverlayStyle();
 
+
+
  // Why zero here, Where to the the PlotConfiguriotninstance ??
  cout<<cn<<mn<<"HuHu fix me pc.GetPlotConfigurationInstance(0) is not good ! "<<endl;
  SPXPlotConfigurationInstance pci=pc.GetPlotConfigurationInstance(0);
@@ -1072,6 +1071,11 @@ void SPXPlot::DrawLegend(void) {
   }
  }
 
+
+ bool nlolabel=true;
+ SPXRatioStyle ratioStyle = pc.GetRatioStyle(0);
+ if (ratioStyle.IsDataOverConvolute()) nlolabel=false;
+
  if(os.ContainsConvolute()) {
 
   std::vector<TString> vpdf;
@@ -1110,28 +1114,31 @@ void SPXPlot::DrawLegend(void) {
     if (gridcorrectionfound) std::cout << cn << mn <<"Grid corrections found !"<< std::endl;
     if (nlouncertainty)      std::cout << cn << mn <<"Band contains NLO uncertainty !"<< std::endl;
     if (pdffound)            std::cout << cn << mn <<"Band contains PDF !"<< std::endl;
+    if (nlolabel)            std::cout << cn << mn << "Plot NLO labels "<< std::endl;
    }
 
    if (!bandsdifferent) {
-    TString text="";
-    if (icross==0) { //only Draw text for the first cross section
-     text+="NLO QCD";
-     if(steeringFile->ApplyGridCorr()) {
-      std::vector<string> corrlabel=crossSections[icross].GetCorrectionLabels();
-      if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
-      for(int ic = 0; ic < corrlabel.size(); ic++) {
-       string label=" #otimes "+corrlabel[ic];
-       //if (debug) std::cout<<cn<<mn<<"grid correction label= "<<label.c_str()<<std::endl;
-       text+=TString(label); // do this better
+    if (nlolabel) {
+     TString text="";
+     if (icross==0) { //only Draw text for the first cross section
+      text+="NLO QCD";
+      if(steeringFile->ApplyGridCorr()) {
+       std::vector<string> corrlabel=crossSections[icross].GetCorrectionLabels();
+       if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
+       for(int ic = 0; ic < corrlabel.size(); ic++) {
+        string label=" #otimes "+corrlabel[ic];
+        //if (debug) std::cout<<cn<<mn<<"grid correction label= "<<label.c_str()<<std::endl;
+        text+=TString(label); // do this better
+       }
+       if (text.Sizeof()>namesize) namesize=text.Sizeof();
+       //std::cout<<cn<<mn<<text.Data()<<" namesize= "<<namesize<<std::endl;
       }
-      if (text.Sizeof()>namesize) namesize=text.Sizeof();
-      //std::cout<<cn<<mn<<text.Data()<<" namesize= "<<namesize<<std::endl;
+  
+      text+=" with:";
+     // Draw nothing
+      if (gridcorrectionfound&&!nlouncertainty) text="";
+      if (nlouncertainty) leg->AddEntry((TObject*)0, text, "");
      }
- 
-     text+=" with:";
-    // Draw nothing
-     if (gridcorrectionfound&&!nlouncertainty) text="";
-     if (nlouncertainty) leg->AddEntry((TObject*)0, text, "");
     }
    } else {
     if (nlouncertainty)
@@ -1205,29 +1212,30 @@ void SPXPlot::DrawLegend(void) {
      string              gtype   =pdf->GetBandType(iband);
 
      if (debug) std::cout << cn << mn <<"Same properties iband= "<<iband<<" gtype= "<< gtype.c_str()<< std::endl;
-      
+     
+ 
      if (gtype.compare(string("pdf"))==0){
       pdffound=true; npdf++;
-
+      if (nlolabel) {
       
-      int pdfcount=std::count (vpdf.begin(), vpdf.end(), pdftype);
-      if (debug) std::cout<<" icross= "<<icross<<" pdf= "<<pdftype<<" pdfcount= "<<pdfcount<<std::endl;
+       int pdfcount=std::count (vpdf.begin(), vpdf.end(), pdftype);
+       if (debug) std::cout<<" icross= "<<icross<<" pdf= "<<pdftype<<" pdfcount= "<<pdfcount<<std::endl;
 
-      if (steeringFile->GetPlotMarker()) {
-       if (debug) std::cout<<cn<<mn<<"in PDF Plot marker add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<std::endl;
-       if (pdfcount<1) {
-        leg->AddEntry(gband, pdftype, "PE");
-        vpdf.push_back(pdftype);
-       }
-      } else if (steeringFile->GetPlotBand()) {
-       if (debug) std::cout<<cn<<mn<<"in pdf add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<std::endl;
-       if (pdfcount<1) {
-        leg->AddEntry(gband, pdftype, "LF");
-        vpdf.push_back(pdftype);
-       }
-      } else
-       std::cout << cn << mn <<"WARNING do not know what to do not plotMarker, not plotBand"<< std::endl;
-
+       if (steeringFile->GetPlotMarker()) {
+        if (debug) std::cout<<cn<<mn<<"in PDF Plot marker add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<std::endl;
+        if (pdfcount<1) {
+         leg->AddEntry(gband, pdftype, "PE");
+         vpdf.push_back(pdftype);
+        }
+       } else if (steeringFile->GetPlotBand()) {
+        if (debug) std::cout<<cn<<mn<<"in pdf add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<std::endl;
+        if (pdfcount<1) {
+         leg->AddEntry(gband, pdftype, "LF");
+         vpdf.push_back(pdftype);
+        }
+       } else
+        std::cout << cn << mn <<"WARNING do not know what to do not plotMarker, not plotBand"<< std::endl;
+      }
       if (pdftype.Sizeof()>namesize) namesize=pdftype.Sizeof();
       //std::cout<<cn<<mn<<pdftype.Data()<<" namesize= "<<namesize<<std::endl;
      }
@@ -1552,7 +1560,7 @@ void SPXPlot::InitializeCrossSections(void) {
 
 			crossSectionInstance.ApplyCorrections();
 
-			crossSectionInstance.UpdateBandandHisto();
+			crossSectionInstance.UpdateBand();
 
 			crossSections.push_back(crossSectionInstance);
 
@@ -1584,7 +1592,7 @@ void SPXPlot::InitializeCrossSections(void) {
               convoluteFilePDFMap.insert(StringPairPDFPair_T(convolutePair, pdf));
  
               for (int iband=0; iband<nbands; iband++) {
-                //SPXPDF * pdf=crossSections[i].GetPDF();
+
 		TGraphAsymmErrors * gband   =pdf->GetBand(iband);
 		string              gtype   =pdf->GetBandType(iband);
 		if (!gband) {
@@ -1661,7 +1669,7 @@ void SPXPlot::InitializeCrossSections(void) {
 		gband->SetLineColor  (fillcolor);
 		gband->SetFillStyle  (fillstyle);
 		gband->SetFillColor  (fillcolor);
-                //gband->SetFillColorAlpha  (fillcolor,0.35);
+
                 if (debug) gband->Print();               
 	       }
 	       //StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
@@ -1764,11 +1772,15 @@ void SPXPlot::NormalizeCrossSections(void) {
 			 std::cout << "\t X Scale: " << pci->xScale << std::endl;
 			 std::cout << "\t Y Scale: " << pci->yScale << std::endl << std::endl;
 			}
-			SPXGraphUtilities::Scale(gNom, xScale, yScale);
-			SPXGraphUtilities::Scale(gRef, xScale, yScale);
+
+                        if (xScale!=1. || yScale!=1.) {
+ 			 SPXGraphUtilities::Scale(gNom, xScale, yScale);
+			 SPXGraphUtilities::Scale(gRef, xScale, yScale);
+                        } 
 			//Also scale by the artificial grid scale from the grid steering file
 			xScale = 1.0;
 			yScale = pci->gridSteeringFile.GetYScale();
+
                         //
                         // loop over bands (pdf, alphas, scale etc) as set in SPXPDF
                         //
@@ -1811,7 +1823,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 			  std::cout<<cn<<mn<< "Reference Total Sigma = "<< totalSigmaRef  << std::endl;
 			}
 			//First divide the cross section by the bin width if it needs to be
-			//@TODO Do I need to do this also for the Alpha S and Scale Uncertainty bands?
+			//
 			if(dataDividedByBinWidth && !gridDividedByBinWidth) {
 			 if(debug) std::cout << cn << mn << "Dividing Cross Section by the Bin Width" << std::endl;
 			 SPXGraphUtilities::DivideByBinWidth(gNom);
@@ -1820,7 +1832,6 @@ void SPXPlot::NormalizeCrossSections(void) {
 			  if(debug) std::cout << cn << mn << "Dividing Grid Reference by the Bin Width" << std::endl;
 			  SPXGraphUtilities::DivideByBinWidth(gRef);
 			}
-
 
 			//Set the yBinWidthScale, which is the scaling of the data's Y Bin Width Units to the data's X Units
 			double yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), pci->dataSteeringFile.GetYBinWidthUnits());
@@ -1904,6 +1915,13 @@ void SPXPlot::InitializeData(void) {
 		//SPXData dataInstance = SPXData(pci);
 
                 SPXData *dataInstance = new SPXData(pci);
+
+   		if(debug) std::cout << cn << mn << "Chi2 calculations" << steeringFile->GetCalculateChi2() << std::endl;
+
+                if (steeringFile->GetCalculateChi2()>0) {
+   		 if(debug) std::cout << cn << mn << "Read-in Chi2 calculations" << std::endl;
+                 dataInstance->ReadCorrelation();
+                }
 
 		//@DEBUG
 		std::cout  << cn << mn << pci.dataDirectory << std::endl;

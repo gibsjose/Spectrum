@@ -385,13 +385,17 @@ void SPXRatio::Divide(void) {
  }
 
  if(ratioStyle.IsConvoluteOverData() || ratioStyle.IsConvoluteOverReference() || ratioStyle.IsConvoluteOverNominal()) {
+
   pci = plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
+
   if(debug) {
    pci.Print();
   }
 
   //Match the convolute binning to the data binning
   if(ratioStyle.IsConvoluteOverData()) {
+
+   if (debug) std::cout<<cn<<mn<<" ratioStyle.IsConvoluteOverData "<<std::endl;
 
    if (numeratorGraph.size()==0)
     throw SPXGraphException(cn + mn + "No numeratorGraph found !");
@@ -401,7 +405,7 @@ void SPXRatio::Divide(void) {
       if (debug) std::cout<<cn<<mn<<"Match binning for numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName()
                           <<" denominatorGraph= "<<denominatorGraph->GetName()<<std::endl;
 
-     SPXGraphUtilities::MatchBinning(denominatorGraph, numeratorGraph[i], true);
+      SPXGraphUtilities::MatchBinning(denominatorGraph, numeratorGraph[i], true);
     } catch(const SPXException &e) {
      std::cerr << e.what() << std::endl;
      std::ostringstream oss;
@@ -418,12 +422,13 @@ void SPXRatio::Divide(void) {
    pci.Print();
   }
 
+  if (debug) std::cout<<cn<<mn<<" ratioStyle.IsDataOverConvolute "<<std::endl;
+
   if (numeratorGraph.size()==0)
    throw SPXGraphException(cn + mn + "No numeratorGraph found !");
 
   //Match the convolute binning to the data binning
   try {
-
    for (int i=0; i<numeratorGraph.size(); i++){
     SPXGraphUtilities::MatchBinning(numeratorGraph[i], denominatorGraph, true);
    }
@@ -435,26 +440,42 @@ void SPXRatio::Divide(void) {
 
 //@TODO What if it's Data/Data???
  else if(ratioStyle.IsDataOverData()) {
-  if(debug) std::cout <<cn<<mn<<"Data/Data: Could not get pci" << std::endl;
+  if(debug) std::cout <<cn<<mn<<"Data/Data: " << std::endl;
+
+  if (debug) std::cout<<cn<<mn<<" ratioStyle.IsDataOverData() "<<std::endl;
 
   //@TODO Match binning here? Who is the master?
- }
+ } 
+ else if (ratioStyle.IsConvoluteOverNominal()) {
+  if (debug) std::cout<<cn<<mn<<" ratioStyle.IsConvoluteOverNominal "<<std::endl;
 
+  std::cout<<cn<<mn<<" ratioStyle.IsDataOverData() nothing implemented yet "<<std::endl;
+ } 
+ else {
+ if (debug) std::cout<<cn<<mn<<"No special ratiostyle  "<<std::endl;
+ }
+ 
  try {
   //Determine how to divide based on ratioStyle: zeroNumErrors/zeroDenErrors set with '!'
   DivideErrorType_t divideType;
 
   if(ratioStyle.GetZeroNumeratorErrors() && ratioStyle.GetZeroDenominatorErrors()) {
+   if (debug) std::cout<<cn<<mn<<"Zero all error "<<std::endl;
    divideType = ZeroAllErrors;
   } else if(ratioStyle.GetZeroNumeratorErrors()) {
+   if (debug) std::cout<<cn<<mn<<"Zero numerator error "<<std::endl;
    divideType = ZeroNumGraphErrors;
   } else if(ratioStyle.GetZeroDenominatorErrors()) {
+   if (debug) std::cout<<cn<<mn<<"Zero denominator error "<<std::endl;
    divideType = ZeroDenGraphErrors;
   } else {
+   if (debug) std::cout<<cn<<mn<<"Add errors "<<std::endl;
    divideType = AddErrors;
   }
 
   //Divide graphs
+
+  if (debug) std::cout<<cn<<mn<<"HUHU now divide graph "<<std::endl;
 
   if (numeratorGraph.size()==0)
    throw SPXGraphException(cn + mn + "No numeratorGraph found !");

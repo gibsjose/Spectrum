@@ -24,6 +24,9 @@ label_sqrt_s = true
 x_legend = 0.4
 y_legend = 0.93
 
+x_info_legend = 0.4
+y_info_legend = 0.3
+
 band_with_pdf= true
 band_with_alphas= true
 band_with_scale = true
@@ -50,10 +53,10 @@ data_directory = Data/jet/atlas/incljets2011_2p76TeV
 grid_directory = Grids/jet/atlas/incljets2011_2p76TeV/nlojet
 data_steering_files = atlas_2011_2p76TeV_jet_antiktr06_incljetpt_eta1.txt
 grid_steering_files = atlas_2011_2p76TeV_jet_antiktr06_incljetpt_eta1.txt
-pdf_steering_files = NNPDF30nlo.txt
+;pdf_steering_files = NNPDF30nlo.txt
 ;pdf_steering_files = NNPDF30nlo_nojet.txt
 ;pdf_steering_files = MMHT2014.txt
-;pdf_steering_files = CT10.txt
+pdf_steering_files = CT10.txt
 ;pdf_steering_files = ATLASepWZ12.txt
 ;pdf_steering_files = MRST2008nlo.txt
 ;pdf_steering_files = CTEQ6M.txt

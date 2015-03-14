@@ -292,12 +292,18 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
                     //If divided by bin width, scale by the slave bin width before summing
                     if(db) {
                         s_y_sum += s_y * s_bw;
-                        s_eyl_sum += pow(s_eyl * s_bw,2);
-                        s_eyh_sum += pow(s_eyh * s_bw,2);
+                        //s_eyl_sum += pow(s_eyl * s_bw,2);
+                        //s_eyh_sum += pow(s_eyh * s_bw,2);
+
+                        s_eyl_sum += s_eyl * s_bw;
+                        s_eyh_sum += s_eyh * s_bw;
+
                     } else {
                         s_y_sum += s_y;
-                        s_eyl_sum += pow(s_eyl,2);
-                        s_eyh_sum += pow(s_eyh,2);
+                        //s_eyl_sum += pow(s_eyl,2);
+                        //s_eyh_sum += pow(s_eyh,2);
+                         s_eyl_sum += s_eyl;
+                         s_eyh_sum += s_eyh;
                     }
 
                     if(debug) {
@@ -324,11 +330,11 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
                     n_exh = m_exh - m_x;
                     n_x = (m_exh + m_exl) / 2;
 
-                    if (s_eyl_sum>0.)
-                     s_eyl_sum=sqrt(s_eyl_sum);
+                    //if (s_eyl_sum>0.)
+                    // s_eyl_sum=sqrt(s_eyl_sum);
 
-                    if (s_eyh_sum>0.)
-                     s_eyh_sum=sqrt(s_eyh_sum);
+                    //if (s_eyh_sum>0.)
+                    // s_eyh_sum=sqrt(s_eyh_sum);
 
                     //Divided by bin width
                     if (debug) {
@@ -369,6 +375,7 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
                     for(int k = 0; k < (s_count - 1); k++) {
                         unsigned int index = (j - (s_count - 1));
 
+                       if(debug) {
                         double t_x, t_y;
                         double t_exl, t_exh, t_eyl, t_eyh;
                         slave->GetPoint(index, t_x, t_y);
@@ -379,7 +386,7 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
                         t_exl = t_x - t_exl;
                         t_exh = t_x + t_exh;
 
-                        if(debug) {
+
 			  std::cout << cn << mn << "REMOVING slave point with (index, x, y, exl, exh, eyl, eyh) = ("<< index << ", ";
                           std::cout.width(10); std::cout<< t_x << ", " << t_y << ", " << t_exl << ", " << t_exh << ", " << t_eyl << ", " << t_eyh << ")" << std::endl;
                         }
@@ -435,8 +442,8 @@ TGraphAsymmErrors * SPXGraphUtilities::Divide(TGraphAsymmErrors *g1, TGraphAsymm
      g2->Print();
 
      std::ostringstream oss;
-     oss << cn << mn << "Graphs do not contain the same number of bins: Graph1 "
-	 << g1->GetName() << " n1= " << n1 <<" Graph2 "<< g2->GetName() << " n2= " << n2;
+     oss << cn << mn << "Graphs do not contain the same number of bins: Graph1= "
+	 << g1->GetName() << " n1= " << n1 <<" Graph2= "<< g2->GetName() << " n2= " << n2;
 
      throw SPXGraphException(oss.str());
     }
@@ -638,6 +645,7 @@ void SPXGraphUtilities::HistogramToGraph(TGraphAsymmErrors * g, TH1 *h) {
         g->SetPoint(i, x, y);
         g->SetPointError(i, ex, ex, ey, ey);
     }
+    g->SetName(h->GetName());
 }
 
 TH1D *SPXGraphUtilities::GraphToHistogram(TGraphAsymmErrors * g) {

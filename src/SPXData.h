@@ -42,6 +42,8 @@ public:
 
 	void CreateGraphs(void);
 
+	void ReadCorrelation();
+
 	static bool GetDebug(void) {
 		return debug;
 	}
@@ -184,16 +186,6 @@ public:
 	  return this->totalErrorGraph;
 	}
 
-        void SetReadinCorrellationInformation(bool setReadin){
-         ReadInCorrelationInformation=setReadin;
-         return;
-        }
-
-        bool GetReadinCorrellationInformation(){
-         return ReadInCorrelationInformation;
-        }
-
-
         TMatrixT<double>  *GetDataCovarianceMatrix() {return cov_matrixtot;};
 
 private:
@@ -223,8 +215,6 @@ private:
 
         // stuff related to covariance matrix
 
-        bool ReadInCorrelationInformation; // if set covariance matrices are created
-
         TMatrixT<double>  *cov_matrixtot;
         TMatrixT<double>  *cov_matrixstat;
         TMatrixT<double>  *cov_matrixsyst;
@@ -234,7 +224,6 @@ private:
         TMatrixT<double>  *corr_matrixsyst;
 
         void ReadCorrelationMatrix(string filename);
-	void ReadCorrelation();
         void CalculateSystematicCovarianceMatrix();
 
         StringDoubleVectorMap_T SymmetrizeSystemicUncertaintiesMatrix(StringDoubleVectorMap_T syst);

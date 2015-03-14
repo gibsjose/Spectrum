@@ -42,7 +42,6 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
 
  //Attempt to create the PDF object and perform convolution
  try {
-  //pdf = new SPXPDF(psf, grid->GetGridName());
   pdf = new SPXPDF(psf, grid);
  } catch(const SPXException &e) {
   throw;
@@ -108,6 +107,29 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
   if (debug) std::cout<<cn<<mn<<"Initialize the PDF "<<std::endl;
 
   pdf->Initialize();
+
+ //Convert reference and nominal histograms to graphs and save them
+ if (!pdf->GetPDFNominal()) {
+  throw SPXParseException(cn+mn+"Nominal PDF histogram not found !");
+ }
+
+ if (!grid->GetReference()) {
+  std::cout<<cn<<mn<<"WARNING: reference histogram not found ! "<<endl;
+ }
+
+ SPXGraphUtilities::HistogramToGraph(gridReference, grid->GetReference());
+ SPXGraphUtilities::HistogramToGraph(nominal,       pdf->GetPDFNominal());
+ TString nomname="Nominal";
+ nomname+=nominal->GetName();
+ nominal->SetName(nomname);
+
+ if (debug) {
+  //std::cout<<cn<<mn<<" nominal PDF histogram "<<std::endl;
+  //pdf->GetPDFNominal()->Print("all");
+
+  std::cout<<cn<<mn<<" nominal Nbins= "<<nominal->GetN()<<std::endl;
+  nominal->Print();
+ }
 }
 
 
@@ -130,24 +152,13 @@ void SPXCrossSection::ParseCorrections(void) {
 	}
 }
 
-void SPXCrossSection::UpdateBandandHisto() {
+void SPXCrossSection::UpdateBand() {
  std::string mn = "UpdateBandandHisto: ";
+ //
  // calculate total uncertainties
- 
+ //
  pdf->CalcTotalErrors();
 
- //Convert reference and nominal histograms to graphs and save them
- if (!pdf->GetPDFNominal()) {
-  throw SPXParseException(cn+mn+"Nominal PDF histogram not found !");
- }
-
- if (!grid->GetReference()) {
-  std::cout<<cn<<mn<<"WARNING: reference histogram not found ! "<<endl;
- }
-
- SPXGraphUtilities::HistogramToGraph(gridReference, grid->GetReference());
- SPXGraphUtilities::HistogramToGraph(nominal,       pdf->GetPDFNominal());
- 
  return;
 }
 
@@ -300,6 +311,7 @@ void SPXCrossSection::MatchBinning(StringGraphMap_T dataFileGraphMap) {
    if (debug) std::cout << cn <<mn<<"Match binning for slave graph "<<gband->GetName()<<std::endl;
    //if (debug) if (dividedByBinWidth)  std::cout << cn <<mn<<"Divided by binwidth is ON "<<std::endl;
 
+
    SPXGraphUtilities::MatchBinning(master, gband, dividedByBinWidth);
    if (debug) {
     std::cout << cn <<mn<<"After matching pdf graph "<<gband->GetName()<<" to data "<<master->GetName()<<std::endl;
@@ -307,6 +319,18 @@ void SPXCrossSection::MatchBinning(StringGraphMap_T dataFileGraphMap) {
    }
   }
 
+  if (!nominal) {
+   throw SPXGeneralException(cn+mn+"Nominal graph not found");
+  }
+
+  if (debug) std::cout << cn <<mn<<"Match binning for nominal graph "<<nominal->GetName()<<std::endl; 
+  SPXGraphUtilities::MatchBinning(master, nominal, dividedByBinWidth);
+  if (debug) {
+   std::cout << cn <<mn<<"After matching nominal graph "<<nominal->GetName()<<" to data "<<master->GetName()<<std::endl;
+
+   nominal->Print();
+   std::cout << cn <<mn<<"Number of bins "<<nominal->GetN()<<std::endl;
+  }
 
  }
 
