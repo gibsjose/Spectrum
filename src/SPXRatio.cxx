@@ -475,7 +475,7 @@ void SPXRatio::Divide(void) {
 
   //Divide graphs
 
-  if (debug) std::cout<<cn<<mn<<"HUHU now divide graph "<<std::endl;
+  if (debug) std::cout<<cn<<mn<<"Now divide graph "<<std::endl;
 
   if (numeratorGraph.size()==0)
    throw SPXGraphException(cn + mn + "No numeratorGraph found !");

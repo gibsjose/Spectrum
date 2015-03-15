@@ -82,6 +82,8 @@ private:
 	double yInfoLegend;	    //Y Position of the information legend, based on top-right corner
 	double yOverlayMin;	    //Force Y-Axis minimum for overlay section
 	double yOverlayMax;	    //Force Y-Axis maximum for overlay section
+	double xOverlayMin;	    //Force X-Axis minimum for overlay section
+	double xOverlayMax;	    //Force X-Axis maximum for overlay section
 	double yRatioMin;	    //Force Y-Axis minimum for ratio section
 	double yRatioMax;	    //Force Y-Axis maximum for ratio section
 
@@ -189,6 +191,14 @@ public:
 
 	double GetYOverlayMax(void) const {
 		return this->yOverlayMax;
+	}
+
+	double GetXOverlayMin(void) const {
+		return this->xOverlayMin;
+	}
+
+	double GetXOverlayMax(void) const {
+		return this->xOverlayMax;
 	}
 
 	double GetYRatioMin(void) const {

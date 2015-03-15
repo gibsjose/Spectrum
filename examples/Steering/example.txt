@@ -55,6 +55,8 @@ x_info_legend = 0.9				;[Optional] X(Right)-Position of information Legend, base
 y_info_legend = 0.9			        ;[Optional] Y(Top)-Position of information legend, based on top right side
 ; y_overlay_min = 				;[Optional] Force Y-Axis minimum for overlay section
 ; y_overlay_max = 				;[Optional] Force Y-Axis maximum for overlay section
+; x_overlay_min = 				;[Optional] Force X-Axis minimum for overlay section
+; x_overlay_max = 				;[Optional] Force X-Axis maximum for overlay section
 ; y_ratio_min =					;[Optional] Force Y-Axis minimum for ratio section
 ; y_ratio_max = 			        ;[Optional] Force Y-Axis maximum for ratio section
 

@@ -500,6 +500,15 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 		if(debug) std::cout << cn << mn << "Forcing Overlay Y Axis Maxmimum to " << yMaxOverlay << std::endl;
 	}
 
+	if(steeringFile->GetXOverlayMin() != MIN_EMPTY) {
+		xMinOverlay = steeringFile->GetXOverlayMin();
+		if(debug) std::cout << cn << mn << "Forcing Overlay X Axis Minimum to " << xMinOverlay << std::endl;
+	}
+	if(steeringFile->GetXOverlayMax() != MAX_EMPTY) {
+		xMaxOverlay = steeringFile->GetXOverlayMax();
+		if(debug) std::cout << cn << mn << "Forcing Overlay X Axis Maxmimum to " << xMaxOverlay << std::endl;
+	}
+
 	//Force to non-negative if plotting logarithmic axis
 	if(pc.IsXLog()) {
 		if(xMinOverlay < 0) {
@@ -521,13 +530,6 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 
 
         xAxisOverlay->SetNdivisions(5);
-	//std::cout << cn<<mn<<"INFO change xMin = " << xMinOverlay <<" by small value to better draw axis lables" << std::endl;
-	//std::cout << cn<<mn<<"INFO change xMax = " << xMaxOverlay <<" by small value to better draw axis lables" << std::endl;
-
-        //const double small=1.e-6;
-	//xMinOverlay*=(1-small);
-        //xMaxOverlay*=(1+small);
-
 	xAxisOverlay->SetMoreLogLabels(true);
 
 	if(debug) {
@@ -563,11 +565,22 @@ void SPXPlot::DrawRatioPadFrame(void) {
 		if(debug) std::cout << cn << mn << "Forcing Ratio Y Axis Maxmimum to " << yMaxRatio << std::endl;
 	}
 
-	//Force Ratio X Min/Max to match Overlay, if plotted (should alread match anyway...)
+	//Force Ratio X Min/Max to match Overlay, if plotted (should already match anyway...)
 	if(ds.ContainsOverlay()) {
 	 xMinRatio = xMinOverlay;
 	 xMaxRatio = xMaxOverlay;
-	}
+	} else { // otherwise read in values from Steering
+
+	 if(steeringFile->GetXOverlayMin() != MIN_EMPTY) {
+		xMinRatio = steeringFile->GetXOverlayMin();
+		if(debug) std::cout << cn << mn << "Forcing Overlay X Axis Minimum to " << xMinOverlay << std::endl;
+	 }
+	 if(steeringFile->GetXOverlayMax() != MAX_EMPTY) {
+		xMaxRatio = steeringFile->GetXOverlayMax();
+		if(debug) std::cout << cn << mn << "Forcing Overlay X Axis Maxmimum to " << xMaxOverlay << std::endl;
+	 }
+
+        }
 
 	//@TODO What to do here for forcing Y axis within logarithmic limits like I do for overlay? It doesn't matter now, since
 	//			only overlay Y is logarithmic, and the X follows the overlay exactly (if it's plotted)
@@ -1459,7 +1472,8 @@ void SPXPlot::CanvasToPNG(void) {
 	//Draw PNG File
 	canvas->Print(filename.c_str());
         TString epsname=filename;
-        epsname.ReplaceAll("png","pdf");
+        epsname.ReplaceAll("plot_0","");
+        epsname.ReplaceAll("png","eps");
 	canvas->Print(epsname);
 }
 

@@ -80,6 +80,12 @@ void SPXSteeringFile::SetDefaults(void) {
 	yInfoLegend = 0.4;
 	if(debug) std::cout << cn << mn << "yInfoLegend set to default: \"0.4\"" << std::endl;
 
+	xOverlayMin = MIN_EMPTY;
+	if(debug) std::cout << cn << mn << "xOverlayMin set to default: \"" << MIN_EMPTY << "\"" << std::endl;
+
+	xOverlayMax = MAX_EMPTY;
+	if(debug) std::cout << cn << mn << "xOverlayMax set to default: \"" << MAX_EMPTY << "\"" << std::endl;
+
 	yOverlayMin = MIN_EMPTY;
 	if(debug) std::cout << cn << mn << "yOverlayMin set to default: \"" << MIN_EMPTY << "\"" << std::endl;
 
@@ -265,6 +271,8 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Y information Legend: " << yInfoLegend << std::endl;
 	std::cout << "\t\t Y Overlay Min: " << yOverlayMin << std::endl;
 	std::cout << "\t\t Y Overlay Max: " << yOverlayMax << std::endl;
+	std::cout << "\t\t X Overlay Min: " << xOverlayMin << std::endl;
+	std::cout << "\t\t X Overlay Max: " << xOverlayMax << std::endl;
 	std::cout << "\t\t Y Ratio Min: " << yRatioMin << std::endl;
 	std::cout << "\t\t Y Ratio Max: " << yRatioMax << std::endl << std::endl;
 
@@ -1611,6 +1619,9 @@ void SPXSteeringFile::Parse(void) {
 
 	xInfoLegend = reader->GetReal("GRAPH", "x_info_legend", xInfoLegend);
 	yInfoLegend = reader->GetReal("GRAPH", "y_info_legend", xInfoLegend);
+
+	xOverlayMin = reader->GetReal("GRAPH", "x_overlay_min", xOverlayMin);
+	xOverlayMax = reader->GetReal("GRAPH", "x_overlay_max", xOverlayMax);
 
 	yOverlayMin = reader->GetReal("GRAPH", "y_overlay_min", yOverlayMin);
 	yOverlayMax = reader->GetReal("GRAPH", "y_overlay_max", yOverlayMax);
