@@ -1458,6 +1458,9 @@ void SPXPlot::CanvasToPNG(void) {
 
 	//Draw PNG File
 	canvas->Print(filename.c_str());
+        TString epsname=filename;
+        epsname.ReplaceAll("png","pdf");
+	canvas->Print(epsname);
 }
 
 std::string SPXPlot::GetPNGFilename(std::string desc) {
