@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
 			Options::Metadata = true;
 		}
                 else if(!arg.compare("-latex_table")) {
-		  std::cout<<" option latex_table not yet implemented "<<endl;
+		  std::cout<<" option latex_table not yet implemented "<<std::endl;
                   exit (0);
  		}
 

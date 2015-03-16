@@ -562,7 +562,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmp = reader->Get(plotSection, "data_steering_files", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 		  //throw SPXINIParseException(plotSection, "data_steering_files", "You MUST specify the data_steering_files");
-		 std::cout<<"INFO no data_Steering_file found "<<endl;
+		 std::cout<<"INFO no data_Steering_file found "<<std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -585,7 +585,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 
 		if(!tmp.compare("EMPTY") ) {
 		  //throw SPXINIParseException(plotSection, "grid_steering_files", "You MUST specify the grid_steering_files");
-		 std::cout<<"INFO no grid_steering_file found "<<endl;
+		  std::cout<<"INFO no grid_steering_file found "<<std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);

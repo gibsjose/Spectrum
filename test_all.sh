@@ -34,7 +34,7 @@
 #
 ./Spectrum Steering/detailedtheoryband_atlas_incljet2011.txt
 #
-./Spectrum Steering/detailedtheoryband_atlas_incljet2015.txt
+#./Spectrum Steering/detailedtheoryband_atlas_incljet2015.txt
 #
 ./Spectrum Steering/hadronisation_uncertainty_detailedtheoryband_atlas_incljet2011_2p76TeV.txt
 #

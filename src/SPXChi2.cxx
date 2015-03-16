@@ -127,7 +127,7 @@ double SPXChi2::CalculateSimpleChi2(SPXPDF *pdf, SPXData *data) {
  TMatrixT<double> invertex_cov_matrix = tot_cov_matrix->Invert(); //includes theory errors in diagonal elements
 
  if (debug) {
-  cout<<cn<<mn<<"Inverted total covariance matrix: "<<endl;
+  std::cout<<cn<<mn<<"Inverted total covariance matrix: "<<std::endl;
   invertex_cov_matrix.Print();
  }
 
@@ -158,7 +158,7 @@ double SPXChi2::CalculateSimpleChi2(SPXPDF *pdf, SPXData *data) {
 
   TMatrixT<double> cov_times_col = invertex_cov_matrix*col_data_minus_theory;
   if (debug) {
-   cout<<cn<<mn<<"After first multiplication matrix is: \n"<<endl;
+   std::cout<<cn<<mn<<"After first multiplication matrix is: \n"<<std::endl;
    cov_times_col.Print();
    /*
       for (int pi = 0; pi < g_theory->GetN(); pi++) {
@@ -170,12 +170,12 @@ double SPXChi2::CalculateSimpleChi2(SPXPDF *pdf, SPXData *data) {
  
  TMatrixT<double> result = row_data_minus_theory*cov_times_col;
  if (debug) {
-  cout<<cn<<mn<<"Result matrix"<<endl;
+  std::cout<<cn<<mn<<"Result matrix"<<std::endl;
   result.Print();
  }
 
  double chi2 = result(0,0);
- if (debug) cout<<cn<<mn<<" chi2 = "<<chi2<<endl;
+ if (debug) std::cout<<cn<<mn<<" chi2 = "<<chi2<<std::endl;
 
  return chi2;
 

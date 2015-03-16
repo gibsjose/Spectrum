@@ -35,11 +35,11 @@ const std::string cn = "SPXPDF::";
 bool SPXPDF::debug;
 
 
-string SPXPDF::GetEnv( const string & var ) {
+std::string SPXPDF::GetEnv( const std::string & var ) {
 		const char* res= getenv( var.c_str() );
 
 		std::string s = res!=NULL? res:"";
-		if (debug) cout<<"s: "<<s<<endl;
+		if (debug) std::cout<<"s: "<<s<<std::endl;
 		return s;
 }
 
@@ -54,7 +54,7 @@ void getPDF(const double& x, const double& Q, double* xf) {
 LHAPDF::PDF* mypdf=0;
 //void getPDF(const double &X, const double &Q, double xfs[13]) {
 void getPDF(const double &X, const double &Q, double *xfs) {
-  vector <double> xf; xf.resize(13);
+  std::vector <double> xf; xf.resize(13);
 
   //std::cout<<"getpdf: X= "<<X<<" Q= "<<Q<<std::endl;
   if (!mypdf) std::cout<<" getpdf mypdf not found !"<<std::endl;
@@ -95,26 +95,26 @@ SPXPDF::SPXPDF(SPXPDFSteeringFile *psf, int iflpdf, double Q2value, TH1D* h1)
  ReadPDFSteeringFile(psf);
 
  hpdf=h1;
- if (!hpdf) cout<<cn<<" histograme not found "<<endl;
+ if (!hpdf) std::cout<<cn<<" histograme not found "<<std::endl;
 
  ifl=iflpdf;
  Q2=Q2value;
 
- cout<<cn<<"Get PDF for Q2= "<<Q2<<" ifl= "<<ifl<<endl;
+ std::cout<<cn<<"Get PDF for Q2= "<<Q2<<" ifl= "<<ifl<<std::endl;
  if (debug) {
-  cout<<cn<<" Get PDF for Q2= "<<Q2<<" ifl= "<<ifl<<endl;
-  cout<<cn<<" Histogram: "<<endl;
+  std::cout<<cn<<" Get PDF for Q2= "<<Q2<<" ifl= "<<ifl<<std::endl;
+  std::cout<<cn<<" Histogram: "<<std::endl;
   hpdf->Print("all");
  }
 
 
- if (debug) cout<<cn<<"SPXPDF: end constructor PDF-only "<<std::endl;
+ if (debug) std::cout<<cn<<"SPXPDF: end constructor PDF-only "<<std::endl;
 }
 
 SPXPDF::SPXPDF(SPXPDFSteeringFile *psf, const std::string &_gridName)
 {
 
-  std::cout<<cn<<" constructor called via name "<<endl;
+  std::cout<<cn<<" constructor called via name "<<std::endl;
 
   spxgrid=0;
   gridName=_gridName;
@@ -128,14 +128,14 @@ SPXPDF::SPXPDF(SPXPDFSteeringFile *psf, SPXGrid *grid)
   spxgrid=grid;
   gridName=grid->GetGridName();
 
-  std::cout<<cn<<" constructor called via SPXGrid name= "<<gridName.c_str()<<endl;
+  std::cout<<cn<<" constructor called via SPXGrid name= "<<gridName.c_str()<<std::endl;
 
   SetUpParameters(psf);
 }
 
 void SPXPDF::SetUpParameters(SPXPDFSteeringFile *psf) {
  std::string mn = "SetUpParameters: ";
- if (debug) cout<<cn<<mn<<" Start overloaded constructor"<<endl;
+ if (debug) std::cout<<cn<<mn<<" Start overloaded constructor"<<std::endl;
 
  SetVariablesDefault();
 
@@ -165,7 +165,7 @@ void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
  if(debug) std::cout<<cn<<mn<<"processing pre-parsed steering file named: "<< steeringFileName << std::endl;
 
   pdfSetPath = defaultPDFSetPath;
-  string pdfSetDefaultPath = GetEnv("LHAPATH");
+  std::string pdfSetDefaultPath = GetEnv("LHAPATH");
 
   if (pdfSetDefaultPath.size()>0) {
    if (pdfSetDefaultPath.find_last_of("/") == pdfSetDefaultPath.size()-1) {
@@ -173,9 +173,9 @@ void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
    }
 
    pdfSetPath=pdfSetDefaultPath;
-   if (debug) cout<<cn<<mn<<"LHAPATH environment variable found, using path: "<<pdfSetPath<<endl;
+   if (debug) std::cout<<cn<<mn<<"LHAPATH environment variable found, using path: "<<pdfSetPath<<std::endl;
   } else {
-   if (debug) cout<<cn<<mn<<"LHAPATH environment variable not set, using default: "<<pdfSetPath<<endl;
+   if (debug) std::cout<<cn<<mn<<"LHAPATH environment variable not set, using default: "<<pdfSetPath<<std::endl;
   }
 
   PDFtype = psf->GetType();
@@ -436,7 +436,7 @@ void SPXPDF::Initialize()
      TH1D* h_scale_temp= my_grid->convolute( getPDF, alphasPDF, nLoops,RenScales[iscale],FacScales[iscale]);
      char rs[100];
      sprintf(rs,"#xi_{R}=%3.1f   #xi_{F}=%3.1f",RenScales[iscale],FacScales[iscale]);
-     if (debug) cout<<cn<<mn<<iscale<<" "<<rs<<endl;
+     if (debug) std::cout<<cn<<mn<<iscale<<" "<<rs<<std::endl;
      char rname[100];
      sprintf(rname,"muR%3.1f_muF%3.1f",RenScales[iscale],FacScales[iscale]);
      h_scale_temp->SetTitle(rs);
@@ -463,9 +463,9 @@ void SPXPDF::Initialize()
     throw SPXParseException(oss.str());
    }
   } else {
-   if (debug) cout<<cn<<mn<<"Histogram from PDF not applgrid ! "<<endl;
+   if (debug) std::cout<<cn<<mn<<"Histogram from PDF not applgrid ! "<<std::endl;
    temp_hist=this->FillPdfHisto();
-   cout<<cn<<mn<<" hpdf= "<<hpdf->GetName()<<endl;
+   std::cout<<cn<<mn<<" hpdf= "<<hpdf->GetName()<<std::endl;
    //temp_hist->SetName((TString) ("h_pdf_default"));
    temp_hist->SetName(hpdf->GetName());
   }
@@ -633,7 +633,7 @@ void SPXPDF::Initialize()
 
  // Calculate PDF errors using standard PDF error band
  if (do_PDFBand) {
-  if (debug) cout<<cn<<mn<<"Calculate PDF errors"<<endl;
+   if (debug) std::cout<<cn<<mn<<"Calculate PDF errors"<<std::endl;
   std::cout<<cn<<mn<<"Calculate PDF errors for: "<<default_pdf_set_name
 	       <<" w/ defaultpdfid: "<<defaultpdfid<<std::endl;
 
@@ -677,7 +677,7 @@ void SPXPDF::Initialize()
      //Band-aid for accounting for no error bands - This needs to be handled better
      if(PDFnamevar.empty() == false) {
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
-      if (debug) cout<<cn<<mn<<"Initialize: mkPDF name= "<<PDFnamevar.c_str()<<" set= "<<defaultpdfidvar<<endl;
+      if (debug) std::cout<<cn<<mn<<"Initialize: mkPDF name= "<<PDFnamevar.c_str()<<" set= "<<defaultpdfidvar<<std::endl;
       mypdf=LHAPDF::mkPDF(PDFnamevar.c_str(), defaultpdfidvar);
 #else
       TString pdfname=TString(pdfSetPath)+"/"+PDFnamevar+".LHgrid";
@@ -687,7 +687,7 @@ void SPXPDF::Initialize()
     } else if ( pdferri > lasteig+1 ) {
       //>> modification P Berta 28.8.14>>
      int pdfset=pdferri - lasteig-1;
-     if (debug) cout<<cn<<mn<<"Initialize: pdferri> lasteig+1 initPDF name= "<<PDFnamevar.c_str()<<" set= "<<pdfset<<endl;
+     if (debug) std::cout<<cn<<mn<<"Initialize: pdferri> lasteig+1 initPDF name= "<<PDFnamevar.c_str()<<" set= "<<pdfset<<std::endl;
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
       mypdf=LHAPDF::mkPDF(PDFnamevar.c_str(), pdfset);
 #else
@@ -924,12 +924,12 @@ void SPXPDF::CalcPDFBandErrors()
    this_err_up   = TMath::Sqrt(this_err_up);
   } else if (ErrorPropagationType==StyleHeraPDF) {
    if (debug) {
-    cout<<cn<<mn<<"HERA/ATLAS type PDF "<<endl;
-    cout<<cn<<mn<<"PDFname= "<<PDFname.c_str()<<" PDFnamevar= "<<PDFnamevar.c_str()<<endl;
-    cout<<cn<<mn<<"firsteig= "<<firsteig<<" lasteig= "<<lasteig<<endl;
-    cout<<cn<<mn<<"firstquadvar= "<<firstquadvar<<" lastquadvar= "<<lastquadvar<<endl;
-    cout<<cn<<mn<<"firstmaxvar= "<<firstmaxvar<<" lastmaxvar= "<<lastmaxvar<<endl;
-    cout<<cn<<mn<<"defaultpdfid= "<<defaultpdfid<<" defaultpdfidvar= "<<defaultpdfidvar<<endl;
+    std::cout<<cn<<mn<<"HERA/ATLAS type PDF "<<std::endl;
+    std::cout<<cn<<mn<<"PDFname= "<<PDFname.c_str()<<" PDFnamevar= "<<PDFnamevar.c_str()<<std::endl;
+    std::cout<<cn<<mn<<"firsteig= "<<firsteig<<" lasteig= "<<lasteig<<std::endl;
+    std::cout<<cn<<mn<<"firstquadvar= "<<firstquadvar<<" lastquadvar= "<<lastquadvar<<std::endl;
+    std::cout<<cn<<mn<<"firstmaxvar= "<<firstmaxvar<<" lastmaxvar= "<<lastmaxvar<<std::endl;
+    std::cout<<cn<<mn<<"defaultpdfid= "<<defaultpdfid<<" defaultpdfidvar= "<<defaultpdfidvar<<std::endl;
    }
 
    central_val = h_errors_PDFBand.at(defaultpdfid)->GetBinContent(bi);
@@ -1029,7 +1029,7 @@ void SPXPDF::CalcPDFBandErrors()
    h_PDFBand_results->GetPoint(bi-1, x_val, y_val);
    if (y_val!=0) {
     std::cout<<cn<<mn<<" bin= "<<bi<<" (y_val+this_err_up)/y_val= "  <<(y_val+this_err_up)/y_val
-		     <<" (y_val-this_err_down)/y_val= "<<(y_val-this_err_down)/y_val<<endl;
+	     <<" (y_val-this_err_down)/y_val= "<<(y_val-this_err_down)/y_val<<std::endl;
    }
   }
  }  /// loop over bins
@@ -1050,7 +1050,7 @@ void SPXPDF::CalcAlphaSErrors()
  double error_up = 0.;
  double error_down = 0.;
 
- if (debug) cout<<" Size h_errors_AlphaS= "<<h_errors_AlphaS.size()<<endl;
+ if (debug) std::cout<<" Size h_errors_AlphaS= "<<h_errors_AlphaS.size()<<std::endl;
 
  if (h_errors_AlphaS.size()==0)
   std::cout<<cn<<mn<<"ERROR h_errors_AlphaS not filled "<<std::endl;
@@ -1079,14 +1079,14 @@ void SPXPDF::CalcAlphaSErrors()
 
  double alphaS_absUnc=alphaS_relUnc_worldAverage*alphaS_variations.at(0);
 
- if (debug) cout<<cn<<mn<<"alphaS_absUnc= "<<alphaS_absUnc<<std::endl;
+ if (debug) std::cout<<cn<<mn<<"alphaS_absUnc= "<<alphaS_absUnc<<std::endl;
 
  for (int bi = 1; bi <= h_errors_AlphaS.at(0)->GetNbinsX(); bi++) {
   this_default_val = h_errors_AlphaS.at(0)->GetBinContent(bi);
   this_err_down    = h_errors_AlphaS.at(1)->GetBinContent(bi);
   this_err_up      = h_errors_AlphaS.at(2)->GetBinContent(bi);
 
-  if (debug) cout<<cn<<mn<<"bin = "<<bi<<", default val = "<<this_default_val
+  if (debug) std::cout<<cn<<mn<<"bin = "<<bi<<", default val = "<<this_default_val
              <<" +"<<this_err_up<<" -"<<this_err_down<<std::endl;
 
   // now interpolate for alpha_s uncertainty wanted
@@ -1094,7 +1094,7 @@ void SPXPDF::CalcAlphaSErrors()
   error_up =   (this_err_up-this_default_val)  *alphaS_absUnc/(alphaS_variations.at(2)-alphaS_variations.at(0));
   error_down = (this_default_val-this_err_down)*alphaS_absUnc/(alphaS_variations.at(0)-alphaS_variations.at(1));
 
-  if (debug) cout<<cn<<mn<<"bin = "<<bi<<" error_up = "<<error_up<<" error_down = "<<error_down<<std::endl;
+  if (debug) std::cout<<cn<<mn<<"bin = "<<bi<<" error_up = "<<error_up<<" error_down = "<<error_down<<std::endl;
 
   double init_x_val;
   double init_y_val;
@@ -1159,13 +1159,13 @@ void SPXPDF::CalcScaleErrors()
  h_Scale_results->SetFillColor  (fillColorCode);
 
  if (debug) {
-  cout<<cn<<mn<<" Line Color= "<<h_Scale_results->GetLineColor()<<std::endl;
-  cout<<cn<<mn<<" Fill Color= "<<h_Scale_results->GetFillColor()<<std::endl;
-  cout<<cn<<mn<<" h_Scale_results "<< h_Scale_results->GetName()<<std::endl;
+   std::cout<<cn<<mn<<" Line Color= "<<h_Scale_results->GetLineColor()<<std::endl;
+   std::cout<<cn<<mn<<" Fill Color= "<<h_Scale_results->GetFillColor()<<std::endl;
+   std::cout<<cn<<mn<<" h_Scale_results "<< h_Scale_results->GetName()<<std::endl;
   h_Scale_results->Print("all");
  }
 
- if (debug) cout<<cn<<mn<<"End calculation of ScaleErrors for: "<<PDFtype<<std::endl;
+ if (debug) std::cout<<cn<<mn<<"End calculation of ScaleErrors for: "<<PDFtype<<std::endl;
 }
 
 void SPXPDF::CalcTotalErrors()
@@ -1195,8 +1195,8 @@ void SPXPDF::CalcTotalErrors()
   if (nbin!=nbinold)
    std::cout <<cn<<mn<<"WARNING Number of bins is different" <<" nbin= "<<nbin<<" nbinold= "<<nbinold<< std::endl;
 
-  string gtype   =it->first;
-  if (gtype.compare(string("total"))==0){
+  std::string gtype   =it->first;
+  if (gtype.compare(std::string("total"))==0){
    std::ostringstream oss;
    oss << cn << mn << "ERROR Mapallbands already contains total uncertainty, called twice ? "; 
    throw SPXGraphException(oss.str());
@@ -1271,7 +1271,7 @@ void SPXPDF::DrawPDFBand(){
  //h_PDFBand_results->Print("all");
  h_PDFBand_results->Draw("E2,same");
 
- if (!hpdf) cout<<cn<<mn<<" test histo not found "<<endl;
+ if (!hpdf) std::cout<<cn<<mn<<" test histo not found "<<std::endl;
  hpdf->Draw("same");
 
  return;
@@ -1306,7 +1306,7 @@ TH1D* SPXPDF::GetPDFRatio(int iset1, int iset2)
 
  if (iset1>=n_PDFMembers||iset2>=n_PDFMembers||iset1<0||iset2<0){
   std::ostringstream oss;
-  oss << cn << mn << "ERROR iset too large iset2= "<< iset2<<" iset1= "<<iset1<<endl;
+  oss << cn << mn << "ERROR iset too large iset2= "<< iset2<<" iset1= "<<iset1;
   throw SPXParseException(oss.str());
  }
 
@@ -1314,7 +1314,7 @@ TH1D* SPXPDF::GetPDFRatio(int iset1, int iset2)
   ratio_to_ref_name +=TString("/set");
   ratio_to_ref_name +=iset2;
  }
- if (debug) cout<<cn<<mn<<" "<< ratio_to_ref_name.Data()<<endl;
+ if (debug) std::cout<<cn<<mn<<" "<< ratio_to_ref_name.Data()<<std::endl;
 
  TH1D *hratio=(TH1D*) h_errors_PDFBand[iset1]->Clone( ratio_to_ref_name);
  TH1D *htmp=(TH1D*) h_errors_PDFBand[iset2]->Clone("htmp");
@@ -1341,13 +1341,13 @@ double SPXPDF::GetPDFWeight(int iset1, double x1, double x2){
  double htmpx2=htmp->GetBinContent(htmp->FindBin(x2));
 
  // x1,x2,scale,id1,id2,pdf1,pdf2 0.630916 0.734315 3967.7 21 21 0.000859055 0.000121401
- cout<<cn<<mn<<" PDF= "<<this->GetPDFName()<<" iset1= "<<iset1<<" ifl= "<<ifl<<endl;
- cout<<cn<<mn<<" x1= "<<x1<<" x2= "<<x2<<" Q2= "<<Q2<<" pdf1= "<<htmpx1<<" pdf2= "<<htmpx2<<endl;
+ std::cout<<cn<<mn<<" PDF= "<<this->GetPDFName()<<" iset1= "<<iset1<<" ifl= "<<ifl<<std::endl;
+ std::cout<<cn<<mn<<" x1= "<<x1<<" x2= "<<x2<<" Q2= "<<Q2<<" pdf1= "<<htmpx1<<" pdf2= "<<htmpx2<<std::endl;
 
  w=htmpx1*htmpx2;
  w/=hpdfx1*hpdfx2;
 
- cout<<cn<<mn<<" w= "<<w<<endl;
+ std::cout<<cn<<mn<<" w= "<<w<<std::endl;
 
  return w;
 };
@@ -1361,43 +1361,43 @@ void SPXPDF::Print()
  std::string ON="ON";         //bool true
  std::string OFF="OFF";       //bool false
 
- cout<<"SPXPDF::Print: >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-     <<"\n"<<setw(w)<<"debug:"                <<setw(w)<<(debug? "ON":"OFF")
-     //             <<"\n"<<setw(w)<<"steeringFilePath:"     <<setw(w)<<(steeringFilePath.size()>0? steeringFilePath:empty)
-     //             <<"\n"<<setw(w)<<"steeringFileDir:"      <<setw(w)<<(steeringFileDir.size()>0? steeringFileDir:empty)
-     <<"\n"<<setw(w)<<"steeringFileName:"     <<setw(w)<<(steeringFileName.size()>0? steeringFileName:empty)
-     <<"\n"<<setw(w)<<"gridName:"             <<setw(w)<<(gridName.size()>0? gridName:empty)
-     <<"\n"
-     <<"\n"<<setw(w)<<"PDFtype:"              <<setw(w)<<(PDFtype.size()>0? PDFtype:empty)
-     <<"\n"<<setw(w)<<"PDFname:"              <<setw(w)<<(PDFname.size()>0? PDFname:empty)
-     <<"\n"<<setw(w)<<"PDFnamevar:"           <<setw(w)<<(PDFnamevar.size()>0? PDFname:empty)
-     <<"\n"<<setw(w)<<"numPDFMembers:"        <<setw(w)<<(n_PDFMembers!=DEFAULT? patch::to_string(n_PDFMembers):empty)
-     <<"\n"<<setw(w)<<"nLoops: "              <<setw(w)<<(nLoops!=DEFAULT? patch::to_string(nLoops):empty)
-     <<"\n"<<setw(w)<<"fillStyleCode:"        <<setw(w)<<(fillStyleCode!=DEFAULT? patch::to_string(fillStyleCode):empty)
-     <<"\n"<<setw(w)<<"fillColorCode:"        <<setw(w)<<(fillColorCode!=DEFAULT? patch::to_string(fillColorCode):empty)
-     <<"\n"<<setw(w)<<"ErrorPropagationType: "<<setw(w)<<(ErrorPropagationType)
-     <<"\n"<<setw(w)<<"PDFBandType:"          <<setw(w)<<(PDFBandType.size()>0? PDFBandType:empty)
-     <<"\n"<<setw(w)<<"first Eigenvector: "   <<setw(w)<<(firsteig!=DEFAULT? patch::to_string(firsteig):empty)
-     <<"\n"<<setw(w)<<"last Eigenvector:   "  <<setw(w)<<(lasteig!=DEFAULT?  patch::to_string(lasteig):empty)
-     <<"\n"<<setw(w)<<"first component added in quadrature"  <<setw(w)<<(firstquadvar!=DEFAULT?patch::to_string(firstquadvar):empty)
-     <<"\n"<<setw(w)<<"last component added in quadrature"  <<setw(w)<<(lastquadvar!=DEFAULT?patch::to_string(lastquadvar):empty)
-     <<"\n"<<setw(w)<<"first component to find maximum"  <<setw(w)<<(firstmaxvar!=DEFAULT?patch::to_string(firstmaxvar):empty)
-     <<"\n"<<setw(w)<<"last component to find maximum"  <<setw(w)<<(lastmaxvar!=DEFAULT?patch::to_string(lastmaxvar):empty)
-     <<"\n"<<setw(w)<<"f_PDFErrorSize90Percent"         <<setw(w)<<(f_PDFErrorSize90Percent? ON:OFF)
-     <<"\n"<<setw(w)<<"PDFBand:"              <<setw(w)<<(do_PDFBand? ON:OFF)
-     <<"\n"<<setw(w)<<"AlphaS:"               <<setw(w)<<(do_AlphaS? ON:OFF)
-     <<"\n"<<setw(w)<<"Scale:" <<setw(w)<<(do_Scale? ON:OFF)
-     <<"\n"<<setw(w)<<"includeEIG:"           <<setw(w)<<(includeEIG? ON:OFF)
-     <<"\n"<<setw(w)<<"includeQUAD:"          <<setw(w)<<(includeQUAD? ON:OFF)
-     <<"\n"<<setw(w)<<"includeMAX:"           <<setw(w)<<(includeMAX? ON:OFF)
-     <<"\n SPXPDF::Print:<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"<<endl;
+ std::cout<<"SPXPDF::Print: >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+	  <<"\n"<<std::setw(w)<<"debug:"                <<std::setw(w)<<(debug? "ON":"OFF")
+     //   <<"\n"<<setw(w)<<"steeringFilePath:"     <<setw(w)<<(steeringFilePath.size()>0? steeringFilePath:empty)
+     //   <<"\n"<<setw(w)<<"steeringFileDir:"      <<setw(w)<<(steeringFileDir.size()>0? steeringFileDir:empty)
+	  <<"\n"<<std::setw(w)<<"steeringFileName:"     <<std::setw(w)<<(steeringFileName.size()>0? steeringFileName:empty)
+	  <<"\n"<<std::setw(w)<<"gridName:"             <<std::setw(w)<<(gridName.size()>0? gridName:empty)
+          <<"\n"
+	  <<"\n"<<std::setw(w)<<"PDFtype:"              <<std::setw(w)<<(PDFtype.size()>0? PDFtype:empty)
+	  <<"\n"<<std::setw(w)<<"PDFname:"              <<std::setw(w)<<(PDFname.size()>0? PDFname:empty)
+	  <<"\n"<<std::setw(w)<<"PDFnamevar:"           <<std::setw(w)<<(PDFnamevar.size()>0? PDFname:empty)
+	  <<"\n"<<std::setw(w)<<"numPDFMembers:"        <<std::setw(w)<<(n_PDFMembers!=DEFAULT? patch::to_string(n_PDFMembers):empty)
+	  <<"\n"<<std::setw(w)<<"nLoops: "              <<std::setw(w)<<(nLoops!=DEFAULT? patch::to_string(nLoops):empty)
+	  <<"\n"<<std::setw(w)<<"fillStyleCode:"        <<std::setw(w)<<(fillStyleCode!=DEFAULT? patch::to_string(fillStyleCode):empty)
+	  <<"\n"<<std::setw(w)<<"fillColorCode:"        <<std::setw(w)<<(fillColorCode!=DEFAULT? patch::to_string(fillColorCode):empty)
+	  <<"\n"<<std::setw(w)<<"ErrorPropagationType: "<<std::setw(w)<<(ErrorPropagationType)
+	  <<"\n"<<std::setw(w)<<"PDFBandType:"          <<std::setw(w)<<(PDFBandType.size()>0? PDFBandType:empty)
+	  <<"\n"<<std::setw(w)<<"first Eigenvector: "   <<std::setw(w)<<(firsteig!=DEFAULT? patch::to_string(firsteig):empty)
+	  <<"\n"<<std::setw(w)<<"last Eigenvector:   "  <<std::setw(w)<<(lasteig!=DEFAULT?  patch::to_string(lasteig):empty)
+	  <<"\n"<<std::setw(w)<<"first component added in quadrature"  <<std::setw(w)<<(firstquadvar!=DEFAULT?patch::to_string(firstquadvar):empty)
+	  <<"\n"<<std::setw(w)<<"last component added in quadrature"  <<std::setw(w)<<(lastquadvar!=DEFAULT?patch::to_string(lastquadvar):empty)
+	  <<"\n"<<std::setw(w)<<"first component to find maximum"  <<std::setw(w)<<(firstmaxvar!=DEFAULT?patch::to_string(firstmaxvar):empty)
+	  <<"\n"<<std::setw(w)<<"last component to find maximum"  <<std::setw(w)<<(lastmaxvar!=DEFAULT?patch::to_string(lastmaxvar):empty)
+	  <<"\n"<<std::setw(w)<<"f_PDFErrorSize90Percent"         <<std::setw(w)<<(f_PDFErrorSize90Percent? ON:OFF)
+	  <<"\n"<<std::setw(w)<<"PDFBand:"              <<std::setw(w)<<(do_PDFBand? ON:OFF)
+	  <<"\n"<<std::setw(w)<<"AlphaS:"               <<std::setw(w)<<(do_AlphaS? ON:OFF)
+	  <<"\n"<<std::setw(w)<<"Scale:" <<std::setw(w)<<(do_Scale? ON:OFF)
+	  <<"\n"<<std::setw(w)<<"includeEIG:"           <<std::setw(w)<<(includeEIG? ON:OFF)
+	  <<"\n"<<std::setw(w)<<"includeQUAD:"          <<std::setw(w)<<(includeQUAD? ON:OFF)
+	  <<"\n"<<std::setw(w)<<"includeMAX:"           <<std::setw(w)<<(includeMAX? ON:OFF)
+     <<"\n SPXPDF::Print:<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"<<std::endl;
 }
 
 //default values for variables to avoid crashes and check for proper setup before doing anything
 void SPXPDF::SetVariablesDefault()
 {
- if (debug) cout<<"SPXPDF::setVariablesDefault: Start default values being set."<<std::endl;
- string defaultString="";
+ if (debug) std::cout<<"SPXPDF::setVariablesDefault: Start default values being set."<<std::endl;
+ std::string defaultString="";
  //int defaultInt=-1;
 
  DEFAULT=-1;
@@ -1446,7 +1446,7 @@ void SPXPDF::SetVariablesDefault()
  //alphaS_absUnc_worldAverage=0.0020;
  alphaS_scale_worldAverage=91.1876;
 
- if (debug) cout<<cn<<"setVariablesDefault: End default values are set."<<std::endl;
+ if (debug) std::cout<<cn<<"setVariablesDefault: End default values are set."<<std::endl;
 }
 
 
@@ -1454,17 +1454,17 @@ void SPXPDF::SetVariablesDefault()
 void SPXPDF::SetDebug(bool _debug) {
  debug=_debug;
 }
-void SPXPDF::SetGridName(string _gridName) {
+void SPXPDF::SetGridName(std::string _gridName) {
  gridName=_gridName;
 }
 
-void SPXPDF::SetSteeringFileName(string _steeringFileName) {
+void SPXPDF::SetSteeringFileName(std::string _steeringFileName) {
  steeringFileName=_steeringFileName;
 }
-void SPXPDF::SetPDFtype(string _PDFtype) {
+void SPXPDF::SetPDFtype(std::string _PDFtype) {
  PDFtype=_PDFtype;
 }
-void SPXPDF::SetPDFname(string _PDFname) {
+void SPXPDF::SetPDFname(std::string _PDFname) {
  PDFname=_PDFname;
 }
 void SPXPDF::SetNumPDFMembers(int _n_PDFMembers) {
@@ -1476,10 +1476,10 @@ void SPXPDF::SetFillStyleCode(int _fillStyleCode) {
 void SPXPDF::SetFillColorCode(int _fillColorCode) {
  fillColorCode=_fillColorCode;
 }
-void SPXPDF::SetPDFBandType(string _PDFBandType) {
+void SPXPDF::SetPDFBandType(std::string _PDFBandType) {
  PDFBandType=_PDFBandType;
 }
-void SPXPDF::SetPDFErrorType(string _PDFErrorType) {
+void SPXPDF::SetPDFErrorType(std::string _PDFErrorType) {
  PDFErrorType=_PDFErrorType;
 }
 //void SPXPDF::SetPDFErrorSize(string _PDFErrorSize) {
@@ -1516,15 +1516,15 @@ void SPXPDF::SetAlphaSmemberNumDown(int _memberNum) {
 void SPXPDF::SetAlphaSmemberNumUp(int _memberNum) {
  AlphaSmemberNumUp=_memberNum;
 }
-void SPXPDF::SetAlphaSPDFSetNameDown(string _name) {
+void SPXPDF::SetAlphaSPDFSetNameDown(std::string _name) {
  AlphaSPDFSetNameDown= _name;
 }
-void SPXPDF::SetAlphaSPDFSetNameUp(string _name) {
+void SPXPDF::SetAlphaSPDFSetNameUp(std::string _name) {
  AlphaSPDFSetNameUp= _name;
 }
 
 void SPXPDF::CleanUpSPXPDF() {
- if (debug) cout<<cn<<" CleanUpSPXPDF: Starting to clean up..."<<std::endl;
+  if (debug) std::cout<<cn<<" CleanUpSPXPDF: Starting to clean up..."<<std::endl;
 
  if (h_errors_PDFBand.size()>0) {
   for (int i=0; i<h_errors_PDFBand.size(); ++i) {
@@ -1544,7 +1544,7 @@ void SPXPDF::CleanUpSPXPDF() {
   }
  }
 
- if (debug) cout<<cn<<"CleanUpSPXPDF: Finished clean up!"<<std::endl;
+ if (debug) std::cout<<cn<<"CleanUpSPXPDF: Finished clean up!"<<std::endl;
 }
 
 
@@ -1561,8 +1561,8 @@ TH1D * SPXPDF::FillPdfHisto(){
  const double xmax=hpdf->GetBinWidth(nbin)/2.+hpdf->GetBinCenter(nbin);
  const double binw=hpdf->GetBinWidth(1);
 
- if (debug) cout<<cn<<"FillPdfHisto: xmin= "<<xmin<<" xmax= "<<xmax<<" binw= "<<binw<<endl;
- if (debug) cout<<cn<<"FillPdfHisto: Q2= "<<Q2<<endl;
+ if (debug) std::cout<<cn<<"FillPdfHisto: xmin= "<<xmin<<" xmax= "<<xmax<<" binw= "<<binw<<std::endl;
+ if (debug) std::cout<<cn<<"FillPdfHisto: Q2= "<<Q2<<std::endl;
 
  double xfl[13];
  for (int i=0; i<nbin; i++){
@@ -1572,7 +1572,7 @@ TH1D * SPXPDF::FillPdfHisto(){
 
   int ibin=hpdf->FindBin(x);
   if (debug)
-   cout<<cn<<"FillPdfHisto: ibin= "<<ibin<<" Q2= "<<Q2<<" x= "<<x<<" xfl["<<ifl<<"]= "<<xfl[6+ifl]<<endl;
+   std::cout<<cn<<"FillPdfHisto: ibin= "<<ibin<<" Q2= "<<Q2<<" x= "<<x<<" xfl["<<ifl<<"]= "<<xfl[6+ifl]<<std::endl;
 
   hpdf->SetBinContent(ibin,x,xfl[6+ifl]);
  }
@@ -1584,7 +1584,7 @@ void SPXPDF::PrintMap(BandMap_T &m) {
  std::string mn = "PrintMap: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
- if (debug) cout<<cn<<mn<<" Map size= "<<Mapallbands.size()<<endl;
+ if (debug) std::cout<<cn<<mn<<" Map size= "<<Mapallbands.size()<<std::endl;
 
  for(BandMap_T::const_iterator it = m.begin(); it != m.end(); ++it) {
   std::cout <<cn<<mn<< " " << std::endl;
@@ -1592,7 +1592,7 @@ void SPXPDF::PrintMap(BandMap_T &m) {
   it->second->Print("all");
  }
  return;
- if (debug) cout<<cn<<mn<<" ending "<<endl;
+ if (debug) std::cout<<cn<<mn<<" ending "<<std::endl;
 }
 
 TGraphAsymmErrors * SPXPDF::GetBand(int i){ 
@@ -1611,7 +1611,7 @@ TGraphAsymmErrors * SPXPDF::GetBand(int i){
  return 0;
 };
 
-string SPXPDF::GetBandType(int i){ 
+std::string SPXPDF::GetBandType(int i){ 
  std::string mn = "GetBandType: ";
  //if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
@@ -1627,7 +1627,7 @@ string SPXPDF::GetBandType(int i){
     return it->first;
   } else j++;
  }
- string empty="";
+ std::string empty="";
  return empty;
 };
 
@@ -1680,7 +1680,7 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
   }
 
   if (gband->GetN()!=gcorr->GetN()) {
-    std::cout<<cn<<mn<<"Was not able to match graphs ! "<<endl;
+   std::cout<<cn<<mn<<"Was not able to match graphs ! "<<std::endl;
    std::ostringstream oss;
    oss << cn << mn << "Graph "<<gband->GetName()<<" has different nbin= "<<gband->GetN()<<" than graph"<<gcorr->GetName()<<" nbin= "<<gcorr->GetN();
    throw SPXParseException(oss.str());

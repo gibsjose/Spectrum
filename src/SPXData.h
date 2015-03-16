@@ -223,7 +223,7 @@ private:
         TMatrixT<double>  *corr_matrixstat;
         TMatrixT<double>  *corr_matrixsyst;
 
-        void ReadCorrelationMatrix(string filename);
+        void ReadCorrelationMatrix(std::string filename);
         void CalculateSystematicCovarianceMatrix();
 
         StringDoubleVectorMap_T SymmetrizeSystemicUncertaintiesMatrix(StringDoubleVectorMap_T syst);

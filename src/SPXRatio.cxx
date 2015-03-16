@@ -746,9 +746,9 @@ void SPXRatio::GetGraphs(void) {
    
   for (int iband=0; iband<nbands; iband++) {
    TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-   string              gtype   =pdf->GetBandType(iband);
+   std::string         gtype   =pdf->GetBandType(iband);
    if (!gband) throw SPXParseException(cn+mn+" gband not found !");
-   if (debug) cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<endl;
+   if (debug) std::cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<std::endl;
    numeratorGraph.push_back(gband);
   }
 
@@ -841,9 +841,9 @@ void SPXRatio::GetGraphs(void) {
   TGraphAsymmErrors * mygband=0;
   for (int iband=0; iband<nbands; iband++) {
    TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-   string              gtype   =pdf->GetBandType(iband);
+   std::string         gtype   =pdf->GetBandType(iband);
    if (!gband) throw SPXParseException(cn+mn+" gband not found !");
-   if (debug) cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<endl;
+   if (debug) std::cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<std::endl;
    TString gname=gband->GetName();
    if (gname.Contains("_total_")) mygband=gband; 
   }
@@ -919,9 +919,9 @@ void SPXRatio::GetGraphs(void) {
    
    for (int iband=0; iband<nbands; iband++) {
     TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-    string              gtype   =pdf->GetBandType(iband);
+    std::string         gtype   =pdf->GetBandType(iband);
     if (!gband) throw SPXParseException(cn+mn+" gband not found !");
-    if (debug) cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<endl;
+    if (debug) std::cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<std::endl;
     numeratorGraph.push_back(gband);
    }
    
@@ -1023,7 +1023,7 @@ bool SPXRatio::MatchesConvoluteString(std::string &s) {
 }
 
 
-void SPXRatio::Draw(string option, int statRatios, int totRatios) {
+void SPXRatio::Draw(std::string option, int statRatios, int totRatios) {
  std::string mn = "Draw: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
@@ -1045,12 +1045,12 @@ void SPXRatio::Draw(string option, int statRatios, int totRatios) {
 
    int mcolor=graph->GetFillColor();
    if(IsDataStat()) {
-    string datastat="Data stat uncertainty";
+    std::string datastat="Data stat uncertainty";
     SPXDrawUtilities::BoxText(xmin, ymin, boxsize, mcolor, datastat);
    }
 
    if(IsDataTot()) {
-    string datastat="Data tot uncertainty";
+    std::string datastat="Data tot uncertainty";
     ymin-=0.05;
     SPXDrawUtilities::BoxText(xmin, ymin, boxsize, mcolor, datastat);
    }

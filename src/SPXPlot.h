@@ -43,6 +43,9 @@ public:
 		}
 	}
 
+
+        //~SPXPlot();
+
 	void Initialize(void);
 	void Plot(void);
 
@@ -60,7 +63,7 @@ public:
 	void DrawRatioPadFrame(void);
 	void DrawOverlay(void);
 	void DrawRatio(void);
-	void DrawBand(SPXPDF *pdf, string option, SPXPlotConfigurationInstance pc);
+	void DrawBand(SPXPDF *pdf, std::string option, SPXPlotConfigurationInstance pc);
 	void DrawLegend();
 	void UpdateCanvas(void);
 	void CanvasToPNG(void);

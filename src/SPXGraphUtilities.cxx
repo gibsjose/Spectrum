@@ -1096,8 +1096,8 @@ int SPXGraphUtilities::CompareValues(TGraphAsymmErrors *g1, TGraphAsymmErrors *g
     //double yh=max((y1[i]+eyh1[i]),(y2[j]+eyh2[j]));
     //double yl=max((y1[i]-eyl1[i]),(y2[j]-eyl2[j]));
 
-    double yh=max(eyh1[i],eyh2[j]);
-    double yl=max(eyl1[i],eyl2[j]);
+      double yh=std::max(eyh1[i],eyh2[j]);
+      double yl=std::max(eyl1[i],eyl2[j]);
 
     //std::cout<<i<<" x= "<< x1[i]<<" match yh="<<yh  <<" yl="<<yl<<std::endl;
      

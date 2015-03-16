@@ -24,6 +24,12 @@ const std::string cn = "SPXPlot::";
 //Must define the static debug variable in the implementation
 bool SPXPlot::debug;
 
+//SPXPlot::~SPXPlot(){
+// std::cout<<cn<<" destructor delete canvas "<<std::endl;
+//
+// if (canvas) delete canvas;
+//}
+
 //Initialize all plots
 void SPXPlot::Initialize(void) {
 	std::string mn = "Initialize: ";
@@ -504,10 +510,13 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 		xMinOverlay = steeringFile->GetXOverlayMin();
 		if(debug) std::cout << cn << mn << "Forcing Overlay X Axis Minimum to " << xMinOverlay << std::endl;
 	}
+
+	/* commenting this is can lead to a corrupted eps file ! .. no idea why
 	if(steeringFile->GetXOverlayMax() != MAX_EMPTY) {
-		xMaxOverlay = steeringFile->GetXOverlayMax();
+	  xMaxOverlay = steeringFile->GetXOverlayMax();
 		if(debug) std::cout << cn << mn << "Forcing Overlay X Axis Maxmimum to " << xMaxOverlay << std::endl;
 	}
+	*/
 
 	//Force to non-negative if plotting logarithmic axis
 	if(pc.IsXLog()) {
@@ -570,16 +579,16 @@ void SPXPlot::DrawRatioPadFrame(void) {
 	 xMinRatio = xMinOverlay;
 	 xMaxRatio = xMaxOverlay;
 	} else { // otherwise read in values from Steering
-
+	
 	 if(steeringFile->GetXOverlayMin() != MIN_EMPTY) {
 		xMinRatio = steeringFile->GetXOverlayMin();
-		if(debug) std::cout << cn << mn << "Forcing Overlay X Axis Minimum to " << xMinOverlay << std::endl;
+		if(debug) std::cout << cn << mn << "Forcing Overlay X Axis Minimum to " << xMinRatio << std::endl;
 	 }
 	 if(steeringFile->GetXOverlayMax() != MAX_EMPTY) {
-		xMaxRatio = steeringFile->GetXOverlayMax();
-		if(debug) std::cout << cn << mn << "Forcing Overlay X Axis Maxmimum to " << xMaxOverlay << std::endl;
+	   xMaxRatio = steeringFile->GetXOverlayMax();
+		if(debug) std::cout << cn << mn << "Forcing Overlay X Axis Maxmimum to " << xMaxRatio << std::endl;
 	 }
-
+      
         }
 
 	//@TODO What to do here for forcing Y axis within logarithmic limits like I do for overlay? It doesn't matter now, since
@@ -965,7 +974,7 @@ void SPXPlot::DrawLegend(void) {
 
 
  // Why zero here, Where to the the PlotConfiguriotninstance ??
- cout<<cn<<mn<<"HuHu fix me pc.GetPlotConfigurationInstance(0) is not good ! "<<endl;
+ //std::cout<<cn<<mn<<"HuHu fix me pc.GetPlotConfigurationInstance(0) is not good ! "<<std::endl;
  SPXPlotConfigurationInstance pci=pc.GetPlotConfigurationInstance(0);
  SPXGridSteeringFile gridsteeringFile=pci.gridSteeringFile;
 
@@ -994,9 +1003,6 @@ void SPXPlot::DrawLegend(void) {
  double charactersize=0.04;    
  float linesize=0.07; 
 
- //TString mylabel="test";
- //int mysize=TString(mylabel).Sizeof(); 
-
  leg = new TLegend();
  leg->SetBorderSize(0);
  leg->SetFillColor(0);
@@ -1013,7 +1019,7 @@ void SPXPlot::DrawLegend(void) {
   int nbands=pdf->GetNBands();
   for (int iband=0; iband<nbands; iband++) {
    TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-   string              gtype   =pdf->GetBandType(iband);
+   std::string         gtype   =pdf->GetBandType(iband);
    //
    //if (debug) std::cout << cn << mn <<"iband= "<< iband<<" gband= "<<gband->GetName()<< std::endl;
    //
@@ -1078,9 +1084,9 @@ void SPXPlot::DrawLegend(void) {
    if (debug) std::cout<<cn<<mn<<datalabel.Data()<<" namesize= "<<namesize<<std::endl;
    
 
-   if (!ratioonly || data.size()>0) // ratioonly figures have data in the ratio, no separate label
-    leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
-
+   if (!ratioonly && data.size()>0) { // ratioonly figures have data in the ratio, no separate label
+     leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
+   }
   }
  }
 
@@ -1107,16 +1113,16 @@ void SPXPlot::DrawLegend(void) {
    bool gridcorrectionfound=false;
 
    for (int iband=0; iband<nbands; iband++) {
-    string gtype    = pdf->GetBandType(iband);
+    std::string gtype    = pdf->GetBandType(iband);
     TGraphAsymmErrors * gband = pdf->GetBand(iband);
 
-    if (gtype.compare(string("alphas"))==0) nlouncertainty=true;
-    if (gtype.compare(string("scale"))==0)  nlouncertainty=true;
-    if (gtype.compare(string("pdf"))==0) {
+    if (gtype.compare(std::string("alphas"))==0) nlouncertainty=true;
+    if (gtype.compare(std::string("scale"))==0)  nlouncertainty=true;
+    if (gtype.compare(std::string("pdf"))==0) {
      pdffound=true; nlouncertainty=true;
     }
     if(steeringFile->ApplyGridCorr()) {
-     std::vector<string> corrlabel=crossSections[icross].GetCorrectionLabels();
+     std::vector<std::string> corrlabel=crossSections[icross].GetCorrectionLabels();
      for(int ic = 0; ic < corrlabel.size(); ic++) {
       if (gtype.compare(corrlabel[ic])==0) gridcorrectionfound=true;	   
      }
@@ -1136,10 +1142,10 @@ void SPXPlot::DrawLegend(void) {
      if (icross==0) { //only Draw text for the first cross section
       text+="NLO QCD";
       if(steeringFile->ApplyGridCorr()) {
-       std::vector<string> corrlabel=crossSections[icross].GetCorrectionLabels();
+	std::vector<std::string> corrlabel=crossSections[icross].GetCorrectionLabels();
        if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
        for(int ic = 0; ic < corrlabel.size(); ic++) {
-        string label=" #otimes "+corrlabel[ic];
+	std::string label=" #otimes "+corrlabel[ic];
         //if (debug) std::cout<<cn<<mn<<"grid correction label= "<<label.c_str()<<std::endl;
         text+=TString(label); // do this better
        }
@@ -1163,7 +1169,7 @@ void SPXPlot::DrawLegend(void) {
    if (bandsdifferent) { // uncertainty bands have different properties
     for (int iband=0; iband<nbands; iband++) {
      TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-     string              gtype   =pdf->GetBandType(iband);
+     std::string              gtype   =pdf->GetBandType(iband);
 
      if (debug) std::cout << cn << mn <<"Different properties iband= "<<iband<<" gtype= "<< gtype.c_str()<< std::endl;
 
@@ -1173,7 +1179,7 @@ void SPXPlot::DrawLegend(void) {
      if (bandtype.Contains("ALPHAS")) bandtype="#alpha_{s}";
      if (bandtype.Contains("SCALE"))  bandtype="Scale";
      if (bandtype.Contains("TOTAL"))  bandtype="Total";
-     if (gtype.compare(string("pdf"))==0)
+     if (gtype.compare(std::string("pdf"))==0)
       label=pdftype+" "+bandtype;
      else
       label=bandtype;
@@ -1185,7 +1191,7 @@ void SPXPlot::DrawLegend(void) {
      } else if (steeringFile->GetPlotBand()) {
       if (debug) std::cout<<cn<<mn<<"Plot type "<<bandtype<<std::endl;
       if (debug) std::cout<<cn<<mn<<"gband Name= "<<gband->GetName()<<std::endl;
-      string opt="LF";
+      std::string opt="LF";
       int edgecolor=-1; 
       TString gname=gband->GetName();
      
@@ -1222,12 +1228,12 @@ void SPXPlot::DrawLegend(void) {
 
     for (int iband=0; iband<nbands; iband++) {
      TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-     string              gtype   =pdf->GetBandType(iband);
+     std::string         gtype   =pdf->GetBandType(iband);
 
      if (debug) std::cout << cn << mn <<"Same properties iband= "<<iband<<" gtype= "<< gtype.c_str()<< std::endl;
      
  
-     if (gtype.compare(string("pdf"))==0){
+     if (gtype.compare(std::string("pdf"))==0){
       pdffound=true; npdf++;
       if (nlolabel) {
       
@@ -1265,7 +1271,7 @@ void SPXPlot::DrawLegend(void) {
       //if(steeringFile->ApplyGridCorr()) {
       TString gname=gband->GetName();
       if (gname.Contains("_corrections_")) {
-       std::vector<string> corrlabel=crossSections[icross].GetCorrectionLabels();
+	std::vector<std::string> corrlabel=crossSections[icross].GetCorrectionLabels();
        if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
        for(int ic = 0; ic < corrlabel.size(); ic++) {
         if (debug) std::cout<<cn<<mn<<"add in legend ic= "<<std::endl;
@@ -1276,6 +1282,12 @@ void SPXPlot::DrawLegend(void) {
     }
    }
   }
+
+  //gPad->Update();
+  gPad->RedrawAxis();
+  //TLine l;
+  //l.DrawLine(gPad->GetUxmin(), gPad->GetUymax(), gPad->GetUxmax(), gPad->GetUymax());
+  //l.DrawLine(gPad->GetUxmax(), gPad->GetUymin(), gPad->GetUxmax(), gPad->GetUymax());
  }
 
  double x1=0., y1=0., x2=0., y2=0.;
@@ -1321,7 +1333,7 @@ void SPXPlot::DrawLegend(void) {
  double sqrtsvalold = -1.;
  double jetR    = -1.;
  double jetRold = -1.;
- string lumiold ="NOVALUE";
+ std::string lumiold ="NOVALUE";
 
  double doublebbinminold = -999.;
  double doublebinmaxold  = -999.;
@@ -1407,7 +1419,7 @@ void SPXPlot::DrawLegend(void) {
   }
 
   if (steeringFile->GetAddLumiLabel()) {
-   string lumi = data.at(idata)-> GetDatasetLumi();
+   std::string lumi = data.at(idata)-> GetDatasetLumi();
    //std::cout<<"data set lumi= "<<lumi.c_str()<<std::endl;
 
    if (lumi!=lumiold) {
@@ -1471,8 +1483,10 @@ void SPXPlot::CanvasToPNG(void) {
 
 	//Draw PNG File
 	canvas->Print(filename.c_str());
+
+        //Draw PDF file
         TString epsname=filename;
-        epsname.ReplaceAll("plot_0","");
+        epsname.ReplaceAll("_plot_0","");
         epsname.ReplaceAll("png","eps");
 	canvas->Print(epsname);
 }
@@ -1611,21 +1625,21 @@ void SPXPlot::InitializeCrossSections(void) {
               for (int iband=0; iband<nbands; iband++) {
 
 		TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-		string              gtype   =pdf->GetBandType(iband);
+		std::string         gtype   =pdf->GetBandType(iband);
 		if (!gband) {
                  std::ostringstream oss;
                  oss << cn <<mn<<"GetBands:"<<"Band "<<iband<<" not found at index "<<i;
                  throw SPXParseException(oss.str());
                 }
-                if (debug) cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<endl;
+                if (debug) std::cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<std::endl;
 		//Update the Convolute File Map
 		//string theoryname=pci.pdfSteeringFile.GetFilename()+gband->GetName();
-                string theoryname=gband->GetName();
+		std::string theoryname=gband->GetName();
 
                 // 
                 int markerstyle=-99, fillcolor=-99,fillstyle=-99, edgecolor=-99, edgestyle;
 
-                if (gtype.compare(string("pdf"))==0){
+                if (gtype.compare(std::string("pdf"))==0){
 		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.pdfMarkerStyle;
                  fillcolor  =pci.pdfFillColor;
@@ -1633,7 +1647,7 @@ void SPXPlot::InitializeCrossSections(void) {
                  edgecolor  =pci.pdfEdgeColor;
                  edgestyle  =pci.pdfEdgeStyle;
                 } 
-                if (gtype.compare(string("scale"))==0){
+                if (gtype.compare(std::string("scale"))==0){
 		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.scaleMarkerStyle;
                  fillcolor  =pci.scaleFillColor;
@@ -1641,7 +1655,7 @@ void SPXPlot::InitializeCrossSections(void) {
                  edgecolor  =pci.scaleEdgeColor;
                  edgestyle  =pci.scaleEdgeStyle;
                 } 
-                if (gtype.compare(string("alphas"))==0){
+                if (gtype.compare(std::string("alphas"))==0){
 		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.alphasMarkerStyle;
                  fillcolor  =pci.alphasFillColor;
@@ -1652,7 +1666,7 @@ void SPXPlot::InitializeCrossSections(void) {
 
                 int ncorr=pci.gridSteeringFile.GetNumberOfCorrectionFiles();
                 for (int icorr=0; icorr<ncorr; icorr++) {
-                 string corrlabel=pci.gridSteeringFile.GetCorrectionFileLabel(icorr);
+		  std::string corrlabel=pci.gridSteeringFile.GetCorrectionFileLabel(icorr);
                  if (gtype.compare(corrlabel)==0){
 	 	 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
                   markerstyle=pci.correctionsMarkerStyle;
@@ -1662,7 +1676,7 @@ void SPXPlot::InitializeCrossSections(void) {
                   edgestyle  =pci.correctionsEdgeStyle;
                  } 
                 }
-                if (gtype.compare(string("total"))==0){
+                if (gtype.compare(std::string("total"))==0){
 		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.totalMarkerStyle;
                  fillcolor  =pci.totalFillColor;
@@ -2023,7 +2037,7 @@ void SPXPlot::InitializeData(void) {
 }
 
 
-void SPXPlot::DrawBand(SPXPDF *pdf, string option, SPXPlotConfigurationInstance pci) {
+void SPXPlot::DrawBand(SPXPDF *pdf, std::string option, SPXPlotConfigurationInstance pci) {
  std::string mn = "DrawBand: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
@@ -2043,7 +2057,7 @@ void SPXPlot::DrawBand(SPXPDF *pdf, string option, SPXPlotConfigurationInstance 
    throw SPXGeneralException(oss.str());
   }
 
-  string gtype =pdf->GetBandType(iband);
+  std::string gtype =pdf->GetBandType(iband);
   TString gname=gband->GetName();
 
   if (gname.Contains("_total_")) detailedband=true;
@@ -2085,12 +2099,12 @@ void SPXPlot::DrawBand(SPXPDF *pdf, string option, SPXPlotConfigurationInstance 
  double markerstyle=pci.totalMarkerStyle;
 
 
- vector < TGraphAsymmErrors *> graphs;
+ std::vector < TGraphAsymmErrors *> graphs;
 
  for (int iband=0; iband<nbands; iband++) {
   TGraphAsymmErrors * gband   =pdf->GetBand(iband);
   TString gname=gband->GetName();
-  string  gtype=pdf->GetBandType(iband);
+  std::string  gtype=pdf->GetBandType(iband);
 
   if (debug) std::cout<<cn<<mn<<"gname= "<<gname.Data()<<" type= "<<gtype.c_str()<<std::endl;
 

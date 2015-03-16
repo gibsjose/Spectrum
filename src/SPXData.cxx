@@ -952,10 +952,10 @@ void SPXData::ReadCorrelation()
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 
- string corrtotalfilename=pci.dataSteeringFile.GetTotalCorrellationFileName();
+ std::string corrtotalfilename=pci.dataSteeringFile.GetTotalCorrellationFileName();
  if (debug) std::cout <<cn<<mn<<"Read total correlations corrfilename= "<<corrtotalfilename<< std::endl;
 
- string corrstatfilename=pci.dataSteeringFile.GetStatCorrellationFileName();
+ std::string corrstatfilename=pci.dataSteeringFile.GetStatCorrellationFileName();
  if (debug) std::cout <<cn<<mn<<"Read statistical correlations corrfilename= "<<corrstatfilename<< std::endl;
 
 
@@ -1084,7 +1084,7 @@ void SPXData::ReadCorrelation()
 
 }
 
-void SPXData::ReadCorrelationMatrix(string filename) {
+void SPXData::ReadCorrelationMatrix(std::string filename) {
  std::string mn = "ReadCorrelationMatrix: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
@@ -1094,7 +1094,7 @@ void SPXData::ReadCorrelationMatrix(string filename) {
 
  filename=pci.dataDirectory+"/"+filename;
 
- std::ifstream infile(filename.c_str(), ios::in);
+ std::ifstream infile(filename.c_str(), std::ios::in);
  if(!infile){ // Check open
   infile.close();
   std::ostringstream oss;
@@ -1405,7 +1405,7 @@ StringDoubleVectorMap_T SPXData::SymmetrizeSystemicUncertaintiesMatrix(StringDou
  if (debug2) std::cout<<cn<<mn<<"Loop over systematics Number of systematics= "<< systmap.size()  << std::endl;
 
  // declare map containing symmetrized systematic uncertainties
- std::map <string, vector <double> >  symsystmap;
+ std::map <std::string, std::vector <double> >  symsystmap;
 
  //
  // Loop over systematic uncertainty components
@@ -1425,22 +1425,22 @@ StringDoubleVectorMap_T SPXData::SymmetrizeSystemicUncertaintiesMatrix(StringDou
    std::vector <double> vtmp;
    vtmp.clear();
 
-   if (systmap.count(string(sname.Data()))) {
+   if (systmap.count(std::string(sname.Data()))) {
     if (debug2) std::cout<<cn<<mn<<"Corresponding negative systematic found sname= "<< sname  << std::endl;
     std::vector <double> vtmp;
     for (int i=0; i<syst.size(); i++) {
-      double err=0.5*(systmap[string(sname.Data())].at(i) + syst.at(i));
+      double err=0.5*(systmap[std::string(sname.Data())].at(i) + syst.at(i));
       vtmp.push_back(err);
     } 
     sname.ReplaceAll("-","");
-    symsystmap[string(sname.Data())]=vtmp;
+    symsystmap[std::string(sname.Data())]=vtmp;
    } else {
     std::cout<<cn<<mn<<"INFO Corresponding negative systematic sname= "<< sname <<" not found !" << std::endl;
    } 
   } else if (name.find("-") != std::string::npos) {
    TString sname=TString(name);
    sname.ReplaceAll("-","");
-   if (symsystmap.count(string(sname.Data()))) {
+   if (symsystmap.count(std::string(sname.Data()))) {
     if (debug2) std::cout<<cn<<mn<<"already averaged sname= "<< sname  << std::endl;
    } else {
     std::cout<<cn<<mn<<"WARNING not yet in map, there is mismatch between +/- errors "<< sname  << std::endl;
@@ -1461,7 +1461,7 @@ void SPXData::PrintSystematics(StringDoubleVectorMap_T syst) {
  std::string mn = "PrintSystematics: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
         
- std::cout<<" Number systematics uncertainties= "<<syst.size()<<endl;
+ std::cout<<" Number systematics uncertainties= "<<syst.size()<<std::endl;
 
  for(StringDoubleVectorMap_T::iterator it = syst.begin(); it != syst.end(); it++) {
   const std::string &syst_name = it->first;

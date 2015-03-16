@@ -38,7 +38,7 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
   throw;
  }
 
- if (debug) std::cout<<cn<<mn<<"Attached the GRID "<<endl;
+ if (debug) std::cout<<cn<<mn<<"Attached the GRID "<<std::endl;
 
  //Attempt to create the PDF object and perform convolution
  try {
@@ -54,7 +54,7 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
 
  if (debug) {
 
-  std::cout<<cn<<mn<<"Created the PDF-class "<<endl;
+  std::cout<<cn<<mn<<"Created the PDF-class "<<std::endl;
   std::cout<<cn<<mn<<"dividedByBinWidth= " <<dividedByBinWidth<<std::endl;
 
   std::cout<<cn<<mn<<"GetBandwithPDF= "   <<mainsteeringFile->GetBandwithPDF()<<std::endl;
@@ -114,7 +114,7 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
  }
 
  if (!grid->GetReference()) {
-  std::cout<<cn<<mn<<"WARNING: reference histogram not found ! "<<endl;
+  std::cout<<cn<<mn<<"WARNING: reference histogram not found ! "<<std::endl;
  }
 
  SPXGraphUtilities::HistogramToGraph(gridReference, grid->GetReference());
