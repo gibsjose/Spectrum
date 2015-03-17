@@ -6,6 +6,8 @@
 
 ## Change Log
 
+- SPXPDF functions to test band properties 
+
 - fix Staggering algorithm and introduce StaggerGraph in SPXGraphUtilities
 
 - corrected bug adding errors in quadrature in Matchbinning

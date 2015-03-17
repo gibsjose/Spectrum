@@ -154,6 +154,10 @@ class SPXPDF {
 
         void ApplyBandCorrection(TGraphAsymmErrors *g, std::string corrlabel, bool includeinband);
 
+        bool BandsHaveDifferentProperties();
+        bool BandsHaveDifferentMarker();
+        bool BandsHaveDifferentFillStyle();
+
     private:
         //VARIABLES
         static bool debug;

@@ -683,32 +683,6 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 	  SPXGraphUtilities::StaggerGraph(i, nratio, graph);
          }
         }
-      /*
-          double dx= pow(-1,i) * int((i+1)/2.);
-	  if (debug) std::cout << cn << mn <<i<<" dx= " <<dx<< std::endl;          
-	  std::vector<TGraphAsymmErrors *> ratiographs=ratios[i].GetRatioGraph();
-  		 
-          for (int igraph=0; igraph < ratiographs.size(); igraph++) {
-	        TGraphAsymmErrors *graph = ratiographs[igraph];
-		for(int j = 0; j < graph->GetN(); j++) {
-			//Loop over bins
-			double x = 0;
-			double y = 0;
-			graph->GetPoint(j, x, y);
-
-		        double newX = x + dx;
-                        double exh=graph->GetErrorXhigh(j)-dx;
-                        double exl=graph->GetErrorXlow(j)+dx;
-
-			graph->SetPoint(j, newX, y);
-
-                        graph->SetPointEXhigh(j, exh);
-	     	        graph->SetPointEXlow (j, exl);
-
-		}
-	  }
-	}
-      */
 }
 
 //Matches the overlay binning if the match_binning flag is set
@@ -944,9 +918,7 @@ void SPXPlot::DrawRatio(void) {
   }
    
   ratios[i].Draw(ratioOptions.c_str(),statRatios, totRatios);
-
-  //double xmin=0.2, bwidth=0.1, ymin=0.2, bhigh=0.1;
-  
+ 
 
  }
 
@@ -964,8 +936,6 @@ void SPXPlot::DrawLegend(void) {
  //SPXPlotType        &pt = pc.GetPlotType();
  SPXDisplayStyle      &ds = pc.GetDisplayStyle();
  SPXOverlayStyle      &os = pc.GetOverlayStyle();
-
-
 
  // Why zero here, Where to the the PlotConfiguriotninstance ??
  //std::cout<<cn<<mn<<"HuHu fix me pc.GetPlotConfigurationInstance(0) is not good ! "<<std::endl;
@@ -1006,47 +976,25 @@ void SPXPlot::DrawLegend(void) {
  // Look first, if properties of bands are different
  int old_fill_style=-999, old_fill_color=-999;
  int old_marker_style=-999, old_marker_color=-999;
+
  bool bandsdifferent=false;
 
  for(int icross = 0; icross < crossSections.size(); icross++) {
   SPXPDF * pdf=crossSections[icross].GetPDF();
-  int nbands=pdf->GetNBands();
-  for (int iband=0; iband<nbands; iband++) {
-   TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-   std::string         gtype   =pdf->GetBandType(iband);
-   //
-   //if (debug) std::cout << cn << mn <<"iband= "<< iband<<" gband= "<<gband->GetName()<< std::endl;
-   //
-   // edge color are not taken into account
-   //if (debug) std::cout << cn << mn <<"old_fill_style= "<< old_fill_style<<" gband= "<<gband->GetFillStyle()<< std::endl;
-   //if (debug) std::cout << cn << mn <<"old_fill_color= "<< old_fill_color<<" gband= "<<gband->GetFillColor()<< std::endl;
-   //if (debug) std::cout << cn << mn <<"old_marker_color= "<< old_marker_color<<" gband= "<<gband->GetMarkerColor()<< std::endl;
-   //if (debug) std::cout << cn << mn <<"old_marker_style= "<< old_fill_style<<" gband= "<<gband->GetMarkerStyle()<< std::endl;
 
-   if (iband>0) {
-    if (steeringFile->GetPlotBand()) {
-     if (old_fill_style  !=gband->GetFillStyle())   bandsdifferent=true;
-     if (old_fill_color  !=gband->GetFillColor())   bandsdifferent=true;
-    }
+  if (debug) std::cout << cn << mn <<icross<<" Test band properties "<< std::endl;
 
-    if (steeringFile->GetPlotMarker()) { 
-     if (old_marker_style!=gband->GetMarkerStyle()) bandsdifferent=true;
-     if (old_marker_color!=gband->GetMarkerColor()) bandsdifferent=true;           
-    }
-   } else {
-    old_fill_style=gband->GetFillStyle();
-    old_fill_color=gband->GetFillColor();
-    old_marker_style=gband->GetMarkerStyle();
-    old_marker_color=gband->GetMarkerColor();
-   }
+  bandsdifferent=pdf->BandsHaveDifferentProperties();
+  if (debug) {
+   if (bandsdifferent) std::cout << cn << mn <<icross<<"Bands have different properties !"<< std::endl;
+   else                std::cout << cn << mn <<icross<<"bands have same properties ! "<< std::endl;
   }
  }
 
  if (debug) {
-  if (bandsdifferent) std::cout << cn << mn <<"Bands have different properties !"<< std::endl;
-  else                std::cout << cn << mn <<"bands have same properties ! "<< std::endl;
+  if (bandsdifferent) std::cout << cn << mn <<"One Cross section with Bands with have different properties !"<< std::endl;
+  else                std::cout << cn << mn <<"All cross section have bands with have same properties ! "<< std::endl;
  }
-
 
  if(os.ContainsData()) {
   if (debug) std::cout << cn << mn <<"contains data "<< std::endl;
@@ -2091,7 +2039,6 @@ void SPXPlot::DrawBand(SPXPDF *pdf, std::string option, SPXPlotConfigurationInst
  double fillcolor  =pci.totalFillColor;
  double fillstyle  =pci.totalFillStyle;
  double markerstyle=pci.totalMarkerStyle;
-
 
  std::vector < TGraphAsymmErrors *> graphs;
 

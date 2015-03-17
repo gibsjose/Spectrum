@@ -1809,3 +1809,140 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
  return;
 
 }
+
+bool SPXPDF::BandsHaveDifferentProperties(){
+ std::string mn = "BandsHaveDifferentProperties: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ if (Mapallbands.empty()) {
+  std::cout<<cn<<mn<<"WARNING Band map is empty; can only show grid corrections, if specified "<<std::endl;
+  // throw SPXParseException(cn+mn+"Map is empty");
+ } 
+
+ // Look first, if properties of bands are different
+ int old_fill_style=-999, old_fill_color=-999;
+ int old_marker_style=-999, old_marker_color=-999;
+ bool bandsdifferent=false;
+
+ int iband=0;
+ for(BandMap_T::const_iterator it = Mapallbands.begin(); it != Mapallbands.end(); ++it) {
+  if (debug) std::cout <<cn<<mn<< "map["<<it->first<<"]="<< " " << it->second->GetName() << std::endl;
+
+  iband++;
+  TGraphAsymmErrors *gband=it->second;
+  if (!gband) {
+   std::ostringstream oss;
+   oss << cn << mn << "Graph in band not found !";
+   throw SPXParseException(oss.str());
+  }
+
+  if (iband==1) {
+   old_fill_style=gband->GetFillStyle();
+   old_fill_color=gband->GetFillColor();
+   old_marker_style=gband->GetMarkerStyle();
+   old_marker_color=gband->GetMarkerColor();
+  } else {
+
+   if (old_fill_style  !=gband->GetFillStyle())   bandsdifferent=true;
+   if (old_fill_color  !=gband->GetFillColor())   bandsdifferent=true;
+   if (old_marker_style!=gband->GetMarkerStyle()) bandsdifferent=true;
+   if (old_marker_color!=gband->GetMarkerColor()) bandsdifferent=true;           
+  }
+ }
+
+ if (debug) {
+  if (bandsdifferent) std::cout <<cn<<mn<< " TRUE" << std::endl;
+  else                std::cout <<cn<<mn<< " FALSE" << std::endl;
+ }
+ return bandsdifferent;
+
+};
+
+
+bool SPXPDF::BandsHaveDifferentMarker(){
+ std::string mn = "BandsHaveDifferentMarker: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ if (Mapallbands.empty()) {
+  std::cout<<cn<<mn<<"WARNING Band map is empty; can only show grid corrections, if specified "<<std::endl;
+  // throw SPXParseException(cn+mn+"Map is empty");
+ } 
+
+ // Look first, if properties of bands are different
+ int old_marker_style=-999, old_marker_color=-999;
+ bool bandsdifferent=false;
+
+ int iband=0;
+ for(BandMap_T::const_iterator it = Mapallbands.begin(); it != Mapallbands.end(); ++it) {
+ 
+  if (debug) std::cout <<cn<<mn<< "map["<<it->first<<"]="<< " " << it->second->GetName() << std::endl;
+
+  iband++;
+  TGraphAsymmErrors *gband=it->second;
+  if (!gband) {
+   std::ostringstream oss;
+   oss << cn << mn << "Graph in band not found !";
+   throw SPXParseException(oss.str());
+  }
+
+  if (iband==1) {
+   old_marker_style=gband->GetMarkerStyle();
+   old_marker_color=gband->GetMarkerColor();
+  } else {
+
+   if (old_marker_style!=gband->GetMarkerStyle()) bandsdifferent=true;
+   if (old_marker_color!=gband->GetMarkerColor()) bandsdifferent=true;           
+  }
+ }
+
+ if (debug) {
+  if (bandsdifferent) std::cout <<cn<<mn<< " TRUE" << std::endl;
+  else               std::cout <<cn<<mn<< " FALSE" << std::endl;
+ }
+ return bandsdifferent;
+
+};
+
+bool SPXPDF::BandsHaveDifferentFillStyle(){
+ std::string mn = "BandsHaveDifferentFillStyle: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ if (Mapallbands.empty()) {
+  std::cout<<cn<<mn<<"WARNING Band map is empty; can only show grid corrections, if specified "<<std::endl;
+  // throw SPXParseException(cn+mn+"Map is empty");
+ } 
+
+ // Look first, if properties of bands are different
+ int old_fill_style=-999, old_fill_color=-999;
+ bool bandsdifferent=false;
+
+ int iband=0;
+ for(BandMap_T::const_iterator it = Mapallbands.begin(); it != Mapallbands.end(); ++it) {
+  if (debug) std::cout <<cn<<mn<< "map["<<it->first<<"]="<< " " << it->second->GetName() << std::endl;
+
+  iband++;
+  TGraphAsymmErrors *gband=it->second;
+  if (!gband) {
+   std::ostringstream oss;
+   oss << cn << mn << "Graph in band not found !";
+   throw SPXParseException(oss.str());
+  }
+
+  if (iband==1) {
+   old_fill_style=gband->GetFillStyle();
+   old_fill_color=gband->GetFillColor();
+  } else {
+
+   if (old_fill_style  !=gband->GetFillStyle())   bandsdifferent=true;
+   if (old_fill_color  !=gband->GetFillColor())   bandsdifferent=true;
+  }
+ }
+
+ if (debug) {
+  if (bandsdifferent) std::cout <<cn<<mn<< " TRUE" << std::endl;
+  else               std::cout <<cn<<mn<< " FALSE" << std::endl;
+ }
+ return bandsdifferent;
+
+};
+
