@@ -1023,7 +1023,7 @@ bool SPXRatio::MatchesConvoluteString(std::string &s) {
 }
 
 
-void SPXRatio::Draw(std::string option, int statRatios, int totRatios) {
+void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plotmarker) {
  std::string mn = "Draw: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
@@ -1057,6 +1057,7 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios) {
 
   }
  } else {
+  // Is a convolute 
   // look if detailed band is requested
   bool detailedband=false;
   for (int igraph1=0; igraph1 < ratioGraph.size(); igraph1++) {
@@ -1068,13 +1069,23 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios) {
    if (gname.Contains("_alphas_"))detailedband=true;
   }
 
-  if (!detailedband) {
+  if (debug) if(detailedband) std::cout<<cn<<mn<<" This is a simple band detailedband=FALSE "<<std::endl;
+  if (debug) if (plotmarker)  std::cout<<cn<<mn<<" Asked to plot with markers "<<std::endl;
+
+  if (!detailedband || plotmarker) {
+   if (debug) if (plotmarker)  std::cout<<cn<<mn<<"Only plot total band"<<std::endl;
    for (int igraph1=0; igraph1 < ratioGraph.size(); igraph1++) {
     TGraphAsymmErrors *graph1 = ratioGraph[igraph1];
-    graph1->Draw(option.c_str());
-    return;
+    TString gname=graph1->GetName();
+    if (gname.Contains("_total_")) {
+     if (debug) std::cout<<cn<<mn<<"Draw graph "<<graph1->GetName()<<std::endl;
+     graph1->Draw(option.c_str());
+     return;
+    }
    }
   }
+
+   if (debug) if (plotmarker)  std::cout<<cn<<mn<<"Now order bands and plots"<<std::endl;
 
   // order bands for better plotting
   std::map<int, TGraphAsymmErrors * > bands=  SPXUtilities::OrderBandMap(ratioGraph);

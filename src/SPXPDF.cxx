@@ -1946,3 +1946,38 @@ bool SPXPDF::BandsHaveDifferentFillStyle(){
 
 };
 
+
+bool SPXPDF::HasDetailedBands(){
+ std::string mn = "HasDetailedBands: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ if (Mapallbands.empty()) {
+  std::cout<<cn<<mn<<"WARNING Band map is empty; can only show grid corrections, if specified "<<std::endl;
+  // throw SPXParseException(cn+mn+"Map is empty");
+ } 
+ // 
+ bool detailedband=false;
+
+ for(BandMap_T::const_iterator it = Mapallbands.begin(); it != Mapallbands.end(); ++it) {
+  if (debug) std::cout <<cn<<mn<< "map["<<it->first<<"]="<< " " << it->second->GetName() << std::endl;
+  TGraphAsymmErrors *gband=it->second;
+  if (!gband) {
+   std::ostringstream oss;
+   oss << cn << mn << "Graph in band not found !";
+   throw SPXParseException(oss.str());
+  }
+  TString gname=gband->GetName();
+  if (gname.Contains("_total_")) detailedband=true;
+  if (gname.Contains("_scale_")) detailedband=true;
+  if (gname.Contains("_pdf_"))   detailedband=true;
+  if (gname.Contains("_alphas_"))detailedband=true;
+ }
+
+ if (debug) {
+  if (detailedband)  std::cout <<cn<<mn<< " TRUE" << std::endl;
+  else               std::cout <<cn<<mn<< " FALSE" << std::endl;
+ }
+ return detailedband;
+};
+
+

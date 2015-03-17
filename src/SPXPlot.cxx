@@ -917,7 +917,8 @@ void SPXPlot::DrawRatio(void) {
    }
   }
    
-  ratios[i].Draw(ratioOptions.c_str(),statRatios, totRatios);
+  bool plotmarker=steeringFile->GetPlotMarker();
+  ratios[i].Draw(ratioOptions.c_str(),statRatios, totRatios ,plotmarker);
  
 
  }
@@ -1168,13 +1169,14 @@ void SPXPlot::DrawLegend(void) {
     }
    } else { // uncertainty bands have the same properties
 
+     if (debug) std::cout << cn << mn <<"All bands have same properties !"<< std::endl;
+
     for (int iband=0; iband<nbands; iband++) {
      TGraphAsymmErrors * gband   =pdf->GetBand(iband);
      std::string         gtype   =pdf->GetBandType(iband);
 
-     if (debug) std::cout << cn << mn <<"Same properties iband= "<<iband<<" gtype= "<< gtype.c_str()<< std::endl;
+     if (debug) std::cout << cn << mn <<"iband= "<<iband<<" gtype= "<< gtype.c_str()<< std::endl;
      
- 
      if (gtype.compare(std::string("pdf"))==0){
       pdffound=true; npdf++;
       if (nlolabel) {
@@ -1991,47 +1993,33 @@ void SPXPlot::DrawBand(SPXPDF *pdf, std::string option, SPXPlotConfigurationInst
  if (debug) std::cout << cn << mn <<"Number of bands= " <<nbands<< std::endl;
 
  bool detailedband=false;
- for (int iband=0; iband<nbands; iband++) {
-  TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-  if (!gband) {
-   std::ostringstream oss;
-   oss << cn <<mn<<"Band "<<iband<<" not found at index "<<iband<<" for "<< pdf->GetPDFName();
-   throw SPXGeneralException(oss.str());
-  }
-
-  std::string gtype =pdf->GetBandType(iband);
-  TString gname=gband->GetName();
-
-  if (gname.Contains("_total_")) detailedband=true;
-  if (gname.Contains("_scale_")) detailedband=true;
-  if (gname.Contains("_pdf_"))   detailedband=true;
-  if (gname.Contains("_alphas_"))detailedband=true;
- }
-
+ detailedband=pdf->HasDetailedBands();
  if (debug) if (detailedband) std::cout << cn << mn <<"detailedband TRUE" << std::endl;
 
- if (steeringFile->GetPlotMarker()){
+ bool bandsdifferent=false;
+ bandsdifferent=pdf->BandsHaveDifferentFillStyle();
+ if (debug) if (bandsdifferent) std::cout << cn << mn <<" bandsdifferent TRUE" << std::endl;
 
-  if (detailedband){
-   std::cout << cn << mn <<"WARNING can not plot detailedband with marker option " << std::endl;
-  }
-
+ if (steeringFile->GetPlotMarker() || !bandsdifferent){
   for (int iband=0; iband<nbands; iband++) {
    TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-   //string gtype =pdf->GetBandType(iband);
-   //TString gname=gband->GetName();
-   gband->Draw(option.c_str());
+   TString gname=gband->GetName();
+   std::cout << cn << mn <<iband<<" gname= "<<gname.Data() << std::endl;
+   if (gname.Contains("_total_")) {
+    std::cout << cn << mn <<"INFORMATION only plot total band " << std::endl;
+    gband->Draw(option.c_str());
 
-   if (debug) {
-    std::cout<< cn << mn <<"\n Drew "<<gband->GetName()<< " with options "<<option.c_str()
-                         << " fillcolor= " << gband->GetFillColor() 
-                         << " fillstyle= " << gband->GetFillStyle() 
-                         << " markerstyle= "<<gband->GetMarkerStyle() 
-                         << std::endl;          
+    if (debug) {
+     std::cout<< cn << mn <<"\n Drew "<<gband->GetName()<< " with options "<<option.c_str()
+                          << " fillcolor= " << gband->GetFillColor() 
+                          << " fillstyle= " << gband->GetFillStyle() 
+                          << " markerstyle= "<<gband->GetMarkerStyle() 
+                          << std::endl;          
      gband->Print();
+    }
+    return;
    }
-  };
-  return;
+  }
  }
 
  double edgecolor  =pci.totalEdgeColor;

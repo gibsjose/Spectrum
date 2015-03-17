@@ -6,6 +6,8 @@
 
 ## Change Log
 
+- for marker type and if not detailed band asked for only total band is plotted
+
 - SPXPDF functions to test band properties 
 
 - fix Staggering algorithm and introduce StaggerGraph in SPXGraphUtilities

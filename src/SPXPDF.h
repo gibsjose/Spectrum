@@ -158,6 +158,8 @@ class SPXPDF {
         bool BandsHaveDifferentMarker();
         bool BandsHaveDifferentFillStyle();
 
+        bool HasDetailedBands();
+
     private:
         //VARIABLES
         static bool debug;
