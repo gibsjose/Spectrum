@@ -1123,3 +1123,35 @@ int SPXGraphUtilities::CompareValues(TGraphAsymmErrors *g1, TGraphAsymmErrors *g
 
  return nlargerbins;
 }
+
+void SPXGraphUtilities::StaggerGraph(int index, int ngraph, TGraphAsymmErrors *graph) {
+ std::string mn = "StaggerGraph: ";
+ bool debug=true;
+
+ double dx= pow(-1,index) * int((index+1)/2.);
+
+ if (debug) std::cout << cn << mn <<index<<" dx= " <<dx <<" ngraph= "<<ngraph<<std::endl;
+
+ for(int j = 0; j < graph->GetN(); j++) {
+  //Loop over bins
+  double x = 0., y = 0., range = 0., error = 0.;
+  double exh = 0., exl = 0., dr = 0., newX = 0.;
+
+  graph->GetPoint(j, x, y);
+  error = graph->GetErrorXlow(j) +  graph->GetErrorXhigh(j);
+
+  dr = dx* (error/float(ngraph));
+  dr = dr - dr/2.;
+  newX = x + dr;
+  if (debug) std::cout << cn << mn <<j<<" dr= " <<dr<<" x= "<<x<<" newX= "<<newX<< " error= "<<error<<std::endl;
+
+  exh=graph->GetErrorXhigh(j)-dr;
+  exl=graph->GetErrorXlow(j)+dr;
+
+  graph->SetPoint(j, newX, y);
+  graph->SetPointEXhigh(j, exh);
+  graph->SetPointEXlow (j, exl);
+ }	
+
+ return;
+}

@@ -626,7 +626,11 @@ void SPXPlot::StaggerConvoluteOverlay(void) {
 	const int FRAC_RANGE = 4;
 
 	//Stagger convolutes in overlay
-	for(int i = 0; i < crossSections.size(); i++) {
+        int ncross=crossSections.size();
+	for(int i = 0; i < ncross; i++) {
+
+	      //double dx= pow(-1,i) * int((i+1)/2.);
+	      //if (debug) std::cout << cn << mn <<i<<" dx= " <<dx<< std::endl;
 
               SPXPDF * pdf=crossSections[i].GetPDF();
               int nbands=pdf->GetNBands();
@@ -639,25 +643,7 @@ void SPXPlot::StaggerConvoluteOverlay(void) {
                 throw SPXParseException(oss.str());
                }
                if (debug) std::cout << cn << mn <<"Stagger Graph " <<graph->GetName()<< std::endl;
-	       for(int j = 0; j < graph->GetN(); j++) {
-		//Loop over bins
-		double x = 0., y = 0., range = 0., error = 0.;
-		double exh = 0., exl = 0., dr = 0., newX = 0., dx=0.;
-
-		graph->GetPoint(j, x, y);
-		error = graph->GetErrorX(j);
-		range = error / FRAC_RANGE;
-		dr = range / graph->GetN();
-		//newX = x + (pow(-1, (i + 1)) * (dr *  (i + 1)));
-		dx= pow(-1, (i + 1)) * (dr *  (i + 1));
-		newX = x + dx;
-                exh=graph->GetErrorXhigh(j)-dx;
-                exl=graph->GetErrorXlow(j)+dx;
-
-		graph->SetPoint(j, newX, y);
-                graph->SetPointEXhigh(j, exh);
-		graph->SetPointEXlow (j, exl);
-	       }	
+	       SPXGraphUtilities::StaggerGraph(i, ncross, graph);
               }
 	}
 }
@@ -667,7 +653,7 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	//Change this to alter the fraction of the error range in which the point is staggered
-	const int FRAC_RANGE = 4;
+	//const int FRAC_RANGE = 4;
 
 	//Create local ratios array
 	std::vector<SPXRatio> _ratios;
@@ -676,19 +662,30 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 	// This is important to have the staggering match from the overlay, since the
 	// staggering algorithm is dependent on the total number of ratios, and the ratio index
 	for(int i = 0; i < ratios.size(); i++) {
-		//Remove if ratio style is not a convolute ratio
-		if(!ratios[i].HasConvolute()) {
-			if(debug) std::cout << cn << mn << "Not staggering ratio at index " << i << ": " << ratios[i].GetRatioStyle().ToString() << std::endl;
-		} else {
-			if(debug) std::cout << cn << mn << "Staggering ratio at index " << i << ": " << ratios[i].GetRatioStyle().ToString() << std::endl;
-			_ratios.push_back(ratios[i]);
-		}
+	 //Remove if ratio style is not a convolute ratio
+	 if(!ratios[i].HasConvolute()) {
+	  if(debug) std::cout << cn << mn << "Not staggering ratio at index " << i << ": " << ratios[i].GetRatioStyle().ToString() << std::endl;
+	 } else {
+	  if(debug) std::cout << cn << mn << "Staggering ratio at index " << i << ": " << ratios[i].GetRatioStyle().ToString() << std::endl;
+	   _ratios.push_back(ratios[i]);
+	 }
 	}
 
 	//Stagger convolutes in ratio
-	for(int i = 0; i < _ratios.size(); i++) {
-	  // TC GetRatioGraph returns now vector of graphs
-	  //TGraphAsymmErrors *graph = _ratios[i].GetRatioGraph();
+        int nratio=_ratios.size();
+	for(int i = 0; i < nratio; i++) {
+	 std::vector<TGraphAsymmErrors *> ratiographs=_ratios[i].GetRatioGraph();
+
+         for (int igraph=0; igraph < ratiographs.size(); igraph++) {
+	  TGraphAsymmErrors *graph = ratiographs[igraph];
+          if (!graph) throw SPXGraphException(cn+mn+"Graph not found !");
+	  if(debug) std::cout << cn << mn << "Staggering ratio at index " << i << ": " << graph->GetName() << std::endl;  		 
+	  SPXGraphUtilities::StaggerGraph(i, nratio, graph);
+         }
+        }
+      /*
+          double dx= pow(-1,i) * int((i+1)/2.);
+	  if (debug) std::cout << cn << mn <<i<<" dx= " <<dx<< std::endl;          
 	  std::vector<TGraphAsymmErrors *> ratiographs=ratios[i].GetRatioGraph();
   		 
           for (int igraph=0; igraph < ratiographs.size(); igraph++) {
@@ -698,11 +695,7 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 			double x = 0;
 			double y = 0;
 			graph->GetPoint(j, x, y);
-			double error = graph->GetErrorX(j);
-			double range = error / FRAC_RANGE;
-			double dr = range / graph->GetN();
-			//double newX = x + (pow(-1, (i + 1)) * (dr *  (i + 1)));
-    		        double dx= pow(-1, (i + 1)) * (dr *  (i + 1));
+
 		        double newX = x + dx;
                         double exh=graph->GetErrorXhigh(j)-dx;
                         double exl=graph->GetErrorXlow(j)+dx;
@@ -715,6 +708,7 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 		}
 	  }
 	}
+      */
 }
 
 //Matches the overlay binning if the match_binning flag is set

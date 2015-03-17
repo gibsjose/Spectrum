@@ -2,9 +2,11 @@
 ### 18 December, 2014
 
 ## Authors
-@gibsjose @csembree Dr. Tancredi Carli
+@gibsjose @csembree Tancredi Carli
 
 ## Change Log
+
+- fix Staggering algorithm and introduce StaggerGraph in SPXGraphUtilities
 
 - corrected bug adding errors in quadrature in Matchbinning
 

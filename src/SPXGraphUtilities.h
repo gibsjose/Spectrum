@@ -98,6 +98,8 @@ public:
         static void Multiply(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, int noerr=0);
 
         static int CompareValues(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, bool bandsize=true);
+
+        static void StaggerGraph(int index, int ngraph, TGraphAsymmErrors *graph);
 };
 
 #endif
