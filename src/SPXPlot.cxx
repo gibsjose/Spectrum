@@ -1105,8 +1105,11 @@ void SPXPlot::DrawLegend(void) {
      }
     }
    } else {
-    if (nlouncertainty)
-     leg->AddEntry((TObject*)0,"NLO QCD Uncertainties", "");
+    if (nlouncertainty) {
+    TString label="NLO QCD Uncertainties";
+    if (label.Sizeof()>namesize) namesize=label.Sizeof();
+     leg->AddEntry((TObject*)0,label, "");
+    }
     if (gridcorrectionfound&&!nlouncertainty)
      leg->AddEntry((TObject*)0,"Uncertainties", "");
    }
@@ -1248,12 +1251,13 @@ void SPXPlot::DrawLegend(void) {
 
  int nraw=leg->GetNRows();
  if (debug) { 
-  std::cout << cn << mn <<"nraw= "<<nraw<<" namesize= "<< namesize<< " linesize= "<<linesize<<std::endl;
+   std::cout << cn << mn <<"nraw= "<<nraw<<" namesize= "<< namesize
+             << " linesize= "<<linesize<<" charactersize= "<< charactersize<<std::endl;
  }
 
- double fac=0.1;
+ double fac=0.5;
  if (namesize<20) fac=0.4;
- x1 = xlegend-(fac*namesize*charactersize), x2=xlegend;
+ x1 = xlegend-(fac*namesize*charactersize); x2=xlegend;
  //x1 = xlegend-(namesize*charactersize), x2=xlegend;
  if (nraw>3) nraw*=0.6;
  y1 = ylegend-(nraw*linesize);  y2=ylegend;
@@ -1446,6 +1450,13 @@ void SPXPlot::CanvasToPNG(void) {
         epsname.ReplaceAll("_plot_0","");
         epsname.ReplaceAll("png","eps");
 	canvas->Print(epsname);
+
+        //Save *.C
+        TString cname=filename;
+        cname.ReplaceAll("_plot_0","");
+        cname.ReplaceAll("png","C");
+	canvas->Print(cname);
+
 }
 
 std::string SPXPlot::GetPNGFilename(std::string desc) {
