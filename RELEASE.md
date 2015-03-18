@@ -6,6 +6,8 @@
 
 ## Change Log
 
+- correction bug with correctionsMarkerStyle in SPXPlotConfiguration.cxx
+
 - for marker type and if not detailed band asked for only total band is plotted
 
 - SPXPDF functions to test band properties 

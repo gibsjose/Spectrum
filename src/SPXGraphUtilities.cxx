@@ -1126,7 +1126,7 @@ int SPXGraphUtilities::CompareValues(TGraphAsymmErrors *g1, TGraphAsymmErrors *g
 
 void SPXGraphUtilities::StaggerGraph(int index, int ngraph, TGraphAsymmErrors *graph) {
  std::string mn = "StaggerGraph: ";
- bool debug=true;
+ bool debug=false;
 
  double dx= pow(-1,index) * int((index+1)/2.);
 

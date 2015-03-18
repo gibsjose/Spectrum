@@ -987,8 +987,8 @@ void SPXPlot::DrawLegend(void) {
 
   bandsdifferent=pdf->BandsHaveDifferentProperties();
   if (debug) {
-   if (bandsdifferent) std::cout << cn << mn <<icross<<"Bands have different properties !"<< std::endl;
-   else                std::cout << cn << mn <<icross<<"bands have same properties ! "<< std::endl;
+   if (bandsdifferent) std::cout << cn << mn <<icross<<" Bands have different properties !"<< std::endl;
+   else                std::cout << cn << mn <<icross<<" Bands have same properties ! "<< std::endl;
   }
  }
 
@@ -998,12 +998,12 @@ void SPXPlot::DrawLegend(void) {
  }
 
  if(os.ContainsData()) {
-  if (debug) std::cout << cn << mn <<"contains data "<< std::endl;
+  if (debug) std::cout << cn << mn <<"Contains data "<< std::endl;
 
   if (data.size()==0)
    throw SPXGeneralException(cn+mn+"No data object found !");
 
-  if (debug) std::cout<<cn<<mn<<"Number of data objects= "<< data.size()+1<<std::endl;
+  if (debug) std::cout<<cn<<mn<<"Number of data objects= "<< data.size()<<std::endl;
 
   for(int idata = 0; idata < data.size(); idata++) {                 
 
@@ -1023,12 +1023,10 @@ void SPXPlot::DrawLegend(void) {
     //datalabel+="}";
    }
 
-   if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
-   if (debug) std::cout<<cn<<mn<<datalabel.Data()<<" namesize= "<<namesize<<std::endl;
-   
-
    if (!ratioonly && data.size()>0) { // ratioonly figures have data in the ratio, no separate label
-     leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
+    if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
+    if (debug) std::cout<<cn<<mn<<"Data Label: "<<datalabel.Data()<<" namesize= "<<namesize<<std::endl;
+    leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
    }
   }
  }
@@ -1039,14 +1037,13 @@ void SPXPlot::DrawLegend(void) {
  if (ratioStyle.IsDataOverConvolute()) nlolabel=false;
 
  if(os.ContainsConvolute()) {
-
+  if (debug) std::cout << cn << mn <<"Contains convolute "<< std::endl;
   std::vector<TString> vpdf;
 
-  if (debug) std::cout << cn << mn <<"contains convolute "<< std::endl;
   int npdf=0; int iold=-1;
   for(int icross = 0; icross < crossSections.size(); icross++) {
    // Now analyze PDF-object
-   //Get PDF object
+   // Get PDF object
    SPXPDF * pdf=crossSections[icross].GetPDF();
    int nbands=pdf->GetNBands();
    TString pdftype = pdf->GetPDFtype();
@@ -1058,7 +1055,6 @@ void SPXPlot::DrawLegend(void) {
    for (int iband=0; iband<nbands; iband++) {
     std::string gtype    = pdf->GetBandType(iband);
     TGraphAsymmErrors * gband = pdf->GetBand(iband);
-
     if (gtype.compare(std::string("alphas"))==0) nlouncertainty=true;
     if (gtype.compare(std::string("scale"))==0)  nlouncertainty=true;
     if (gtype.compare(std::string("pdf"))==0) {
@@ -1097,7 +1093,7 @@ void SPXPlot::DrawLegend(void) {
       }
   
       text+=" with:";
-     // Draw nothing
+      // 
       if (gridcorrectionfound&&!nlouncertainty) text="";
       if (nlouncertainty) leg->AddEntry((TObject*)0, text, "");
      }
@@ -1169,7 +1165,7 @@ void SPXPlot::DrawLegend(void) {
     }
    } else { // uncertainty bands have the same properties
 
-     if (debug) std::cout << cn << mn <<"All bands have same properties !"<< std::endl;
+    if (debug) std::cout << cn << mn <<"All bands have same properties !"<< std::endl;
 
     for (int iband=0; iband<nbands; iband++) {
      TGraphAsymmErrors * gband   =pdf->GetBand(iband);
@@ -1178,6 +1174,7 @@ void SPXPlot::DrawLegend(void) {
      if (debug) std::cout << cn << mn <<"iband= "<<iband<<" gtype= "<< gtype.c_str()<< std::endl;
      
      if (gtype.compare(std::string("pdf"))==0){
+      if (debug) std::cout << cn << mn <<"Band is of type PDF"<< std::endl;
       pdffound=true; npdf++;
       if (nlolabel) {
       
@@ -1212,16 +1209,21 @@ void SPXPlot::DrawLegend(void) {
       // if (debug) std::cout << cn << mn <<"PDF found "<< pdftype.Data()<< std::endl;
       //} else {
       // if (debug) std::cout << cn << mn <<"No PDF band found "<< std::endl;
-      //if(steeringFile->ApplyGridCorr()) {
-      TString gname=gband->GetName();
-      if (gname.Contains("_corrections_")) {
+      //
+      if (pdffound) {
+       if (debug) std::cout << cn << mn <<"Only plot corrections legend when no PDF "<< std::endl;
+      } else {
+       if (debug) std::cout << cn << mn <<"No PDF -> plot correction legend "<< std::endl;
+       TString gname=gband->GetName();
+       if (gname.Contains("_corrections_")) {
 	std::vector<std::string> corrlabel=crossSections[icross].GetCorrectionLabels();
-       if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
-       for(int ic = 0; ic < corrlabel.size(); ic++) {
-        if (debug) std::cout<<cn<<mn<<"add in legend ic= "<<std::endl;
-        leg->AddEntry(gband, TString(corrlabel[ic]), "LF");
-       }
-      } else if (debug) std::cout << cn << mn <<"No grid corrections specified "<< std::endl;
+        if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
+        for(int ic = 0; ic < corrlabel.size(); ic++) {
+   	 if (debug) std::cout<<cn<<mn<<"add in legend ic= "<<ic<<std::endl;       
+         leg->AddEntry(gband, TString(corrlabel[ic]), "LF");
+        }
+       } else if (debug) std::cout << cn << mn <<"No grid corrections specified "<< std::endl;
+      }
      }
     }
    }

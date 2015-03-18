@@ -1272,7 +1272,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		else 		pci.correctionsEdgeColor = PC_EMPTY_EDGE;
 
 		if(cmsSize) pci.correctionsMarkerStyle = atoi(cms.at(i).c_str());
-		else		pci.correctionsMarkerStyle = PC_EMPTY_EDGE;
+		else		pci.correctionsMarkerStyle = PC_EMPTY_STYLE;
 
 		if(xsSize)	pci.xScale = atof(xsc.at(i).c_str());
 		else		pci.xScale = 1.0;

@@ -29,7 +29,6 @@ void SPXSteeringFile::SetDefaults(void) {
 
 	if(debug) std::cout << cn << mn << "Setting default Steering File data" << std::endl;
 
-
 	plotBand = false;
 	if(debug) std::cout << cn << mn << "plotBand set to default: \"false\"" << std::endl;
 
@@ -1030,7 +1029,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "scale_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "INFO: No plot option for scale_marker_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_marker_color" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for scale_marker_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_marker_style" << std::endl;
 
 		if (configurations.count("pdf_marker_style")!=0)
 		 tmpVector = configurations["pdf_marker_style"];
@@ -1247,12 +1246,12 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		 configurations.insert(std::pair<std::string, std::vector<std::string> >("corrections_fill_color", tmpVector));
 		if(debug) std::cout << cn << mn << "configurations[corrections_fill_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["corrections_fill_color"]) << std::endl;
 
-		//Get the alphas_marker_style
+		//Get the corrections_marker_style
        	        if(debug) std::cout << cn << mn << "Start parsing corrections_marker_style " << std::endl;
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "corrections_marker_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout << cn << mn << "INFO: No plot option for corrections_marker_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_marker_style" << std::endl;
+		  std::cout << cn << mn << "INFO: No plot option for corrections_marker_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_marker_style "<< std::endl;
 
 		if (configurations.count("pdf_marker_style")!=0)
 		 tmpVector = configurations["pdf_marker_style"];
@@ -1856,6 +1855,8 @@ void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 						" Correction Fill Color was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetFillColor() << std::endl;
 					pci.correctionsFillColor = pdfSteeringFile.GetFillColor();
 				}
+
+				if(debug) std::cout << cn << mn << " MarkerStyle=  " << pci.correctionsMarkerStyle<< " Default= "<<PC_EMPTY_STYLE << std::endl;
 
 				if(pci.correctionsMarkerStyle == PC_EMPTY_STYLE) {
 					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \

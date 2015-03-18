@@ -201,7 +201,7 @@ void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
 
   fillStyleCode = psf->GetFillStyle();
   fillColorCode = psf->GetFillColor();
-  markerStyle = psf->GetMarkerStyle();
+  markerStyle   = psf->GetMarkerStyle();
   ErrorPropagationType= psf->GetErrorPropagationType();
   if (debug) std::cout<<cn<<mn<<"ErrorPropagationType= "<<ErrorPropagationType<<std::endl;
 
@@ -1824,6 +1824,9 @@ bool SPXPDF::BandsHaveDifferentProperties(){
  int old_marker_style=-999, old_marker_color=-999;
  bool bandsdifferent=false;
 
+
+ //debug=true;
+
  int iband=0;
  for(BandMap_T::const_iterator it = Mapallbands.begin(); it != Mapallbands.end(); ++it) {
   if (debug) std::cout <<cn<<mn<< "map["<<it->first<<"]="<< " " << it->second->GetName() << std::endl;
@@ -1847,6 +1850,18 @@ bool SPXPDF::BandsHaveDifferentProperties(){
    if (old_fill_color  !=gband->GetFillColor())   bandsdifferent=true;
    if (old_marker_style!=gband->GetMarkerStyle()) bandsdifferent=true;
    if (old_marker_color!=gband->GetMarkerColor()) bandsdifferent=true;           
+  }
+
+
+  if (debug) {
+    std::cout <<cn<<mn<< " old_fill_style= "   <<old_fill_style  <<" gband= "<<gband->GetFillStyle()  << std::endl;
+    std::cout <<cn<<mn<< " old_fill_color= "   <<old_fill_color  <<" gband= "<<gband->GetFillColor()  << std::endl;
+    std::cout <<cn<<mn<< " old_marker_style= " <<old_marker_style<<" gband= "<<gband->GetMarkerStyle()<< std::endl;
+    std::cout <<cn<<mn<< " old_marker_color= " <<old_marker_color<<" gband= "<<gband->GetMarkerColor()<< std::endl;
+
+    if (bandsdifferent) std::cout <<cn<<mn<<iband<< " TRUE" << std::endl;
+    else                std::cout <<cn<<mn<<iband<< " FALSE" << std::endl;
+
   }
  }
 
