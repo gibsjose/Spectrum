@@ -70,6 +70,6 @@ error_size = one_sigma
 ; PDF set member number
 alpha_s_error_number_up = 0
 alpha_s_error_number_down = 0
-alpha_s_pdf_name_up = MSTW2008nlo68cl_asmz-68cl
-alpha_s_pdf_name_down = MSTW2008nlo68cl_asmz+68cl
+alpha_s_pdf_name_up = MSTW2008nlo68cl_asmz+68cl
+alpha_s_pdf_name_down = MSTW2008nlo68cl_asmz-68cl
 

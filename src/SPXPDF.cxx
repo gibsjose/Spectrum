@@ -603,7 +603,7 @@ void SPXPDF::Initialize()
 #else
   double value_alphaS_up=LHAPDF::alphasPDF(alphaS_scale_worldAverage);
 #endif
-  TString AlphaSPDFSetHistNameUp=AlphaSPDFSetNameDown+"_value_alphas= ";
+  TString AlphaSPDFSetHistNameUp=AlphaSPDFSetNameUp+"_value_alphas= ";
   TString nameup; nameup.Form("%3.3f",value_alphaS_up);
   AlphaSPDFSetHistNameUp+=nameup;
 

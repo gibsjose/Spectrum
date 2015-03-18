@@ -42,7 +42,7 @@ grid_directory = Grids/top/atlas/mcfm/ttbarresolvedpartons
 data_steering_files = atlas_2011_top_partons_mtt.txt
 grid_steering_files = atlas_2011_top_partons_mtt.txt
 
-pdf_steering_files = MRST2008nlo.txt,CT10.txt,HERAPDF15NLO.txt,NNPDF23nlo.txt
+pdf_steering_files = MSTW2008nlo.txt,CT10.txt,HERAPDF15NLO.txt,NNPDF23nlo.txt
 ;pdf_steering_files = CT10.txt
 ;x_scale = 1.0
 ;y_scale = 1.0
