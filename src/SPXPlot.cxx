@@ -918,7 +918,13 @@ void SPXPlot::DrawRatio(void) {
   }
    
   bool plotmarker=steeringFile->GetPlotMarker();
-  ratios[i].Draw(ratioOptions.c_str(),statRatios, totRatios ,plotmarker);
+  double xbox=steeringFile->GetXDataBoxLabel();
+  double ybox=steeringFile->GetYDataBoxLabel();
+  if (debug) {
+   std::cout<<cn<<mn<<"Draw ratio with xbox= "<<xbox<<" ybox= "<<ybox<<std::endl;
+   if (plotmarker) std::cout<<cn<<mn<<"plotmarker TRUE "<<std::endl;
+  }
+  ratios[i].Draw(ratioOptions.c_str(),statRatios, totRatios ,plotmarker,xbox,ybox);
  
 
  }
@@ -1288,6 +1294,11 @@ void SPXPlot::DrawLegend(void) {
 
   //TString infolabel = "#font[9]{";
   TString infolabel = "";
+
+  if (steeringFile->GetInfoLegendLabel().size()>0) {
+   TString label=steeringFile->GetInfoLegendLabel();
+   leginfo->AddEntry((TObject*)0, label,"");
+  }
 
   if (steeringFile->GetLabelSqrtS()) {
 

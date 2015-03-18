@@ -112,11 +112,11 @@ void SPXPDFSteeringFile::SetDefaults(void) {
 	alphaSPDFNameDown.clear();
 	if(debug) std::cout << cn << mn << "alphaSPDFNameDown set to default: \" \"" << std::endl;
 
-	alphaSPDFHistogramNameUp.clear();
-	if(debug) std::cout << cn << mn << "alphaSPDFHistogramNameUp set to default: \" \"" << std::endl;
+	//alphaSPDFHistogramNameUp.clear();
+	//if(debug) std::cout << cn << mn << "alphaSPDFHistogramNameUp set to default: \" \"" << std::endl;
 
-	alphaSPDFHistogramNameDown.clear();
-	if(debug) std::cout << cn << mn << "alphaSPDFHistogramNameDown set to default: \" \"" << std::endl;
+	//alphaSPDFHistogramNameDown.clear();
+	//if(debug) std::cout << cn << mn << "alphaSPDFHistogramNameDown set to default: \" \"" << std::endl;
 }
 
 //Print the PDF Steering File Data in a nice format
@@ -168,8 +168,8 @@ void SPXPDFSteeringFile::Print(void) {
 	std::cout << "\t\t Alpha S Error Number Down: " << alphaSErrorNumberDown << std::endl;
 	std::cout << "\t\t Alpha S PDF Name Up: " << alphaSPDFNameUp << std::endl;
 	std::cout << "\t\t Alpha S PDF Name Down: " << alphaSPDFNameDown << std::endl;
-	std::cout << "\t\t Alpha S PDF Histogram Name Up: " << alphaSPDFHistogramNameUp << std::endl;
-	std::cout << "\t\t Alpha S PDF Histogram Name Down: " << alphaSPDFHistogramNameDown << std::endl << std::endl;
+	//std::cout << "\t\t Alpha S PDF Histogram Name Up: " << alphaSPDFHistogramNameUp << std::endl;
+	//std::cout << "\t\t Alpha S PDF Histogram Name Down: " << alphaSPDFHistogramNameDown << std::endl << std::endl;
 }
 
 void SPXPDFSteeringFile::Parse(void) {

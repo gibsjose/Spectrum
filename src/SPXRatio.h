@@ -198,7 +198,7 @@ public:
         pdfDirectory = dir;
     }
 
-    void Draw(std::string option, int istat, int itot, bool plotmarker);
+    void Draw(std::string option, int istat, int itot, bool plotmarker, double xbox=0.5, double ybox=0.3);
 
 private:
     static bool debug;

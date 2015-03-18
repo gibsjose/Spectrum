@@ -48,7 +48,8 @@ apply_grid_corr = true				;[Optional] Apply the grid corrections (e.g. hadronisa
 label_sqrt_s = true				;[Optional] Specify to show the Sqrt(s) on the legend - [default = false]
 ;label_lumi                                     ;[Optional] Add luminosity label 
 ;label_journalreference                         ;[Optional] Add journal reference label
-label_journalyear = true                        ;[Optional] Add journal year 
+label_journalyear = true                        ;[Optional] Add journal year
+label_informationlegend = ""                     ;[Optional] additional label on information legend
 x_legend = 0.9				        ;[Optional] X(Right)-Position of main Legend, based on top right side
 y_legend = 0.9					;[Optional] Y(Top)-Position of main legend, based on top right side
 x_info_legend = 0.9				;[Optional] X(Right)-Position of information Legend, based on top right side
@@ -59,6 +60,8 @@ y_info_legend = 0.9			        ;[Optional] Y(Top)-Position of information legend,
 ; x_overlay_max = 				;[Optional] Force X-Axis maximum for overlay section
 ; y_ratio_min =					;[Optional] Force Y-Axis minimum for ratio section
 ; y_ratio_max = 			        ;[Optional] Force Y-Axis maximum for ratio section
+x_databox = 0.9                                ;[Optional] X-Axis of data uncertainty box label
+y_databox = 0.3                                 ;[Optional] Y-Axis of data uncertainty box label
 
 band_with_pdf= true                             ;[Optional] Include PDF uncertainty in band
 band_with_alphas= true                          ;[Optional] Include alphas uncertainty in band

@@ -79,6 +79,15 @@ void SPXSteeringFile::SetDefaults(void) {
 	yInfoLegend = 0.4;
 	if(debug) std::cout << cn << mn << "yInfoLegend set to default: \"0.4\"" << std::endl;
 
+	InfoLegendLabel = "";
+	if(debug) std::cout << cn << mn << "InfoLegendLabel set to default: empty string" << std::endl;
+
+	XDataBoxLabel = 0.25;
+	if(debug) std::cout << cn << mn << "XDataBoxLabel set to default: \"0.25\"" << std::endl;
+
+	YDataBoxLabel = 0.3;
+	if(debug) std::cout << cn << mn << "XDataBoxLabel set to default: \"0.3\"" << std::endl;
+
 	xOverlayMin = MIN_EMPTY;
 	if(debug) std::cout << cn << mn << "xOverlayMin set to default: \"" << MIN_EMPTY << "\"" << std::endl;
 
@@ -268,6 +277,8 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Y main Legend: " << yLegend << std::endl;
 	std::cout << "\t\t X information Legend: " << xInfoLegend << std::endl;
 	std::cout << "\t\t Y information Legend: " << yInfoLegend << std::endl;
+	std::cout << "\t\t X Data uncertainty box: " <<  XDataBoxLabel << std::endl;
+	std::cout << "\t\t Y Data uncertainty box: " <<  YDataBoxLabel << std::endl;
 	std::cout << "\t\t Y Overlay Min: " << yOverlayMin << std::endl;
 	std::cout << "\t\t Y Overlay Max: " << yOverlayMax << std::endl;
 	std::cout << "\t\t X Overlay Min: " << xOverlayMin << std::endl;
@@ -1607,17 +1618,21 @@ void SPXSteeringFile::Parse(void) {
         }
 
 	plotErrorTicks = reader->GetBoolean("GRAPH", "plot_error_ticks", plotErrorTicks);
-	plotMarker = reader->GetBoolean("GRAPH", "plot_marker", plotMarker);
-	plotStaggered = reader->GetBoolean("GRAPH", "plot_staggered", plotStaggered);
-	matchBinning = reader->GetBoolean("GRAPH", "match_binning", matchBinning);
-	gridCorr = reader->GetBoolean("GRAPH", "apply_grid_corr", gridCorr);
-	labelSqrtS = reader->GetBoolean("GRAPH", "label_sqrt_s", labelSqrtS);
+	plotMarker     = reader->GetBoolean("GRAPH", "plot_marker", plotMarker);
+	plotStaggered  = reader->GetBoolean("GRAPH", "plot_staggered", plotStaggered);
+	matchBinning   = reader->GetBoolean("GRAPH", "match_binning", matchBinning);
+	gridCorr       = reader->GetBoolean("GRAPH", "apply_grid_corr", gridCorr);
+	labelSqrtS     = reader->GetBoolean("GRAPH", "label_sqrt_s", labelSqrtS);
 
 	xLegend = reader->GetReal("GRAPH", "x_legend", xLegend);
 	yLegend = reader->GetReal("GRAPH", "y_legend", xLegend);
 
 	xInfoLegend = reader->GetReal("GRAPH", "x_info_legend", xInfoLegend);
 	yInfoLegend = reader->GetReal("GRAPH", "y_info_legend", xInfoLegend);
+
+	XDataBoxLabel = reader->GetReal("GRAPH", "x_databox", XDataBoxLabel);
+	YDataBoxLabel = reader->GetReal("GRAPH", "y_databox", YDataBoxLabel);
+
 
 	xOverlayMin = reader->GetReal("GRAPH", "x_overlay_min", xOverlayMin);
 	xOverlayMax = reader->GetReal("GRAPH", "x_overlay_max", xOverlayMax);
@@ -1633,6 +1648,8 @@ void SPXSteeringFile::Parse(void) {
 	AddLumi       = reader->GetBoolean("GRAPH", "label_lumi", AddLumi);
 	AddJournal    = reader->GetBoolean("GRAPH", "label_journalreference", AddJournal);
 	AddJournalYear= reader->GetBoolean("GRAPH", "label_journalyear", AddJournalYear);
+
+	InfoLegendLabel= reader->Get("GRAPH", "label_informationlegend",InfoLegendLabel);
 
 	if(debug) std::cout << cn << mn << "Start with ParsePlotConfigurations " << std::endl;
 

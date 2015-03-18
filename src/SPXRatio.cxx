@@ -1023,14 +1023,15 @@ bool SPXRatio::MatchesConvoluteString(std::string &s) {
 }
 
 
-void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plotmarker) {
+void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plotmarker, double xbox, double ybox) {
  std::string mn = "Draw: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if ( ratioGraph.size()==0)
   std::cout<<cn<<mn<<"WARNING: Ratio graph is empty "<<std::endl;
 
- double xmin=0.22, ymin=0.95, boxsize=0.025;
+ //double xmin=0.25, ymin=0.3, boxsize=0.05;
+ double xmin=xbox, ymin=ybox, boxsize=0.05;
 
  // plot data if requested
  if(IsDataStat() || IsDataTot()) {
@@ -1044,16 +1045,16 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
    graph->Draw("E2");
 
    int mcolor=graph->GetFillColor();
-   if(IsDataStat()) {
-    std::string datastat="Data stat uncertainty";
-    SPXDrawUtilities::BoxText(xmin, ymin, boxsize, mcolor, datastat);
-   }
 
    if(IsDataTot()) {
-    std::string datastat="Data tot uncertainty";
-    ymin-=0.05;
-    SPXDrawUtilities::BoxText(xmin, ymin, boxsize, mcolor, datastat);
+    std::string datatext="Data uncertainty";
+    SPXDrawUtilities::BoxText(xmin, ymin, boxsize, boxsize, mcolor, datatext, mcolor, 1, 0.75*boxsize);
    }
+
+   if(IsDataStat()) {
+    SPXDrawUtilities::BoxText(xmin, ymin, boxsize, boxsize/2., mcolor,"", mcolor, 1, 0.75*boxsize);
+   }
+
 
   }
  } else {

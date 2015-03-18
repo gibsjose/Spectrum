@@ -66,6 +66,9 @@ private:
 	bool gridCorr;		    //Flag to indicate that, if specified in the steering, the grid corrections should be applied
 	bool labelSqrtS;	    //Flag to indicate that the Sqrt(s) value should be shown in the legend
 
+        double XDataBoxLabel;         // X-coordinate of data box label
+        double YDataBoxLabel;         // Y-coordinate of data box label
+
         bool BandwithPDF;           // show the Uncertainty band with the PDF uncertainties
 	bool BandwithAlphaS;        // show the Uncertainty band with alphas  uncertainties
 	bool BandwithScales;        // show the Uncertainty band with ren&fac scales uncertainties
@@ -80,6 +83,7 @@ private:
 	double yLegend;		    //Y Position of the main legend, based on top-right corner
 	double xInfoLegend;	    //X Position of the information legend, based on  corner
 	double yInfoLegend;	    //Y Position of the information legend, based on top-right corner
+	std::string InfoLegendLabel;// Additional information legend label
 	double yOverlayMin;	    //Force Y-Axis minimum for overlay section
 	double yOverlayMax;	    //Force Y-Axis maximum for overlay section
 	double xOverlayMin;	    //Force X-Axis minimum for overlay section
@@ -169,6 +173,15 @@ public:
 		return this->labelSqrtS;
 	}
 
+	double GetXDataBoxLabel(void) const {
+	  return this->XDataBoxLabel;
+	}
+
+	double GetYDataBoxLabel(void) const {
+	  return this->YDataBoxLabel;
+	}
+
+
 	double GetXLegend(void) const {
 		return this->xLegend;
 	}
@@ -183,6 +196,10 @@ public:
 
 	double GetYInfoLegend(void) const {
 		return this->yInfoLegend;
+	}
+
+	std::string GetInfoLegendLabel(void) const {
+		return this->InfoLegendLabel;
 	}
 
 	double GetYOverlayMin(void) const {

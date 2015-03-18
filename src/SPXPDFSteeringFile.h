@@ -87,8 +87,8 @@ private:
 	int alphaSErrorNumberDown;
 	std::string alphaSPDFNameUp;
 	std::string alphaSPDFNameDown;
-	std::string alphaSPDFHistogramNameUp;
-	std::string alphaSPDFHistogramNameDown;
+	//std::string alphaSPDFHistogramNameUp;
+	//std::string alphaSPDFHistogramNameDown;
 
 	void SetDefaults(void);
 
@@ -236,13 +236,13 @@ public:
 		return this->alphaSPDFNameDown;
 	}
 
-	const std::string & GetAlphaSPDFHistogramNameUp(void) const {
-		return this->alphaSPDFHistogramNameUp;
-	}
+	//const std::string & GetAlphaSPDFHistogramNameUp(void) const {
+	//	return this->alphaSPDFHistogramNameUp;
+	//}
 
-	const std::string & GetAlphaSPDFHistogramNameDown(void) const {
-		return this->alphaSPDFHistogramNameDown;
-	}
+	//const std::string & GetAlphaSPDFHistogramNameDown(void) const {
+	//	return this->alphaSPDFHistogramNameDown;
+	//}
 };
 
 #endif

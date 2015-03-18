@@ -6,6 +6,16 @@
 
 ## Change Log
 
+- fixed problem that mean very different for PDF and scale, alphas in case of NNPDF error propagation
+  where average of replica is used instead defulat PDF set
+  alphas and scale uncertainty now also refer to the average
+
+- protection to calculation lphas uncertainty if problems if PDF alphas variations samples
+
+- Add addition label for information legend
+
+- introduce steering fo x/y coordination of data uncertainty box
+
 - correction bug with correctionsMarkerStyle in SPXPlotConfiguration.cxx
 
 - for marker type and if not detailed band asked for only total band is plotted
