@@ -177,7 +177,7 @@ data_marker_color = 1					  ;[REQUIRED] List of data marker colors
 x_log = true						  ;[Optional] Plot the X Axis logarithmically
 y_log = true						  ;[Optional] Plot the Y Axis logarithmically
 display_style =	overlay, ratio			          ;[REQUIRED] What to display: overlay and/or ratio
-overlay_style = data, convolute				  ;[REQUIRED]	What to plot in the overlay section:
+overlay_style = data, convolute				  ;[REQUIRED] What to plot in the overlay section:
 ;data, reference, and/or convolute
 
 ;--------------------------------------------------------------

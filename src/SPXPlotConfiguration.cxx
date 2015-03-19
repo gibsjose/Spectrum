@@ -91,7 +91,7 @@ SPXPlotConfiguration::SPXPlotConfiguration(std::map<std::string, std::vector<std
 	} catch(const SPXException &e) {
 		std::cerr << e.what() << std::endl;
 
-		throw SPXParseException("Unable to parse SPXPlotConfiguration instances");
+		throw SPXParseException(cn+"Unable to parse SPXPlotConfiguration instances");
 	}
 }
 
@@ -149,70 +149,70 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	//Make sure all required vectors exist
 	{
 		if(options.count("plot_type") == 0) {
-			throw SPXParseException("The options map MUST contain an entry for plot_type");
+			throw SPXParseException(cn+mn+"The options map MUST contain an entry for plot_type");
 		}
 
 		if(options.count("desc") == 0) {
-			throw SPXParseException("The options map MUST contain an entry for desc");
+			throw SPXParseException(cn+mn+"The options map MUST contain an entry for desc");
 		}
 
 		if(options.count("display_style") == 0) {
-			throw SPXParseException("The options map MUST contain an entry for display_style");
+			throw SPXParseException(cn+mn+"The options map MUST contain an entry for display_style");
 		}
 
 		//@TODO If display style doesn't contain overlay, this shouldn't be required
 		if(options.count("overlay_style") == 0) {
-			throw SPXParseException("The options map MUST contain an entry for overlay_style");
+			throw SPXParseException(cn+mn+"The options map MUST contain an entry for overlay_style");
 		}
 
 		//@TODO If display style doesn't contain ratio, these shouldn't be required
 		if(options.count("ratio_title") == 0) {
-			throw SPXParseException("The options map MUST contain an entry for ratio_title");
+			throw SPXParseException(cn+mn+"The options map MUST contain an entry for ratio_title");
 		}
 
 		if(options.count("ratio_style") == 0) {
-			throw SPXParseException("The options map MUST contain a vector for ratio_style");
+			throw SPXParseException(cn+mn+"The options map MUST contain a vector for ratio_style");
 		}
 
 		if(options.count("ratio") == 0) {
-			throw SPXParseException("The options map MUST contain a vector for ratio");
+			throw SPXParseException(cn+mn+"The options map MUST contain a vector for ratio");
 		}
 
 		if(options.count("x_log") == 0) {
-			throw SPXParseException("The options map MUST contain an entry for x_log");
+			throw SPXParseException(cn+mn+"The options map MUST contain an entry for x_log");
 		}
 
 		if(options.count("y_log") == 0) {
-			throw SPXParseException("The options map MUST contain an entry for y_log");
+			throw SPXParseException(cn+mn+"The options map MUST contain an entry for y_log");
 		}
 
 		if(options.count("data_directory") == 0) {
-			throw SPXParseException("The options map MUST contain a vector for data_directory");
+			throw SPXParseException(cn+mn+"The options map MUST contain a vector for data_directory");
 		}
 
 		if(options.count("grid_directory") == 0) {
 		  //throw SPXParseException("The options map MUST contain a vector for grid_directory");
-		  std::cout<<"INFO no grid_directory found !"<<std::endl;
+		  std::cout<<cn<<mn<<"INFO no grid_directory found !"<<std::endl;
 		}
 
 		if(options.count("pdf_directory") == 0) {
 		  //throw SPXParseException("The options map MUST contain a vector for pdf_directory");
-		  std::cout<<"INFO no pdf_directory found !"<<std::endl;
+		  std::cout<<cn<<mn<<"INFO no pdf_directory found !"<<std::endl;
 		}
 
 		if(options.count("data_steering_files") == 0) {
 		  //throw SPXParseException("The options map MUST contain a vector for data_steering_files");
-		  std::cout<<"INFO no data_steering_files found !"<<std::endl;
+		  std::cout<<cn<<mn<<"INFO no data_steering_files found !"<<std::endl;
 		}
 
 		if(options.count("grid_steering_files") == 0) {
 		  //throw SPXParseException("The options map MUST contain a vector for grid_steering_files");
-		  std::cout<<"INFO no grid_steering_files found !"<<std::endl;
+		  std::cout<<cn<<mn<<"INFO no grid_steering_files found !"<<std::endl;
 		}
 
 		if(options.count("pdf_steering_files") == 0) {
 		  //throw SPXParseException("The options map MUST contain a vector for pdf_steering_files");
-		  std::cout<<"INFO no pdf_steering_files found !"<<std::endl;
+		  std::cout<<cn<<mn<<"INFO no pdf_steering_files found !"<<std::endl;
 		}
 	}
 
@@ -879,17 +879,25 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	//data[], grid[], pdf
 	else if(plotType.IsType2()) {
 		if(dsfSize <= 1) {
-			throw SPXParseException("Size of data_steering_files vector MUST be > 1 for Plot Type 2 (data[], grid[], pdf)");
+		  std::ostringstream oss;
+		  oss<<cn<<mn<<"Size of data_steering_files "<< dsfSize <<" vector MUST be > 1 for Plot Type 2 (data[], grid[], pdf)";
+		  throw SPXParseException(oss.str());
 		}
 		if(gsfSize <= 1) {
-			throw SPXParseException("Size of grid_steering_files vector MUST be > 1 for Plot Type 2 (data[], grid[], pdf)");
+		  std::ostringstream oss;
+		  oss<<cn<<mn<<"Size of grid_steering_files "<<gsfSize<<" vector MUST be > 1 for Plot Type 2 (data[], grid[], pdf)";
+		  throw SPXParseException(oss.str());
 		}
 		if(psfSize != 1) {
-			throw SPXParseException("Size of pdf_steering_files vector MUST be 1 (ONE) for Plot Type 2 (data[], grid[], pdf)");
+		  std::ostringstream oss;
+		  oss<<cn<<mn<<"Size of pdf_steering_files vector "<<psfSize<<" MUST be 1 (ONE) for Plot Type 2 (data[], grid[], pdf)";
+		  throw SPXParseException(oss.str());
 		}
 
 		if(dsfSize != gsfSize) {
-			throw SPXParseException("Size of data_steering_files vector MUST match the size of the grid_steering_files vector for Plot Type 2");
+		  std::ostringstream oss;
+		  oss<<cn<<mn<<"Size of data_steering_files vector"<<dsfSize<<" MUST match the size of the grid_steering_files vector "<<gsfSize<<" for Plot Type 2";
+		  throw SPXParseException(oss.str());
 		}
 
 		numberOfConfigurationInstances = dsfSize;
@@ -937,7 +945,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		  else if(xsSize == 1)	xsc.push_back(options["x_scale"].at(0));
 			else					xsc.push_back("1.0");
 
-			if(ysSize > 1) 			ysc.push_back(options["y_scale"][i]);
+		  if(ysSize > 1) 			ysc.push_back(options["y_scale"].at(i));
 			else if(ysSize == 1)	ysc.push_back(options["y_scale"].at(0));
 			else					ysc.push_back("1.0");
 		}
@@ -946,13 +954,13 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	//data, grid, pdf[]
 	else if(plotType.IsType3()) {
 		if(dsfSize != 1) {
-			throw SPXParseException("Size of data_steering_files vector MUST be 1 (ONE) for Plot Type 3 (data, grid, pdf[])");
+			throw SPXParseException(cn+mn+"Size of data_steering_files vector MUST be 1 (ONE) for Plot Type 3 (data, grid, pdf[])");
 		}
 		if(gsfSize != 1) {
-			throw SPXParseException("Size of grid_steering_files vector MUST be 1 (ONE) for Plot Type 3 (data, grid, pdf[])");
+			throw SPXParseException(cn+mn+"Size of grid_steering_files vector MUST be 1 (ONE) for Plot Type 3 (data, grid, pdf[])");
 		}
 		if(psfSize <= 1) {
-			throw SPXParseException("Size of pdf_steering_files vector MUST be > 1 for Plot Type 3 (data, grid, pdf[])");
+			throw SPXParseException(cn+mn+"Size of pdf_steering_files vector MUST be > 1 for Plot Type 3 (data, grid, pdf[])");
 		}
 
 		numberOfConfigurationInstances = psfSize;
@@ -1008,13 +1016,13 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	//data, grid[], pdf
 	else if(plotType.IsType4()) {
 		if(dsfSize != 1) {
-			throw SPXParseException("Size of data_steering_files vector MUST be 1 (ONE) for Plot Type 4 (data, grid[], pdf)");
+			throw SPXParseException(cn+mn+"Size of data_steering_files vector MUST be 1 (ONE) for Plot Type 4 (data, grid[], pdf)");
 		}
 		if(gsfSize <= 1) {
-			throw SPXParseException("Size of grid_steering_files vector MUST be > 1 for Plot Type 4 (data, grid[], pdf)");
+			throw SPXParseException(cn+mn+"Size of grid_steering_files vector MUST be > 1 for Plot Type 4 (data, grid[], pdf)");
 		}
 		if(psfSize != 1) {
-			throw SPXParseException("Size of pdf_steering_files vector MUST be 1 (ONE) for Plot Type 4 (data, grid[], pdf)");
+			throw SPXParseException(cn+mn+"Size of pdf_steering_files vector MUST be 1 (ONE) for Plot Type 4 (data, grid[], pdf)");
 		}
 
 		numberOfConfigurationInstances = gsfSize;
@@ -1131,7 +1139,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 				std::cerr << e.what() << std::endl;
 
 				std::ostringstream oss;
-				oss << "Unable to parse ratio_style_" << i;
+				oss << cn<<mn<<"Unable to parse ratio_style_" << i;
 				throw SPXParseException(oss.str());
 			}
 		}

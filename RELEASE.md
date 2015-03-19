@@ -6,6 +6,10 @@
 
 ## Change Log
 
+- changes in SPXPlotConfiguration::GetRatioStyle to avoid crash in case no ratio_Style is specified
+
+- y_Scale (artificial scaling constant) now goes to both data and MC
+
 - fixed problem that mean very different for PDF and scale, alphas in case of NNPDF error propagation
   where average of replica is used instead defulat PDF set
   alphas and scale uncertainty now also refer to the average

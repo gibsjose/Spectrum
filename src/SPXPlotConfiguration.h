@@ -328,9 +328,16 @@ public:
 	}
 
 	SPXRatioStyle & GetRatioStyle(unsigned int index) {
-		if((index + 1) > ratios.size()) {
-			int top = ratios.size() - 1;
-			throw SPXOutOfRangeException(top, index, "SPXPlotConfiguration::GetRatioStyle: Index out of range");
+	 std::cout<<" index= "<<index<<std::endl;
+	 std::cout<<" ratio.size()= "<<ratios.size()<<std::endl;
+
+		if(index  > ratios.size()) {
+		 int top = ratios.size() - 1;
+		 throw SPXOutOfRangeException(top, index, "SPXPlotConfiguration::GetRatioStyle: Index out of range");
+		}
+ 
+                if (ratios.size()==0) { 
+                 return tmp;
 		}
 
 		return ratioStyles.at(index);
@@ -400,6 +407,8 @@ private:
 	std::vector<SPXPlotConfigurationInstance> configurationInstances;
 
 	StringPCIMap_T filenameToPCIMap;
+
+	SPXRatioStyle tmp;
 
 	void SetDefaults(void) {
 		std::string mn = "SetDefaults: ";

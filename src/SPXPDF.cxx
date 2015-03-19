@@ -623,7 +623,7 @@ void SPXPDF::Initialize()
 
   h_errors_AlphaS.push_back(temp_hist);
 
-  if (debug) std::cout<<cn<<mn<<"alphas up PDFname= "<<AlphaSPDFSetNameUp<<" member= "<<AlphaSmemberNumUp<<" value= "<<value_alphaS_up<<std::endl;
+  if (debug) std::cout<<cn<<mn<<"alphas up   PDFname= "<<AlphaSPDFSetNameUp<<" member= "<<AlphaSmemberNumUp<<" value= "<<value_alphaS_up<<std::endl;
   alphaS_variations.push_back(value_alphaS_up);
   if (debug) std::cout <<cn<<mn<<"Added up variation histogram with alphaS value: " << value_alphaS_up << std::endl ;
 
@@ -691,9 +691,9 @@ void SPXPDF::Initialize()
 #endif
     } else if( pdferri == lasteig+1 ) {
      //account for PDF set "ATLAS.txt" and "ATLAS3jet" with no error bands?
-     if (debug) std::cout<<cn<<mn<<"A 'PDFnamevar' was "
-			 <<(PDFnamevar.empty()? "":"NOT")<<" found name= "<<PDFnamevar.c_str()<<std::endl;
-
+     //if (debug) std::cout<<cn<<mn<<"A 'PDFnamevar' was "
+     //			 <<(PDFnamevar.empty()? "":"NOT")<<" found name= "<<PDFnamevar.c_str()<<std::endl;
+     //
      //Band-aid for accounting for no error bands - This needs to be handled better
      if(PDFnamevar.empty() == false) {
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
@@ -703,6 +703,9 @@ void SPXPDF::Initialize()
       TString pdfname=TString(pdfSetPath)+"/"+PDFnamevar+".LHgrid";
       LHAPDF::initPDFSet(pdfname.Data(), defaultpdfidvar);
 #endif
+     } else {
+      std::cout<<cn<<mn<<"WARNING Can not intitalize name= "<<PDFnamevar.c_str()<<" set= "<<defaultpdfidvar<<std::endl;
+      std::cerr<<cn<<mn<<"WARNING Can not intitalize name= "<<PDFnamevar.c_str()<<" set= "<<defaultpdfidvar<<std::endl;
      }
     } else if ( pdferri > lasteig+1 ) {
       //>> modification P Berta 28.8.14>>

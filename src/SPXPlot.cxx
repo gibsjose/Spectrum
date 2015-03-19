@@ -977,6 +977,8 @@ void SPXPlot::DrawLegend(void) {
  leg = new TLegend();
  leg->SetBorderSize(0);
  leg->SetFillColor(0);
+ //leg->SetFillColorAlpha(kYellow,0.);
+ leg->SetFillStyle(0);
  leg->SetMargin(0.2);
  leg->SetTextSize(charactersize); 
 
@@ -1281,6 +1283,7 @@ void SPXPlot::DrawLegend(void) {
  TLegend *leginfo = new TLegend();
  leginfo->SetBorderSize(0);
  leginfo->SetFillColor(0);
+ leginfo->SetFillStyle(0);
  leginfo->SetMargin(0.2);
  leginfo->SetTextSize(charactersize);
 
@@ -1766,38 +1769,44 @@ void SPXPlot::NormalizeCrossSections(void) {
 			//Also scale by the artificial scale from the plot configuration instance
 			xScale *= pci->xScale;
 			yScale *= pci->yScale;
+
 			if(debug) {
 			 std::cout << cn << mn << "Additional artificial scale for Cross Section/Reference: " << std::endl;
 			 std::cout << "\t X Scale: " << pci->xScale << std::endl;
 			 std::cout << "\t Y Scale: " << pci->yScale << std::endl << std::endl;
 			}
 
-                        if (xScale!=1. || yScale!=1.) {
- 			 SPXGraphUtilities::Scale(gNom, xScale, yScale);
-			 SPXGraphUtilities::Scale(gRef, xScale, yScale);
-                        } 
 			//Also scale by the artificial grid scale from the grid steering file
-			xScale = 1.0;
-			yScale = pci->gridSteeringFile.GetYScale();
+			double xScale2 = 1.0;
+			double yScale2 = pci->gridSteeringFile.GetYScale();
+			if (debug) std::cout << cn << mn << "Scaling Bands from Grid steering factor xScale= "
+                                             <<xScale<<" yScale= "<<yScale<< std::endl;  
 
-                        //
-                        // loop over bands (pdf, alphas, scale etc) as set in SPXPDF
-                        //
+                        double myscaley=yScale*yScale2;
+                        double myscalex=xScale*xScale2;
+
                         int nbands=(crossSections[i].GetPDF())->GetNBands();
                         if (debug) std::cout << cn << mn <<"Number of bands= " <<nbands<< std::endl;
-                        for (int iband=0; iband<nbands; iband++) {
+
+                        if (myscaley!=1. || myscalex!=1.) {
+  			 SPXGraphUtilities::Scale(gNom, xScale, yScale);
+ 			 SPXGraphUtilities::Scale(gRef, xScale, yScale);
+                         //
+                         // loop over bands (pdf, alphas, scale etc) as set in SPXPDF
+                         //
+                         for (int iband=0; iband<nbands; iband++) {
                           SPXPDF * pdf=crossSections[i].GetPDF();
-			  TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+			  TGraphAsymmErrors * gband=pdf->GetBand(iband);
 			  if (!gband) {
                            std::ostringstream oss;
                            oss << cn <<mn<<"Band "<<iband<<" not found at index "<<i;
                            throw SPXParseException(oss.str());
 			  } else {
-			  if (debug) std::cout << cn << mn << "Scaling band: " << gband->GetName() << std::endl;  
-                          SPXGraphUtilities::Scale(gband , xScale, yScale);
+			   if (debug) std::cout << cn << mn << "Scaling band: " << gband->GetName() <<" with yScale= "<<myscaley<<" xScale= "<<myscalex<< std::endl;  
+                           SPXGraphUtilities::Scale(gband , myscalex, myscaley);
+                          }
                          }
                         }
-
 			//Check if data/grid are/are not normalized by total sigma or bin width
 			bool normalizeToTotalSigma = pci->dataSteeringFile.IsNormalizedToTotalSigma();
 			bool dataDividedByBinWidth = pci->dataSteeringFile.IsDividedByBinWidth();
