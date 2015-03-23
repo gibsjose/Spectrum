@@ -21,11 +21,11 @@ plot_marker = false
 match_binning = true
 ;apply_grid_corr = true
 label_sqrt_s = true
-x_legend = 0.4
-y_legend = 0.93
+;x_legend = 0.4
+;y_legend = 0.93
 
-x_info_legend = 0.3
-y_info_legend = 0.3
+;x_info_legend = 0.3
+;y_info_legend = 0.3
 
 band_with_pdf= true
 band_with_alphas= true

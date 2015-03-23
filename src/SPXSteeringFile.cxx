@@ -67,8 +67,8 @@ void SPXSteeringFile::SetDefaults(void) {
 	labelSqrtS = false;
 	if(debug) std::cout << cn << mn << "labelSqrtS set to default: \"false\"" << std::endl;
 
-	xLegend = 0.93;
-	if(debug) std::cout << cn << mn << "xLegend set to default: \"0.93\"" << std::endl;
+	xLegend = 0.8;
+	if(debug) std::cout << cn << mn << "xLegend set to default: \"0.75\"" << std::endl;
 
 	yLegend = 0.93;
 	if(debug) std::cout << cn << mn << "yLegend set to default: \"0.93\"" << std::endl;
@@ -76,8 +76,8 @@ void SPXSteeringFile::SetDefaults(void) {
 	xInfoLegend = 0.4;
 	if(debug) std::cout << cn << mn << "xInfoLegend set to default: \"0.4\"" << std::endl;
 
-	yInfoLegend = 0.4;
-	if(debug) std::cout << cn << mn << "yInfoLegend set to default: \"0.4\"" << std::endl;
+	yInfoLegend = 0.3;
+	if(debug) std::cout << cn << mn << "yInfoLegend set to default: \"0.3\"" << std::endl;
 
 	InfoLegendLabel = "";
 	if(debug) std::cout << cn << mn << "InfoLegendLabel set to default: empty string" << std::endl;
@@ -1625,10 +1625,10 @@ void SPXSteeringFile::Parse(void) {
 	labelSqrtS     = reader->GetBoolean("GRAPH", "label_sqrt_s", labelSqrtS);
 
 	xLegend = reader->GetReal("GRAPH", "x_legend", xLegend);
-	yLegend = reader->GetReal("GRAPH", "y_legend", xLegend);
+	yLegend = reader->GetReal("GRAPH", "y_legend", yLegend);
 
 	xInfoLegend = reader->GetReal("GRAPH", "x_info_legend", xInfoLegend);
-	yInfoLegend = reader->GetReal("GRAPH", "y_info_legend", xInfoLegend);
+	yInfoLegend = reader->GetReal("GRAPH", "y_info_legend", yInfoLegend);
 
 	XDataBoxLabel = reader->GetReal("GRAPH", "x_databox", XDataBoxLabel);
 	YDataBoxLabel = reader->GetReal("GRAPH", "y_databox", YDataBoxLabel);

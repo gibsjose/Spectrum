@@ -8,7 +8,7 @@
 ; General Options
 ;==============================================================
 [GEN]
-debug = false
+debug = true
 
 ;==============================================================
 ; Graphing Options
@@ -28,10 +28,10 @@ label_sqrt_s = true
 ;band_with_gridcorrection = false
 ;band_total = false
 
-x_legend = 0.75
-y_legend = 0.9
-x_info_legend = 0.25
-y_info_legend = 0.35
+;x_legend = 0.75
+;y_legend = 0.9
+;x_info_legend = 0.35
+;y_info_legend = 0.25
 
 ; y_overlay_min =
 ; y_overlay_max =

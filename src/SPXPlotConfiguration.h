@@ -328,8 +328,8 @@ public:
 	}
 
 	SPXRatioStyle & GetRatioStyle(unsigned int index) {
-	 std::cout<<" index= "<<index<<std::endl;
-	 std::cout<<" ratio.size()= "<<ratios.size()<<std::endl;
+	  //std::cout<<" index= "<<index<<std::endl;
+	  //std::cout<<" ratio.size()= "<<ratios.size()<<std::endl;
 
 		if(index  > ratios.size()) {
 		 int top = ratios.size() - 1;

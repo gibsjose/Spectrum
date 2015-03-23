@@ -33,6 +33,17 @@ public:
 
         return sqrt(sum);
     }
+
+    static void frexp10(double value, int &exp, double &x) {
+     exp=int(log10(value));
+     x=value/pow(10,exp);
+     
+    //std::cout<<"SPXMathUtilities::frexp10: value= "<<value<<" = "<<x<<" x 10^"<<exp<<std::endl;
+    
+     return;
+
+  }
+
 };
 
 #endif
