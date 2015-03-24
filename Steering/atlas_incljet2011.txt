@@ -49,7 +49,7 @@ pdf_directory = PDF
 data_directory = Data/jet/atlas/incljets2011
 grid_directory = Grids/jet/atlas/incljets2011/nlojet
 data_steering_files = atlas_2011_jet_antiktr06_incljetpt_eta1.txt
-grid_steering_files = atlas_2011_incljet_eta1_r06.txt
+grid_steering_files = atlas_2011_jet_antiktr06_incljetpt_eta1.txt
 pdf_steering_files = CT10.txt
 ;
 x_scale = 1.0

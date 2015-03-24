@@ -328,8 +328,9 @@ public:
 	}
 
 	SPXRatioStyle & GetRatioStyle(unsigned int index) {
-	  //std::cout<<" index= "<<index<<std::endl;
-	  //std::cout<<" ratio.size()= "<<ratios.size()<<std::endl;
+
+	  std::cout<<"GetRatioStyle index= "<<index<<std::endl;
+	  std::cout<<"GetRatioStyle  ratio.size()= "<<ratios.size()<<std::endl;
 
 		if(index  > ratios.size()) {
 		 int top = ratios.size() - 1;
@@ -385,7 +386,7 @@ public:
 		if(debug) std::cout << focn << mn << "Filename Key: [" << filename << "]" << std::endl;
 
 		if(filenameToPCIMap.count(filename) == 0) {
-			throw SPXGraphException(focn + mn + "Invalid key: filenameToPCIMap[" + filename + "]");
+			throw SPXGraphException(focn + mn + "Invalid key: filename Key: [" + filename + "]");
 		}
 
 		return filenameToPCIMap[filename];

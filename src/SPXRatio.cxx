@@ -121,6 +121,10 @@ void SPXRatio::Parse(std::string &s) {
         numeratorConvoluteGridFile = v.at(0);
         numeratorConvolutePDFFile = v.at(1);
 
+        if (debug) std::cout<<cn<<mn<<"numeratorConvoluteGridFile= "<<numeratorConvoluteGridFile.c_str()
+			    <<" numeratorConvolutePDFFile= "<<numeratorConvolutePDFFile.c_str()<<std::endl;
+
+
         //Check for alias
         std::string numeratorGridAlias = CheckForAlias(numeratorConvoluteGridFile, "grid");
         std::string numeratorPDFAlias = CheckForAlias(numeratorConvolutePDFFile, "pdf");
@@ -177,7 +181,7 @@ void SPXRatio::Parse(std::string &s) {
 		std::cout << cn << mn << "Denominator blob parsed as: " << denominatorBlob << std::endl;
 	}
 
-    if(debug) std::cout << cn << mn << "Ratio style is: " << ratioStyle.ToString() << " (" << ratioStyle.GetNumerator() \
+        if(debug) std::cout << cn << mn << "Ratio style is: " << ratioStyle.ToString() << " (" << ratioStyle.GetNumerator() \
         << " / " << ratioStyle.GetDenominator() << ")" << std::endl;
 
     //Check the RatioStyle:
@@ -204,12 +208,13 @@ void SPXRatio::Parse(std::string &s) {
         if(v_den.size() != 2) {
             throw SPXParseException(cn + mn + "Denominator blob is NOT of the form \"[grid_file, pdf_file]\"");
         }
+
         denominatorConvoluteGridFile = v_den.at(0);
         denominatorConvolutePDFFile = v_den.at(1);
 
         //Check for alias
         std::string numeratorDataAlias = CheckForAlias(numeratorDataFile, "data");
-        std::string denominatorGridAlias = CheckForAlias(denominatorConvoluteGridFile, "grid");
+        std::string denominatorGridAlias= CheckForAlias(denominatorConvoluteGridFile, "grid");
         std::string denominatorPDFAlias = CheckForAlias(denominatorConvolutePDFFile, "pdf");
 
         //Use alias, if there is one, otherwise prepend directories
@@ -422,7 +427,7 @@ void SPXRatio::Divide(void) {
    pci.Print();
   }
 
-  if (debug) std::cout<<cn<<mn<<" ratioStyle.IsDataOverConvolute "<<std::endl;
+  if (debug) std::cout<<cn<<mn<<"ratioStyle.IsDataOverConvolute "<<std::endl;
 
   if (numeratorGraph.size()==0)
    throw SPXGraphException(cn + mn + "No numeratorGraph found !");
@@ -907,45 +912,42 @@ void SPXRatio::GetGraphs(void) {
 
   // StringPair_T convoluteKeytmp =it->first;
   //if(debug) std::cout << cn << mn << "convoluteFileGraphMap["<<convoluteKeytmp.first << ", " << convoluteKeytmp.second << "]"<<std::endl; 
-   //numeratorGraph.push_back((*convoluteFileGraphMap)[convoluteKey]);
-   //numeratorGraph.push_back(it->second);
+  //numeratorGraph.push_back((*convoluteFileGraphMap)[convoluteKey]);
+  //numeratorGraph.push_back(it->second);
 
-   SPXPDF *pdf= (*convoluteFilePDFMap)[convoluteKey];
+  SPXPDF *pdf= (*convoluteFilePDFMap)[convoluteKey];
 
-   if (!pdf) throw SPXGraphException(cn + mn + "PDF not found ");
-   else 
-    std::cout << cn << mn << "Found pdf= " << pdf->GetPDFName() << std::endl;
-   int nbands=pdf->GetNBands();
+  if (!pdf) throw SPXGraphException(cn + mn + "PDF not found ");
+  else 
+   std::cout << cn << mn << "Found pdf= " << pdf->GetPDFName() << std::endl;
+  int nbands=pdf->GetNBands();
    
-   for (int iband=0; iband<nbands; iband++) {
-    TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-    std::string         gtype   =pdf->GetBandType(iband);
-    if (!gband) throw SPXParseException(cn+mn+" gband not found !");
-    if (debug) std::cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<std::endl;
-    numeratorGraph.push_back(gband);
-   }
+  for (int iband=0; iband<nbands; iband++) {
+   TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+   std::string         gtype   =pdf->GetBandType(iband);
+   if (!gband) throw SPXParseException(cn+mn+" gband not found !");
+   if (debug) std::cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<std::endl;
+   numeratorGraph.push_back(gband);
+  }
    
- 
-   //Make sure graphs are valid
-   if(numeratorGraph.size()==0) {
+  //Make sure graphs are valid
+  if(numeratorGraph.size()==0) {
+   std::ostringstream oss;
+   oss << "TGraph numeratorGraph has zero size at convoluteFileGraphMap[" << dataKey << "]";
+   throw SPXGraphException(cn + mn + oss.str());
+  }
+
+  if(debug) std::cout << cn << mn << "Number of numeratorGraphs= "<<numeratorGraph.size() << std::endl;
+
+  for (int i=0; i< numeratorGraph.size(); i++) {
+   if (!numeratorGraph[i]) {
     std::ostringstream oss;
-    oss << "TGraph numeratorGraph has zero size at convoluteFileGraphMap[" << dataKey << "]";
+    oss << "TGraph numeratorGraph["<<i<<"] pointer at convoluteFileGraphMap [" << dataKey << "] is zero";
     throw SPXGraphException(cn + mn + oss.str());
+   } else {
+    if(debug) std::cout << cn << mn << " numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName() << std::endl;
    }
-
-   if(debug) std::cout << cn << mn << "Number of numeratorGraphs= "<<numeratorGraph.size() << std::endl;
-
-   for (int i=0; i< numeratorGraph.size(); i++) {
-    if (!numeratorGraph[i]) {
-     std::ostringstream oss;
-     oss << "TGraph numeratorGraph["<<i<<"] pointer at convoluteFileGraphMap [" << dataKey << "] is zero";
-     throw SPXGraphException(cn + mn + oss.str());
-    } else {
-     if(debug) std::cout << cn << mn << " numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName() << std::endl;
-    }
-
-   }
- //}
+  }
  } else if(ratioStyle.IsDataOverData()) {
   //Create keys
   std::string numDataKey = numeratorDataFile;
@@ -1054,12 +1056,24 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
    if(IsDataStat()) {
     SPXDrawUtilities::BoxText(xmin, ymin, boxsize, boxsize/2., mcolor,"", mcolor, 1, 0.75*boxsize);
    }
-
-
   }
  } else {
   // Is a convolute 
   // look if detailed band is requested
+
+  if(ratioStyle.IsDataOverConvolute()) {
+   if (debug) std::cout<<cn<<mn<<" Is data over convolute number of ratio= "<< ratioGraph.size()<<std::endl;
+
+   for (int igraph1=0; igraph1 < ratioGraph.size(); igraph1++) {
+    TGraphAsymmErrors *graph1 = ratioGraph[igraph1];
+    if (!graph1) std::cout<<" Graph1 not found !"<<std::endl;
+    TString gname=graph1->GetName();
+    if (debug) std::cout<<cn<<mn<<"Draw now gname= "<<gname.Data()<<std::endl;
+    graph1->Draw(option.c_str());
+   }
+   return;
+  }
+
   bool detailedband=false;
   for (int igraph1=0; igraph1 < ratioGraph.size(); igraph1++) {
    TGraphAsymmErrors *graph1 = ratioGraph[igraph1];
@@ -1070,8 +1084,9 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
    if (gname.Contains("_alphas_"))detailedband=true;
   }
 
-  if (debug) if(detailedband) std::cout<<cn<<mn<<"This is a simple band detailedband=FALSE "<<std::endl;
+  if (debug) if(!detailedband) std::cout<<cn<<mn<<"This is a simple band detailedband=FALSE "<<std::endl;
   if (debug) if (plotmarker)  std::cout<<cn<<mn<<"Asked to plot with markers "<<std::endl;
+             else std::cout<<cn<<mn<<"plotmarker=FALSE "<<std::endl;
 
   if (!detailedband || plotmarker) {
    if (debug) if (plotmarker)  std::cout<<cn<<mn<<"Only plot total band"<<std::endl;
@@ -1086,12 +1101,26 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
    }
   }
 
-   if (debug) if (plotmarker)  std::cout<<cn<<mn<<"Now order bands and plots"<<std::endl;
+  if (debug) std::cout<<cn<<mn<<"Now order bands and plots"<<std::endl;
 
   // order bands for better plotting
   std::map<int, TGraphAsymmErrors * > bands=  SPXUtilities::OrderBandMap(ratioGraph);
 
-  SPXPlotConfigurationInstance pci=plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
+  if (debug) std::cout<<cn<<mn<<"ordering done"<<std::endl;
+
+  SPXPlotConfigurationInstance pci;
+
+  if(ratioStyle.IsDataOverConvolute()) {
+   if (debug) std::cout<<cn<<mn<<"Get plot configuration: "<<numeratorDataFile.c_str()<<std::endl;
+   //pci=plotConfiguration.GetPlotConfigurationInstance(denominatorConvolutePDFFile);
+   //pci=plotConfiguration.GetPlotConfigurationInstance(numeratorDataFile);
+   throw SPXGraphException(cn+mn+"You should not come here, can not plot detailed band for data in numerator");
+  } else {
+   if (debug) std::cout<<cn<<mn<<"Get plot configuration: "<<numeratorConvolutePDFFile.c_str()<<std::endl;
+   pci=plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
+  }
+  
+  //if (!pci) std::cout<<cn<<mn<<"WARNING pci not found "<<std::endl;
 
   // now plot graph: largest first
   //std::cout<<cn<<mn<<" \n iterate over map " <<std::endl;

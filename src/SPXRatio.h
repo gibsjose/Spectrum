@@ -215,14 +215,14 @@ private:
 
     std::string ratioString;
 
-    std::string numeratorConvoluteGridFile;			//Grid file if numerator contains convolute
-    std::string numeratorConvolutePDFFile;			//PDF file if numerator contains convolute
-    std::string numeratorDataFile;					//Data file if numerator contains data
-    std::string denominatorConvoluteGridFile;		//Grid file if denominator contains convolute
-    std::string denominatorConvolutePDFFile;		//PDF file if denomintator contains convolute
-    std::string denominatorReferenceGridFile;		//Grid file if denominator contains reference
-    std::string denominatorNominalGridFile;         //Grid file if denominator contains nominal
-    std::string denominatorDataFile;				//Data file if denominator contains data
+    std::string numeratorConvoluteGridFile;	    // Grid file if numerator contains convolute
+    std::string numeratorConvolutePDFFile;	    // PDF file if numerator contains convolute
+    std::string numeratorDataFile;		    // Data file if numerator contains data
+    std::string denominatorConvoluteGridFile;	    // Grid file if denominator contains convolute
+    std::string denominatorConvolutePDFFile;	    // PDF file if denomintator contains convolute
+    std::string denominatorReferenceGridFile;	    // Grid file if denominator contains reference
+    std::string denominatorNominalGridFile;         // Grid file if denominator contains nominal
+    std::string denominatorDataFile;		    //Data file if denominator contains data
 
     std::vector<TGraphAsymmErrors *> numeratorGraph;
     std::vector<TGraphAsymmErrors *> ratioGraph;

@@ -91,38 +91,45 @@ void SPXPlot::SetAxisLabels(void) {
 
 	//Set Overlay Y-Axis Label
 	if(ds.ContainsOverlay()) {
-		overlayFrameHisto->SetYTitle(yLabelOverlay.c_str());
-                //if (pc.IsYLog()) {
-		// overlayFrameHisto->GetYaxis()->SetTitleOffset(1.2);
-		// overlayFrameHisto->GetYaxis()->SetTitleColor(6);
-                //}
+	 if (debug) std::cout<<cn<<mn<<"Set yLabelOverlay "<<yLabelOverlay.c_str()<<std::endl;
+         if (!overlayFrameHisto) throw SPXGeneralException(cn+mn+"overlayFrameHisto not found !");
+
+	  overlayFrameHisto->SetYTitle(yLabelOverlay.c_str());
 	}
 
 	//Set Ratio Y-Axis Label
 	if(ds.ContainsRatio()) {
-		ratioFrameHisto->SetYTitle(yLabelRatio.c_str());
+	  if (debug) std::cout<<cn<<mn<<"Set yLabelRatio= "<<yLabelRatio.c_str()<<std::endl;
+          if (!ratioFrameHisto) throw SPXGeneralException(cn+mn+"ratioFrameHisto not found !");
+	  ratioFrameHisto->SetYTitle(yLabelRatio.c_str());
 	}
 
 	//Set X-Axis Label
 	if(ds.ContainsOverlay() && !ds.ContainsRatio()) {
-		//Set Overlay X-Axis Label
-		overlayFrameHisto->SetXTitle(xLabel.c_str());
-                //if (pc.IsXLog())
-		// overlayFrameHisto->GetXaxis()->SetTitleOffset(1.2);
+	 if (debug) std::cout<<cn<<mn<<"Set xLabel= "<<xLabel.c_str()<<std::endl;
+         if (!overlayFrameHisto) throw SPXGeneralException(cn+mn+"overlayFrameHisto not found !");
+	  //Set Overlay X-Axis Label
+	  overlayFrameHisto->SetXTitle(xLabel.c_str());
 
 	} else if(ds.ContainsRatio()){
-		//Set Ratio X-Axis Label
-		ratioFrameHisto->SetXTitle(xLabel.c_str());
+	  if (debug) std::cout<<cn<<mn<<"Set xLabel= "<<xLabel.c_str()<<std::endl;
+          if (!ratioFrameHisto) throw SPXGeneralException(cn+mn+"ratioFrameHisto not found !");
+	  //Set Ratio X-Axis Label
+	  ratioFrameHisto->SetXTitle(xLabel.c_str());
 	}
 
 	if(ds.ContainsOverlay()) {
-		overlayPad->cd();
-		overlayFrameHisto->Draw();
+	 if (debug) std::cout<<cn<<mn<<"Draw overlayFramHisto"<<xLabel.c_str()<<std::endl;
+         if (!overlayFrameHisto) throw SPXGeneralException(cn+mn+"overlayFrameHisto not found !");
+	 overlayPad->cd();
+	 overlayFrameHisto->Draw();
 	}
 
 	if(ds.ContainsRatio()) {
-		ratioPad->cd();
-		ratioFrameHisto->Draw();
+	  if (debug) std::cout<<cn<<mn<<"Draw ratioFrameHisto "<<std::endl;
+          if (!ratioFrameHisto) throw SPXGeneralException(cn+mn+"ratioFrameHisto not found !");
+	  ratioPad->cd();
+	  ratioFrameHisto->Draw();
 	}
 }
 
@@ -145,18 +152,26 @@ void SPXPlot::ScaleAxes(void) {
 	xTitleOffset = 0.7;
 	yTitleOffset = 0.8;
 
-        if (pc.IsYLog()) {
-	  if (yAxisOverlay->GetBinCenter(yAxisOverlay->GetLast())>1000.)
-          yTitleOffset = 1.5; 
-        }
-	if (pc.IsXLog()) {
-	 if (xAxisOverlay->GetBinCenter(xAxisOverlay->GetLast())>1000.)
-          xTitleOffset = 1.25; 
-        }
-        
-
 	//Scale Overlay Axes
 	if(ds.ContainsOverlay()) {
+		if(debug) std::cout << cn << mn << "Contains Overlay " << std::endl;
+
+                if (!yAxisOverlay) throw SPXGeneralException(cn+mn+"yAxisOverlay not found !");
+                if (!xAxisOverlay) throw SPXGeneralException(cn+mn+"xAxisOverlay not found !");
+
+                if (pc.IsYLog()) {
+	         if (yAxisOverlay->GetBinCenter(yAxisOverlay->GetLast())>1000.)
+		   //yTitleOffset = 1.5; 
+                  yTitleOffset = 1.25; 
+                }
+
+	        if (pc.IsXLog()) {
+	         if (xAxisOverlay->GetBinCenter(xAxisOverlay->GetLast())>1000.)
+                  xTitleOffset = 1.25; 
+                }
+        
+
+
 		xAxisOverlay->SetTitleOffset(xTitleOffset);
 		yAxisOverlay->SetTitleOffset(yTitleOffset);
 
@@ -171,6 +186,13 @@ void SPXPlot::ScaleAxes(void) {
 
 	//Scale Ratio Axes
 	if(ds.ContainsRatio()) {
+
+		if(debug) std::cout << cn << mn << "Contains Ratio " << std::endl;
+
+                if (!xAxisRatio) throw SPXGeneralException(cn+mn+"xAxisRatio not found !");
+                if (!yAxisRatio) throw SPXGeneralException(cn+mn+"yAxisRatio not found !");
+
+
 		xAxisRatio->SetTitleOffset(xTitleOffset);
 
 		//NOTE: Not sure why I have to do -0.25 to begin with... For some reason at 0.0 (total offset = 0.8 when below is false)
@@ -185,25 +207,43 @@ void SPXPlot::ScaleAxes(void) {
 
 		if(debug) std::cout << cn << mn << "Set Y Axis Ratio Title Offset to " << yTitleOffset + distScale << std::endl;
 
+
 		double rScale = 1.0;
 		if(ds.ContainsOverlay()) {
-			rScale = (0.4 - 0.0) / (1.0 - 0.4);
+		 rScale = (0.4 - 0.0) / (1.0 - 0.4);
+
+  		 xAxisRatio->SetLabelSize(xAxisOverlay->GetLabelSize() / rScale);
+ 		 yAxisRatio->SetLabelSize(yAxisOverlay->GetLabelSize() / rScale);
+
 		}
 
-		xAxisRatio->SetLabelSize(xAxisOverlay->GetLabelSize() / rScale);
-		yAxisRatio->SetLabelSize(yAxisOverlay->GetLabelSize() / rScale);
+     		if(ds.ContainsRatio()) {
+      
+		 xAxisRatio->SetTitleSize(xAxisRatio->GetTitleSize() / rScale);
+		 yAxisRatio->SetTitleSize(yAxisRatio->GetTitleSize() / rScale);
+                }
 
-		xAxisRatio->SetTitleSize(xAxisOverlay->GetTitleSize() / rScale);
-		yAxisRatio->SetTitleSize(yAxisOverlay->GetTitleSize() / rScale);
+ 		if(debug) std::cout << cn << mn << "After rescaleing titlesize rScale= " << rScale << std::endl;
+
+
+
 	}
 
 	if(ds.ContainsOverlay()) {
 		overlayPad->cd();
+		if(debug) {
+                 std::cout << cn << mn << "Draw overlayFrameHisto "  << std::endl;
+                 //overlayFrameHisto->Print("all");
+                }
 		overlayFrameHisto->Draw();
 	}
 
 	if(ds.ContainsRatio()) {
 		ratioPad->cd();
+		if(debug) {
+                 std::cout << cn << mn << "Draw ratio FrameHisto "  << std::endl;
+                 //ratioFrameHisto->Print("all");
+                }
 		ratioFrameHisto->Draw();
 	}
 }
@@ -551,8 +591,11 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 	overlayPad->cd();
 
         if (xMinOverlay==0 && yMinOverlay==0 && xMaxOverlay==0 && yMaxOverlay==0) {
-	  if (debug) std::cout << cn << mn << "No Frame plotted all bounds are zero ! " << std::endl;
-        } else {
+	 if (debug) std::cout << cn << mn << "No Frame plotted all bounds are zero ! " << std::endl;
+          overlayFrameHisto=0;
+          xAxisOverlay=0;
+          yAxisOverlay=0;
+	 } else {
         
  	 overlayFrameHisto = overlayPad->DrawFrame(xMinOverlay, yMinOverlay, xMaxOverlay, yMaxOverlay);
 	 xAxisOverlay = overlayFrameHisto->GetXaxis();
@@ -568,7 +611,7 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 	  std::cout << "\t yMin = " << yMinOverlay << std::endl;
 	  std::cout << "\t yMax = " << yMaxOverlay << std::endl;
 	 }
-        }
+	}
 }
 
 void SPXPlot::DrawRatioPadFrame(void) {
@@ -640,9 +683,12 @@ void SPXPlot::DrawRatioPadFrame(void) {
 	  std::cout << "\t yMin = " << yMinRatio << std::endl;
 	  std::cout << "\t yMax = " << yMaxRatio << std::endl;
 	 }
-        } else {
-	  if (debug) std::cout << cn << mn << "No ratios ask for no DrawFrame for ratioPad " << std::endl;
-        }
+	} else {
+	  ratioFrameHisto=0;
+          xAxisRatio=0;
+          yAxisRatio=0;
+	  if (debug) std::cout << cn << mn << "No ratios asked for -> no DrawFrame for ratioPad " << std::endl;
+	}
 }
 
 void SPXPlot::StaggerConvoluteOverlay(void) {
@@ -993,6 +1039,8 @@ void SPXPlot::DrawLegend(void) {
  if (overlay) overlayPad->cd();
  if (ratioonly) ratioPad->cd();
 
+  if (debug&&ratioonly) std::cout << cn << mn <<"Is ratio only "<< std::endl;
+
  // Analyse what data are there...
  //
  // eta-scan is when all data have same name, but ymin and y max are all different
@@ -1020,10 +1068,11 @@ void SPXPlot::DrawLegend(void) {
    }
   
    if (data.at(idata)->GetDoubleBinVariableName().size()>0) {
-    if (debug) std::cout<<cn<<mn<<"Double differential variable ON " <<std::endl;
+     if (debug) std::cout<<cn<<mn<<"Double differential variable ON for idata= "<<idata <<std::endl;
 
     double binmin = data.at(idata)->GetDoubleBinValueMin();
     double binmax = data.at(idata)->GetDoubleBinValueMax();
+    //std::cout<<cn<<mn<<"binmin= "<<binmin<<" binmax= "<<binmax<<std::endl;
     if (binmin!=binminold || binmax!=binmaxold) {
      binminold =  binmin;
      binmaxold  = binmax;
@@ -1097,7 +1146,7 @@ void SPXPlot::DrawLegend(void) {
  if (debug) std::cout << cn << mn <<" "<< std::endl;
 
  if(os.ContainsData()) {
-  if (debug) std::cout << cn << mn <<"Contains data "<< std::endl;
+   if (debug) std::cout << cn << mn <<"Contains data "<< std::endl;
 
   if (data.size()==0)
    throw SPXGeneralException(cn+mn+"No data object found !");
@@ -1111,6 +1160,7 @@ void SPXPlot::DrawLegend(void) {
    if (!etascan) {
     if (steeringFile->GetAddJournalLabel()) {
      datalabel+=" "+data.at(idata)->GetJournalLegendLabel();
+     if (debug) std::cout<<cn<<mn<<"Add journal label datalabel  "<<datalabel.Data() <<std::endl;
     }
 
     if (steeringFile->GetAddJournalYear()) if (debug) std::cout<<cn<<mn<<"Add journal year  "<<std::endl;
@@ -1123,11 +1173,14 @@ void SPXPlot::DrawLegend(void) {
      //datalabel+="}";
     }
 
-    if (!ratioonly && data.size()>0) { // ratioonly figures have data in the ratio, no separate label
+    //if (!ratioonly && data.size()>0) { // ratioonly figures have data in the ratio, no separate label
+    if (data.size()>0) { 
      if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
      if (debug) std::cout<<cn<<mn<<"Data Label: "<<datalabel.Data()<<" namesize= "<<namesize<<std::endl;
      leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
-    }
+    } else 
+     if (debug) std::cout<<cn<<mn<<"Ratio only or data.size==0  "<<std::endl;
+
    } else { // This is for the eta-scan
     if (onedataset) {
      if (idata==0) {

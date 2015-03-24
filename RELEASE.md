@@ -6,6 +6,10 @@
 
 ## Change Log
 
+- harmonized names of grid steering files (now called with same convention as data)
+
+- SetAxes works now even if no DrawFrame
+
 - changes in SPXPlotConfiguration::GetRatioStyle to avoid crash in case no ratio_Style is specified
 
 - y_Scale (artificial scaling constant) now goes to both data and MC
