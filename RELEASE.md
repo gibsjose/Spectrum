@@ -6,6 +6,11 @@
 
 ## Change Log
 
+- Improvement in Title offsets
+
+- DrawLegend has now logic to put all different information to normal legend
+  while all same information (jet R, eta bin etc) to information legend
+
 - added 2010 inclusive jet data
 
 - harmonized names of grid steering files (now called with same convention as data)

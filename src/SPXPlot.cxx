@@ -149,8 +149,19 @@ void SPXPlot::ScaleAxes(void) {
 
 	double xTitleOffset, yTitleOffset;
 
-	xTitleOffset = 0.7;
-	yTitleOffset = 0.8;
+	xTitleOffset = 1.0;
+	yTitleOffset = 1.0;
+
+        if (pc.IsYLog()) {
+         yTitleOffset = 1.25; 
+        }
+
+	if (pc.IsXLog()) {
+	 xTitleOffset = 1.25; 
+        }
+
+	if(debug) std::cout << cn << mn << "Set X Axis Overlay Title Offset to " << xTitleOffset << std::endl;
+ 	if(debug) std::cout << cn << mn << "Set Y Axis Overlay Title Offset to " << yTitleOffset << std::endl;
 
 	//Scale Overlay Axes
 	if(ds.ContainsOverlay()) {
@@ -158,19 +169,6 @@ void SPXPlot::ScaleAxes(void) {
 
                 if (!yAxisOverlay) throw SPXGeneralException(cn+mn+"yAxisOverlay not found !");
                 if (!xAxisOverlay) throw SPXGeneralException(cn+mn+"xAxisOverlay not found !");
-
-                if (pc.IsYLog()) {
-	         if (yAxisOverlay->GetBinCenter(yAxisOverlay->GetLast())>1000.)
-		   //yTitleOffset = 1.5; 
-                  yTitleOffset = 1.25; 
-                }
-
-	        if (pc.IsXLog()) {
-	         if (xAxisOverlay->GetBinCenter(xAxisOverlay->GetLast())>1000.)
-                  xTitleOffset = 1.25; 
-                }
-        
-
 
 		xAxisOverlay->SetTitleOffset(xTitleOffset);
 		yAxisOverlay->SetTitleOffset(yTitleOffset);
@@ -181,7 +179,7 @@ void SPXPlot::ScaleAxes(void) {
 		xAxisOverlay->SetTitleSize(xAxisOverlay->GetTitleSize() / scale);
 		yAxisOverlay->SetTitleSize(yAxisOverlay->GetTitleSize() / scale);
 
-		if(debug) std::cout << cn << mn << "Set Y Axis Overlay Title Offset to " << yTitleOffset << std::endl;
+
 	}
 
 	//Scale Ratio Axes
@@ -192,21 +190,8 @@ void SPXPlot::ScaleAxes(void) {
                 if (!xAxisRatio) throw SPXGeneralException(cn+mn+"xAxisRatio not found !");
                 if (!yAxisRatio) throw SPXGeneralException(cn+mn+"yAxisRatio not found !");
 
-
+		if(debug) std::cout << cn << mn << "Set X Axis Ratio Title Offset to " << xTitleOffset << std::endl;
 		xAxisRatio->SetTitleOffset(xTitleOffset);
-
-		//NOTE: Not sure why I have to do -0.25 to begin with... For some reason at 0.0 (total offset = 0.8 when below is false)
-		// there is an additional offset relative to the overlay title. 0.55 (0.8 + (-0.25)) looks nice, however.
-
-		double distScale = -0.25;		//Add an offset to y ratio title offset if only ratio is plotted
-		if(!ds.ContainsOverlay() && ds.ContainsRatio()) {
-			distScale = 0.5;
-		}
-
-		yAxisRatio->SetTitleOffset(yTitleOffset + distScale);
-
-		if(debug) std::cout << cn << mn << "Set Y Axis Ratio Title Offset to " << yTitleOffset + distScale << std::endl;
-
 
 		double rScale = 1.0;
 		if(ds.ContainsOverlay()) {
@@ -215,7 +200,22 @@ void SPXPlot::ScaleAxes(void) {
   		 xAxisRatio->SetLabelSize(xAxisOverlay->GetLabelSize() / rScale);
  		 yAxisRatio->SetLabelSize(yAxisOverlay->GetLabelSize() / rScale);
 
+
 		}
+
+
+		//NOTE: Not sure why I have to do -0.25 to begin with... For some reason at 0.0 (total offset = 0.8 when below is false)
+		// there is an additional offset relative to the overlay title. 0.55 (0.8 + (-0.25)) looks nice, however.
+
+		//double distScale = -0.25;		//Add an offset to y ratio title offset if only ratio is plotted
+		//if(!ds.ContainsOverlay() && ds.ContainsRatio()) {
+		//	distScale = 0.5;
+		//}
+		//yAxisRatio->SetTitleOffset(yTitleOffset + distScale);
+                yTitleOffset*=rScale;
+		if(debug) std::cout << cn << mn << "Set Y Axis Ratio Title Offset to " << yTitleOffset << std::endl;
+                yAxisRatio->SetTitleOffset(yTitleOffset);
+
 
      		if(ds.ContainsRatio()) {
       
@@ -224,8 +224,6 @@ void SPXPlot::ScaleAxes(void) {
                 }
 
  		if(debug) std::cout << cn << mn << "After rescaleing titlesize rScale= " << rScale << std::endl;
-
-
 
 	}
 
@@ -1048,6 +1046,10 @@ void SPXPlot::DrawLegend(void) {
  double binminold=-99999;  double binmaxold=-99999;
  TString datalabelold="";
  int ietabins=0;
+ double sqrtsval = -1., sqrtsvalold = -1., jetR    = -1., jetRold = -1.;
+ std::string lumiold ="NOVALUE";
+
+ bool differentsqrts=false, differentR=false, differentetabin=false, differentlumi=false;
 
  if(os.ContainsData()) {
   if (debug) std::cout << cn << mn <<"Contains data "<< std::endl;
@@ -1066,7 +1068,41 @@ void SPXPlot::DrawLegend(void) {
     datalabelold=datalabel;
     if (idata>0) onedataset=false;
    }
-  
+
+   if (steeringFile->GetAddLumiLabel()) {
+    std::string lumi = data.at(idata)-> GetDatasetLumi();
+    if (lumi!=lumiold) {
+     if (lumiold!=std::string("NOVALUE")) {
+      if (debug) std::cout<<cn<<mn<<"idata= "<<idata<<" lumi changed: lumi= "<<lumi.c_str()<<" lumiold= "<<lumiold.c_str()<<std::endl;
+      differentlumi=true;
+     }
+     lumiold=lumi; 
+    }
+   }
+
+   if (steeringFile->GetLabelSqrtS()) {
+    sqrtsval = data.at(idata)->GetSqrtS();
+    if (sqrtsval!=sqrtsvalold) {
+     if (sqrtsvalold!=-1) {
+      if (debug) std::cout<<cn<<mn<<"idata= "<<idata<<" sqrt changed: sqrtsval= "<<sqrtsval<<" sqrtsvalold= "<<sqrtsvalold<<std::endl;
+      differentsqrts=true;
+     }
+     sqrtsvalold=sqrtsval;
+    }
+   }
+
+   if (data.at(idata)->GetJetAlgorithmLabel().size()>0){
+    jetR=data.at(idata)->GetJetAlgorithmRadius();
+    if (jetR!=jetRold) {
+     if (jetRold!=-1) {
+      if (debug) std::cout<<cn<<mn<<"idata= "<<idata<<" jet R changed: jetR= "<<jetR<<" jetRold= "<<jetRold<<std::endl;
+      differentR=true;
+     }
+     jetRold=jetR;
+
+    }
+   }
+
    if (data.at(idata)->GetDoubleBinVariableName().size()>0) {
      if (debug) std::cout<<cn<<mn<<"Double differential variable ON for idata= "<<idata <<std::endl;
 
@@ -1074,15 +1110,13 @@ void SPXPlot::DrawLegend(void) {
     double binmax = data.at(idata)->GetDoubleBinValueMax();
     //std::cout<<cn<<mn<<"binmin= "<<binmin<<" binmax= "<<binmax<<std::endl;
     if (binmin!=binminold || binmax!=binmaxold) {
+     if (binminold!=-99999) {
+     if (debug) std::cout<<cn<<mn<<"binmin= "<<binmin<<" binmax= "<<binmax<<" ietabins= " << ietabins <<std::endl;
+      differentetabin=true;
+     }
      binminold =  binmin;
      binmaxold  = binmax;
-     //TString varname=data.at(idata)->GetDoubleBinVariableName();
-     //if (debug) std::cout<<" varname= "<<varname.Data()<<std::endl;
-     //if (idata>0) {
-      ietabins++;
-      if (debug)
-       std::cout<<cn<<mn<<"binmin= "<<binmin<<" binmax= "<<binmax<<" ietabins= " << ietabins <<std::endl;
-      //}
+     ietabins++;
     }
    }
   }
@@ -1098,6 +1132,22 @@ void SPXPlot::DrawLegend(void) {
   else         std::cout<<cn<<mn<<"etascan is OFF ! " <<std::endl;
   if (onedataset)  std::cout<<cn<<mn<<"Only one data-set ! " <<std::endl;
   else             std::cout<<cn<<mn<<"More than one data-set ! " <<std::endl;
+
+  if (steeringFile->GetLabelSqrtS()) {
+   if (differentsqrts) std::cout<<cn<<mn<<"Data-sets with different sqrts values ! " <<std::endl;
+   else                std::cout<<cn<<mn<<"Data-sets have same sqrts values ! " <<std::endl;
+  }
+
+  if (differentR)     std::cout<<cn<<mn<<"Data-sets with different jet R values ! " <<std::endl;
+  else                std::cout<<cn<<mn<<"Data-sets have same jet R values ! " <<std::endl;
+
+  if (differentetabin)std::cout<<cn<<mn<<"Data-sets with different eta bins ! " <<std::endl;
+  else                std::cout<<cn<<mn<<"Data-sets with same eta bins ! " <<std::endl;
+
+  if (steeringFile->GetAddLumiLabel()) {
+   if (differentlumi)  std::cout<<cn<<mn<<"Data-sets with different lumi ! " <<std::endl;
+   else                std::cout<<cn<<mn<<"Data-sets with same lumi ! " <<std::endl;
+  }
  }
 
  int namesize=5;    
@@ -1158,12 +1208,36 @@ void SPXPlot::DrawLegend(void) {
    TString datalabel=data.at(idata)->GetLegendLabel();
 
    if (!etascan) {
+
+    if(differentsqrts) {
+     datalabel+=" ";
+     double sqrtsval = data.at(idata)->GetSqrtS();
+     datalabel+=this->FormatSqrtLabel(sqrtsval);
+    }
+ 
+    if (differentR) {
+     datalabel+=" ";
+     double jetR=data.at(idata)->GetJetAlgorithmRadius();
+     datalabel+=this->FormatjetRLabel(jetR);
+    }
+ 
+    if (differentetabin){
+     datalabel+=" ";
+     double binmin = data.at(idata)->GetDoubleBinValueMin();
+     double binmax = data.at(idata)->GetDoubleBinValueMax();
+     TString varname=data.at(idata)->GetDoubleBinVariableName();
+     datalabel+=this->FormatetabinLabel(varname, binmin,binmax);
+    }
+
+    if (differentlumi){
+     datalabel+=" ";
+     datalabel+= data.at(idata)-> GetDatasetLumi();
+    }
+
     if (steeringFile->GetAddJournalLabel()) {
      datalabel+=" "+data.at(idata)->GetJournalLegendLabel();
      if (debug) std::cout<<cn<<mn<<"Add journal label datalabel  "<<datalabel.Data() <<std::endl;
     }
-
-    if (steeringFile->GetAddJournalYear()) if (debug) std::cout<<cn<<mn<<"Add journal year  "<<std::endl;
 
     if (steeringFile->GetAddJournalYear()) {
      if (debug) std::cout<<" Add journal year= "<<data.at(idata)->GetJournalYear()<<std::endl;
@@ -1458,6 +1532,7 @@ void SPXPlot::DrawLegend(void) {
 
  double fac=0.5;
  if (namesize<20) fac=0.4;
+ if (namesize>30) fac=0.2;
  x1 = xlegend-(fac*namesize*charactersize); x2=xlegend;
  //x1 = xlegend-(namesize*charactersize), x2=xlegend;
  if (nraw>3) nraw*=0.6;
@@ -1486,12 +1561,8 @@ void SPXPlot::DrawLegend(void) {
  leginfo->SetMargin(0.2);
  leginfo->SetTextSize(charactersize);
 
-
- double sqrtsval = -1.; 
- double sqrtsvalold = -1.;
- double jetR    = -1.;
- double jetRold = -1.;
- std::string lumiold ="NOVALUE";
+ sqrtsval = -1.; sqrtsvalold = -1.; jetR    = -1.; jetRold = -1.;
+ lumiold ="NOVALUE";
 
  double doublebinminold = -999.;
  double doublebinmaxold  = -999.;
@@ -1509,7 +1580,7 @@ void SPXPlot::DrawLegend(void) {
    leginfo->AddEntry((TObject*)0, label,"");
   }
 
-  if (steeringFile->GetLabelSqrtS()) {
+  if (!differentsqrts && steeringFile->GetLabelSqrtS()) {
 
    sqrtsval = data.at(idata)->GetSqrtS();
    //std:cout<<cn<<mn<<"idata= "<<idata<<" sqrtsval= "<<sqrtsval<<" sqrtsvalold= "<<sqrtsvalold<<std::endl;
@@ -1517,11 +1588,7 @@ void SPXPlot::DrawLegend(void) {
    if (sqrtsval!=sqrtsvalold) {
     sqrtsvalold=sqrtsval;
 
-    if (int(sqrtsval)%1000==0)
-     infolabel.Form("#sqrt{s}= %.f %s",double(sqrtsval)/1000.,"TeV"); 
-    else
-     infolabel.Form("#sqrt{s}= %3.0f %s",double(sqrtsval),"GeV"); 
-
+    infolabel=this->FormatSqrtLabel(sqrtsval);
     //if (TString(infolabel).Sizeof()>leginfomax) leginfomax=TString(infolabel).Sizeof();
     if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
     if (debug) std::cout<<cn<<mn<<"idata= "<<idata<<" add sqrts label "<<infolabel.Data()<<std::endl;
@@ -1539,16 +1606,16 @@ void SPXPlot::DrawLegend(void) {
   //                                                          <<data.at(i)->GetDoubleBinValueWidth()<<std::endl;
   //else std::cout<<cn<<mn<<"Data are divided by bin width of double differential variable "<<std::endl;
 
-  if (data.at(idata)->GetJetAlgorithmLabel().size()>0){
+  if (!differentR && data.at(idata)->GetJetAlgorithmLabel().size()>0){
    jetR=data.at(idata)->GetJetAlgorithmRadius();
    if (jetR!=jetRold) {
     jetRold=jetR;
     infolabel=data.at(idata)->GetJetAlgorithmLabel();
-    if (jetR<10)
-     infolabel+=" R= 0.";
-    else
-     infolabel+=" R= ";
-    infolabel+=jetR;
+    //    if (jetR<10)
+    // infolabel+=" R= 0.";
+    //else
+    // infolabel+=" R= ";
+    infolabel+=this->FormatjetRLabel(jetR);
     if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
     if (debug) std::cout<<cn<<mn<<"idata= "<<idata<<" add R label "<<infolabel.Data()<<std::endl;
     leginfo->AddEntry((TObject*)0, infolabel,"");
@@ -1556,7 +1623,7 @@ void SPXPlot::DrawLegend(void) {
    //if (debug) std::cout<<cn<<mn<<" infolabel= "<<infolabel.Data()<<std::endl;
   }
 
-  if (!etascan) { // for eta-scan this information is in the other legend
+  if (!differentetabin && !etascan) { // for eta-scan this information is in the other legend
    if (data.at(idata)->GetDoubleBinVariableName().size()>0) {
     double binmin = data.at(idata)->GetDoubleBinValueMin();
     double binmax = data.at(idata)->GetDoubleBinValueMax();
@@ -1565,19 +1632,8 @@ void SPXPlot::DrawLegend(void) {
      doublebinminold =  binmin;
      doublebinmaxold  = binmax;
 
-     infolabel="";
-
      TString varname=data.at(idata)->GetDoubleBinVariableName();
-
-     if (binmin!=0) {
-      infolabel.Form(" %3.2f ",binmin); 
-     } else {
-      //std::cout<<" varname= "<<varname.Data()<<std::endl;
-      varname.ReplaceAll("#leq","");
-      varname.ReplaceAll("","");
-     }
-     infolabel+=varname;
-     infolabel+=Form(" %3.2f ",binmax);
+     infolabel=this->FormatetabinLabel(varname, binmin,binmax);
 
      if (infolabel.Sizeof()>leginfomax) leginfomax=infolabel.Sizeof();
      if (debug) std::cout<<cn<<mn<<"infolabel= "<<infolabel.Data()<<std::endl;
@@ -2369,4 +2425,42 @@ void SPXPlot::DrawBand(SPXPDF *pdf, std::string option, SPXPlotConfigurationInst
   }
 
  }
+ return;
 }
+
+TString SPXPlot::FormatSqrtLabel(double sqrtsval){
+ TString infolabel="";
+ if (int(sqrtsval)%1000==0)
+  infolabel.Form("#sqrt{s}= %.f %s",double(sqrtsval)/1000.,"TeV"); 
+ else
+  infolabel.Form("#sqrt{s}= %3.0f %s",double(sqrtsval),"GeV"); 
+
+ return infolabel;
+};
+
+TString SPXPlot::FormatjetRLabel(double jetR){
+ TString infolabel="";
+ if (jetR<10)
+  infolabel+=" R= 0.";
+ else
+  infolabel+=" R= ";
+
+ infolabel+=jetR;
+
+ return infolabel;
+};
+
+TString SPXPlot::FormatetabinLabel(TString varname, double binmin, double binmax){
+ TString infolabel="";
+ if (binmin!=0) {
+  infolabel.Form(" %3.2f ",binmin); 
+ } else {
+  //std::cout<<" varname= "<<varname.Data()<<std::endl;
+ varname.ReplaceAll("#leq","");
+ varname.ReplaceAll("","");
+ }
+ infolabel+=varname;
+ infolabel+=Form(" %3.2f ",binmax);
+ return infolabel;
+};
+

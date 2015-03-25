@@ -141,6 +141,10 @@ private:
 	void InitializeCrossSections(void);
 	void NormalizeCrossSections(void);
 	void InitializeRatios(void);
+
+        TString FormatSqrtLabel(double sqrtsval);
+        TString FormatjetRLabel(double jet);
+        TString FormatetabinLabel(TString varname, double binmin, double binmax);
 };
 
 #endif

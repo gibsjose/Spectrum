@@ -14,6 +14,12 @@
 # ATLAS inclusive jets 2011 2.76 TeV
 ./Spectrum Steering/atlas_incljet2011_2p76TeV.txt
 #
+# ATLAS inclusive jets 2010 7 TeV
+./Spectrum Steering/atlas_incljet2010.txt
+#
+# ATLAS inclusive jets 2010 7 TeV
+./Spectrum Steering/atlas_incljet2010_all.txt
+#
 # ATLAS inclusive Z boson 2010 7 TeV
 ./Spectrum Steering/atlas_inclZ2010.txt
 #

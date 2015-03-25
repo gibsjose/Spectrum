@@ -246,8 +246,6 @@ public:
 		CalculateChi2= newchi2;
 	}
 
-
-
 	bool GetBandwithPDF(void) const {
 		return this->BandwithPDF;
 	}
