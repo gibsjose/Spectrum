@@ -1,0 +1,77 @@
+;==============================================================
+;
+; Description:		
+; ATLAS inclusive jet cross sections
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = true
+
+;==============================================================
+; Graphing Options
+;==============================================================
+[GRAPH]
+plot_band = false
+; plot_error_ticks = true
+plot_marker = true
+plot_staggered = true
+;match_binning = true
+apply_grid_corr = true
+label_sqrt_s = true
+
+;band_with_pdf= false
+;band_with_alphas= false
+;band_with_scale = true
+;band_with_gridcorrection = false
+;band_total = false
+
+;x_legend = 0.75
+;y_legend = 0.9
+;x_info_legend = 0.35
+;y_info_legend = 0.25
+
+; y_overlay_min =
+; y_overlay_max =
+; y_ratio_min =
+; y_ratio_max =
+;--------------------------------------------------------------
+;==============================================================
+; Plot 0 Options
+;==============================================================
+[PLOT_0]
+;plot_type = data[], grid[], pdf
+plot_type = data, grid, pdf
+pdf_directory = PDF
+data_directory = Data/jet/atlas/incljets2010
+grid_directory = Grids/jet/atlas/incljets2010/nlojet
+data_steering_files = atlas_2010_jet_antiktr06_incljetpt_eta1.txt
+grid_steering_files = atlas_2010_jet_antiktr06_incljetpt_eta1.txt
+pdf_steering_files = CT10.txt
+desc = atlas_inclusive_jet2010_r06_eta1
+;
+x_log = true
+y_log = true
+;
+data_marker_style = 20
+data_marker_color = 1
+;
+display_style = overlay,ratio
+;
+overlay_style = data, convolute
+;
+;
+ratio_style_0 = data_tot
+ratio_0 = data_0
+;
+ratio_style_1 = data_stat
+ratio_1 = data_0
+;
+ratio_style_2 = convolute / !data
+ratio_2 = ([grid_0, pdf_0]) / (data_0)
+
+;ratio_title = Data/ NLO QCD
+;ratio_style_2 = !data / convolute
+;ratio_2 = (data_0) / ([grid_0, pdf_0]) 

@@ -1385,7 +1385,7 @@ void SPXPlot::DrawLegend(void) {
       if (nlolabel) {
       
        int pdfcount=std::count (vpdf.begin(), vpdf.end(), pdftype);
-       if (debug) std::cout<<" icross= "<<icross<<" pdf= "<<pdftype<<" pdfcount= "<<pdfcount<<std::endl;
+       if (debug) std::cout<<cn<<mn<<" icross= "<<icross<<" pdf= "<<pdftype<<" pdfcount= "<<pdfcount<<std::endl;
 
        if (steeringFile->GetPlotMarker()) {
         if (debug) std::cout<<cn<<mn<<"in PDF Plot marker add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<std::endl;

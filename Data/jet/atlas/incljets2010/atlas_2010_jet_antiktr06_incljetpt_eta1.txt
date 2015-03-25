@@ -1,0 +1,45 @@
+;Path: /HepData/8579/d8-x1-y1
+;Inclusive jet PT distribution for the |y| range  0.0-0.3 and R=0.6
+;Location: T 12,F 10
+;ABS(YRAP) : 0.0 - 0.3
+;R : 0.6
+;RE : P P --> JET X
+;x : PT IN GEV
+;y : D2(SIG)/DPT/DYRAP IN PB/GEV
+;
+[GEN]
+debug = false
+
+[DESC]
+comments = This is a test comment
+reference_journal_year = 2011
+reference_arxiv_year = 2011
+data_set_year = 2010
+data_set_lumi = 0.037
+publication_status = published
+reference_arxiv_number = arXiv:1112.6297
+reference_journal_name = Phys.Rev. D86 (2012) 014022
+experiment = ATLAS
+
+[GRAPH]
+sqrt_s = 7000.0
+legend_label = ATLAS 2010
+x_label = p_{T,jet} [GeV]
+y_label = d^{2}#sigma/dp_{T,jet} d|y| [pb/GeV]
+x_units = GeV
+y_units = pb
+y_bin_width_units= GeV
+jet_algorithm_label = Anti-k_{t}
+jet_algorithm_radius = 6
+doublediff_binname = #leq |y| < 
+doublediff_bin_value_min  =  0.0
+doublediff_bin_value_max  =  0.3
+doublediff_bin_width  =  0.6
+
+[DATA]
+data_format = spectrum
+data_file = atlas_2010_jet_antiktr06_incljetpt_eta1_data.txt
+divided_by_bin_width = true
+divided_by_doublediff_bin_width = true
+error_in_percent = false
+lumi_scale_factor = 1.0187 
