@@ -6,6 +6,10 @@
 
 ## Change Log
 
+- for DataOverConvolute also Draw statistical uncertainty in ratios 
+
+- added in lumi_scale_factor in SPXData
+
 - Improvement in Title offsets
 
 - DrawLegend has now logic to put all different information to normal legend

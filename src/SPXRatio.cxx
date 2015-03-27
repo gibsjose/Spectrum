@@ -441,8 +441,18 @@ void SPXRatio::Divide(void) {
    std::cerr << e.what() << std::endl;
    throw SPXGraphException(cn + mn + "Unable to match convolute binning to data binning");
   }
- }
 
+  //Match the convolute binning to the data binning
+  try {
+   for (int i=0; i<numeratorGraphstatonly.size(); i++){
+    SPXGraphUtilities::MatchBinning(numeratorGraphstatonly[i], denominatorGraph, true);
+   }
+  } catch(const SPXException &e) {
+   std::cerr << e.what() << std::endl;
+   throw SPXGraphException(cn + mn + "Unable to match convolute binning to data binning");
+  }
+
+ }
 //@TODO What if it's Data/Data???
  else if(ratioStyle.IsDataOverData()) {
   if(debug) std::cout <<cn<<mn<<"Data/Data: " << std::endl;
@@ -493,6 +503,7 @@ void SPXRatio::Divide(void) {
    }
 
    TGraphAsymmErrors *graph = SPXGraphUtilities::Divide(numeratorGraph[i], denominatorGraph,divideType); 
+   if (!graph) throw SPXGraphException(cn + mn + "graph not found !");
 
    if(debug) std::cout << cn + mn + "\nFill Options for graph with name: " << graph->GetName() << std::endl;
    if(debug) std::cout << "\t Fill Style = " << graph->GetFillStyle() << std::endl;
@@ -502,6 +513,18 @@ void SPXRatio::Divide(void) {
 
    ratioGraph.push_back(graph);
   }
+
+  // add statistical error from Data as separate graph for Data/convolute
+  if(ratioStyle.IsDataOverConvolute()) {
+
+   for (int i=0; i<numeratorGraphstatonly.size(); i++){
+    TGraphAsymmErrors *graph = SPXGraphUtilities::Divide(numeratorGraphstatonly[i], denominatorGraph,divideType); 
+    if (!graph) throw SPXGraphException(cn + mn + "graph not found !");
+    ratioGraphstatonly.push_back(graph);
+   }
+
+  }
+
  } catch(const SPXException &e) {
   std::cerr << e.what() << std::endl;
   throw SPXGraphException(cn + mn + "Unable to divide numerator and denominator to calculate ratio");
@@ -789,6 +812,8 @@ void SPXRatio::GetGraphs(void) {
   std::string dataKey = numeratorDataFile;
   StringPair_T convoluteKey = StringPair_T(denominatorConvoluteGridFile, denominatorConvolutePDFFile);
 
+  std::string dataKeystat = numeratorDataFile+"_stat";
+
   if(debug) std::cout << cn << mn << "Data over Convolute" << std::endl;
 
   if(!os.ContainsData()) {
@@ -801,15 +826,23 @@ void SPXRatio::GetGraphs(void) {
 
   if(debug) {
    std::cout << cn << mn << "Data Key = [" << dataKey << "]" << std::endl;
+   std::cout << cn << mn << "Data Key stat only= [" << dataKeystat << "]" << std::endl;
    std::cout << cn << mn << "Convolute Key = [" << convoluteKey.first << ", " << convoluteKey.second << "]" << std::endl;
   }
 
   //Check for existence of data key
   if(dataFileGraphMap->count(dataKey) == 0) {
    PrintDataFileGraphMapKeys(std::cerr);
-
    std::ostringstream oss;
    oss << "dataFileGraphMap[" << dataKey << "] was not found: Invalid key";
+   throw SPXGraphException(cn + mn + oss.str());
+  }
+
+  //Check for existence of data key statistical only
+  if(dataFileGraphMap->count(dataKeystat) == 0) {
+   PrintDataFileGraphMapKeys(std::cerr);
+   std::ostringstream oss;
+   oss << "dataFileGraphMap[" << dataKeystat << "] was not found: Invalid key";
    throw SPXGraphException(cn + mn + oss.str());
   }
 
@@ -830,6 +863,25 @@ void SPXRatio::GetGraphs(void) {
     throw SPXGraphException(cn + mn + oss.str());
    }
    if (debug) std::cout << cn << mn << "data graph is  "<< numeratorGraph[i]->GetName() << std::endl;
+  }
+
+  // Keys exist, grab graphs
+  numeratorGraphstatonly.push_back((*dataFileGraphMap)[dataKeystat]);
+
+  //Make sure graphs are valid
+  if(numeratorGraphstatonly.size()==0) {
+   std::ostringstream oss;
+   oss << "TGraph numeratorGraphstatonly has zero size at dataFileGraphMap[" << dataKey << "]";
+   throw SPXGraphException(cn + mn + oss.str());
+  }
+
+  for (int i=0; i< numeratorGraphstatonly.size(); i++) {
+   if (!numeratorGraph[i]) {
+    std::ostringstream oss;
+    oss << "TGraph numeratorGraphstatonly["<<i<<"] pointer at dataFileGraphMap[" << dataKeystat << "] is zero";
+    throw SPXGraphException(cn + mn + oss.str());
+   }
+   if (debug) std::cout << cn << mn << "data graph is  "<< numeratorGraphstatonly[i]->GetName() << std::endl;
   }
 
   //denominatorGraph = (*convoluteFileGraphMap)[convoluteKey];
@@ -973,14 +1025,12 @@ void SPXRatio::GetGraphs(void) {
   //Check for existence of denominator data key
   if(dataFileGraphMap->count(denDataKey) == 0) {
    PrintDataFileGraphMapKeys(std::cerr);
-
    std::ostringstream oss;
    oss << "dataFileGraphMap[" << denDataKey << "] was not found: Invalid key";
    throw SPXGraphException(cn + mn + oss.str());
   }
 
   //Keys exist, grab graphs
-  //numeratorGraph = (*dataFileGraphMap)[numDataKey];
   numeratorGraph.push_back((*dataFileGraphMap)[numDataKey]);
   denominatorGraph = (*dataFileGraphMap)[denDataKey];
 
@@ -1064,12 +1114,38 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
   if(ratioStyle.IsDataOverConvolute()) {
    if (debug) std::cout<<cn<<mn<<" Is data over convolute number of ratio= "<< ratioGraph.size()<<std::endl;
 
-   for (int igraph1=0; igraph1 < ratioGraph.size(); igraph1++) {
-    TGraphAsymmErrors *graph1 = ratioGraph[igraph1];
-    if (!graph1) std::cout<<" Graph1 not found !"<<std::endl;
-    TString gname=graph1->GetName();
-    if (debug) std::cout<<cn<<mn<<"Draw now gname= "<<gname.Data()<<std::endl;
-    graph1->Draw(option.c_str());
+   for (int igraph=0; igraph < ratioGraph.size(); igraph++) {
+    TGraphAsymmErrors *graph = ratioGraph[igraph];
+    if (!graph) std::cout<<"Graph not found !"<<std::endl;
+    TString gname=graph->GetName();
+    if (debug) std::cout<<cn<<mn<<"Draw now gname= "<<gname.Data()<<" option= "<<option.c_str()<<std::endl;
+    if (debug) graph->Print();
+    graph->Draw(option.c_str());
+   }
+
+   if (debug) {
+    if (TString(option).Contains("Z")) std::cout<<cn<<mn<<"option does contain Z "    <<" option= "<<option.c_str()<<std::endl;
+    else                               std::cout<<cn<<mn<<"option does not contain Z "<<" option= "<<option.c_str()<<std::endl;
+    if (!TString(option).Contains("z"))std::cout<<cn<<mn<<"option does contain z "    <<" option= "<<option.c_str()<<std::endl;
+    else                               std::cout<<cn<<mn<<"option does not contain z "<<" option= "<<option.c_str()<<std::endl;
+   }
+
+   if (!TString(option).Contains("Z") && !TString(option).Contains("z")) { // only plot if error ticks are ask for
+
+    for (int igraphstat=0; igraphstat < ratioGraphstatonly.size(); igraphstat++) {
+     TGraphAsymmErrors *graphstat = ratioGraphstatonly[igraphstat];
+     if (!graphstat) std::cout<<"Graphstat not found !"<<std::endl;
+     TString gname=graphstat->GetName();
+     // avoid plotting the vertical line for the x-error bars
+     for (int ibin=0; ibin<graphstat->GetN(); ibin++) {
+      graphstat->SetPointEXhigh(ibin,0.);
+      graphstat->SetPointEXlow (ibin,0.);
+     }
+     option="||";
+     if (debug) std::cout<<cn<<mn<<"Draw now gname= "<<gname.Data()<<" option= "<<option.c_str()<<std::endl;
+     if (debug) graphstat->Print();
+     graphstat->Draw(option.c_str());
+    }
    }
    return;
   }

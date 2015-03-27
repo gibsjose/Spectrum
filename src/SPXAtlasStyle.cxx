@@ -76,11 +76,14 @@ TStyle* AtlasStyle()
   //atlasStyle->SetLineWidth(2.);
 
   // get rid of X error bars
-  atlasStyle->SetErrorX(0.001);
+  //atlasStyle->SetErrorX(0.001);
+  atlasStyle->SetErrorX(0.0);
+
   //atlasStyle->SetErrorX(1.0);
   //get rid of error bar caps
-  atlasStyle->SetEndErrorSize(0.);
-  gStyle->SetEndErrorSize(1);
+  //atlasStyle->SetEndErrorSize(0.);
+  atlasStyle->SetEndErrorSize(5);
+
 
   // do not display any of the standard histogram decorations
   atlasStyle->SetOptTitle(0);

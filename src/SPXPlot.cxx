@@ -753,7 +753,18 @@ void SPXPlot::StaggerConvoluteRatio(void) {
 	  if(debug) std::cout << cn << mn << "Staggering ratio at index " << i << ": " << graph->GetName() << std::endl;  		 
 	  SPXGraphUtilities::StaggerGraph(i, nratio, graph);
          }
+
+
+	 std::vector<TGraphAsymmErrors *> ratiographsstat=_ratios[i].GetRatioGraphStat();
+
+         for (int igraph=0; igraph < ratiographsstat.size(); igraph++) {
+	  TGraphAsymmErrors *graph = ratiographsstat[igraph];
+          if (!graph) throw SPXGraphException(cn+mn+"Graph not found !");
+	  if(debug) std::cout << cn << mn << "Staggering ratio at index " << i << ": " << graph->GetName() << std::endl;  		 
+	  SPXGraphUtilities::StaggerGraph(i, nratio, graph);
+         }
         }
+
 }
 
 //Matches the overlay binning if the match_binning flag is set
@@ -1306,7 +1317,7 @@ void SPXPlot::DrawLegend(void) {
 
  bool nlolabel=true;
  SPXRatioStyle ratioStyle = pc.GetRatioStyle(0);
- if (ratioStyle.IsDataOverConvolute()) nlolabel=false;
+ //if (ratioStyle.IsDataOverConvolute()) nlolabel=false;
 
  if(os.ContainsConvolute()) {
   if (debug) std::cout << cn << mn <<"Contains convolute "<< std::endl;
@@ -1342,9 +1353,16 @@ void SPXPlot::DrawLegend(void) {
 
    if (debug) {
     if (gridcorrectionfound) std::cout << cn << mn <<"Grid corrections found !"<< std::endl;
+    else                     std::cout << cn << mn <<"No Grid corrections found !"<< std::endl;
+
     if (nlouncertainty)      std::cout << cn << mn <<"Band contains NLO uncertainty !"<< std::endl;
+    else                     std::cout << cn << mn <<"No NLO uncertainty found !"<< std::endl;
+
     if (pdffound)            std::cout << cn << mn <<"Band contains PDF !"<< std::endl;
+    else                     std::cout << cn << mn <<"No PDF band found !"<< std::endl;
+
     if (nlolabel)            std::cout << cn << mn <<"Plot NLO labels "<< std::endl;
+    else                     std::cout << cn << mn <<"No NLO labels "<< std::endl;
    }
 
    if (!bandsdifferent) {
@@ -1468,7 +1486,9 @@ void SPXPlot::DrawLegend(void) {
         if (pdfcount<1) {
   	 if (debug) std::cout<<cn<<mn<<" Add legend pdftype= "<<pdftype.Data()<<std::endl;      
          if (pdftype.Sizeof()>namesize) namesize=pdftype.Sizeof();
-         leg->AddEntry(gband, pdftype, "PE");
+         TString opt="PE";
+         if (ratioStyle.IsDataOverConvolute()) opt=""; // for Data over convolute do not plot marker
+         leg->AddEntry(gband, pdftype,opt);
          vpdf.push_back(pdftype);
         }
        } else if (steeringFile->GetPlotBand()) {

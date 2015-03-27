@@ -169,9 +169,16 @@ public:
 
     std::vector<TGraphAsymmErrors *> GetRatioGraph(void) {
     if(ratioGraph.size()==0) {
-     throw SPXGraphException("SPXRatio::GetRatioGraph: Ratio graph is empty");
+     throw SPXGraphException("SPXRatio::GetRatioGraph: Ratio graph is empty"); 
     }
      return ratioGraph;
+    }
+
+    std::vector<TGraphAsymmErrors *> GetRatioGraphStat(void) {
+     //if(ratioGraphstatonly.size()==0) {
+       //throw SPXGraphException("SPXRatio::GetRatioGraph: Ratio graphstatonly is empty");
+     //}
+     return ratioGraphstatonly;
     }
 
     TGraphAsymmErrors *GetDenominatorGraph(void) {
@@ -225,7 +232,10 @@ private:
     std::string denominatorDataFile;		    //Data file if denominator contains data
 
     std::vector<TGraphAsymmErrors *> numeratorGraph;
+    std::vector<TGraphAsymmErrors *> numeratorGraphstatonly;
     std::vector<TGraphAsymmErrors *> ratioGraph;
+    std::vector<TGraphAsymmErrors *> ratioGraphstatonly;
+
     TGraphAsymmErrors *denominatorGraph;            //TGraph of the denominator
 
     StringGraphMap_T * dataFileGraphMap;            //Map of data files to their data TGraph
