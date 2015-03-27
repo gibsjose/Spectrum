@@ -139,6 +139,13 @@ void SPXData::ParseSpectrum(void) {
 	//Number of columns (used to determine symmetric, asymmetric, or no total systematic error)
 	unsigned int numberOfColumns = 0;
 
+        double faclumi=pci.dataSteeringFile.GetLumiScaleFactor();
+
+        if (faclumi!=1) {
+	 if (debug) std::cout<<cn<<mn<<"Rescale data by factor= "<<faclumi<<std::endl;
+	} 
+
+
 	while(dataFile->good()) {
 		std::getline(*dataFile, line);
 
@@ -207,6 +214,12 @@ void SPXData::ParseSpectrum(void) {
 						}
 					}
 
+                                        if (faclumi!=1) {
+					 //if (debug) std::cout<<cn<<mn<<"Rescale data by factor "<<faclumi<<std::endl;
+                                         std::transform(tmp_syst.begin(), tmp_syst.end(), tmp_syst.begin(), 
+                                         std::bind1st(std::multiplies<double>(), faclumi));
+                                        }
+
 					//Add it to the map
 					StringDoubleVectorPair_T pair(name, tmp_syst);
 					individualSystematics.insert(pair);
@@ -247,11 +260,11 @@ void SPXData::ParseSpectrum(void) {
 				}
 
 				//Parse out required data
-				xm_t = tmp_data[XM_COL];
-				xlow_t = tmp_data[XLOW_COL];
+				xm_t    = tmp_data[XM_COL];
+				xlow_t  = tmp_data[XLOW_COL];
 				xhigh_t = tmp_data[XHIGH_COL];
 				sigma_t = tmp_data[SIGMA_COL];
-				stat_t = tmp_data[STAT_COL];
+				stat_t  = tmp_data[STAT_COL];
 
 				//Check for symmetric, asymmetric, or no total systematic error (set numberOfColumns)
 				if(numberOfColumns == 5) {
@@ -272,6 +285,13 @@ void SPXData::ParseSpectrum(void) {
 
 				//Increment bin count
 				bin_count++;
+
+
+                                if (faclumi!=1) {
+				  //if (debug) std::cout<<cn<<mn<<" rescale data by factor "<<faclumi<<std::endl;
+                                 sigma_t*=faclumi;
+                                 stat_t *=faclumi;
+                                }
 
 				//Fill required vectors with temp variables
 				xm.push_back(xm_t);
@@ -399,13 +419,13 @@ void SPXData::ParseSpectrum(void) {
 	if(debug) std::cout << cn << mn << "Checking sizes of all other vectors..." << std::endl;
 
 	try {
-		CheckVectorSize(xm, "xm", masterSize);
+		CheckVectorSize(xm,   "xm", masterSize);
 		CheckVectorSize(xlow, "xlow", masterSize);
 		CheckVectorSize(xhigh, "xhigh", masterSize);
 		CheckVectorSize(sigma, "sigma", masterSize);
-		CheckVectorSize(stat, "stat", masterSize);
-		CheckVectorSize(syst_p, "syst_p", masterSize);
-		CheckVectorSize(syst_n, "syst_n", masterSize);
+		CheckVectorSize(stat,  "stat", masterSize);
+		CheckVectorSize(syst_p,"syst_p", masterSize);
+		CheckVectorSize(syst_n,"syst_n", masterSize);
 
 		//Check size of all individual systematic errors
 		for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
@@ -850,7 +870,7 @@ void SPXData::CreateGraphs(void) {
 		name = TString(pci.dataSteeringFile.GetName());
 		statName = name + "_stat";
 		systName = name + "_syst";
-		totName = name + "_tot";
+		totName  = name + "_tot";
 	}
 
 	//Data steering file has no [DESC]:name
@@ -877,8 +897,6 @@ void SPXData::CreateGraphs(void) {
 		exl[i] = data["xm"][i] - m + n;
 		exh[i] = m + n - data["xm"][i];
 	}
-
-	//@TODO MUST IMPLEMENT CORRELATION MATRIX
 
 	//Convert to raw number if errors are given in percent
 	if(pci.dataSteeringFile.IsErrorInPercent()) {

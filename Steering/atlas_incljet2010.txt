@@ -47,8 +47,8 @@ plot_type = data, grid, pdf
 pdf_directory = PDF
 data_directory = Data/jet/atlas/incljets2010
 grid_directory = Grids/jet/atlas/incljets2010/nlojet
-data_steering_files = atlas_2010_jet_antiktr06_incljetpt_eta1.txt
-grid_steering_files = atlas_2010_jet_antiktr06_incljetpt_eta1.txt
+data_steering_files = atlas_2010_jet_antiktr04_incljetpt_eta1.txt
+grid_steering_files = atlas_2010_jet_antiktr04_incljetpt_eta1.txt
 pdf_steering_files = CT10.txt
 desc = atlas_inclusive_jet2010_r06_eta1
 ;

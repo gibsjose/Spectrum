@@ -993,6 +993,7 @@ void SPXPlot::DrawRatio(void) {
   if (debug) {
    std::cout<<cn<<mn<<"Draw ratio with xbox= "<<xbox<<" ybox= "<<ybox<<std::endl;
    if (plotmarker) std::cout<<cn<<mn<<"plotmarker TRUE "<<std::endl;
+   std::cout<<cn<<mn<<"Draw ratio with options= "<<ratioOptions.c_str()<<std::endl;
   }
   ratios[i].Draw(ratioOptions.c_str(),statRatios, totRatios ,plotmarker,xbox,ybox);
  
@@ -1206,6 +1207,7 @@ void SPXPlot::DrawLegend(void) {
   for (int idata = 0; idata < data.size(); idata++) {                 
 
    TString datalabel=data.at(idata)->GetLegendLabel();
+   //datalabel.ReplaceAll("comb","");
 
    if (!etascan) {
 

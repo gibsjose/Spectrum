@@ -42,4 +42,7 @@ data_file = atlas_2010_jet_antiktr04_incljetpt_eta1_data.txt
 divided_by_bin_width = true
 divided_by_doublediff_bin_width = true
 error_in_percent = false
+;
+;lumi_scale_factor = 1.0 
 lumi_scale_factor = 1.0187 
+;lumi_scale_factor = 10.0 

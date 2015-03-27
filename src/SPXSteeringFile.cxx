@@ -32,8 +32,8 @@ void SPXSteeringFile::SetDefaults(void) {
 	plotBand = false;
 	if(debug) std::cout << cn << mn << "plotBand set to default: \"false\"" << std::endl;
 
-	plotErrorTicks = false;
-	if(debug) std::cout << cn << mn << "plotErrorTicks set to default: \"false\"" << std::endl;
+	plotErrorTicks = true;
+	if(debug) std::cout << cn << mn << "plotErrorTicks set to default: \"true\"" << std::endl;
 
 	plotMarker = true;
 	if(debug) std::cout << cn << mn << "plotMarker set to default: \"true\"" << std::endl;
