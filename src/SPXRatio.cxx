@@ -316,7 +316,7 @@ void SPXRatio::Parse(std::string &s) {
         denominatorDataFile = SPXStringUtilities::RemoveCharacters(denBlob, "()");
 
         //Check for alias
-        std::string numeratorDataAlias = CheckForAlias(numeratorDataFile, "data");
+        std::string numeratorDataAlias   = CheckForAlias(numeratorDataFile, "data");
         std::string denominatorDataAlias = CheckForAlias(denominatorDataFile, "data");
 
         //Use alias, if there is one, otherwise prepend directories
@@ -455,18 +455,33 @@ void SPXRatio::Divide(void) {
  }
 //@TODO What if it's Data/Data???
  else if(ratioStyle.IsDataOverData()) {
-  if(debug) std::cout <<cn<<mn<<"Data/Data: " << std::endl;
+  if (debug) std::cout<<cn<<mn<<"ratioStyle.IsDataOverData() "<<std::endl;
 
-  if (debug) std::cout<<cn<<mn<<" ratioStyle.IsDataOverData() "<<std::endl;
+  if (debug) {
+   std::cout<<cn<<mn<<" Print denominator graph: "<<std::endl;
+   denominatorGraph->Print();
+  }
 
-  //@TODO Match binning here? Who is the master?
- } 
- else if (ratioStyle.IsConvoluteOverNominal()) {
+  try {
+   
+   for (int i=0; i<numeratorGraph.size(); i++){
+    if (debug) {
+     std::cout<<cn<<mn<<"numeratorGraph["<<i<<"]: " << numeratorGraph[i]->GetName()<<std::endl;
+     numeratorGraph[i]->Print();
+    }
+    SPXGraphUtilities::MatchBinning(numeratorGraph[i], denominatorGraph, true);
+   }
+  } catch(const SPXException &e) {
+   std::cerr << e.what() << std::endl;
+   throw SPXGraphException(cn + mn + "Unable to match convolute binning to data binning");
+  }
+
+ } else if (ratioStyle.IsConvoluteOverNominal()) {
   if (debug) std::cout<<cn<<mn<<" ratioStyle.IsConvoluteOverNominal "<<std::endl;
 
-  std::cout<<cn<<mn<<" ratioStyle.IsDataOverData() nothing implemented yet "<<std::endl;
- } 
- else {
+  std::cout<<cn<<mn<<" ratioStyle.IsConvoluteOverNominal() nothing implemented yet "<<std::endl;
+ 
+ } else {
  if (debug) std::cout<<cn<<mn<<"No special ratiostyle  "<<std::endl;
  }
  
@@ -495,10 +510,12 @@ void SPXRatio::Divide(void) {
   if (numeratorGraph.size()==0)
    throw SPXGraphException(cn + mn + "No numeratorGraph found !");
 
+  if (debug) std::cout <<cn<<mn<<"Number of numeratorGraphs "<<numeratorGraph.size()<<std::endl;
+
   for (int i=0; i<numeratorGraph.size(); i++){
 
    if (debug) {
-     std::cout <<cn<<mn<<"Divide: numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName()
+     std::cout <<cn<<mn<<"numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName()
                <<" denominatorGraph= "<<denominatorGraph->GetName()<<" divideType= "<<divideType<<std::endl;
    }
 
@@ -1010,7 +1027,7 @@ void SPXRatio::GetGraphs(void) {
   }
 
   if(debug) {
-   std::cout << cn << mn << "Numerator Data Key = [" << numDataKey << "]" << std::endl;
+   std::cout << cn << mn << "Numerator   Data Key = [" << numDataKey << "]" << std::endl;
    std::cout << cn << mn << "Denominator Data Key = [" << denDataKey << "]" << std::endl;
   }
 
@@ -1031,8 +1048,27 @@ void SPXRatio::GetGraphs(void) {
   }
 
   //Keys exist, grab graphs
-  numeratorGraph.push_back((*dataFileGraphMap)[numDataKey]);
-  denominatorGraph = (*dataFileGraphMap)[denDataKey];
+
+  // now check if map contains systematic uncertainties
+  // XXX
+  // PrintDataFileGraphMapKeys();
+
+   if (DataFileGraphMapHasSystematics()) {
+    for (StringGraphMap_T::iterator it = dataFileGraphMap->begin(); it != dataFileGraphMap->end(); ++it) {
+     std::string systkey =  it->first;
+     //if (debug) std::cout<<" denDataKey= "<< denDataKey <<" systkey= "<<systkey.c_str()<<std::endl;
+
+     if (systkey!=denDataKey && systkey!=denDataKey+"_stat") {
+      //if (debug) std::cout<<" Add numeratorGraph systkey= "<<systkey.c_str()<<std::endl;
+
+      numeratorGraph.push_back((*dataFileGraphMap)[systkey]);
+     }
+    }
+    denominatorGraph = (*dataFileGraphMap)[denDataKey];
+   } else {
+    numeratorGraph.push_back((*dataFileGraphMap)[numDataKey]);
+    denominatorGraph = (*dataFileGraphMap)[denDataKey];
+   }
 
   if(!denominatorGraph) {
    std::ostringstream oss; 
@@ -1106,6 +1142,17 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
    if(IsDataStat()) {
     SPXDrawUtilities::BoxText(xmin, ymin, boxsize, boxsize/2., mcolor,"", mcolor, 1, 0.75*boxsize);
    }
+  }
+ } else if ( IsDataOverData() ){
+  
+  if (!debug) std::cout<<"DataOverData!"<<std::endl;
+  for (int igraph=0; igraph < ratioGraph.size(); igraph++) {
+   TGraphAsymmErrors *graph = ratioGraph[igraph];
+   if (!graph) std::cout<<"Graph not found !"<<std::endl;
+   TString gname=graph->GetName();
+   if (debug) std::cout<<cn<<mn<<"Draw now gname= "<<gname.Data()<<" option= "<<option.c_str()<<std::endl;
+   if (debug) graph->Print();
+   graph->Draw(option.c_str());
   }
  } else {
   // Is a convolute 
@@ -1296,3 +1343,70 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
   }
  }
 }
+
+void SPXRatio::PrintDataFileGraphMapKeys(std::ostream &out ) {
+ out << "SPXRatio::PrintDataFileGraphMapKeys: " << std::endl;
+ out << "\t Key Format: [Data]" << std::endl;
+ out << "\t ============ KNOWN KEYS ============" << std::endl;
+ for(StringGraphMap_T::iterator it = dataFileGraphMap->begin(); it != dataFileGraphMap->end(); ++it) {
+  out << "\t [" << it->first << "]" << std::endl;
+ }
+ out << "\t ====================================" << std::endl << std::endl;
+ return;
+}
+
+void SPXRatio::PrintReferenceFileGraphMapKeys(std::ostream &out) {
+ out << "SPXRatio::PrintReferenceFileGraphMapKeys: " << std::endl;
+ out << "\t Key Format: [Grid, PDF]" << std::endl;
+ out << "\t ============ KNOWN KEYS ============" << std::endl;
+ for(StringPairGraphMap_T::iterator it = convoluteFileGraphMap->begin(); it != convoluteFileGraphMap->end(); ++it) {
+  out << "\t [" << it->first.first << ", " << it->first.second << "]" << std::endl;
+ }
+ out << "\t ====================================" << std::endl << std::endl;
+ return;
+}
+
+void SPXRatio::PrintNominalFileGraphMapKeys(std::ostream &out) {
+ out << "SPXRatio::PrintNominalFileGraphMapKeys: " << std::endl;
+ out << "\t Key Format: [Grid, PDF]" << std::endl;
+ out << "\t ============ KNOWN KEYS ============" << std::endl;
+ for(StringPairGraphMap_T::iterator it = convoluteFileGraphMap->begin(); it != convoluteFileGraphMap->end(); ++it) {
+  out << "\t [" << it->first.first << ", " << it->first.second << "]" << std::endl;
+ }
+ out << "\t ====================================" << std::endl << std::endl;
+ return;
+}
+
+void SPXRatio::PrintConvoluteFilePDFMapKeys(std::ostream &out) {
+ out << "SPXRatio::PrintConvoluteFilePDFMapKeys: " << std::endl;
+ out << "\t Key Format: [Grid, PDF]" << std::endl;
+ out << "\t ============ KNOWN KEYS ============" << std::endl;
+ for(StringPairPDFMap_T::iterator it = convoluteFilePDFMap->begin(); it != convoluteFilePDFMap->end(); ++it) {
+  out << "\t [" << it->first.first << ", " << it->first.second << "]" << std::endl;
+ }
+ out << "\t ====================================" << std::endl << std::endl;
+ return;
+}
+
+void SPXRatio::PrintConvoluteFileGraphMapKeys(std::ostream &out) {
+ out << "SPXRatio::PrintConvoluteFileGraphMapKeys: " << std::endl;
+ out << "\t Key Format: [Grid, PDF]" << std::endl;
+ out << "\t ============ KNOWN KEYS ============" << std::endl;
+ for(StringPairGraphMap_T::iterator it = convoluteFileGraphMap->begin(); it != convoluteFileGraphMap->end(); ++it) {
+  out << "\t [" << it->first.first << ", " << it->first.second << "]" << std::endl;
+ }
+ out << "\t ====================================" << std::endl << std::endl;
+}
+
+bool SPXRatio::DataFileGraphMapHasSystematics(){
+ //if (debug) std::cout << "SPXRatio::DataFileGraphMapHasSystematics: " << std::endl;
+
+ for(StringGraphMap_T::iterator it = dataFileGraphMap->begin(); it != dataFileGraphMap->end(); ++it) {
+  //if (debug) std::cout << "\t [" << it->first << "]" << std::endl;
+  TString testkey= it->first;
+  if (testkey.Contains("syst_")) {
+   return true;
+  }
+ }
+ return false;
+};

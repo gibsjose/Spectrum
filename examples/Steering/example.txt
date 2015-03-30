@@ -45,6 +45,9 @@ plot_staggered = true		                ;[Optional] Stagger points horizontally t
 match_binning = true				;[Optional] Match the binning for all graphs in the plot - [default = true]
 apply_grid_corr = true				;[Optional] Apply the grid corrections (e.g. hadronisation) 
 ;                                                           (as specified in SPXGrid steering) for all grids if true
+
+show_individual_systemtics = 0                  ;[Optional] Show individual systematic on data above x%
+
 label_sqrt_s = true				;[Optional] Specify to show the Sqrt(s) on the legend - [default = false]
 ;label_lumi                                     ;[Optional] Add luminosity label 
 ;label_journalreference                         ;[Optional] Add journal reference label
@@ -139,6 +142,10 @@ pdf_steering_files = CT10.txt				  ;[REQUIRED] List of all PDF steering files
 data_marker_style = 20					  ;[REQUIRED] List of data marker styles
 data_marker_color = 1					  ;[REQUIRED] List of data marker colors
 ;
+display_systematic_group = JES, JER                       ;[Optional] List of groups of systematics to be displayed
+                                                                      (active only for DataOVerData)
+display_systematic_group_band_color = 2,3                 ;[Optional] color of band for systematic groups
+
 ;total_fill_style=1001					  ;[Optional] List of Total marker style OVERRIDES
 ;total_fill_color=800                                     ;[Optional] root color code and style https://root.cern.ch/root/html/TAttFill.html
 ;total_edge_color=800                                     ;[Optional] Plots edges of band as think line                          

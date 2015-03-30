@@ -75,6 +75,10 @@ public:
         return ratioStyle;
     }
 
+    bool IsDataOverData(void) {
+        return ratioStyle.IsDataOverData();
+    }
+
     bool IsDataStat(void) {
         return ratioStyle.IsDataStat();
     }
@@ -115,62 +119,20 @@ public:
         return false;
     }
 
-    void PrintDataFileGraphMapKeys(std::ostream &out = std::cout) {
-        out << "SPXRatio::PrintDataFileGraphMapKeys: " << std::endl;
-        out << "\t Key Format: [Data]" << std::endl;
-        out << "\t ============ KNOWN KEYS ============" << std::endl;
-        for(StringGraphMap_T::iterator it = dataFileGraphMap->begin(); it != dataFileGraphMap->end(); ++it) {
-            out << "\t [" << it->first << "]" << std::endl;
-        }
-        out << "\t ====================================" << std::endl << std::endl;
-    }
-
-    void PrintReferenceFileGraphMapKeys(std::ostream &out = std::cout) {
-        out << "SPXRatio::PrintReferenceFileGraphMapKeys: " << std::endl;
-        out << "\t Key Format: [Grid, PDF]" << std::endl;
-        out << "\t ============ KNOWN KEYS ============" << std::endl;
-        for(StringPairGraphMap_T::iterator it = convoluteFileGraphMap->begin(); it != convoluteFileGraphMap->end(); ++it) {
-            out << "\t [" << it->first.first << ", " << it->first.second << "]" << std::endl;
-        }
-        out << "\t ====================================" << std::endl << std::endl;
-    }
-
-    void PrintNominalFileGraphMapKeys(std::ostream &out = std::cout) {
-        out << "SPXRatio::PrintNominalFileGraphMapKeys: " << std::endl;
-        out << "\t Key Format: [Grid, PDF]" << std::endl;
-        out << "\t ============ KNOWN KEYS ============" << std::endl;
-        for(StringPairGraphMap_T::iterator it = convoluteFileGraphMap->begin(); it != convoluteFileGraphMap->end(); ++it) {
-            out << "\t [" << it->first.first << ", " << it->first.second << "]" << std::endl;
-        }
-        out << "\t ====================================" << std::endl << std::endl;
-    }
-
-    void PrintConvoluteFilePDFMapKeys(std::ostream &out = std::cout) {
-        out << "SPXRatio::PrintConvoluteFilePDFMapKeys: " << std::endl;
-        out << "\t Key Format: [Grid, PDF]" << std::endl;
-        out << "\t ============ KNOWN KEYS ============" << std::endl;
-        for(StringPairPDFMap_T::iterator it = convoluteFilePDFMap->begin(); it != convoluteFilePDFMap->end(); ++it) {
-            out << "\t [" << it->first.first << ", " << it->first.second << "]" << std::endl;
-        }
-        out << "\t ====================================" << std::endl << std::endl;
-    }
-
-    void PrintConvoluteFileGraphMapKeys(std::ostream &out = std::cout) {
-        out << "SPXRatio::PrintConvoluteFileGraphMapKeys: " << std::endl;
-        out << "\t Key Format: [Grid, PDF]" << std::endl;
-        out << "\t ============ KNOWN KEYS ============" << std::endl;
-        for(StringPairGraphMap_T::iterator it = convoluteFileGraphMap->begin(); it != convoluteFileGraphMap->end(); ++it) {
-            out << "\t [" << it->first.first << ", " << it->first.second << "]" << std::endl;
-        }
-        out << "\t ====================================" << std::endl << std::endl;
-    }
-
+    void PrintDataFileGraphMapKeys(std::ostream &out = std::cout);
+    void PrintReferenceFileGraphMapKeys(std::ostream &out = std::cout);
+    void PrintNominalFileGraphMapKeys(std::ostream &out = std::cout);
+    void PrintConvoluteFilePDFMapKeys(std::ostream &out = std::cout);
+    void PrintConvoluteFileGraphMapKeys(std::ostream &out = std::cout);
+ 
+    bool DataFileGraphMapHasSystematics();
+   
     void Divide(void);
 
     std::vector<TGraphAsymmErrors *> GetRatioGraph(void) {
-    if(ratioGraph.size()==0) {
-     throw SPXGraphException("SPXRatio::GetRatioGraph: Ratio graph is empty"); 
-    }
+     if(ratioGraph.size()==0) {
+      throw SPXGraphException("SPXRatio::GetRatioGraph: Ratio graph is empty"); 
+     }
      return ratioGraph;
     }
 

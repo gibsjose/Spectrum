@@ -117,10 +117,10 @@ public:
 		return dividedByBinWidth;
 	}
 
-
 	unsigned int GetNumberOfIndividualSystematicErrors(void) const {
-		return individualSystematics.size();
-	}
+	 return individualSystematics.size();
+        }
+
 
 	std::vector<double> GetDataColumn(const std::string &column) {
 		return data[column];
@@ -150,6 +150,8 @@ public:
 		return data["stat"];
 	}
 
+
+
 	//NOTE: Returns average of postive and negative error
 	//std::vector<double> & GetSystematicErrorVector(void) {
 	//  return 0.5*(data["syst_p"]+data["syst_n"]);
@@ -163,6 +165,8 @@ public:
 		return data["syst_n"];
 	}
 
+	std::vector <TGraphAsymmErrors *> GetSystematicsErrorGraphs(void);
+
 	TGraphAsymmErrors * GetStatisticalErrorGraph(void) {
 
 	if(!this->statisticalErrorGraph) {
@@ -171,6 +175,8 @@ public:
          return this->statisticalErrorGraph;
 	}
 
+	TGraphAsymmErrors * GetSystematicErrorGraph(int i);
+
 	TGraphAsymmErrors * GetSystematicErrorGraph(void) {
 
 	 if(!this->systematicErrorGraph) {
@@ -178,6 +184,7 @@ public:
 	  }
 	  return this->systematicErrorGraph;
 	}
+
 
 	TGraphAsymmErrors * GetTotalErrorGraph(void) {
 	 if(!this->totalErrorGraph) {
@@ -210,6 +217,8 @@ private:
 	//Graph containing systematic errors
 	TGraphAsymmErrors *systematicErrorGraph;
 
+	std::vector <TGraphAsymmErrors *> individualsystematicErrorGraph;
+
 	//Actual data graph containing total errors
 	TGraphAsymmErrors *totalErrorGraph;
 
@@ -225,6 +234,8 @@ private:
 
         void ReadCorrelationMatrix(std::string filename);
         void CalculateSystematicCovarianceMatrix();
+
+	std::string GetCorrespondingSystematicName(std::string systename);
 
         StringDoubleVectorMap_T SymmetrizeSystemicUncertaintiesMatrix(StringDoubleVectorMap_T syst);
 

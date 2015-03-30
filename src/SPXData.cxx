@@ -34,7 +34,7 @@ SPXData::SPXData(const SPXPlotConfigurationInstance &pci) {
  statisticalErrorGraph=0;
  systematicErrorGraph=0;
  totalErrorGraph=0;
-
+ 
  cov_matrixtot=0;
  cov_matrixstat=0;
  cov_matrixsyst=0;
@@ -42,6 +42,8 @@ SPXData::SPXData(const SPXPlotConfigurationInstance &pci) {
  corr_matrixtot=0;
  corr_matrixstat=0;
  corr_matrixsyst=0;
+
+ individualsystematicErrorGraph.clear();
 
  // Parse in data
   
@@ -1479,7 +1481,7 @@ void SPXData::PrintSystematics(StringDoubleVectorMap_T syst) {
  std::string mn = "PrintSystematics: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
         
- std::cout<<" Number systematics uncertainties= "<<syst.size()<<std::endl;
+ std::cout<<cn<<mn<<" Number of systematics uncertainties= "<<syst.size()<<std::endl;
 
  for(StringDoubleVectorMap_T::iterator it = syst.begin(); it != syst.end(); it++) {
   const std::string &syst_name = it->first;
@@ -1498,3 +1500,132 @@ void SPXData::PrintSystematics(StringDoubleVectorMap_T syst) {
  std::cout << std::endl << std::endl;
  return;
 }
+
+
+TGraphAsymmErrors * SPXData::GetSystematicErrorGraph(int isyst){
+ std::string mn ="GetSystematicErrorGraph: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+        
+ if ( individualsystematicErrorGraph.size()==0) {
+  std::vector <TGraphAsymmErrors *> vsyst=this->GetSystematicsErrorGraphs();
+ }
+
+ if (isyst>individualsystematicErrorGraph.size()){
+  std::ostringstream oss;
+  oss <<cn<<mn<<"isyst too large isyst= "<<isyst<<" graph size= " <<individualsystematicErrorGraph.size()<<std::endl;
+  throw SPXParseException(oss.str());
+ }
+
+ return individualsystematicErrorGraph.at(isyst);
+
+}
+
+
+std::vector <TGraphAsymmErrors *>  SPXData::GetSystematicsErrorGraphs(void){
+ std::string mn ="GetSystematicsErrorGraphs: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ if ( individualsystematicErrorGraph.size()==0) {
+  if (debug) {
+   std::cout<<cn<<mn<<"Fill individualsystematicErrorGraph vector from map"<<std::endl;  
+   //std::cout<<cn<<mn<<"Copy values from graph= "<<systematicErrorGraph->GetName()<<std::endl;
+   //systematicErrorGraph->Print();
+  }
+
+  std::vector<double> csyst;
+  std::vector<double> csyst2;
+
+  for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); ++it) {
+
+   // add negative systematic to positive systematics
+
+   std::string syst_name = it->first;
+   
+   if (syst_name.find("-") != std::string::npos) continue;
+
+   if (debug) std::cout<<cn<<mn<<"Fill individualsystematicErrorGraph syst_name= "<<syst_name<<std::endl;  
+
+   csyst = it->second;
+
+   csyst2.clear();
+
+   std::string syst_name2=SPXData::GetCorrespondingSystematicName(syst_name);
+   if (debug)   std::cout<<cn<<mn<<"Found for syst_name "<<syst_name<<" syst_name2= "<<syst_name2<<std::endl;  
+
+   if (individualSystematics.count(syst_name2)) {
+    if (debug) std::cout<<cn<<mn<<"Corresponding negative systematic found name= "<< syst_name2.c_str() << std::endl;
+    csyst2 = (individualSystematics[syst_name2]);
+   }
+
+   if (csyst2.size()==0) {
+    std::ostringstream oss;
+    oss <<cn<<mn<<"Corresponding systematics vector not found for " <<syst_name2.c_str();
+    throw SPXParseException(oss.str());
+   }
+
+   if (csyst.size()!=csyst2.size()) {
+    std::ostringstream oss;
+    oss <<cn<<mn<<"Different size positive "<<csyst.size()<<" and negative "<<csyst2.size()<<" systematics vector ";
+    throw SPXParseException(oss.str());
+   }
+
+   // first copy over from total systematic
+   TGraphAsymmErrors *gsyst = new TGraphAsymmErrors(*systematicErrorGraph);
+   TString sname=syst_name;
+   sname.ReplaceAll("+","");
+   sname.ReplaceAll("-","");
+   gsyst->SetName(sname);
+
+   // Now fill high and low systematics
+   if (debug) std::cout<<" loop over systematic vector Nbin= "<<csyst.size()<<std::endl;
+
+   for (int ibin=0; ibin<csyst.size(); ibin++) {
+    double value=0., x;
+    systematicErrorGraph->GetPoint(ibin, x,value);
+    double eyh=csyst.at(ibin) /100*value;
+    double eyl=csyst2.at(ibin)/100*value;
+  
+    //if (debug) std::cout<<ibin<<" value= "<<value<<" syst= "<<csyst.at(ibin)<<" "<<csyst2.at(ibin)<<" eyh= "<<eyh<<" eyl= "<<eyl<<std::endl;
+
+    gsyst->SetPointEYhigh(ibin,eyh);
+    gsyst->SetPointEYlow (ibin,eyl);
+   }
+   if (debug) gsyst->Print();
+
+   individualsystematicErrorGraph.push_back(gsyst);
+  }
+ } 
+
+ return individualsystematicErrorGraph;
+
+
+}
+
+std::string SPXData::GetCorrespondingSystematicName(std::string syst_name){
+ std::string mn ="GetCorrespondingSystematicName: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ std::string newsystname="";
+ TString sname=syst_name;
+
+ if (syst_name.find("+") != std::string::npos) {
+  //if (debug) std::cout<<cn<<mn<<"Positive systematic name= "<< syst_name  << std::endl;
+  sname.ReplaceAll("+","-");
+  if (individualSystematics.count(std::string(sname.Data()))) {
+    //if (debug) std::cout<<cn<<mn<<"Corresponding negative systematic found in map sname= "<< sname.Data()  << std::endl;
+   newsystname=sname;
+   return newsystname;
+  }
+ } else if (syst_name.find("-") != std::string::npos) {
+  if (debug) std::cout<<cn<<mn<<"Negative systematic name= "<< syst_name  << std::endl;
+  sname.ReplaceAll("-","+");
+  if (individualSystematics.count(std::string(sname.Data()))) {
+   //if (debug) std::cout<<cn<<mn<<"Corresponding positive systematic found in map sname= "<< sname.Data()  << std::endl;
+   newsystname=sname;
+   return newsystname;
+  }
+ } else 
+ std::cout<<cn<<mn<<"WARNING systematics sname= "<< sname.Data() <<" negative or positive ? " << std::endl;
+ 
+ return newsystname;
+};

@@ -38,6 +38,7 @@ double SPXGraphUtilities::GetXMin(std::vector<TGraphAsymmErrors *> graphs) {
     return min;
 }
 
+
 double SPXGraphUtilities::GetXMax(std::vector<TGraphAsymmErrors *> graphs) {
 
     double max = -1e30;
@@ -110,6 +111,27 @@ double SPXGraphUtilities::GetYMax(std::vector<TGraphAsymmErrors *> graphs) {
     return max;
 }
 
+
+double SPXGraphUtilities::GetLargestError(TGraphAsymmErrors* graph) {
+
+ double errormax = -1e30;
+    
+ for(int j = 0; j < graph->GetN(); j++) {
+  //Loop over bins
+  double x = 0., y = 0., error = 0.;
+
+  graph->GetPoint(j, x, y);
+  error = (graph->GetErrorYlow(j) +  graph->GetErrorYhigh(j))/2.;
+  error/=y; // relative error
+  //error = graph->GetErrorYlow(j)/y;
+
+  if(errormax < error) {
+   errormax = error;
+  }
+ }
+
+ return errormax;
+}
 
 TGraphAsymmErrors* SPXGraphUtilities::TH1TOTGraphAsymm(TH1 *h1)
 {

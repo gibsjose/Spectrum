@@ -411,7 +411,7 @@ void SPXPlot::DivideCanvasIntoPads(void) {
 	canvas->Divide(1, 2);
 	std::string canvasID = canvas->GetName();
 	overlayPad = (TPad *)canvas->GetListOfPrimitives()->FindObject(TString(canvasID + "_1"));
-	ratioPad = (TPad *)canvas->GetListOfPrimitives()->FindObject(TString(canvasID + "_2"));
+	ratioPad   = (TPad *)canvas->GetListOfPrimitives()->FindObject(TString(canvasID + "_2"));
 
 	if(!overlayPad || !ratioPad) {
 		throw SPXROOTException(cn + mn + "There was an error while getting the TPads from the divided TCanvas");
@@ -2294,12 +2294,37 @@ void SPXPlot::InitializeData(void) {
 		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename(), totGraph));
 		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename() + "_stat", statGraph));
 
+                if (steeringFile->ShowIndividualSystematics()!=0) {
+
+		  std::vector <TGraphAsymmErrors *> vsyst;
+                  vsyst=data[i]->GetSystematicsErrorGraphs();
+		  if(debug) std::cout<<cn<<mn<<"Number of systematic found= " << vsyst.size() <<std::endl;
+                  for (int isyst=0; isyst<vsyst.size(); isyst++) {
+		   std::string systname=vsyst.at(isyst)->GetName();
+		   if(dataFileGraphMap.count(systname)>0) {
+		    std::cout<<cn<<mn<< "WARNING systematics"<<systname.c_str()<<" already in map "<< std::endl; 
+                   }
+                   double emax=  SPXGraphUtilities::GetLargestError(vsyst.at(isyst));
+                   emax*=100.; // in percent
+		   if (emax>steeringFile->ShowIndividualSystematics()) {
+		    if (debug) {
+		     std::cout<<cn<<mn<<"Add systematic "<<systname.c_str()<<" to dataFileGraphMap"<< std::endl;
+                     vsyst.at(isyst)->Print(); 
+                     std::cout<<cn<<mn<<systname.c_str()<<" Largest systematics "<<emax<<" above "<<steeringFile->ShowIndividualSystematics()<<std::endl;
+                    }
+ 		    dataFileGraphMap.insert(StringGraphPair_T(systname, vsyst.at(isyst)));
+		   } else {
+		     if (debug) std::cout<<cn<<mn<<"systematics "<<systname.c_str()<<" too small ! Largest systematics= "<<emax<<" < " << steeringFile->ShowIndividualSystematics() <<std::endl;
+                   }
+                  }                 
+                }
+
 		if(dataFileGraphMap.count(pci.dataSteeringFile.GetFilename())>0) {
-			if(debug) {
-				std::cout << cn << mn << "Added data to map: [" << pci.dataSteeringFile.GetFilename() << "]" << std::endl;
-			}
+		 if(debug) {
+		  std::cout << cn << mn << "Added data to map: [" << pci.dataSteeringFile.GetFilename() << "]" << std::endl;
+		 }
 		} else {
-			std::cerr << "---> Warning: Unable to add data to map: [" << pci.dataSteeringFile.GetFilename() << "]" << std::endl;
+		 std::cerr << "---> Warning: Unable to add data to map: [" << pci.dataSteeringFile.GetFilename() << "]" << std::endl;
 		}
 	}
 }

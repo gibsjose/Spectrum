@@ -58,6 +58,9 @@ void SPXSteeringFile::SetDefaults(void) {
 	plotStaggered = false;
 	if(debug) std::cout << cn << mn << "plotStaggered set to default: \"false\"" << std::endl;
 
+	showIndividualSystematics = 0.;
+	if(debug) std::cout << cn << mn << "showIndividualSystematics set to default: \"0\"" << std::endl;
+
 	matchBinning = true;
 	if(debug) std::cout << cn << mn << "matchBinning set to default: \"true\"" << std::endl;
 
@@ -272,6 +275,10 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Add luminosity label on Legend: " << (AddLumi ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Add journal label on Legend: " << (AddJournal ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Add journal year on Legend: " << (AddJournalYear ? "YES" : "NO") << std::endl;
+        if (showIndividualSystematics==0)
+	 std::cout << "\t\t Show NO individual systematics: " << std::endl;
+        if (showIndividualSystematics>0)
+	 std::cout << "\t\t Show individual systematics with one bin above "<<showIndividualSystematics << std::endl;
 
 	std::cout << "\t\t X main Legend: " << xLegend << std::endl;
 	std::cout << "\t\t Y main Legend: " << yLegend << std::endl;
@@ -1623,6 +1630,8 @@ void SPXSteeringFile::Parse(void) {
 	matchBinning   = reader->GetBoolean("GRAPH", "match_binning", matchBinning);
 	gridCorr       = reader->GetBoolean("GRAPH", "apply_grid_corr", gridCorr);
 	labelSqrtS     = reader->GetBoolean("GRAPH", "label_sqrt_s", labelSqrtS);
+
+        showIndividualSystematics = reader->GetReal("GRAPH", "show_individual_systemtics", showIndividualSystematics);
 
 	xLegend = reader->GetReal("GRAPH", "x_legend", xLegend);
 	yLegend = reader->GetReal("GRAPH", "y_legend", yLegend);

@@ -6,6 +6,10 @@
 
 ## Change Log
 
+- add possibility to plot individual systematic uncertainty using SPXRatio for ratiostyle DataOverData
+
+- move helper function in SPXRatio.h to SPXRatio.cxx
+
 - for DataOverConvolute also Draw statistical uncertainty in ratios 
 
 - added in lumi_scale_factor in SPXData
