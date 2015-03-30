@@ -7,21 +7,24 @@
 user=$USER
 U=${user:0:1}
 
-#
-#Install directory for installation of APPLgrid, LHAPDF, Hoppet, FastJet, etc.
-export INSTALLDIR=/afs/cern.ch/work/$U/$USER/public/usr-slc6/
-export BASEDIR=/afs/cern.ch/user/$U/$USER/www/Spectrum
-#
-#
-#
 ### setup for SLC6
-export platform=x86_64-slc6-gcc46-opt
+#export platform=x86_64-slc6-gcc46-opt
+export platform=x86_64-slc6-gcc48-opt
+# 
+#Install directory for installation of APPLgrid Hoppet  etc.
+#export INSTALLDIR=/afs/cern.ch/work/$U/$USER/public/usr-slc6/
+#export INSTALLDIR=/afs/cern.ch/work/$U/$USER/public/${platform}
+export INSTALLDIR=/afs/cern.ch/work/a/applgrid/public/${platform}
+#export BASEDIR=/afs/cern.ch/user/$U/$USER/www/Spectrum 
+export BASEDIR=`pwd`
+#
 #
 export external=/afs/cern.ch/sw/lcg/external
 export releases=/afs/cern.ch/sw/lcg/app/releases
 export contrib=/afs/cern.ch/sw/lcg/contrib
 #
-source ${contrib}/gcc/4.6/${platform}/setup.sh
+#source ${contrib}/gcc/4.6/${platform}/setup.sh
+source ${contrib}/gcc/4.8/${platform}/setup.sh
 #
 #
 #
@@ -29,34 +32,35 @@ source ${contrib}/gcc/4.6/${platform}/setup.sh
 
 ### ROOT ###
 # Uncomment to use ROOT v5.34.05
-export ROOTSYS=/afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.05/${platform}/root
+#export ROOTSYS=/afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.05/${platform}/root
+export  ROOTSYS=/afs/cern.ch/sw/lcg/app/releases/ROOT/6.02.05/${platform}/root
 
 ### LHAPDF ###
 #export LHAPDFPATH=${BASEDIR}/lhapdf/5.9.1
-export LHAPDFPATH=/afs/cern.ch/sw/lcg/external/MCGenerators/lhapdf/5.8.9/${platform}
+#export LHAPDFPATH=/afs/cern.ch/sw/lcg/external/MCGenerators/lhapdf/5.8.9/${platform}
+export LHAPDFPATH=/afs/cern.ch/sw/lcg/external/MCGenerators_lcgcmt67b/lhapdf6/6.1.5/${platform}
+export LHAPDF_DATA_PATH=/afs/cern.ch/sw/lcg/external/lhapdfsets/current
 
 ### FASTJET ###
-export FASTJET=/afs/cern.ch/sw/lcg/external/fastjet/3.0.3/${platform}
+#export FASTJET=/afs/cern.ch/sw/lcg/external/fastjet/3.0.3/${platform}
 
 ### HOPPET ###
-#export HOPPET=${BASEDIR}/hoppet/1.1.5
 export HOPPET=$INSTALLDIR/hoppet/1.1.5
 
 ### APPLGRID ###
-#export APPLGRID=${BASEDIR}/applgrid/1.4.56
 export APPLGRID=$INSTALLDIR/applgrid/1.4.56
 
 ### SHERPA ###
 #export SHERPA=${BASEDIR}/sherpa
 #
 ### explicitly update paths
-export PATH=${APPLGRID}/bin:${HOPPET}/bin:${LHAPDFPATH}/bin:${ROOTSYS}/bin:$LHAPDFPATH/bin:${PATH}
-export LD_LIBRARY_PATH=${APPLGRID}/lib::${HOPPET}/lib:${ROOTSYS}/lib:$LHAPDFPATH/lib:${LD_LIBRARY_PATH}
+export PATH=${APPLGRID}/bin:${HOPPET}/bin:${LHAPDFPATH}/bin:${ROOTSYS}/bin:${PATH}
+export LD_LIBRARY_PATH=${APPLGRID}/lib:${HOPPET}/lib:${ROOTSYS}/lib:$LHAPDFPATH/lib:${LD_LIBRARY_PATH}
 #
 #
 cd $BASEDIR
-rm -f PDFsets
-ln -s `lhapdf-config --pdfsets-path`  PDFsets
+#rm -f PDFsets
+#ln -s `lhapdf-config --pdfsets-path`  PDFsets
 
 #
 ### Link to APPLgrids and PDFSets to local directory
