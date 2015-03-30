@@ -1,0 +1,49 @@
+;==============================================================
+;
+; Description:
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = false
+
+;==============================================================
+; Description
+;==============================================================
+[DESC]
+name = MMHT2014nlo68cl
+;name_var = 
+type = MMHT2014 ; general name used for printing etc
+order = 1
+num_members = 51
+; 
+
+;==============================================================
+; Style Options
+;==============================================================
+[STYLE]
+fill_style = 3001
+;fill_color = 417
+fill_color = 417
+marker_style = 21
+
+;==============================================================
+; PDF Options
+;==============================================================
+[PDF]
+default_id = 0
+default_id_var = 0
+band_type = use_error_band
+;
+ErrorPropagationType = 1
+;error_type = scale_band
+error_type = pdf_band
+;error_type = alphas_band
+;
+error_size = one_sigma
+; PDF set member number
+alpha_s_error_number_up = 4
+alpha_s_error_number_down = 1
+alpha_s_pdf_name_up = MMHT2014nlo_asmzsmallrange
+alpha_s_pdf_name_down = MMHT2014nlo_asmzsmallrange
+

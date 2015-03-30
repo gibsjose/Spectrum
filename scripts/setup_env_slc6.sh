@@ -40,6 +40,8 @@ export  ROOTSYS=/afs/cern.ch/sw/lcg/app/releases/ROOT/6.02.05/${platform}/root
 #export LHAPDFPATH=/afs/cern.ch/sw/lcg/external/MCGenerators/lhapdf/5.8.9/${platform}
 export LHAPDFPATH=/afs/cern.ch/sw/lcg/external/MCGenerators_lcgcmt67b/lhapdf6/6.1.5/${platform}
 export LHAPDF_DATA_PATH=/afs/cern.ch/sw/lcg/external/lhapdfsets/current
+#export LHAPDF_DATA_PATH=/cvmfs/sft.cern.ch/lcg/external/lhapdfsets/current
+
 
 ### FASTJET ###
 #export FASTJET=/afs/cern.ch/sw/lcg/external/fastjet/3.0.3/${platform}

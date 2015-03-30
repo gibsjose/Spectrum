@@ -1,0 +1,74 @@
+;==============================================================
+;
+; Description:
+;	Example PDF Steering File
+;
+; Authors:
+;	Jon Doe
+;	Jean Pierre Larousse
+;	...
+;
+; Date:
+;	17.09.2014
+;
+; Other:
+;	Other information...
+;
+;==============================================================
+
+;--------------------------------------------------------------
+; NOTE:
+;
+; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
+;
+;	"  some_thing = "  <--- BAD
+;	"; some_thing = "  <--- OKAY
+;
+; If you forget to do this, some trailing comments could
+; be included in the option's value
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = false
+
+;==============================================================
+; Description
+;==============================================================
+[DESC]
+name = NNPDF30_nlo_as_0118_nolhc
+type = NNPDF30_nolhc ; general name used for printing etc
+order = 1
+num_members = 101
+; pdf_set_path =
+
+;==============================================================
+; Style Options
+;==============================================================
+[STYLE]
+fill_style = 3005
+fill_color = 593
+marker_style = 23
+
+;==============================================================
+; PDF Options
+;==============================================================
+[PDF]
+default_id = 0
+default_id_var = 0
+band_type = use_error_band
+;
+ErrorPropagationType = 3
+;error_type = scale_band
+error_type = pdf_band
+;error_type = alphas_band
+;
+; PDF set member number
+alpha_s_error_number_up = 0
+alpha_s_error_number_down = 0
+alpha_s_pdf_name_up = NNPDF30_nlo_as_0119_nolhc
+alpha_s_pdf_name_down = NNPDF30_nlo_as_0117_nolhc
+
+
