@@ -28,7 +28,7 @@
 # Top parton
 #
 ./Spectrum Steering/atlas_topparton_mtt.txt
-./Spectrum Steering/atlas_topparton_ptttop.txt
+./Spectrum Steering/atlas_topparton_pttop.txt
 ./Spectrum Steering/atlas_topparton_ttbarpt.txt
 ./Spectrum Steering/atlas_topparton_ttbary.txt
 #
