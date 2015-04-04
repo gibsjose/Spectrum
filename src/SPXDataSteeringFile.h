@@ -44,7 +44,7 @@ private:
 	std::string experiment;				//Experiment
 	std::string reaction;				//Reaction name
 	std::string datasetYear;			//Year of dataset
-	std::string datasetLumi;			//Dataset luminosity string
+	std::string datasetLumilabel;			//Dataset luminosity label string 
 	std::string referenceJournalName;	//Name of journal
 	std::string referenceJournalYear;	//Year of publication in journal
 	std::string referenceArXivNumber;	//ID number of arXiv
@@ -80,6 +80,10 @@ private:
 	bool normalizedToTotalSigma;	        //Flag to indicate that cross section data is normalized to the total cross section
 	bool errorInPercent;			//Flag to indicate the errors in the data file are given in percents
 	double lumiScaleFactor;			//Luminosity scale factor: Default to 1.0
+	double lumiValue;			//Luminosity value:      
+	double lumiError;			//Luminosity uncertainty 
+
+        bool addLumiSystematic;                // Add luminosity uncertainty as additional systematic components 
 
 	void SetDefaults(void);
 
@@ -119,8 +123,9 @@ public:
 	}
 
 	const std::string & GetDatasetLumi(void) const {
-		return datasetLumi;
+		return datasetLumilabel;
 	}
+
 
 	const std::string & GetReferenceJournalName(void) const {
 		return referenceJournalName;
@@ -254,9 +259,24 @@ public:
 		return errorInPercent;
 	}
 
+	bool AddLuminosityUncertainyToSystematics(void) const {
+		return addLumiSystematic;
+	}
+
+
 	double GetLumiScaleFactor(void) const {
 		return lumiScaleFactor;
 	}
+
+	double GetDatasetValue(void) const {
+		return lumiValue;
+	}
+
+	double GetDatasetUncertainty(void) const {
+		return lumiError;
+	}
+
+
 };
 
 #endif

@@ -1507,7 +1507,7 @@ void SPXSteeringFile::Parse(void) {
 
 	if(filename.empty()) {
 	 //throw SPXFileIOException(filename, "Empty file string \"\" was given");
-	 std::cout<<cn<<mn<<"WARNING no steering file given, do not know what to do, return "<<std::endl;
+	 std::cout<<cn<<mn<<"WARNING: no steering file given, do not know what to do, return "<<std::endl;
          return;
 	}
 
@@ -1631,7 +1631,7 @@ void SPXSteeringFile::Parse(void) {
 	gridCorr       = reader->GetBoolean("GRAPH", "apply_grid_corr", gridCorr);
 	labelSqrtS     = reader->GetBoolean("GRAPH", "label_sqrt_s", labelSqrtS);
 
-        showIndividualSystematics = reader->GetReal("GRAPH", "show_individual_systemtics", showIndividualSystematics);
+        showIndividualSystematics = reader->GetReal("GRAPH", "show_individual_systematics", showIndividualSystematics);
 
 	xLegend = reader->GetReal("GRAPH", "x_legend", xLegend);
 	yLegend = reader->GetReal("GRAPH", "y_legend", yLegend);

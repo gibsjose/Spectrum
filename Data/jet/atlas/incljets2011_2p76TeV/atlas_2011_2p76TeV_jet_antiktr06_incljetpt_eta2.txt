@@ -36,4 +36,6 @@ data_file =atlas_2011_2p76TeV_jet_antiktr06_incljetpt_eta2_data.txt
 divided_by_bin_width = true
 divided_by_doublediff_bin_width = false
 error_in_percent = true
- 
+lumi_value = 0.0002
+lumi_error = 2.7
+add_lumi_uncertainty_to_systematics = true 

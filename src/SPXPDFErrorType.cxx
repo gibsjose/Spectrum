@@ -114,7 +114,7 @@ bool SPXPDFErrorType::IsValid(void) {
 
 	//Empty style: valid, but empty
 	if(this->IsEmpty()){
-	 std::cout << cn << mn << "WARNING PDF Error Type is empty" << std::endl;
+	 std::cout << cn << mn << "WARNING: PDF Error Type is empty" << std::endl;
 	 return true;
 	}
 

@@ -52,7 +52,7 @@ void SPXDataFormat::Parse(std::string s) {
 	if(!s.compare("spectrum")) {
 		if(debug) std::cout << cn << mn << "Successfully matched format string: \"spectrum\"" << std::endl;
 		format = DF_SPECTRUM;
-		if(debug) std::cout << cn << mn << "Data Format successfully set to \"spectrun\"" << std::endl;
+		if(debug) std::cout << cn << mn << "Data Format successfully set to \"spectrum\"" << std::endl;
 	}
 	else if(!s.compare("herafitter")) {
 		if(debug) std::cout << cn << mn << "Successfully matched format string: \"herafitter\"" << std::endl;

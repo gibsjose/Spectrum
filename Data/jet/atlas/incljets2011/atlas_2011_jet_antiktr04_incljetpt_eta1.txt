@@ -6,7 +6,7 @@ comments = This is a test comment
 reference_journal_year = unknown
 reference_arxiv_year = 2014
 data_set_year = 2011
-data_set_lumi = 4.5
+data_set_lumi = 4.5 fb^{-1}
 publication_status = published
 reference_arxiv_number = arXiv:1410.8857
 reference_journal_name = none
@@ -34,5 +34,9 @@ divided_by_bin_width = true
 divided_by_doublediff_bin_width = false
 error_in_percent = true
 lumi_scale_factor = 1.0
+lumi_value = 4.5
+lumi_error = 1.8
+add_lumi_uncertainty_to_systematics = true
+
 ; 
  

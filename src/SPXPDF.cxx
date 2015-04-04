@@ -237,7 +237,7 @@ void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
 
   if (TString(AlphaSPDFSetNameUp).Contains("none") ||
       TString(AlphaSPDFSetNameDown).Contains("none") ){
-    std::cout<<cn<<mn<<"WARNING Need to provide AlphaSPDFSetNameUp and AlphaSPDFSetNameDown to evaluate alphas uncertainty, do_Alphas turned off ";
+    std::cout<<cn<<mn<<"WARNING: Need to provide AlphaSPDFSetNameUp and AlphaSPDFSetNameDown to evaluate alphas uncertainty, do_Alphas turned off ";
     do_AlphaS=false;
   }
 
@@ -298,7 +298,7 @@ void SPXPDF::Initialize()
  } else {
   std::cout<<"INFO No SPX grid found open via name "<<std::endl;
   if (gridName.size()==0) {
-   std::cout<<cn<<mn<<"WARNING no gridname given "<<std::endl;
+   std::cout<<cn<<mn<<"WARNING: no gridname given "<<std::endl;
   } else {
    if (debug) std::cout<<cn<<mn<<"construct gridname= "<<TString(gridName).Data()<<std::endl;
    my_grid = new appl::grid(gridName.c_str());
@@ -638,11 +638,11 @@ void SPXPDF::Initialize()
    if(alphaS_variations.at(0)==alphaS_variations.at(1) ||
       alphaS_variations.at(1)==alphaS_variations.at(2) ||
       alphaS_variations.at(0)==alphaS_variations.at(2) ) {
-    std::cout<<cn<<mn<<"WARNING alphaS_variations should be different ! "<< h_errors_AlphaS.at(0)->GetName()<<std::endl;
+    std::cout<<cn<<mn<<"WARNING: alphaS_variations should be different ! "<< h_errors_AlphaS.at(0)->GetName()<<std::endl;
     for (int i=0; i<3; i++){
       std::cout<<cn<<mn<<i<<" value= "<<alphaS_variations.at(i)<<std::endl;
     }
-    std::cerr<<cn<<mn<<"WARNING alphaS_variations should be different ! "<<h_errors_AlphaS.at(0)->GetName()<<std::endl;
+    std::cerr<<cn<<mn<<"WARNING: alphaS_variations should be different ! "<<h_errors_AlphaS.at(0)->GetName()<<std::endl;
    }
   }
  }
@@ -680,7 +680,7 @@ void SPXPDF::Initialize()
    if (ErrorPropagationType==StyleHeraPDF) {
     if (!includeEIG&&!includeQUAD&&!includeMAX) std::cout<<cn<<mn<<" no error band included !! "<<std::endl;
 
-    if (defaultpdfidvar<0) std::cout<<cn<<mn<<"WARNING No default PDF id found in steering. Check steering for missing 'defaultpdfidvar'. pdferri= "<<pdferri<<std::endl;
+    if (defaultpdfidvar<0) std::cout<<cn<<mn<<"WARNING: No default PDF id found in steering. Check steering for missing 'defaultpdfidvar'. pdferri= "<<pdferri<<std::endl;
     if (pdferri <= lasteig ) {
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
       if (debug) std::cout<<cn<<mn<<"...mkPDF "<<PDFname.c_str()<<" pdferri= "<<pdferri<<std::endl;
@@ -704,8 +704,8 @@ void SPXPDF::Initialize()
       LHAPDF::initPDFSet(pdfname.Data(), defaultpdfidvar);
 #endif
      } else {
-      std::cout<<cn<<mn<<"WARNING Can not intitalize name= "<<PDFnamevar.c_str()<<" set= "<<defaultpdfidvar<<std::endl;
-      std::cerr<<cn<<mn<<"WARNING Can not intitalize name= "<<PDFnamevar.c_str()<<" set= "<<defaultpdfidvar<<std::endl;
+      std::cout<<cn<<mn<<"WARNING: Can not intitalize name= "<<PDFnamevar.c_str()<<" set= "<<defaultpdfidvar<<std::endl;
+      std::cerr<<cn<<mn<<"WARNING: Can not intitalize name= "<<PDFnamevar.c_str()<<" set= "<<defaultpdfidvar<<std::endl;
      }
     } else if ( pdferri > lasteig+1 ) {
       //>> modification P Berta 28.8.14>>
@@ -792,19 +792,19 @@ void SPXPDF::Initialize()
 
  if (do_PDFBand) if(h_PDFBand_results) {
   if (debug) std::cout<<cn<<mn<<" Fill in map "<<h_PDFBand_results->GetName()<<std::endl;
-  if (Mapallbands.count("pdf")>0) std::cout<<cn<<mn<<"WARNING Mapallbands[pdf] already filled ! "<<std::endl;
+  if (Mapallbands.count("pdf")>0) std::cout<<cn<<mn<<"WARNING: Mapallbands[pdf] already filled ! "<<std::endl;
   Mapallbands["pdf"]=h_PDFBand_results;
  }
 
  if (do_Scale) if(h_Scale_results){
   if (debug) std::cout<<cn<<mn<<" Fill in map "<<h_Scale_results->GetName()<<std::endl;
-  if (Mapallbands.count("scale")>0) std::cout<<cn<<mn<<"WARNING Mapallbands[scale] already filled ! "<<std::endl;
+  if (Mapallbands.count("scale")>0) std::cout<<cn<<mn<<"WARNING: Mapallbands[scale] already filled ! "<<std::endl;
   Mapallbands["scale"]=h_Scale_results;
  }
 
  if (do_AlphaS) if (h_AlphaS_results) {
   if (debug) std::cout<<cn<<mn<<" Fill in map "<<h_AlphaS_results->GetName()<<std::endl;
-  if (Mapallbands.count("alphas")>0) std::cout<<cn<<mn<<"WARNING Mapallbands[alphas] already filled ! "<<std::endl;
+  if (Mapallbands.count("alphas")>0) std::cout<<cn<<mn<<"WARNING: Mapallbands[alphas] already filled ! "<<std::endl;
   Mapallbands["alphas"]=h_AlphaS_results;
  }
 
@@ -867,7 +867,7 @@ void SPXPDF::CalcPDFBandErrors()
 
  if (h_errors_PDFBand.size()<1) {
   std::ostringstream oss;
-  oss << cn << mn << "ERROR h_error_PDFBand is too small "<<h_errors_PDFBand.size(); 
+  oss << cn << mn << "ERROR: h_error_PDFBand is too small "<<h_errors_PDFBand.size(); 
   throw SPXParseException(oss.str());
  }
 
@@ -1139,8 +1139,8 @@ void SPXPDF::CalcAlphaSErrors()
   if (dxup<1.e-12) {
    ifirstup++;
    if (ifirstup==1) {
-    std::cout<<cn<<mn<<"WARNING No variation in alphas up, can not calculate ALPHAS uncertainty "<<h_errors_AlphaS.at(2)->GetName()<<std::endl;
-    std::cerr<<cn<<mn<<"WARNING No variation in alphas up, can not calculate ALPHAS uncertainty "<<h_errors_AlphaS.at(2)->GetName()<<std::endl;
+    std::cout<<cn<<mn<<"WARNING: No variation in alphas up, can not calculate ALPHAS uncertainty "<<h_errors_AlphaS.at(2)->GetName()<<std::endl;
+    std::cerr<<cn<<mn<<"WARNING: No variation in alphas up, can not calculate ALPHAS uncertainty "<<h_errors_AlphaS.at(2)->GetName()<<std::endl;
    }
    error_up=0.;
   } else {
@@ -1152,8 +1152,8 @@ void SPXPDF::CalcAlphaSErrors()
   if (dxdn<1.e-12) {
    ifirstdn++;
    if (ifirstdn==1) {
-    std::cout<<cn<<mn<<"WARNING No variation in alphas down, can not calculate ALPHAS uncertainty "<< h_errors_AlphaS.at(1)->GetName()<<std::endl;
-    std::cerr<<cn<<mn<<"WARNING No variation in alphas down, can not calculate ALPHAS uncertainty "<< h_errors_AlphaS.at(1)->GetName()<<std::endl;
+    std::cout<<cn<<mn<<"WARNING: No variation in alphas down, can not calculate ALPHAS uncertainty "<< h_errors_AlphaS.at(1)->GetName()<<std::endl;
+    std::cerr<<cn<<mn<<"WARNING: No variation in alphas down, can not calculate ALPHAS uncertainty "<< h_errors_AlphaS.at(1)->GetName()<<std::endl;
    }
    error_down=0.;
   } else {
@@ -1240,12 +1240,12 @@ void SPXPDF::CalcTotalErrors()
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if (!do_Total) {
-  std::cout <<cn<<mn<< "WARNING do_total is off, will not calculate total error"<< std::endl;
+  std::cout <<cn<<mn<< "WARNING: do_total is off, will not calculate total error"<< std::endl;
   return;
  }
 
  if (Mapallbands.empty()) {
-  std::cout<<cn<<mn<<"WARNING Band map is empty; can not calculate total uncertainty "<<std::endl;
+  std::cout<<cn<<mn<<"WARNING: Band map is empty; can not calculate total uncertainty "<<std::endl;
   return;
  } 
 
@@ -1259,7 +1259,7 @@ void SPXPDF::CalcTotalErrors()
   if (debug)
    std::cout <<cn<<mn<< "map["<<it->first<<"]:"<< " graph name: " << it->second->GetName() <<" nbin= "<<nbin<< std::endl;
   if (nbin!=nbinold)
-   std::cout <<cn<<mn<<"WARNING Number of bins is different" <<" nbin= "<<nbin<<" nbinold= "<<nbinold<< std::endl;
+   std::cout <<cn<<mn<<"WARNING: Number of bins is different" <<" nbin= "<<nbin<<" nbinold= "<<nbinold<< std::endl;
 
   std::string gtype   =it->first;
   if (gtype.compare(std::string("total"))==0){
@@ -1294,8 +1294,8 @@ void SPXPDF::CalcTotalErrors()
    icount++;
    if (icount==1) { xold=x, yold=y; ioldx=icount, ioldy=icount;}
    else {   
-     if (xold!=x) std::cout <<cn<<mn<<"WARNING Something changed for "<<it->first<<" xold= "<<xold<<" x= "<<x<<" ratio= "<<xold/x<<" iold= "<<ioldx<<" icount= "<<icount<<std::endl;
-     if (yold!=y) std::cout <<cn<<mn<<"WARNING Something changed for "<<it->first<<" yold= "<<yold<<" y= "<<y<<" ratio= "<<yold/y<<" iold= "<<ioldy<<" icount= "<<icount<<std::endl;
+     if (xold!=x) std::cout <<cn<<mn<<"WARNING: Something changed for "<<it->first<<" xold= "<<xold<<" x= "<<x<<" ratio= "<<xold/x<<" iold= "<<ioldx<<" icount= "<<icount<<std::endl;
+     if (yold!=y) std::cout <<cn<<mn<<"WARNING: Something changed for "<<it->first<<" yold= "<<yold<<" y= "<<y<<" ratio= "<<yold/y<<" iold= "<<ioldy<<" icount= "<<icount<<std::endl;
    }
    h_Total_results->SetPoint(ibin,x,y);
 
@@ -1621,7 +1621,7 @@ TH1D * SPXPDF::FillPdfHisto(){
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if (!hpdf) {
-  throw SPXParseException(cn+mn+"WARNING FillPdfHistos histo not found ");
+  throw SPXParseException(cn+mn+"WARNING: FillPdfHistos histo not found ");
  }
  //const int nstep=1000;
  const double xmin=hpdf->GetBinCenter(1);
@@ -1720,7 +1720,7 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
  TGraphAsymmErrors *gband2=0;
 
  if (Mapallbands.empty()) {
-  std::cout<<cn<<mn<<"WARNING Band map is empty; can only show grid corrections, if specified "<<std::endl;
+  std::cout<<cn<<mn<<"WARNING: Band map is empty; can only show grid corrections, if specified "<<std::endl;
   // throw SPXParseException(cn+mn+"Map is empty");
  } 
 
@@ -1883,7 +1883,7 @@ bool SPXPDF::BandsHaveDifferentProperties(){
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if (Mapallbands.empty()) {
-  std::cout<<cn<<mn<<"WARNING Band map is empty; can only show grid corrections, if specified "<<std::endl;
+  std::cout<<cn<<mn<<"WARNING: Band map is empty; can only show grid corrections, if specified "<<std::endl;
   // throw SPXParseException(cn+mn+"Map is empty");
  } 
 
@@ -1947,7 +1947,7 @@ bool SPXPDF::BandsHaveDifferentMarker(){
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if (Mapallbands.empty()) {
-  std::cout<<cn<<mn<<"WARNING Band map is empty; can only show grid corrections, if specified "<<std::endl;
+  std::cout<<cn<<mn<<"WARNING: Band map is empty; can only show grid corrections, if specified "<<std::endl;
   // throw SPXParseException(cn+mn+"Map is empty");
  } 
 
@@ -1991,7 +1991,7 @@ bool SPXPDF::BandsHaveDifferentFillStyle(){
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if (Mapallbands.empty()) {
-  std::cout<<cn<<mn<<"WARNING Band map is empty; can only show grid corrections, if specified "<<std::endl;
+  std::cout<<cn<<mn<<"WARNING: Band map is empty; can only show grid corrections, if specified "<<std::endl;
   // throw SPXParseException(cn+mn+"Map is empty");
  } 
 
@@ -2035,7 +2035,7 @@ bool SPXPDF::HasDetailedBands(){
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if (Mapallbands.empty()) {
-  std::cout<<cn<<mn<<"WARNING Band map is empty; can only show grid corrections, if specified "<<std::endl;
+  std::cout<<cn<<mn<<"WARNING: Band map is empty; can only show grid corrections, if specified "<<std::endl;
   // throw SPXParseException(cn+mn+"Map is empty");
  } 
  // 

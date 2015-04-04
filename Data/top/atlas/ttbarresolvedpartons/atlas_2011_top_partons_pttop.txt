@@ -34,3 +34,6 @@ divided_by_bin_width = true
 error_in_percent = true
 normalized_to_total_sigma = true
 ; 
+lumi_value = 4.6
+lumi_error = 1.8
+add_lumi_uncertainty_to_systematics = true

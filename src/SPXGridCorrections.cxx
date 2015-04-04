@@ -335,32 +335,32 @@ TGraphAsymmErrors * SPXGridCorrections::GetCorrectionGraph(std::string &filename
   double c_x, c_xmin, c_xmax, c_y, c_eyl, c_eyh;
 
   if (corrections[filename].count("x")==0)
-   std::cout<<cn<<mn<<"WARNING element x not found in map "<<std::endl;
+   std::cout<<cn<<mn<<"WARNING: element x not found in map "<<std::endl;
   else
    c_x   = corrections[filename]["x"][i];
 
   if (corrections[filename].count("xmin")==0)
-   std::cout<<cn<<mn<<"WARNING element xmin not found in map "<<std::endl;
+   std::cout<<cn<<mn<<"WARNING: element xmin not found in map "<<std::endl;
   else
    c_xmin= corrections[filename]["xmin"][i];
 
   if (corrections[filename].count("xmax")==0)
-   std::cout<<cn<<mn<<"WARNING element xmax not found in map "<<std::endl;
+   std::cout<<cn<<mn<<"WARNING: element xmax not found in map "<<std::endl;
   else
    c_xmax= corrections[filename]["xmax"][i];
 
   if (corrections[filename].count("y")==0)
-   std::cout<<cn<<mn<<"WARNING element y not found in map "<<std::endl;
+   std::cout<<cn<<mn<<"WARNING: element y not found in map "<<std::endl;
   else
    c_y   = corrections[filename]["y"][i];
 
   if (corrections[filename].count("eyl")==0)
-   std::cout<<cn<<mn<<"WARNING element eyl not found in map "<<std::endl;
+   std::cout<<cn<<mn<<"WARNING: element eyl not found in map "<<std::endl;
   else
    c_eyl = corrections[filename]["eyl"][i];
 
   if (corrections[filename].count("eyh")==0)
-   std::cout<<cn<<mn<<"WARNING element eyh not found in map "<<std::endl;
+   std::cout<<cn<<mn<<"WARNING: element eyh not found in map "<<std::endl;
   else
    c_eyh = corrections[filename]["eyh"][i];
 
@@ -370,7 +370,7 @@ TGraphAsymmErrors * SPXGridCorrections::GetCorrectionGraph(std::string &filename
  }
 
  if (debug) {
-  std::cout<<cn<<mn<<" print graph"<<std::endl;
+  std::cout<<cn<<mn<<"Print graph"<<std::endl;
   gcorr->Print("all");
  }
 

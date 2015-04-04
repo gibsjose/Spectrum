@@ -29,4 +29,6 @@ data_format = spectrum
 data_file =atlas_2011_2p76TeV_jet_antiktr06_incljetxt_eta1_data.txt
 divided_by_bin_width = true
 error_in_percent = true
- 
+lumi_value = 0.0002
+lumi_error = 2.7
+add_lumi_uncertainty_to_systematics = true 

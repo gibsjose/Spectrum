@@ -121,8 +121,9 @@ int main(int argc, char *argv[]) {
     //     Analysis
     //=========================================================
     try {
-    	SPXAnalysis analysis = SPXAnalysis(&steeringFile);
-    	analysis.Run();
+      SPXAnalysis analysis = SPXAnalysis(&steeringFile);
+      analysis.Run();
+
     } catch(const SPXException &e) {
     	std::cerr << e.what() << std::endl;
     	std::cerr << "FATAL: Unable to perform successful analysis" << std::endl;
@@ -130,7 +131,7 @@ int main(int argc, char *argv[]) {
     }
 
 	if(drawApplication) {
-		spectrum->Run(kTRUE);
+	 spectrum->Run(kTRUE);
 	}
 
 	return 0;

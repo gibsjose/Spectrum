@@ -42,7 +42,17 @@ typedef StringDoubleMatrixMap_T::iterator StringDoubleMatrixMapIterator_T;
 class SPXUtilities {
 public:
 
+    static bool SortLargestRelativeError(TGraphAsymmErrors * g1, TGraphAsymmErrors * g2);
+
     static std::map<int, TGraphAsymmErrors * > OrderBandMap(std::vector< TGraphAsymmErrors *> inputgraph);
+    //static std::vector<TGraphAsymmErrors * > OrderGraphVector(std::vector< TGraphAsymmErrors *> inputgraph);
+    static std::vector<TGraphAsymmErrors * > OrderLargestRelativeErrorGraphVector (std::vector< TGraphAsymmErrors *> inputgraph);
+
+    static Color_t ICol(int i); // give color codes as function of 1...n
+    static Color_t IColBlue(int i); // give color codes as function of 1...n
+    static Color_t IColRed(int i); // give color codes as function of 1...n
+    static Color_t IColGreen(int i); // give color codes as function of 1...n
+
 
     static void PrintMethodHeader(const std::string &className, const std::string &methodName) {
         std::cout << std::endl;

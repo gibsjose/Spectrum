@@ -22,6 +22,8 @@ plot_staggered = true
 apply_grid_corr = true
 label_sqrt_s = true
 
+;show_individual_systematics = 1.
+
 ;band_with_pdf= false
 ;band_with_alphas= false
 ;band_with_scale = true

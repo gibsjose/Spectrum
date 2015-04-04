@@ -121,6 +121,9 @@ public:
 	 return individualSystematics.size();
         }
 
+	StringDoubleVectorMap_T GetIndividualSystematics(){
+	 return individualSystematics;
+        };
 
 	std::vector<double> GetDataColumn(const std::string &column) {
 		return data[column];
@@ -193,7 +196,9 @@ public:
 	  return this->totalErrorGraph;
 	}
 
-        TMatrixT<double>  *GetDataCovarianceMatrix() {return cov_matrixtot;};
+        TMatrixT <double> * GetDataTotalCovarianceMatrix() {return cov_matrixtot; };
+        TMatrixT <double> * GetDataStatCovarianceMatrix()  {return cov_matrixstat;};
+        TMatrixT <double> * GetDataSystCovarianceMatrix()  {return cov_matrixsyst;};
 
 private:
 	static bool debug;				//Flag indicating debug mode
@@ -238,6 +243,7 @@ private:
 	std::string GetCorrespondingSystematicName(std::string systename);
 
         StringDoubleVectorMap_T SymmetrizeSystemicUncertaintiesMatrix(StringDoubleVectorMap_T syst);
+
 
         // parsing and print methods
 

@@ -465,10 +465,10 @@ void SPXRatio::Divide(void) {
   try {
    
    for (int i=0; i<numeratorGraph.size(); i++){
-    if (debug) {
-     std::cout<<cn<<mn<<"numeratorGraph["<<i<<"]: " << numeratorGraph[i]->GetName()<<std::endl;
-     numeratorGraph[i]->Print();
-    }
+    //if (debug) {
+    //std::cout<<cn<<mn<<"numeratorGraph["<<i<<"]: " << numeratorGraph[i]->GetName()<<std::endl;
+    //numeratorGraph[i]->Print();
+    //}
     SPXGraphUtilities::MatchBinning(numeratorGraph[i], denominatorGraph, true);
    }
   } catch(const SPXException &e) {
@@ -522,12 +522,13 @@ void SPXRatio::Divide(void) {
    TGraphAsymmErrors *graph = SPXGraphUtilities::Divide(numeratorGraph[i], denominatorGraph,divideType); 
    if (!graph) throw SPXGraphException(cn + mn + "graph not found !");
 
-   if(debug) std::cout << cn + mn + "\nFill Options for graph with name: " << graph->GetName() << std::endl;
-   if(debug) std::cout << "\t Fill Style = " << graph->GetFillStyle() << std::endl;
-   if(debug) std::cout << "\t Fill Color = " << graph->GetFillColor() << std::endl;
-   if(debug) std::cout << "\t Marker Style= "<< graph->GetMarkerStyle() << std::endl;
-   if(debug) graph->Print();
-
+   if(debug) {
+     std::cout << cn + mn + "\nFill Options for graph "<<i<<" with name: " << graph->GetName() << std::endl;
+    std::cout << "\t Fill Style = " << graph->GetFillStyle() << std::endl;
+    std::cout << "\t Fill Color = " << graph->GetFillColor() << std::endl;
+    std::cout << "\t Marker Style= "<< graph->GetMarkerStyle() << std::endl;
+    //graph->Print();
+   }
    ratioGraph.push_back(graph);
   }
 
@@ -1121,6 +1122,9 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
  //double xmin=0.25, ymin=0.3, boxsize=0.05;
  double xmin=xbox, ymin=ybox, boxsize=0.05;
 
+ // std::vector<TGraphAsymmErrors * > ratioGraphord=SPXUtilities::OrderGraphVector(ratioGraph);
+ std::vector<TGraphAsymmErrors * > ratioGraphord=SPXUtilities::OrderLargestRelativeErrorGraphVector(ratioGraph);
+ 
  // plot data if requested
  if(IsDataStat() || IsDataTot()) {
   for (int igraph=0; igraph < ratioGraph.size(); igraph++) {
@@ -1146,12 +1150,38 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
  } else if ( IsDataOverData() ){
   
   if (!debug) std::cout<<"DataOverData!"<<std::endl;
-  for (int igraph=0; igraph < ratioGraph.size(); igraph++) {
-   TGraphAsymmErrors *graph = ratioGraph[igraph];
+  //for (std::vector<TGraphAsymmErrors *>::reverse_iterator igraph = ratioGraphord.rbegin();  igraph != ratioGraphord.rend(); ++igraph ) { 
+  for (std::vector<TGraphAsymmErrors *>::iterator igraph = ratioGraphord.begin();  igraph != ratioGraphord.end(); ++igraph ) { 
+   //for (int igraph=0; igraph < ratioGraphord.size(); igraph++) {
+   //TGraphAsymmErrors *graph = ratioGraphord.at(igraph);
+
+   TGraphAsymmErrors *graph = *igraph;
    if (!graph) std::cout<<"Graph not found !"<<std::endl;
    TString gname=graph->GetName();
-   if (debug) std::cout<<cn<<mn<<"Draw now gname= "<<gname.Data()<<" option= "<<option.c_str()<<std::endl;
-   if (debug) graph->Print();
+
+   if (gname.Contains("syst_")) {
+     option="e2";
+     Color_t icol=graph->GetLineColor();
+     //if (icol>910) icol=1;
+     //if (debug) std::cout<<cn<<mn<<" icol= "<<icol<<" "<<graph->GetName()<<std::endl;
+     //graph->SetFillColorAlpha(icol,0.1);
+     graph->SetFillStyle(3001);
+     TH1D *hedgelow =SPXGraphUtilities::GetEdgeHistogram(graph,true);
+     TH1D *hedgehigh=SPXGraphUtilities::GetEdgeHistogram(graph,false);
+
+     hedgehigh->SetLineWidth(3);
+     hedgelow ->SetLineWidth(3);
+
+     hedgehigh->Draw("][,same");
+     hedgelow ->Draw("][,same");
+
+   }
+
+   if (debug) {
+    double emax=SPXGraphUtilities::GetLargestRelativeError(graph);   
+    std::cout<<cn<<mn<<" emax= "<<emax<<" Draw now gname= "<<gname.Data()<<" option= "<<option.c_str()<<" color= "<< graph->GetLineColor()<<std::endl;
+    //graph->Print();
+   }
    graph->Draw(option.c_str());
   }
  } else {
@@ -1243,7 +1273,7 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
    pci=plotConfiguration.GetPlotConfigurationInstance(numeratorConvolutePDFFile);
   }
   
-  //if (!pci) std::cout<<cn<<mn<<"WARNING pci not found "<<std::endl;
+  //if (!pci) std::cout<<cn<<mn<<"WARNING: pci not found "<<std::endl;
 
   // now plot graph: largest first
   //std::cout<<cn<<mn<<" \n iterate over map " <<std::endl;

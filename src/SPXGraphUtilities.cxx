@@ -18,7 +18,6 @@ double SPXGraphUtilities::GetXMin(std::vector<TGraphAsymmErrors *> graphs) {
 
     double min = 1e30;
     
-
     for(int i = 0; i < graphs.size(); i++) {
         double xmin, xmax, ymin, ymax;
 
@@ -112,8 +111,9 @@ double SPXGraphUtilities::GetYMax(std::vector<TGraphAsymmErrors *> graphs) {
 }
 
 
-double SPXGraphUtilities::GetLargestError(TGraphAsymmErrors* graph) {
-
+double SPXGraphUtilities::GetLargestRelativeError(TGraphAsymmErrors* graph) {
+ // return systematics in the bin where it is largest
+ // the low variation is negative, the high variation is positive 
  double errormax = -1e30;
     
  for(int j = 0; j < graph->GetN(); j++) {
@@ -121,13 +121,16 @@ double SPXGraphUtilities::GetLargestError(TGraphAsymmErrors* graph) {
   double x = 0., y = 0., error = 0.;
 
   graph->GetPoint(j, x, y);
-  error = (graph->GetErrorYlow(j) +  graph->GetErrorYhigh(j))/2.;
+  //error = (graph->GetErrorYlow(j) +  graph->GetErrorYhigh(j))/2.;
+  error = graph->GetErrorYhigh(j);
+  if (graph->GetErrorYlow(j)>error) error=graph->GetErrorYlow(j);
   error/=y; // relative error
   //error = graph->GetErrorYlow(j)/y;
 
   if(errormax < error) {
    errormax = error;
   }
+  //std::cout<<cn<<"GetLargestRelativeError: j= "<<j<<" error= "<<error<<" errormax= "<<errormax<<std::endl;
  }
 
  return errormax;
@@ -726,12 +729,11 @@ TH1D *SPXGraphUtilities::GetEdgeHistogram(TGraphAsymmErrors * g, bool low) {
      throw SPXGraphException(cn + mn + "Graph provided was invalid");
     }
 
-
     TString name=TString("h")+g->GetName();
     if (low) name+="LowEdge";
     else     name+="HighEdge";
 
-    std::cout<<cn<<mn<<" name= "<<name<<std::endl;
+    //std::cout<<cn<<mn<<" name= "<<name<<std::endl;
   
     int nbin=g->GetN();
 
@@ -750,6 +752,10 @@ TH1D *SPXGraphUtilities::GetEdgeHistogram(TGraphAsymmErrors * g, bool low) {
     //std::cout << cn<<mn<<"xbins["<<nbin<<"]= "<<xbins[nbin] <<std::endl;
 
     TH1D *h1 = new TH1D(name,name,nbin,xbins); 
+    if (!h1) std::cout << cn<<mn<<"WARNING: Problem creating edge histogram for graph "<<g->GetName()<<std::endl;
+
+    int icol=g->GetLineColor();
+    h1->SetLineColor(icol);
 
     for(int ibin = 0; ibin < nbin; ibin++) {
         double eyh=g->GetErrorYhigh(ibin);
@@ -963,7 +969,7 @@ void SPXGraphUtilities::Multiply(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, i
  int nBins2 = g2->GetN();
  if (nBins1!=nBins2) {
   std::ostringstream oss;
-  oss << cn <<mn<<"WARNING Graph g1 "<<g1->GetName()<<" NBin1= "<<nBins1
+  oss << cn <<mn<<"WARNING: Graph g1 "<<g1->GetName()<<" NBin1= "<<nBins1
                    <<" and graph g2 "<<g2->GetName()<<" NBin2= "<<nBins2
                    <<" do not have the same lenght ! ";
   throw SPXParseException(oss.str());
@@ -1061,7 +1067,7 @@ int SPXGraphUtilities::CompareValues(TGraphAsymmErrors *g1, TGraphAsymmErrors *g
  int nBins2 = g2->GetN();
  if (nBins1!=nBins2) {
   std::ostringstream oss;
-  oss << cn <<mn<<"WARNING Graph g1 "<<g1->GetName()<<" NBin1= "<<nBins1
+  oss << cn <<mn<<"WARNING: Graph g1 "<<g1->GetName()<<" NBin1= "<<nBins1
                    <<" and graph g2 "<<g2->GetName()<<" NBin2= "<<nBins2
                    <<" do not have the same lenght ! ";
   throw SPXParseException(oss.str());

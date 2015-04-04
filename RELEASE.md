@@ -6,6 +6,19 @@
 
 ## Change Log
 
+ 
+ -SPXUtilities: functions to choose color codes as function on index 1...n
+                ICol IColGreen IColBlue IColRed
+
+                added OrderLargestRelativeErrorGraphVector order graph according to largest relative error
+                added SortLargestRelativeError corresponding sort function
+
+ -SPXData:: make public access to individual systematic uncertainty map
+            Warning if systematics appears twice
+
+  Added: lumi_value, lumi_error, add_lumi_uncertainty_to_systematics 
+  All tables updated
+
 - add possibility to plot individual systematic uncertainty using SPXRatio for ratiostyle DataOverData
 
 - move helper function in SPXRatio.h to SPXRatio.cxx

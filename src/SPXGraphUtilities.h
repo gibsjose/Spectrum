@@ -60,7 +60,7 @@ public:
 	static double GetYMin(std::vector<TGraphAsymmErrors *> graphs);
 	static double GetYMax(std::vector<TGraphAsymmErrors *> graphs);
 
-        static double GetLargestError(TGraphAsymmErrors* graphs);
+        static double GetLargestRelativeError(TGraphAsymmErrors* graphs);
 
 	static void MatchBinning(TGraphAsymmErrors *master, TGraphAsymmErrors *slave, bool dividedByBinWidth);
 

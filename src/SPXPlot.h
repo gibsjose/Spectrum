@@ -90,7 +90,7 @@ private:
 	static bool debug;					// Flag indicating debug mode
 	SPXSteeringFile *steeringFile;				// Fully parsed steering file
 	unsigned int id;					// Plot number ID (0-based)
-	//std::vector<SPXData> data;				// Vector of data
+
         std::vector<SPXData*> data;				// Vector of data
 	std::vector<SPXCrossSection> crossSections;		// Vector of cross sections
 	std::vector<SPXRatio> ratios;				// Vector of ratios
@@ -145,6 +145,7 @@ private:
         TString FormatSqrtLabel(double sqrtsval);
         TString FormatjetRLabel(double jet);
         TString FormatetabinLabel(TString varname, double binmin, double binmax);
+        TString FormatwithExp(double xinput);
 };
 
 #endif

@@ -181,7 +181,7 @@ void SPXPDFSteeringFile::Parse(void) {
 
 	if(filename.empty()) {
 	 //throw SPXFileIOException(filename, "Empty file string \"\" was given");
-	 std::cout<<cn<<mn<<"WARNING no steering file given, do not know what to do, return "<<std::endl;
+	 std::cout<<cn<<mn<<"WARNING: no steering file given, do not know what to do, return "<<std::endl;
          return;
 	}
 

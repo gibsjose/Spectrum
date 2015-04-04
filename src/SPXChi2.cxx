@@ -103,7 +103,7 @@ double SPXChi2::CalculateSimpleChi2(SPXPDF *pdf, SPXData *data) {
  // theory_tot_cov_matrix->Print();
  //}
 
- TMatrixT<double> *data_cov_matrix =data->GetDataCovarianceMatrix();
+ TMatrixT<double> *data_cov_matrix =data->GetDataTotalCovarianceMatrix();
  if (!data_cov_matrix) {
   std::ostringstream oss;
   oss << cn <<mn<<"Data covariance matrix not found !";

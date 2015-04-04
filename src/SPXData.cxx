@@ -147,7 +147,6 @@ void SPXData::ParseSpectrum(void) {
 	 if (debug) std::cout<<cn<<mn<<"Rescale data by factor= "<<faclumi<<std::endl;
 	} 
 
-
 	while(dataFile->good()) {
 		std::getline(*dataFile, line);
 
@@ -190,11 +189,31 @@ void SPXData::ParseSpectrum(void) {
 					if(debug) std::cout << cn << mn << "Converted to asymmetric errors: " << p_name << " and " << n_name << std::endl;
 					if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
 
+                                        if (faclumi!=1) {
+					 //if (debug) std::cout<<cn<<mn<<"Rescale data by factor "<<faclumi<<std::endl;
+                                         std::transform(tmp_syst.begin(), tmp_syst.end(), tmp_syst.begin(), 
+                                         std::bind1st(std::multiplies<double>(), faclumi));
+                                        }
+
 					//Add to map
 					StringDoubleVectorPair_T p_pair(p_name, tmp_syst);
 					StringDoubleVectorPair_T n_pair(n_name, tmp_syst);
+
+
+                                        if (individualSystematics.count(p_name)>0) {
+					 std::cout<<cn<<mn<<"WARNING: positive systematics "<<p_name.c_str()<<" already in map "<<std::endl;
+					 std::cerr<<cn<<mn<<"WARNING: positive systematics "<<p_name.c_str()<<" already in map "<<std::endl;
+					}
+
+                                        if ( individualSystematics.count(n_name)>0) {
+					 std::cout<<cn<<mn<<"WARNING: negative systematics "<<n_name.c_str()<<" already in map "<<std::endl;
+					 std::cerr<<cn<<mn<<"WARNING: negative systematics "<<n_name.c_str()<<" already in map "<<std::endl;
+					}
+
 					individualSystematics.insert(p_pair);
 					individualSystematics.insert(n_pair);
+
+					//std::cout<<cn<<mn<<"2 count= "<<individualSystematics.count(p_name)<<std::endl;
 				}
 
 				//Asymmetric Error: If '-', make sure there was already a '+', else issue warning
@@ -224,7 +243,16 @@ void SPXData::ParseSpectrum(void) {
 
 					//Add it to the map
 					StringDoubleVectorPair_T pair(name, tmp_syst);
+
+					//std::cout<<cn<<mn<<"1 count= "<<individualSystematics.count(name)<<std::endl;
+                                        if ( individualSystematics.count(name)>0) {
+					 std::cout<<cn<<mn<<"WARNING: systematics "<<name.c_str()<<" already in map "<<std::endl;
+					 std::cerr<<cn<<mn<<"WARNING: systematics "<<name.c_str()<<" already in map "<<std::endl;
+					}
+
 					individualSystematics.insert(pair);
+
+					//std::cout<<cn<<mn<<"1 count= "<<individualSystematics.count(name)<<std::endl;
 				}
 			}
 
@@ -324,6 +352,17 @@ void SPXData::ParseSpectrum(void) {
 		throw SPXParseException("No total systematic error provided AND no individuals to sum");
 	}
 
+	if (pci.dataSteeringFile.AddLuminosityUncertainyToSystematics()) {
+	 if(debug) std::cout<<cn<<mn<<"Add luminosity as systematic components"<<std::endl;
+         double elumi=pci.dataSteeringFile.GetDatasetUncertainty();
+	 std::vector<double> tmp_syst(masterSize,elumi);
+	 std::string name="syst_lumi";
+         StringDoubleVectorPair_T p_pair(name+"+", tmp_syst);
+	 individualSystematics.insert(p_pair);
+         StringDoubleVectorPair_T n_pair(name+"-", tmp_syst);
+	 individualSystematics.insert(n_pair);
+        }
+
 	//If necessary, compute/compare total positive/negative systematics for each bin using the individual systematic errors
 	if(pos_count) {
 
@@ -391,8 +430,8 @@ void SPXData::ParseSpectrum(void) {
                                 }
 				double given_total_p = syst_p.at(i);
 				double given_total_n = syst_n.at(i);
-				double delta_p = abs(given_total_p - syst_p_t);
-				double delta_n = abs(given_total_n - syst_n_t);
+				double delta_p = fabs(given_total_p - syst_p_t);
+				double delta_n = fabs(given_total_n - syst_n_t);
 				double average_p = (given_total_p + syst_p_t) / 2;
 				double average_n = (given_total_n + syst_n_t) / 2;
 
@@ -1463,11 +1502,11 @@ StringDoubleVectorMap_T SPXData::SymmetrizeSystemicUncertaintiesMatrix(StringDou
    if (symsystmap.count(std::string(sname.Data()))) {
     if (debug2) std::cout<<cn<<mn<<"already averaged sname= "<< sname  << std::endl;
    } else {
-    std::cout<<cn<<mn<<"WARNING not yet in map, there is mismatch between +/- errors "<< sname  << std::endl;
+    std::cout<<cn<<mn<<"WARNING: not yet in map, there is mismatch between +/- errors "<< sname  << std::endl;
    }
   } else {
-   std::cout<<cn<<mn<<"WARNING systematics sname= "<< sname <<" negative or positive ? " << std::endl;
-   std::cout<<cn<<mn<<"WARNING Do not know what to do....add to map " << std::endl;
+   std::cout<<cn<<mn<<"WARNING: systematics sname= "<< sname <<" negative or positive ? " << std::endl;
+   std::cout<<cn<<mn<<"WARNING: Do not know what to do....add to map " << std::endl;
    symsystmap[name]=syst;
   }
  }
@@ -1551,6 +1590,11 @@ std::vector <TGraphAsymmErrors *>  SPXData::GetSystematicsErrorGraphs(void){
 
    std::string syst_name2=SPXData::GetCorrespondingSystematicName(syst_name);
    if (debug)   std::cout<<cn<<mn<<"Found for syst_name "<<syst_name<<" syst_name2= "<<syst_name2<<std::endl;  
+   if (syst_name2.empty()) {
+    std::ostringstream oss;
+    oss <<cn<<mn<<"Corresponding systematics vector not found for " <<syst_name.c_str();
+    throw SPXParseException(oss.str());
+   }
 
    if (individualSystematics.count(syst_name2)) {
     if (debug) std::cout<<cn<<mn<<"Corresponding negative systematic found name= "<< syst_name2.c_str() << std::endl;
@@ -1559,7 +1603,8 @@ std::vector <TGraphAsymmErrors *>  SPXData::GetSystematicsErrorGraphs(void){
 
    if (csyst2.size()==0) {
     std::ostringstream oss;
-    oss <<cn<<mn<<"Corresponding systematics vector not found for " <<syst_name2.c_str();
+    oss <<cn<<mn<<"Corresponding systematics vector not found for " <<syst_name2.c_str()
+                <<" corresponding to "<<syst_name.c_str();
     throw SPXParseException(oss.str());
    }
 
@@ -1590,7 +1635,7 @@ std::vector <TGraphAsymmErrors *>  SPXData::GetSystematicsErrorGraphs(void){
     gsyst->SetPointEYhigh(ibin,eyh);
     gsyst->SetPointEYlow (ibin,eyl);
    }
-   if (debug) gsyst->Print();
+   //if (debug) gsyst->Print();
 
    individualsystematicErrorGraph.push_back(gsyst);
   }
@@ -1625,7 +1670,7 @@ std::string SPXData::GetCorrespondingSystematicName(std::string syst_name){
    return newsystname;
   }
  } else 
- std::cout<<cn<<mn<<"WARNING systematics sname= "<< sname.Data() <<" negative or positive ? " << std::endl;
+ std::cout<<cn<<mn<<"WARNING: systematics sname= "<< sname.Data() <<" negative or positive ? " << std::endl;
  
  return newsystname;
 };

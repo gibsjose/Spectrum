@@ -45,8 +45,8 @@ void SPXDataSteeringFile::SetDefaults(void) {
 	datasetYear.clear();
 	if(debug) std::cout << cn << mn << "datasetYear set to default: \" \"" << std::endl;
 
-	datasetLumi.clear();
-	if(debug) std::cout << cn << mn << "datasetLumi set to default: \" \"" << std::endl;
+	datasetLumilabel.clear();
+	if(debug) std::cout << cn << mn << "datasetLumilabel set to default: \" \"" << std::endl;
 
 	referenceJournalName.clear();
 	if(debug) std::cout << cn << mn << "referenceJournalName set to default: \" \"" << std::endl;
@@ -128,6 +128,14 @@ void SPXDataSteeringFile::SetDefaults(void) {
 
 	lumiScaleFactor = 1.0;
 	if(debug) std::cout << cn << mn << "lumiScaleFactor set to default: \"1.0\"" << std::endl;
+
+	lumiValue = 0.0;
+	if(debug) std::cout << cn << mn << "lumi value lumiValue set to default: \"0.0\"" << std::endl;
+
+	lumiError = 0.0;
+	if(debug) std::cout << cn << mn << "lumi uncertainty lumiError set to default: \"0.0\"" << std::endl;
+
+
 }
 
 //Print the Data Steering File Data in a nice format
@@ -141,7 +149,8 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t\t Experiment: " << experiment << std::endl;
 	std::cout << "\t\t Reaction: " << reaction << std::endl;
 	std::cout << "\t\t Dataset Year: " << datasetYear << std::endl;
-	std::cout << "\t\t Dataset Luminosity: " << datasetLumi << std::endl;
+	std::cout << "\t\t Dataset Luminosity label: " << datasetLumilabel << std::endl;
+	std::cout << "\t\t Dataset Luminosity: " << lumiValue <<" +- "<<lumiError<<"[%]"<< std::endl;
 	std::cout << "\t\t Reference Journal Name: " << referenceJournalName << std::endl;
 	std::cout << "\t\t Reference Journal Year: " << referenceJournalYear << std::endl;
 	std::cout << "\t\t Reference arXiv Number: " << referenceArXivNumber << std::endl;
@@ -186,7 +195,7 @@ void SPXDataSteeringFile::Parse(void) {
 
 	if(filename.empty()) {
 	 //throw SPXFileIOException(filename, "Empty file string \"\" was given");
-	 std::cout<<cn<<mn<<"WARNING no steering file given, do not know what to do, return "<<std::endl;
+	 std::cout<<cn<<mn<<"WARNING: no steering file given, do not know what to do, return "<<std::endl;
          return; 
 	} else
 	 if (debug) std::cout<<cn<<mn<<"Steering file name= "<<filename.c_str()<<std::endl;
@@ -254,9 +263,10 @@ void SPXDataSteeringFile::Parse(void) {
 	if(!tmp.compare("EMPTY")) {
 		if(debug) std::cout << cn << mn << "Dataset Luminosity was not specified" << std::endl;
 	} else {
-		datasetLumi = tmp;
-		if(debug) std::cout << cn << mn << "Successfully read Dataset Luminosity: " << datasetLumi << std::endl;
+		datasetLumilabel = tmp;
+		if(debug) std::cout << cn << mn << "Successfully read Dataset Luminosity: " << datasetLumilabel << std::endl;
 	}
+
 
 	tmp = reader->Get("DESC", "reference_journal_name", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
@@ -439,4 +449,12 @@ void SPXDataSteeringFile::Parse(void) {
 	if(lumiScaleFactor == 0) {
 		std::cerr << cn << mn << "WARNING: Luminosity Scale Factor read as \"0.0\", data/convolute may be scaled to zero" << std::endl;
 	}
+
+	lumiValue = reader->GetReal("DATA", "lumi_value", lumiValue);
+	lumiError = reader->GetReal("DATA", "lumi_error", lumiError);
+
+	addLumiSystematic = reader->GetBoolean("DATA", "add_lumi_uncertainty_to_systematics", false);
+	if(debug) std::cout << cn << mn << "Add luminosity systematic as additional systematic componenent: " << (addLumiSystematic ? "ON" : "OFF") << std::endl;
+
+
 }
