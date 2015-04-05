@@ -1122,9 +1122,7 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
  //double xmin=0.25, ymin=0.3, boxsize=0.05;
  double xmin=xbox, ymin=ybox, boxsize=0.05;
 
- // std::vector<TGraphAsymmErrors * > ratioGraphord=SPXUtilities::OrderGraphVector(ratioGraph);
- std::vector<TGraphAsymmErrors * > ratioGraphord=SPXUtilities::OrderLargestRelativeErrorGraphVector(ratioGraph);
- 
+  
  // plot data if requested
  if(IsDataStat() || IsDataTot()) {
   for (int igraph=0; igraph < ratioGraph.size(); igraph++) {
@@ -1150,7 +1148,12 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
  } else if ( IsDataOverData() ){
   
   if (!debug) std::cout<<"DataOverData!"<<std::endl;
-  //for (std::vector<TGraphAsymmErrors *>::reverse_iterator igraph = ratioGraphord.rbegin();  igraph != ratioGraphord.rend(); ++igraph ) { 
+ 
+ //std::vector<TGraphAsymmErrors * > ratioGraphord=SPXUtilities::OrderGraphVector(ratioGraph);
+ //std::vector<TGraphAsymmErrors * > ratioGraphord=SPXUtilities::OrderLargestRelativeErrorGraphVector(ratioGraph);
+ std::vector<TGraphAsymmErrors * > ratioGraphord=SPXUtilities::OrderLargestBinNumberGraphVector(ratioGraph);
+
+ //for (std::vector<TGraphAsymmErrors *>::reverse_iterator igraph = ratioGraphord.rbegin();  igraph != ratioGraphord.rend(); ++igraph ) { 
   for (std::vector<TGraphAsymmErrors *>::iterator igraph = ratioGraphord.begin();  igraph != ratioGraphord.end(); ++igraph ) { 
    //for (int igraph=0; igraph < ratioGraphord.size(); igraph++) {
    //TGraphAsymmErrors *graph = ratioGraphord.at(igraph);

@@ -43,10 +43,14 @@ class SPXUtilities {
 public:
 
     static bool SortLargestRelativeError(TGraphAsymmErrors * g1, TGraphAsymmErrors * g2);
+    static bool SortLargestBinNumber    (TGraphAsymmErrors * g1, TGraphAsymmErrors * g2);
 
     static std::map<int, TGraphAsymmErrors * > OrderBandMap(std::vector< TGraphAsymmErrors *> inputgraph);
     //static std::vector<TGraphAsymmErrors * > OrderGraphVector(std::vector< TGraphAsymmErrors *> inputgraph);
     static std::vector<TGraphAsymmErrors * > OrderLargestRelativeErrorGraphVector (std::vector< TGraphAsymmErrors *> inputgraph);
+
+
+    static std::vector<TGraphAsymmErrors * > OrderLargestBinNumberGraphVector (std::vector< TGraphAsymmErrors *> inputgraph);
 
     static Color_t ICol(int i); // give color codes as function of 1...n
     static Color_t IColBlue(int i); // give color codes as function of 1...n

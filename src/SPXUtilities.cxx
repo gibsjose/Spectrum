@@ -38,10 +38,35 @@ bool SPXUtilities::SortLargestRelativeError(TGraphAsymmErrors * g1, TGraphAsymmE
   return sort;
 };
 
+bool SPXUtilities::SortLargestBinNumber(TGraphAsymmErrors * g1, TGraphAsymmErrors * g2){
+  std::string mn = "SortLargestBinNumber: ";
+
+  if (!g1) {
+   std::cout<<cn<<mn<<"WARNING: no input graph g1 found ! "<<std::endl;
+   return false;
+  }
+
+  if (!g2) {
+   std::cout<<cn<<mn<<"WARNING: no input graph g2 found ! "<<std::endl;
+   return false;
+  }
+
+  int n1=SPXGraphUtilities::CompareValues(g1, g2, true);
+  int n2=SPXGraphUtilities::CompareValues(g2, g1, true);
+
+  bool sort=false;
+  if (n1>n2) sort=true;
+
+  //if (sort) std::cout<<cn<<mn<<" sort= "<<sort<<std::endl;
+  //std::cout<<cn<<mn<<" g1= "<<g1->GetName()<<" n1= "<<n1<<" g2= "<<g2->GetName()<<" n2= "<<n2<<std::endl;
+ 
+  return sort;
+};
+
 std::vector<TGraphAsymmErrors * >  SPXUtilities::OrderLargestRelativeErrorGraphVector(std::vector< TGraphAsymmErrors *> inputgraph){
   std::string mn = "OrderLargestRelativeGraphVector: ";
   //
-  // order graphs
+  // order graphs according to largest relative errors in nay of the bins
   //
 
   std::vector<TGraphAsymmErrors * > outputgraph;
@@ -62,6 +87,26 @@ std::vector<TGraphAsymmErrors * >  SPXUtilities::OrderLargestRelativeErrorGraphV
   //}
 
 }
+
+std::vector<TGraphAsymmErrors * > SPXUtilities::OrderLargestBinNumberGraphVector (std::vector< TGraphAsymmErrors *> inputgraph){
+  std::string mn = "OrderLargestBinNumberGraphVector: ";
+  //
+  // order graphs according to the largest number of bins that have larger errors 
+  //
+
+  std::vector<TGraphAsymmErrors * > outputgraph;
+  outputgraph.clear();  
+
+  if (inputgraph.size()==0) {
+   std::cout<<cn<<mn<<"WARNING: no input graph found ! "<<std::endl;
+   return outputgraph;
+  }
+
+  sort(inputgraph.begin(), inputgraph.end(), SortLargestBinNumber);
+
+  outputgraph=inputgraph;
+
+};
 
 /*
 std::vector<TGraphAsymmErrors * > SPXUtilities::OrderGraphVector(std::vector< TGraphAsymmErrors *> inputgraph){
