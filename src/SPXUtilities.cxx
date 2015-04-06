@@ -283,16 +283,18 @@ Color_t SPXUtilities::ICol(int i){
 Color_t SPXUtilities::IColBlue(int i){
   if (i== 0) return kPink+9;
   if (i== 1) return kBlue;
-  if (i== 2) return kBlue+2;
-  if (i== 3) return kBlue-6;
-  if (i== 4) return kBlue-9;
-  if (i== 5) return kAzure+6;
-  if (i== 6) return kAzure+1;
-  if (i== 7) return kViolet+1;
+  if (i== 2) return kViolet+1;
+  if (i== 3) return kBlue+2;
+  if (i== 4) return kAzure+6;
+  if (i== 5) return kBlue-6;
+  if (i== 6) return kBlue-9;
+  if (i== 7) return kAzure+1;
   if (i== 8) return kViolet-2;
   if (i== 9) return kCyan-4;
   if (i==10) return kCyan-8;
   if (i==11) return kCyan-2;
+
+  std::cout<<cn<<"IColBlue:: WARNING: Not optimized for i> "<<i<<std::endl;
 
   return kAzure-i;
 }
@@ -321,7 +323,7 @@ Color_t SPXUtilities::IColGreen(int i){
   if (i== 0) return kSpring;
   if (i== 1) return kGreen;
   if (i== 2) return kGreen+2;
-  if (i== 3) return kGreen+4;
+  if (i== 3) return kTeal+3;
   if (i== 4) return kGreen-3;
   if (i== 5) return kGreen-8;
   if (i== 6) return kSpring-2;

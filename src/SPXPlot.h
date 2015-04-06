@@ -19,6 +19,12 @@
 #include <set>
 #include <map>
 
+// if set timer is on
+#define TIMER
+#ifdef TIMER
+#include "appl_grid/appl_timer.h"
+#endif
+
 #include "SPXSteeringFile.h"
 
 #include "SPXRatio.h"

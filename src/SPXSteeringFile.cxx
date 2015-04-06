@@ -64,6 +64,9 @@ void SPXSteeringFile::SetDefaults(void) {
 	matchBinning = true;
 	if(debug) std::cout << cn << mn << "matchBinning set to default: \"true\"" << std::endl;
 
+	TakeSignforTotalError = true;
+	if(debug) std::cout << cn << mn << "TakeSignforTotalError set to default: \"true\"" << std::endl;
+
 	gridCorr = false;
 	if(debug) std::cout << cn << mn << "gridCorr set to default: \"false\"" << std::endl;
 
@@ -110,16 +113,16 @@ void SPXSteeringFile::SetDefaults(void) {
 	if(debug) std::cout << cn << mn << "yRatioMax set to default: \"" << MAX_EMPTY << "\"" << std::endl;
 
 	CalculateChi2 = 0;
-	if(debug) std::cout << cn << mn << " CalculateChi2 set to default: OFF" << std::endl;
+	if(debug) std::cout << cn << mn << "CalculateChi2 set to default: OFF" << std::endl;
 
         AddLumi=false;
-	if(debug) std::cout << cn << mn << " Addlumi set to default: OFF" << std::endl;
+	if(debug) std::cout << cn << mn << "Addlumi set to default: OFF" << std::endl;
 
         AddJournal=false;
-	if(debug) std::cout << cn << mn << " AddJournal set to default: OFF" << std::endl;
+	if(debug) std::cout << cn << mn << "AddJournal set to default: OFF" << std::endl;
 
         AddJournalYear=false;
-	if(debug) std::cout << cn << mn << " AddJournalYear set to default: OFF" << std::endl;
+	if(debug) std::cout << cn << mn << "AddJournalYear set to default: OFF" << std::endl;
 
 }
 
@@ -271,6 +274,8 @@ void SPXSteeringFile::Print(void) {
         if (CalculateChi2==0) std::cout << "\t\t Calculate Chi2: OFF" << std::endl;
         if (CalculateChi2==1) std::cout << "\t\t Calculate Simple Chi2" << std::endl;
 	std::cout << "\t\t Grid Corrections are: " << (gridCorr ? "ON" : "OFF") << std::endl;
+	std::cout << "\t\t Take sign when adding total error: " << (TakeSignforTotalError? "ON" : "OFF") << std::endl;
+
 	std::cout << "\t\t Label Sqrt(s) on Legend: " << (labelSqrtS ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Add luminosity label on Legend: " << (AddLumi ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Add journal label on Legend: " << (AddJournal ? "YES" : "NO") << std::endl;
@@ -662,11 +667,47 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 				SPXStringUtilities::VectorToCommaSeparatedList(configurations["data_marker_style"]) << std::endl;
 		}
 
+                // 
+		//Get the systematic class
+		
+       	        if(debug) std::cout<<cn<<mn<<"Start parsing display_systematic_group " << std::endl;
+		tmp = reader->Get(plotSection, "display_systematic_group", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout<<cn<<mn<<"INFO: No plot option for display_systematic_group found"<< std::endl;
+		} else {
+		 //Parse into vector
+		 systematicsclasses = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		 if(debug) {
+		  std::cout<<cn<<mn<<"display_systematic_group configuration string: " << tmp << " parsed into:" << std::endl;
+		  for(int j = 0; j < systematicsclasses.size(); j++) {
+		   std::cout<<cn<<mn<< "\t" << systematicsclasses[j] << std::endl;
+		  }
+		 }
+		}
+
+                if(debug) std::cout<<cn<<mn<<"Start parsing display_systematic_group_color " << std::endl;
+		tmp = reader->Get(plotSection, "display_systematic_group_color", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout<<cn<<mn<<"INFO: No plot option for display_systematic_group_color found"<< std::endl;
+		} else {	       
+		 //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		 if(debug) {
+		  std::cout<<cn<<mn<<"display_systematic_group_color configuration string: " << tmp << " parsed into:" << std::endl;
+                 }
+		  for(int j = 0; j < tmpVector.size(); j++) {
+		   if (debug) std::cout<<cn<<mn<< "\t" << tmpVector[j] << std::endl;
+                   systematicsclassescolor.push_back( atoi(tmpVector.at(j).c_str()));	       
+		 }
+		}
+
+
+		// 
 		//Get the data_marker_color
        	        if(debug) std::cout << cn << mn << "Start parsing data_marker_color " << std::endl;
 		tmp = reader->Get(plotSection, "data_marker_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-			std::cout << cn << mn << "INFO: No plot option for data_marker_color found: Defaulting to pre-defined settings (" << DEFAULT_DATA_MARKER_COLOR << ")" << std::endl;
+		 std::cout << cn << mn << "INFO: No plot option for data_marker_color found: Defaulting to pre-defined settings (" << DEFAULT_DATA_MARKER_COLOR << ")" << std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -1628,6 +1669,7 @@ void SPXSteeringFile::Parse(void) {
 	plotMarker     = reader->GetBoolean("GRAPH", "plot_marker", plotMarker);
 	plotStaggered  = reader->GetBoolean("GRAPH", "plot_staggered", plotStaggered);
 	matchBinning   = reader->GetBoolean("GRAPH", "match_binning", matchBinning);
+	TakeSignforTotalError = reader->GetBoolean("GRAPH", "take_sign_intoaccount_for_total_error", TakeSignforTotalError);
 	gridCorr       = reader->GetBoolean("GRAPH", "apply_grid_corr", gridCorr);
 	labelSqrtS     = reader->GetBoolean("GRAPH", "label_sqrt_s", labelSqrtS);
 
@@ -1673,6 +1715,7 @@ void SPXSteeringFile::Parse(void) {
 }
 
 void SPXSteeringFile::PrintDataSteeringFiles(void) {
+        std::cout<<" "<<std::endl;
 	for(int i = 0; i < plotConfigurations.size(); i++) {
 		for(int j = 0; j < plotConfigurations.at(i).GetNumberOfConfigurationInstances(); j++) {
 			SPXDataSteeringFile &dataSteeringFile = plotConfigurations.at(i).GetPlotConfigurationInstance(j).dataSteeringFile;

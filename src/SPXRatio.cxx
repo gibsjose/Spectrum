@@ -1162,22 +1162,26 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
    if (!graph) std::cout<<"Graph not found !"<<std::endl;
    TString gname=graph->GetName();
 
+   Color_t icol=graph->GetLineColor();
    if (gname.Contains("syst_")) {
      option="e2";
-     Color_t icol=graph->GetLineColor();
+
      //if (icol>910) icol=1;
      //if (debug) std::cout<<cn<<mn<<" icol= "<<icol<<" "<<graph->GetName()<<std::endl;
      //graph->SetFillColorAlpha(icol,0.1);
-     graph->SetFillStyle(3001);
+     //graph->SetFillStyle(3001);
      TH1D *hedgelow =SPXGraphUtilities::GetEdgeHistogram(graph,true);
      TH1D *hedgehigh=SPXGraphUtilities::GetEdgeHistogram(graph,false);
-
+     if (icol<0) {
+      //SPXGraphUtilities::SetColors(graph,-icol);
+      hedgehigh->SetLineColor(-icol);
+      hedgelow ->SetLineColor(-icol);
+     }
      hedgehigh->SetLineWidth(3);
      hedgelow ->SetLineWidth(3);
 
      hedgehigh->Draw("][,same");
      hedgelow ->Draw("][,same");
-
    }
 
    if (debug) {
@@ -1185,7 +1189,10 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
     std::cout<<cn<<mn<<" emax= "<<emax<<" Draw now gname= "<<gname.Data()<<" option= "<<option.c_str()<<" color= "<< graph->GetLineColor()<<std::endl;
     //graph->Print();
    }
-   graph->Draw(option.c_str());
+   if (icol>0)
+    graph->Draw(option.c_str());
+   else
+    std::cout<<cn<<mn<<"Graph "<<graph->GetName()<<" not plotted since color= "<< graph->GetLineColor()<<std::endl;
   }
  } else {
   // Is a convolute 

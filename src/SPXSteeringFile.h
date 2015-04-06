@@ -63,6 +63,10 @@ private:
 	bool plotMarker;	//Flag to indicate that data point markers should be plotted
 	bool plotStaggered;	//Flag to indicate that points should be staggered horizontally for readability
 	bool matchBinning;	//Flag to indicate that the binning of all graphs on the plot should be matched
+        bool TakeSignforTotalError; // Flag to calculate total data uncertainty
+                                    // when true all positive/negative uncertainty are added to total negative/positive total error
+                                    //      false uncertainties are taken as such
+
 	bool gridCorr;		//Flag to indicate that, if specified in the steering, the grid corrections should be applied
 	bool labelSqrtS;	//Flag to indicate that the Sqrt(s) value should be shown in the legend
 
@@ -77,6 +81,10 @@ private:
 	bool BandTotal;          // show the Total uncertainty band
 
         std::vector<bool> gridcorrections; // flags if grid correction go into band
+
+        std::vector<std::string> systematicsclasses;      // groups to display systematics
+        std::vector<int>         systematicsclassescolor; // groups to display systematics colors
+
 
         std::vector<double> RenScales; // vector for renormalisation scale variations
         std::vector<double> FacScales; // vector for factorisation scale variations
@@ -167,6 +175,13 @@ public:
 		return this->matchBinning;
 	}
 
+	bool GetTakeSignforTotalError(void) const {
+	  return this-> TakeSignforTotalError;
+	}
+
+
+
+
 	bool ApplyGridCorr(void) const {
 		return this->gridCorr;
 	}
@@ -177,7 +192,8 @@ public:
 
         double ShowIndividualSystematics(){
 	 return showIndividualSystematics; 
-         }
+        }
+
 	double GetXDataBoxLabel(void) const {
 	  return this->XDataBoxLabel;
 	}
@@ -271,6 +287,7 @@ public:
 	 //std::cout<<" gridcorrections.size()= "<<gridcorrections.size()<<std::endl;
 	 return gridcorrections.size(); 
         }
+
 	bool GetGridCorrectionToBand(int i) {
 	 if (i>=gridcorrections.size()){  
 	   //std::ostringstream oss;
@@ -278,9 +295,18 @@ public:
 	   //throw SPXParseException(oss.str());
            return false;
          } 
-
 	 return gridcorrections.at(i);
 	}
+
+        std::vector<std::string> GetSystematicClasses(){
+         // groups to display systematics
+         return systematicsclasses;      
+        }
+
+        std::vector<int> GetSystematicClassesColor(){         
+         // groups to display systematics colors
+         return systematicsclassescolor; 
+        }
 
         //bool HasData(int iplot) {
 	// if (iplot>hasdata.size()) {

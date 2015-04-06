@@ -1183,3 +1183,144 @@ void SPXGraphUtilities::StaggerGraph(int index, int ngraph, TGraphAsymmErrors *g
 
  return;
 }
+
+void SPXGraphUtilities::AddtoBand(TGraphErrors* g1, TGraphAsymmErrors* g2, bool addinquadrature) {
+ //
+ // add the graph g1 to the band g2
+ // 
+ // addinquadrature=true:  added in quadrature
+ // addinquadrature=false: errors are taken 
+ //
+ std::string mn = "AddtoBand: ";
+ bool debug=false;
+
+ Double_t  x1=0., y1=0.,  y2=0., y0=0;
+
+ if (g1->GetN()!=g2->GetN()) {
+  std::cout<<cn<<mn<<"WARNING: Graphs have not the same # of elements g1= " << g1->GetN() <<" g2 = "<<g2->GetN()<< std::endl;
+  return;
+ }
+
+ Double_t* EYhigh = g2-> GetEYhigh();
+ Double_t* EYlow  = g2-> GetEYlow();
+
+ for (Int_t i=0; i<g1->GetN(); i++) {
+  g1->GetPoint(i, x1,y1);
+  g2->GetPoint(i, x1,y2);
+
+  Double_t eyh=0., eyl=0.;
+
+  if (debug) printf("%d: y1=%f y2=%f Eyhigh= %f Eylow= %f \n",i,y1,y2,EYhigh[i],EYlow[i]);
+
+  y0=y1-y2;
+  if (y0>=0){
+   eyh=EYhigh[i];
+   if (addinquadrature) 
+    eyh=sqrt(eyh*eyh+y0*y0);
+   else
+    if(fabs(y0)>eyh) eyh=fabs(y0);
+
+   if (debug) printf("high: %d: y0=%f eyh=%f  \n",i,y0,eyh);
+   g2->SetPointEYhigh(i,eyh);
+  } else {
+   eyl=EYlow[i];
+   if (addinquadrature) 
+    eyl=sqrt(eyl*eyl+y0*y0);
+   else
+    if(fabs(y0)>eyl) eyl=fabs(y0);
+
+   if (debug) printf("low: %d: y0=%f eyl=%f  \n",i,y0,eyl);
+   g2->SetPointEYlow (i,eyl);
+  }
+ }
+ return;
+}
+
+void SPXGraphUtilities::AddinQuadrature(TGraphAsymmErrors* g1, TGraphAsymmErrors* g2, bool takesign) {
+ //
+ // add the errors of g2 to the graph g1
+ //
+ std::string mn = "AddinQuadrature: ";
+ bool debug=false;
+
+ Double_t  x1=0., y1=0.,  y2=0., y0=0;
+
+ if (!g1) {
+  std::cout<<cn<<mn<<"WARNING: Graphs g1 not found | "<< std::endl;
+  return;
+ }
+
+ if (!g2) {
+  std::cout<<cn<<mn<<"WARNING: Graphs g2 not found | "<< std::endl;
+  return;
+ }
+
+ if (g1->GetN()!=g2->GetN()) {
+  std::cout<<cn<<mn<<"WARNING: Graphs have not the same # of elements g1= " << g1->GetN() <<" g2 = "<<g2->GetN()<< std::endl;
+  return;
+ }
+
+ Double_t* EYhigh1 = g1-> GetEYhigh();
+ Double_t* EYlow1  = g1-> GetEYlow();
+
+ Double_t* EYhigh2 = g2-> GetEYhigh();
+ Double_t* EYlow2  = g2-> GetEYlow();
+
+ for (Int_t i=0; i<g1->GetN(); i++) {
+  Double_t eyh=0., eyl=0.;
+
+  if (EYhigh1[i]<0 && EYlow1[i]>0) {
+   Double_t x1=0., y1=0.;
+   g1->GetPoint(i, x1,y1);
+   if (y1==0.) 
+    std::cout<<cn<<mn<<"INFO: switch signs for g1= "<<g1->GetName()<<" EYhigh1["<<i<<"]= " << EYhigh1[i]<<" EYlow1["<<i<<"]= "<<EYlow1[i]<< std::endl;   
+   else
+    std::cout<<cn<<mn<<"INFO: switch signs for relative g1= "<<g1->GetName()<<" EYhigh1["<<i<<"]= " << EYhigh1[i]/y1 <<" EYlow1["<<i<<"]= "<<EYlow1[i]/y1<< std::endl;   
+   double tmp=EYhigh1[i];
+   EYhigh1[i]= EYlow1[i];
+   EYlow1[i]=tmp;
+  }
+
+  if (EYhigh2[i]<0 && EYlow2[i]>0) {
+   Double_t x2=0., y2=0.;
+   g2->GetPoint(i, x2,y2);
+   if (y2==0.) 
+    std::cout<<cn<<mn<<"INFO: switch signs for g2= "<<g2->GetName()<<" EYhigh2["<<i<<"]= " << EYhigh2[i] <<" EYlow2["<<i<<"]= "<<EYlow2[i]<< std::endl;   
+   else
+    std::cout<<cn<<mn<<"INFO: switch signs for relative g2= "<<g2->GetName()<<" EYhigh2["<<i<<"]= " << EYhigh2[i]/y2 <<" EYlow2["<<i<<"]= "<<EYlow2[i]/y2<< std::endl;   
+   double tmp=EYhigh2[i];
+   EYhigh2[i]= EYlow2[i];
+   EYlow2[i]=tmp;
+  }
+
+  if ((EYhigh2[i]>0 && EYlow2[i]>0) || (EYhigh2[i]<0 && EYlow2[i]<0)) {
+   Double_t x2=0., y2=0.;
+   g2->GetPoint(i, x2,y2);
+   if (y2=0.) y2=1.;
+   std::cout<<cn<<mn<<"INFO: low and high errors have the same sign signs  g2= "<<g2->GetName()<<" EYhigh2["<<i<<"]= " << EYhigh2[i]/y2 <<" EYlow2["<<i<<"]= "<<EYlow2[i]/y2<< std::endl;   
+  }
+
+  eyh=sqrt(EYhigh1[i]*EYhigh1[i]+EYhigh2[i]*EYhigh2[i]);
+  eyl=sqrt(EYlow1[i]*EYlow1[i]+EYlow2[i]*EYlow2[i]);
+
+  g1->SetPointEYlow (i,eyl);
+  g1->SetPointEYhigh(i,eyh);
+
+ }
+ return;
+}
+
+void SPXGraphUtilities::SetColors(TGraphAsymmErrors* g1, Color_t icol) {
+ //
+ std::string mn = "SetColors: ";
+
+ if (!g1) {
+  std::cout<<cn<<mn<<"WARNING Graph g1 not found ! "<<std::endl;
+  return;
+ }
+ g1->SetLineColor(icol);
+ g1->SetFillColor(icol);
+ g1->SetMarkerColor(icol);
+
+ return;
+}

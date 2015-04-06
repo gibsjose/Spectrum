@@ -33,7 +33,6 @@ SRC_DIR = ./src
 OBJ_DIR = ./obj
 INI_DIR = ./inih/src
 BIN_DIR = .
-TST_DIR = $(SRC_DIR)/test
 PLT_DIR = ./plots
 
 INI_SRC =	$(INI_DIR)/ini.c $(INI_DIR)/INIReader.cpp
@@ -68,7 +67,6 @@ dir:
 	@mkdir -p $(SRC_DIR)
 	@mkdir -p $(OBJ_DIR)
 	@mkdir -p $(BIN_DIR)
-	@mkdir -p $(TST_DIR)
 	@mkdir -p $(PLT_DIR)
 
 ini: $(INI_SRC)

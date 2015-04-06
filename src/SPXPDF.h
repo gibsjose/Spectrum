@@ -13,21 +13,29 @@
 #ifndef SPXPDF_H
 #define SPXPDF_H
 
+// if set timer is on
+#define TIMER
+
 #include <stdlib.h> // exit()
 #include <sstream>  // needed for internal io
 #include <iomanip>
+
 
 //ROOT
 #include "SPXROOT.h"
 
 //appl_grid
+
 #include "appl_grid/appl_grid.h"
 #include "appl_grid/generic_pdf.h"
-
+#ifdef TIMER
+#include "appl_grid/appl_timer.h"
+#endif
 //LHAPDF
 #include "LHAPDF/LHAPDF.h"
 
-#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 5
+#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+#else
 #include "SPXLHAPDF.h"
 #endif
 

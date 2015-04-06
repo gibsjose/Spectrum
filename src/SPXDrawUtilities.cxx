@@ -212,3 +212,14 @@ TLatex l; l.SetTextAlign(12); l.SetTextSize(1.2*tsize);
 
 }
 */
+TString SPXDrawUtilities::FormatwithExp(double xinput){
+ TString datalabel="";
+ int exp; double x;
+
+ if (xinput==0) return TString("");
+
+ SPXMathUtilities::frexp10(xinput, exp, x);
+ //if (debug) std::cout<<cn<<"FormatwithExp: value= "<<xinput<<" x= "<<x<<" 10^"<<exp<<std::endl;
+ datalabel+=Form("%1.1f 10^{%d}",x,exp);
+ return datalabel;
+}

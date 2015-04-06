@@ -43,6 +43,8 @@ debug = true					;[Optional] Turn on/off debug statements - [default = false]
 plot_marker = true				;[Optional] Plot a marker on data points - [default = false]
 plot_staggered = true		                ;[Optional] Stagger points horizontally to improve readability - [default = false]
 match_binning = true				;[Optional] Match the binning for all graphs in the plot - [default = true]
+take_sign_intoaccount_for_total_error = true    ;[Optional] When calculating total data uncertainty all positve/negative uncertainties
+                                                ;           are added in positive/negative uncertainty  
 apply_grid_corr = true				;[Optional] Apply the grid corrections (e.g. hadronisation) 
 ;                                                           (as specified in SPXGrid steering) for all grids if true
 
@@ -143,8 +145,11 @@ data_marker_style = 20					  ;[REQUIRED] List of data marker styles
 data_marker_color = 1					  ;[REQUIRED] List of data marker colors
 ;
 display_systematic_group = JES, JER                       ;[Optional] List of groups of systematics to be displayed
-                                                                      (active only for DataOVerData)
+                                                          ;           active only for DataOVerData
+                                                          ;           to be active show_individual_systemtics=0
+                                                          ; if keyword "Others" is given all uncertainties not specified before are added here
 display_systematic_group_band_color = 2,3                 ;[Optional] color of band for systematic groups
+                                                          ;           for negative color: only plot edge histogram with color -idcolor
 
 ;total_fill_style=1001					  ;[Optional] List of Total marker style OVERRIDES
 ;total_fill_color=800                                     ;[Optional] root color code and style https://root.cern.ch/root/html/TAttFill.html

@@ -52,6 +52,9 @@ public:
 		debug = b;
 	}
 
+        void SetTakeSignforTotalError(bool mybool){
+         TakeSignforTotalError=mybool; 
+        }
 	const SPXDataFormat & GetDataFormat(void) {
 		return pci.dataSteeringFile.GetDataFormat();
 	}
@@ -206,6 +209,10 @@ private:
 	SPXPlotConfigurationInstance pci;		//Frame options instance which contains the data steering file as well as the plot options
 	SPXDataFormat dataFormat;			//Format of this data: Included directly simply to cut down on syntax in implementation
 	bool dividedByBinWidth;				//Flag indicating whether the initial data was already divided by the bin width
+
+        bool TakeSignforTotalError; // When adding up components to total error, if true
+                                    // keep all negative systematics in lower total error
+                                    // keep all positive systematics in higher total error
 
 	//Number of bins in data map
 	unsigned int numberOfBins;

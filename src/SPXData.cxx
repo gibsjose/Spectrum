@@ -29,7 +29,7 @@ SPXData::SPXData(const SPXPlotConfigurationInstance &pci) {
  this->pci = pci;
  this->dataFormat = pci.dataSteeringFile.GetDataFormat();
  dividedByBinWidth = this->pci.dataSteeringFile.IsDividedByBinWidth();
-
+  
  //set pointer to zero
  statisticalErrorGraph=0;
  systematicErrorGraph=0;
@@ -50,8 +50,8 @@ SPXData::SPXData(const SPXPlotConfigurationInstance &pci) {
  if (debug) std::cout<<cn<<mn<<"Parse in Data"<<std::endl;
  this->Parse();
 
- if (debug) std::cout<<cn<<mn<<"Create graphs"<<std::endl;
- this->CreateGraphs();
+ //if (debug) std::cout<<cn<<mn<<"Create graphs"<<std::endl;
+ // this->CreateGraphs(); // is now called outside
 
  return;
 }
@@ -391,12 +391,25 @@ void SPXData::ParseSpectrum(void) {
 
 				//Positive systematic
 				if(name.find("+") != std::string::npos) {
-					p_errors.push_back(syst.at(i));
+				 if (TakeSignforTotalError) {
+				  if (syst.at(i)>0) 
+				   p_errors.push_back(syst.at(i));
+                                  else
+				   n_errors.push_back(syst.at(i));
+                                 } else
+				  p_errors.push_back(syst.at(i));
 				}
 
 				//Negative systematic
 				else if(name.find("-") != std::string::npos) {
-					n_errors.push_back(syst.at(i));
+
+				 if (TakeSignforTotalError) {
+				  if (syst.at(i)>0) 
+				   p_errors.push_back(syst.at(i));
+                                  else
+				   n_errors.push_back(syst.at(i));
+                                 } else
+				  n_errors.push_back(syst.at(i));
 				}
 
 				//Symmetric systematic: +/- are the same
@@ -817,6 +830,9 @@ void SPXData::PrintSpectrum(void) {
 
 	std::cout << "This data has " << individualSystematics.size() / 2<< " Individual Systematic Errors:" << std::endl << std::endl;
 
+        if (TakeSignforTotalError) 
+         std::cout << "Total systematics is calculated such that all negative/positive systematics all in negative/positive total uncertainty "<<std::endl;
+
         this->PrintSystematics(individualSystematics);
 
 	//Iterate over individual systematic errors
@@ -917,9 +933,10 @@ void SPXData::CreateGraphs(void) {
 	//Data steering file has no [DESC]:name
 	//Default to filename
 	else {
-		if(debug) std::cout << cn << mn << "Data steering file has no name value: using filename instead" << std::endl;
+		if(debug) std::cout << cn << mn << "Using name of Data steering as graph name" << std::endl;
 		name = pci.dataSteeringFile.GetFilename();
 		name.ReplaceAll(TString(".txt"), TString(""));
+		//name.ReplaceAll(TString("\"), TString("_"));
 		statName = name + "_stat";
 		systName = name + "_syst";
 		totName = name + "_tot";
@@ -969,6 +986,7 @@ void SPXData::CreateGraphs(void) {
 
 		eylt = sqrt(pow(stat[i], 2.0) + pow(eyl_syst[i], 2.0));
 		eyht = sqrt(pow(stat[i], 2.0) + pow(eyh_syst[i], 2.0));
+
 		eyl_tot_v.push_back(eylt);
 		eyh_tot_v.push_back(eyht);
 	}
@@ -1566,13 +1584,13 @@ std::vector <TGraphAsymmErrors *>  SPXData::GetSystematicsErrorGraphs(void){
 
  if ( individualsystematicErrorGraph.size()==0) {
   if (debug) {
-   std::cout<<cn<<mn<<"Fill individualsystematicErrorGraph vector from map"<<std::endl;  
+   std::cout<<cn<<mn<<"XXX Fill individualsystematicErrorGraph vector from map"<<std::endl;  
    //std::cout<<cn<<mn<<"Copy values from graph= "<<systematicErrorGraph->GetName()<<std::endl;
    //systematicErrorGraph->Print();
   }
 
-  std::vector<double> csyst;
-  std::vector<double> csyst2;
+  std::vector<double> csystp;
+  std::vector<double> csystn;
 
   for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); ++it) {
 
@@ -1584,53 +1602,76 @@ std::vector <TGraphAsymmErrors *>  SPXData::GetSystematicsErrorGraphs(void){
 
    if (debug) std::cout<<cn<<mn<<"Fill individualsystematicErrorGraph syst_name= "<<syst_name<<std::endl;  
 
-   csyst = it->second;
+   csystp = it->second;
 
-   csyst2.clear();
+   csystn.clear();
 
-   std::string syst_name2=SPXData::GetCorrespondingSystematicName(syst_name);
-   if (debug)   std::cout<<cn<<mn<<"Found for syst_name "<<syst_name<<" syst_name2= "<<syst_name2<<std::endl;  
-   if (syst_name2.empty()) {
+   std::string syst_namen=SPXData::GetCorrespondingSystematicName(syst_name);
+   if (debug)  std::cout<<cn<<mn<<"Found for syst_name "<<syst_name<<" syst_namen= "<<syst_namen<<std::endl;  
+   if (syst_namen.empty()) {
     std::ostringstream oss;
-    oss <<cn<<mn<<"Corresponding systematics vector not found for " <<syst_name.c_str();
+    oss <<cn<<mn<<"Corresponding systematics vector not found for " <<syst_namen.c_str();
     throw SPXParseException(oss.str());
    }
 
-   if (individualSystematics.count(syst_name2)) {
-    if (debug) std::cout<<cn<<mn<<"Corresponding negative systematic found name= "<< syst_name2.c_str() << std::endl;
-    csyst2 = (individualSystematics[syst_name2]);
+   if (individualSystematics.count(syst_namen)) {
+    if (debug) std::cout<<cn<<mn<<"Corresponding negative systematic found name= "<< syst_namen.c_str() << std::endl;
+    csystn = (individualSystematics[syst_namen]);
    }
 
-   if (csyst2.size()==0) {
+   if (csystp.size()==0) {
     std::ostringstream oss;
-    oss <<cn<<mn<<"Corresponding systematics vector not found for " <<syst_name2.c_str()
+    oss <<cn<<mn<<"Systematics vector csyst is empty ! " 
                 <<" corresponding to "<<syst_name.c_str();
     throw SPXParseException(oss.str());
    }
 
-   if (csyst.size()!=csyst2.size()) {
+   if (csystn.size()==0) {
     std::ostringstream oss;
-    oss <<cn<<mn<<"Different size positive "<<csyst.size()<<" and negative "<<csyst2.size()<<" systematics vector ";
+    oss <<cn<<mn<<"Corresponding systematics vector not found for " <<syst_namen.c_str()
+                <<" corresponding to "<<syst_name.c_str();
+    throw SPXParseException(oss.str());
+   }
+
+   if (csystp.size()!=csystn.size()) {
+    std::ostringstream oss;
+    oss <<cn<<mn<<"Different size positive "<<csystp.size()<<" and negative "<<csystn.size()<<" systematics vector ";
     throw SPXParseException(oss.str());
    }
 
    // first copy over from total systematic
    TGraphAsymmErrors *gsyst = new TGraphAsymmErrors(*systematicErrorGraph);
+   if (!gsyst) {
+    throw SPXParseException(cn+mn+"Problem creating graph gsyst !");
+   }
+
    TString sname=syst_name;
    sname.ReplaceAll("+","");
    sname.ReplaceAll("-","");
    gsyst->SetName(sname);
 
    // Now fill high and low systematics
-   if (debug) std::cout<<" loop over systematic vector Nbin= "<<csyst.size()<<std::endl;
+   if (debug) std::cout<<cn<<mn<<"Loop over systematic vector Nbin= "<<csystp.size()<<std::endl;
 
-   for (int ibin=0; ibin<csyst.size(); ibin++) {
+   for (int ibin=0; ibin<csystp.size(); ibin++) {
     double value=0., x;
     systematicErrorGraph->GetPoint(ibin, x,value);
-    double eyh=csyst.at(ibin) /100*value;
-    double eyl=csyst2.at(ibin)/100*value;
+
+    double eyh=csystp.at(ibin)/100*fabs(value);
+    double eyl=csystn.at(ibin)/100*fabs(value);
   
-    //if (debug) std::cout<<ibin<<" value= "<<value<<" syst= "<<csyst.at(ibin)<<" "<<csyst2.at(ibin)<<" eyh= "<<eyh<<" eyl= "<<eyl<<std::endl;
+    if ((eyh<0 && eyl<0) || (eyh>0 && eyl>0) )
+     std::cout<<cn<<mn<<"WARNING: in ibin= "<<ibin<<" errors have the same sign !  eyh= "<<eyh<<" eyl= "<<eyl<<std::endl;
+
+    if (eyh<0 && eyl>0) {
+     std::cout<<cn<<mn<<"INFO: in ibin= "<<ibin<<" eyh<0 and exl>0 errors have switched sign !  eyh= "<<eyh<<" eyl= "<<eyl<<std::endl;
+     //double tmp=eyh;
+     //eyh=eyl;
+     //eyl=tmp;
+     //std::cout<<cn<<mn<<"INFO: in ibin= "<<ibin<<" sign switched:  eyh= "<<eyh<<" eyl= "<<eyl<<std::endl;
+    }
+
+    //if (debug) std::cout<<cn<<mn<<" ibin= "<<ibin<<" Value= "<<value<<" syst= "<<csystp.at(ibin)<<" "<<csystn.at(ibin)<<" eyh= "<<eyh<<" eyl= "<<eyl<<std::endl;
 
     gsyst->SetPointEYhigh(ibin,eyh);
     gsyst->SetPointEYlow (ibin,eyl);

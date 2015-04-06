@@ -43,13 +43,7 @@ std::string SPXPDF::GetEnv( const std::string & var ) {
 		return s;
 }
 
-#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 5
-void getPDF(const double& x, const double& Q, double* xf) {
-  std::cout<<cn<<" LHAPDF5: getpdf: X= "<<X<<" Q= "<<Q<<std::endl;
-		evolvepdf_(&x, &Q, xf);
-}
-
-#else
+#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
 // version 6
 LHAPDF::PDF* mypdf=0;
 //void getPDF(const double &X, const double &Q, double xfs[13]) {
@@ -75,6 +69,13 @@ double alphasPDF(const double & Q) {
   
   return mypdf->alphasQ(Q); 
 }
+#else
+//version 5
+void getPDF(const double& x, const double& Q, double* xf) {
+  //std::cout<<cn<<" LHAPDF5: getpdf: x= "<<x<<" Q= "<<Q<<std::endl;
+  evolvepdf_(&x, &Q, xf);
+}
+
 #endif
 
 
@@ -113,11 +114,12 @@ SPXPDF::SPXPDF(SPXPDFSteeringFile *psf, int iflpdf, double Q2value, TH1D* h1)
 
 SPXPDF::SPXPDF(SPXPDFSteeringFile *psf, const std::string &_gridName)
 {
-
-  std::cout<<cn<<" constructor called via name "<<std::endl;
-
+  //
   spxgrid=0;
   gridName=_gridName;
+
+  std::cout<<cn<<"constructor called via name "<<gridName.c_str()<<std::endl;
+
   SetUpParameters(psf);
 }
 
@@ -128,7 +130,7 @@ SPXPDF::SPXPDF(SPXPDFSteeringFile *psf, SPXGrid *grid)
   spxgrid=grid;
   gridName=grid->GetGridName();
 
-  std::cout<<cn<<" constructor called via SPXGrid name= "<<gridName.c_str()<<std::endl;
+  std::cout<<cn<<"constructor called via SPXGrid name= "<<gridName.c_str()<<std::endl;
 
   SetUpParameters(psf);
 }
@@ -247,11 +249,26 @@ void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
   return;
 }
 
+#ifdef TIMER
+class quick_timer { 
+public:
+  quick_timer() : _timer(appl_timer_start()) {  }
+  double time()     { return appl_timer_stop(_timer); }
+private:
+  struct timeval _timer;
+};
+#endif
+
+
 // perform any additional work after constructors but before the object is available for use
 void SPXPDF::Initialize()
 {
  std::string mn = "Initialize: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+#ifdef TIMER
+ quick_timer t0;
+#endif
 
  if (debug) {
   std::cout<<cn<<mn<<"Performing Initialization"<<std::endl;
@@ -294,14 +311,30 @@ void SPXPDF::Initialize()
  if (debug) std::cout<<cn<<mn<<"Initialize: gridName= "<<gridName.c_str()<<std::endl;
 
  if (spxgrid) {
-  my_grid=spxgrid->GetGrid();
+
+#ifdef TIMER
+  std::cout<<cn<<mn<<"TIMER set GetGrid running... "<< std::endl;  
+  quick_timer t;
+#endif
+   my_grid=spxgrid->GetGrid();
+#ifdef TIMER
+   std::cout<<cn<<mn<<"TIMER done GetGrid " << t.time() << " [ms]" << std::endl;  
+#endif
+
  } else {
   std::cout<<"INFO No SPX grid found open via name "<<std::endl;
   if (gridName.size()==0) {
    std::cout<<cn<<mn<<"WARNING: no gridname given "<<std::endl;
   } else {
-   if (debug) std::cout<<cn<<mn<<"construct gridname= "<<TString(gridName).Data()<<std::endl;
+   if (debug) std::cout<<cn<<mn<<"onstruct gridname= "<<TString(gridName).Data()<<std::endl;
+#ifdef TIMER
+   std::cout<<cn<<mn<<"TIMER reading grid() running..." << std::endl;     
+   quick_timer t;
+#endif
    my_grid = new appl::grid(gridName.c_str());
+#ifdef TIMER
+   std::cout<<cn<<mn<<"TIMER done grid " << t.time() << " [ms]" << std::endl;
+#endif
   }
  }
 
@@ -315,7 +348,15 @@ void SPXPDF::Initialize()
   applgridok=true;
  }
 
- if (applgridok) my_grid->trim();
+//#ifdef TIMER
+//   std::cout<<cn<<mn<<"TIMER trimming running.... "<< std::endl;  
+//   quick_timer t1;
+//#endif
+// trimming done during reading
+// if (applgridok) my_grid->trim();
+//#ifdef TIMER
+// std::cout<<cn<<mn<<"TIMER done trimming " << t1.time() << " [ms]" << std::endl;
+//#endif
 
  static const int nFlavours = 5;
  h_errors_PDFBand.clear();
@@ -379,10 +420,20 @@ void SPXPDF::Initialize()
   std::cout<<cn<<mn<<"...finished PDF set up: name= "<<default_pdf_set_name<<std::endl;
 
  if (applgridok) {
+#ifdef TIMER
+  std::cout<<cn<<mn<<"TIMER convolution running... " << std::endl;
+  quick_timer t2;
+#endif
+
   temp_hist= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
   TString name="xsec_pdf_"+default_pdf_set_name;
   if (spxgrid) name+="_"+spxgrid->GetName();
   temp_hist->SetName(name);
+
+#ifdef TIMER
+ std::cout<<cn<<mn<<"TIMER done convolution " << t2.time() << " [ms]" << std::endl;
+#endif
+
  } else {
   if (debug) std::cout<<cn<<mn<<"Histogram from PDF not applgrid ! "<<std::endl;
   temp_hist=this->FillPdfHisto();
@@ -653,9 +704,14 @@ void SPXPDF::Initialize()
 
  // Calculate PDF errors using standard PDF error band
  if (do_PDFBand) {
-   if (debug) std::cout<<cn<<mn<<"Calculate PDF errors"<<std::endl;
-  std::cout<<cn<<mn<<"Calculate PDF errors for: "<<default_pdf_set_name
-	       <<" w/ defaultpdfid: "<<defaultpdfid<<std::endl;
+  if (debug) std::cout<<cn<<mn<<"Calculate PDF errors"<<std::endl;
+/*
+  std::cout<<cn<<mn<<"Calculate PDF errors for: "<<default_pdf_set_name<<" w/ defaultpdfid: "<<defaultpdfid<<std::endl;
+
+#ifdef TIMER
+  std::cout<<cn<<mn<<"TIMER call initPDF/mkPDF default PDF= "<<default_pdf_set_name.c_str()<<" id= "<< defaultpdfid<<" running..." << std::endl; 
+  quick_timer ti;
+#endif
 
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
   if (debug) {
@@ -670,18 +726,30 @@ void SPXPDF::Initialize()
   if (debug) std::cout<<cn<<mn<<"...initPDFSet finished for PDFBand"<<std::endl;
 #endif
 
-  // 
+#ifdef TIMER
+  std::cout<<cn<<mn<<"TIMER done call initPDF/mkPDF t=" << ti.time() <<" [ms]"<< std::endl;
+#endif
+// 
+*/
   TH1D *hdefault=0;
   for (int pdferri = 0; pdferri < n_PDFMembers; pdferri++) {
-   if (debug) std::cout<<cn<<mn<<"pdferri: "<<pdferri<<" of "<<n_PDFMembers
-	      	       <<" pdftype="<<PDFtype.c_str()<<std::endl;
+   if (debug) std::cout<<cn<<mn<<"pdferri: "<<pdferri<<" of "<<n_PDFMembers<<" pdftype="<<PDFtype.c_str()<<std::endl;
 
-   // if (TString(PDFtype).Contains("HERA") || TString(PDFtype).Contains("ATLAS") ){
    if (ErrorPropagationType==StyleHeraPDF) {
-    if (!includeEIG&&!includeQUAD&&!includeMAX) std::cout<<cn<<mn<<" no error band included !! "<<std::endl;
+    if (!includeEIG&&!includeQUAD&&!includeMAX) std::cout<<cn<<mn<<"No error band included !! "<<std::endl;
 
-    if (defaultpdfidvar<0) std::cout<<cn<<mn<<"WARNING: No default PDF id found in steering. Check steering for missing 'defaultpdfidvar'. pdferri= "<<pdferri<<std::endl;
+    if (defaultpdfidvar<0) {
+     std::cout<<cn<<mn<<"WARNING: No default PDF id found in steering. Check steering for missing 'defaultpdfidvar'. pdferri= "<<pdferri<<std::endl;
+     std::cerr<<cn<<mn<<"WARNING: No default PDF id found in steering. Check steering for missing 'defaultpdfidvar'. pdferri= "<<pdferri<<std::endl;
+    }
+
     if (pdferri <= lasteig ) {
+#ifdef TIMER
+     quick_timer ti;
+     std::cout<<cn<<mn<<"TIMER call initPDF/mkPDF pdferri <= lasteig PDF= "<<PDFname.c_str()<<" pdferri= "<<pdferri<<" running..." << std::endl; 
+     quick_timer t0;
+#endif
+
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
       if (debug) std::cout<<cn<<mn<<"...mkPDF "<<PDFname.c_str()<<" pdferri= "<<pdferri<<std::endl;
       mypdf=LHAPDF::mkPDF(PDFname.c_str(), pdferri);
@@ -689,6 +757,11 @@ void SPXPDF::Initialize()
       if (debug) std::cout<<cn<<mn<<"...initPDFSet "<<PDFname.c_str()<<" pdferri= "<<pdferri<<std::endl;
       LHAPDF::initPDF(pdferri);
 #endif
+
+#ifdef TIMER
+      std::cout<<cn<<mn<<"TIMER done call initPDF/mkPDF t0= " << t0.time()<<" [ms]"<<std::endl;
+#endif
+
     } else if( pdferri == lasteig+1 ) {
      //account for PDF set "ATLAS.txt" and "ATLAS3jet" with no error bands?
      //if (debug) std::cout<<cn<<mn<<"A 'PDFnamevar' was "
@@ -696,6 +769,13 @@ void SPXPDF::Initialize()
      //
      //Band-aid for accounting for no error bands - This needs to be handled better
      if(PDFnamevar.empty() == false) {
+
+#ifdef TIMER
+     quick_timer ti;
+     std::cout<<cn<<mn<<"TIMER call initPDF/mkPDF pdferri==lasteig+1 PDF= "<<PDFname.c_str()<<" pdferri= "<<pdferri<<" running..." << std::endl; 
+     quick_timer t0;
+#endif
+
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
       if (debug) std::cout<<cn<<mn<<"Initialize: mkPDF name= "<<PDFnamevar.c_str()<<" set= "<<defaultpdfidvar<<std::endl;
       mypdf=LHAPDF::mkPDF(PDFnamevar.c_str(), defaultpdfidvar);
@@ -703,6 +783,11 @@ void SPXPDF::Initialize()
       TString pdfname=TString(pdfSetPath)+"/"+PDFnamevar+".LHgrid";
       LHAPDF::initPDFSet(pdfname.Data(), defaultpdfidvar);
 #endif
+
+#ifdef TIMER
+      std::cout<<cn<<mn<<"TIMER done call initPDF/mkPDF t0= " << t0.time()<<" [ms]"<<std::endl;
+#endif
+
      } else {
       std::cout<<cn<<mn<<"WARNING: Can not intitalize name= "<<PDFnamevar.c_str()<<" set= "<<defaultpdfidvar<<std::endl;
       std::cerr<<cn<<mn<<"WARNING: Can not intitalize name= "<<PDFnamevar.c_str()<<" set= "<<defaultpdfidvar<<std::endl;
@@ -710,15 +795,32 @@ void SPXPDF::Initialize()
     } else if ( pdferri > lasteig+1 ) {
       //>> modification P Berta 28.8.14>>
      int pdfset=pdferri - lasteig-1;
+
+#ifdef TIMER     
+     std::cout<<cn<<mn<<"TIMER initPDF/mkPDF  pdferri>lasteig+1 running PDF= "<<PDFnamevar.c_str()<<" pdfset= "<<pdfset<<std::endl;
+     quick_timer t0;
+#endif
+
      if (debug) std::cout<<cn<<mn<<"Initialize: pdferri> lasteig+1 initPDF name= "<<PDFnamevar.c_str()<<" set= "<<pdfset<<std::endl;
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
       mypdf=LHAPDF::mkPDF(PDFnamevar.c_str(), pdfset);
 #else
      LHAPDF::initPDF(pdfset);
 #endif
+
+#ifdef TIMER     
+     std::cout<<cn<<mn<<"TIMER done initPDF/mkPDF t0= "<<  t0.time()<<" [ms]"<< std::endl;
+#endif
+
     }
    } else {
     if (debug) std::cout<<cn<<mn<<"Initialize normal PDF set= "<<pdferri<<std::endl;
+
+#ifdef TIMER     
+    std::cout<<cn<<mn<<"TIMER call initPDF/mkPDF normal PDF set PDF= "<<default_pdf_set_name.c_str()<<" pdferri= "<<pdferri<<" running... " << std::endl;
+     quick_timer t0;
+#endif
+
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
     if (debug) {
      std::cout<<cn<<mn<<" "<<std::endl;
@@ -728,15 +830,31 @@ void SPXPDF::Initialize()
 #else
     LHAPDF::initPDF(pdferri);
 #endif
+
+#ifdef TIMER     
+    std::cout<<cn<<mn<<"TIMER call initPDF/mkPDF done "<<t0.time()<<" [ms]"<< std::endl;
+#endif
    }
 
    TH1D* temp_hist = 0;
    if (applgridok) {
     if (debug) std::cout<<cn<<mn<<"Setting up convolute "<<std::endl;
+
+#ifdef TIMER     
+    std::cout<<cn<<mn<<"TIMER convolute pdferri= "<<pdferri<<" running... " << std::endl;
+    quick_timer t0;
+#endif
+
     temp_hist = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+
+#ifdef TIMER     
+    std::cout<<cn<<mn<<"TIMER convolute done t0= "<< t0.time()<<" [ms]"<<std::endl;
+#endif
+
     TString hname=temp_hist->GetName()+TString("_pdf_")+default_pdf_set_name;
     if (spxgrid) hname+="_"+spxgrid->GetName();
     temp_hist->SetName(hname);
+
    } else {
     if (debug) std::cout<<cn<<mn<<"Histogram from PDF not applgrid ! "<<std::endl;
     TH1D *tmp=this->FillPdfHisto();
@@ -785,8 +903,17 @@ void SPXPDF::Initialize()
   if (debug) std::cout<<cn<<mn<<"End of PDF errors loop"<<std::endl;
  }  /// do_PDFBand
 
- if (debug) std::cout<<cn<<mn<<"Now calling CalcSystErrors "<<std::endl;
+#ifdef TIMER     
+    std::cout<<cn<<mn<<"TIMER call CalcSystErrors  running... " << std::endl;
+    quick_timer t1;
+#endif
+
+ if (debug) std::cout<<cn<<mn<<"Now calling CalcSystErrors running... "<<std::endl;
  this->CalcSystErrors();
+
+#ifdef TIMER     
+    std::cout<<cn<<mn<<"TIMER CalcSystErrors  done t0= "<< t1.time()<<" [ms]"<<std::endl;
+#endif
 
  if (debug) std::cout<<cn<<mn<<"Now fill map  Mapallbands "<<std::endl;
 
@@ -1173,9 +1300,11 @@ void SPXPDF::CalcAlphaSErrors()
  } /// bi
 
  h_AlphaS_results->SetFillStyle  (fillStyleCode);
- h_AlphaS_results->SetMarkerColor(fillColorCode);
- h_AlphaS_results->SetLineColor  (fillColorCode);
- h_AlphaS_results->SetFillColor  (fillColorCode);
+ //h_AlphaS_results->SetMarkerColor(fillColorCode);
+ //h_AlphaS_results->SetLineColor  (fillColorCode);
+ //h_AlphaS_results->SetFillColor  (fillColorCode);
+
+ SPXGraphUtilities::SetColors(h_AlphaS_results,fillColorCode);
 
  if (debug) std::cout<<cn<<mn<<"End AlphaS uncertainty calculation for: "<<PDFtype<<std::endl;
 }
@@ -1220,9 +1349,11 @@ void SPXPDF::CalcScaleErrors()
  //h_Scale_results->SetName(h_errors_Scale[0]->GetName());
 
  h_Scale_results->SetFillStyle  (fillStyleCode);
- h_Scale_results->SetMarkerColor(fillColorCode);
- h_Scale_results->SetLineColor  (fillColorCode);
- h_Scale_results->SetFillColor  (fillColorCode);
+ //h_Scale_results->SetMarkerColor(fillColorCode);
+ //h_Scale_results->SetLineColor  (fillColorCode);
+ //h_Scale_results->SetFillColor  (fillColorCode);
+
+ SPXGraphUtilities::SetColors( h_Scale_results,fillColorCode);
 
  if (debug) {
    std::cout<<cn<<mn<<" Line Color= "<<h_Scale_results->GetLineColor()<<std::endl;
@@ -1329,10 +1460,10 @@ void SPXPDF::CalcTotalErrors()
  Mapallbands["total"]=h_Total_results;
 
  h_Total_results->SetFillStyle  (fillStyleCode);
- h_Total_results->SetMarkerColor(fillColorCode);
- h_Total_results->SetLineColor  (fillColorCode);
- h_Total_results->SetFillColor  (fillColorCode);
-
+ //h_Total_results->SetMarkerColor(fillColorCode);
+ //h_Total_results->SetLineColor  (fillColorCode);
+ //h_Total_results->SetFillColor  (fillColorCode);
+ SPXGraphUtilities::SetColors( h_Total_results,fillColorCode);
 }
 
 void SPXPDF::DrawPDFBand(){

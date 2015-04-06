@@ -13,6 +13,7 @@
 #ifndef SPXDRAWUTILITIES_H
 #define SPXDRAWUTILITIES_H
 
+#include "SPXMathUtilities.h"
 #include "SPXROOT.h"
 
 
@@ -20,7 +21,7 @@ class SPXDrawUtilities {
 public:
 
   static void BoxText(double x, double y, double xboxsize, double yboxsize, int mcolor, std::string text, int lcol=1, int lstyle=1, double tsize=0.03);
-
+  static TString FormatwithExp(double xinput);
 };
 
 #endif

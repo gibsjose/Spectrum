@@ -17,6 +17,7 @@
 #include "TApplication.h"
 #include "TObject.h"
 #include "TObjString.h"
+#include "TString.h"
 #include "Riostream.h"
 #include "TCanvas.h"
 #include "TLine.h"
@@ -50,6 +51,7 @@
 #include "TRandom.h"
 #include "TMatrixTLazy.h"
 #include "TMatrixT.h"
+
 #include <iostream>
 #include <fstream>
 #include <string>

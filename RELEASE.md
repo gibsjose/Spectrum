@@ -6,12 +6,21 @@
 
 ## Change Log
 
+ -SPXPDF and SPXPlot: added Mark times if define TIMER on
+
+ -SPXPlot: add systematics groups
+
+ -SPXROOT: include TString
  
+ -SPXGraphUtilities: AddinQuadrature, AddtoBand, SetColors
+
  -SPXUtilities: functions to choose color codes as function on index 1...n
                 ICol IColGreen IColBlue IColRed
 
                 added OrderLargestRelativeErrorGraphVector order graph according to largest relative error
                 added SortLargestRelativeError corresponding sort function
+
+                new functions:  AddtoBand,  AddinQuadrature
 
  -SPXData:: make public access to individual systematic uncertainty map
             Warning if systematics appears twice
