@@ -168,6 +168,8 @@ void SPXData::ParseSpectrum(void) {
 	 if (debug) std::cout<<cn<<mn<<"Rescale data by factor= "<<faclumi<<std::endl;
 	} 
 
+	//if (debug) std::cout<<cn<<mn<<"Start looping over file "<<std::endl;
+
 	while(dataFile->good()) {
 		std::getline(*dataFile, line);
 
@@ -178,14 +180,20 @@ void SPXData::ParseSpectrum(void) {
 
 		std::istringstream iss(line);
 
+
+    	        //if (debug) std::cout<<cn<<mn<<"line= "<<line.c_str()<<std::endl;
+
 		//Skip comments
 		if(!line.empty() && (line[0] == ';')) {
 			continue;
 		} else if(!line.empty()) {
 
+		  if (debug) std::cout<<cn<<mn<<"find systematics "<<std::endl;
+
 			//Check for systematic errors (line contains 'syst_')
 			if(line.find("syst_") != std::string::npos) {
 
+			        //if (debug) std::cout<<cn<<mn<<"syst_ "<<std::endl;
 				//Split the line into systematic name and data
 				std::string name;
 				std::vector<double> tmp_syst;
@@ -195,6 +203,8 @@ void SPXData::ParseSpectrum(void) {
 				std::string formatted_line = SPXStringUtilities::RemoveFirstSubstring(line, name);
 				formatted_line = SPXStringUtilities::ReplaceAll(formatted_line, "\t", " ");
 				tmp_syst = SPXStringUtilities::ParseStringToDoubleVector(formatted_line, ' ');
+
+ 	                        //if (debug) std::cout<<cn<<mn<<"after tmp_syst"<<std::endl;
 
 				//Symmetric Error: Create both + and - and add them to map
 				if((name.find("+") == std::string::npos) && (name.find("-") == std::string::npos)) {
@@ -280,7 +290,7 @@ void SPXData::ParseSpectrum(void) {
 			//Not a systematic error: Read as data if it starts with a number (if first non-whitespace character is a digit)
 			else if(isdigit((int)SPXStringUtilities::LeftTrim(line).at(0))) {
 
-				if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
+			  //if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
 
 				//Parse line into data vector
 				//Convert all tabs to spaces
@@ -379,6 +389,8 @@ void SPXData::ParseSpectrum(void) {
 			}
 		}
 	}
+
+	//if (debug) std::cout<<cn<<mn<<"After loop "<<std::endl;
 
 	//Check for no bin count...
 	if(!bin_count) {
