@@ -277,6 +277,9 @@ Color_t SPXUtilities::ICol(int i){
   if (i>70 && i<=80) return kViolet-i+70;
   if (i>80 && i< 90) return kAzure -i+80;
   if (i>90 && i<=100) return kPink +i-90;
+
+  std::cout<<cn<<"IColBlue: WARNING: not optimized for i> "<<i<<std::endl;
+
 }
 
 Color_t SPXUtilities::IColBlue(int i){
@@ -301,7 +304,7 @@ Color_t SPXUtilities::IColBlue(int i){
   if (i>70 && i<=80) return kCyan  +i-70;
   if (i>80 && i<=90) return kCyan  -i+80;
 
-  std::cout<<cn<<"IColBlue:: WARNING: Not optimized for i> "<<i<<std::endl;
+  std::cout<<cn<<"IColBlue: WARNING: not optimized for i> "<<i<<std::endl;
 
   return kAzure-i;
 }
@@ -324,6 +327,9 @@ Color_t SPXUtilities::IColRed(int i){
   if (i==14) return kMagenta+9;
 
  return kPink+1;
+
+ std::cout<<cn<<"IColRed: WARNING: not optimized for i> "<<i<<std::endl;
+
 }
 
 Color_t SPXUtilities::IColGreen(int i){
@@ -344,5 +350,8 @@ Color_t SPXUtilities::IColGreen(int i){
   if (i==14) return kYellow-7;
 
  return kSpring+i;
+
+ std::cout<<cn<<"IColGreen: WARNING: not optimized for i> "<<i<<std::endl;
+
 }
 
