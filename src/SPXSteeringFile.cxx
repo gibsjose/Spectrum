@@ -323,6 +323,7 @@ void SPXSteeringFile::Print(void) {
          } else {
           std::cout << "\t\t Remove no bins "<<std::endl;
          }
+          std::cout << "  "<<std::endl;
         }
 
         std::cout<<"\t Number of Scale variations:"<<RenScales.size()<<std::endl;
@@ -727,10 +728,10 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		 }
 		}
 
-		if (DataCutXmax.size()!=DataCutXmin.size()) {
-		    std::cout<<cn<<mn<<"DataCutXmax.size()= "<<DataCutXmax.size() 
-                                     <<"DataCutXmin.size()= "<<DataCutXmin.size() 
-			             <<" should not be different or one of them is zero "
+		if (DataCutXmax.size()!=DataCutXmin.size() && !(DataCutXmax.size()==0||DataCutXmin.size()==0)) {
+		    std::cout<<cn<<mn<<" DataCutXmax.size()= "<<DataCutXmax.size() 
+                                     <<" DataCutXmin.size()= "<<DataCutXmin.size() 
+			             <<" should not be different unless one of them is zero "
                                      << std::endl;
                 }
                 if (DataCutXmax.size()==0) {

@@ -381,8 +381,8 @@ public:
 	}
         double GetDataCutXmin(int i){
 	 if (DataCutXmin.size()==0) {
-  	  if (debug) std::cout<<"SPXDataSteering::GetDataCutXmin: (GetDataCutXmin.size()==0 return false "<<std::endl;
-          return false;
+  	  if (debug) std::cout<<"SPXDataSteering::GetDataCutXmin: GetDataCutXmin.size()==0 return -HUGE_VAL "<<std::endl;
+          return -HUGE_VAL;
          }
 	 if (i>DataCutXmin.size()) {
           std::cout<<"SPXDataSteeringFile::GetDataCutXmin: something is wrong i= "<<i<<" size= "<<DataCutXmin.size()<<std::endl;
@@ -395,13 +395,13 @@ public:
 
         double GetDataCutXmax(int i){
 	 if (DataCutXmax.size()==0) {
-  	  if (debug) std::cout<<"SPXDataSteering::GetDataCutXmax: (GetDataCutXmax.size()==0 return false "<<std::endl;
-          return false;
+  	  if (debug) std::cout<<"SPXDataSteering::GetDataCutXmax: GetDataCutXmax.size()==0 return HUGE_VAL "<<std::endl;
+          return HUGE_VAL;
          }
 	 if (i>DataCutXmax.size()) {
           std::cout<<"SPXDataSteeringFile::GetDataCutMax: something is wrong i= "<<i<<" size= "<<DataCutXmax.size()<<std::endl;
           std::cerr<<"SPXDataSteeringFile::GetDataCutMax: something is wrong i= "<<i<<" size= "<<DataCutXmax.size()<<std::endl;
-          return false;
+          //return false;
          }
 	 if (!RemoveXbins.at(i)) std::cout<<"SPXDataSteering::GetDataCutXmin: WARNING: RemoveXbin flag is not ON "<<std::cout;
 	 return DataCutXmax.at(i);

@@ -2386,6 +2386,7 @@ void SPXPlot::InitializeData(void) {
 		if(debug) std::cout<<cn<<mn<<"Call GetDataRemoveFlag for i= "<<i << std::endl;
  
                 if (steeringFile->GetDataRemoveXbinsFlag(i)) {
+           
 		 double xmax=steeringFile->GetDataCutXmax(i);
 		 double xmin=steeringFile->GetDataCutXmin(i);
 
