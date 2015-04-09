@@ -696,7 +696,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		}
 
                 // Read in cuts on xmin and xmax in data  
-		// XXX
+		// 
 
        	        if(debug) std::cout<<cn<<mn<<"Start parsing data_cut_xmin " << std::endl;
 
@@ -749,10 +749,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		  RemoveXbins.push_back(true);
 		 }
                 }
-	        //XXX
-
-
-
+	        
                 // 
 		//Get the systematic class
 		//
@@ -2081,4 +2078,53 @@ void SPXSteeringFile::SetDefaultScales(void) {
 
          RenScales.push_back(0.5);
          FacScales.push_back(1.0);
+}
+
+double SPXSteeringFile::GetDataCutXmin(int i){
+ std::string mn = "GetDataCutXmin: ";
+ if (DataCutXmin.size()==0) {
+  if (debug) std::cout<<cn<<mn<<"GetDataCutXmin.size()==0 return -HUGE_VAL "<<std::endl;
+  return -HUGE_VAL;
+ }
+
+ if (i>DataCutXmin.size()) {
+  std::cout<<cn<<mn<<" something is wrong i= "<<i<<" size= "<<DataCutXmin.size()<<std::endl;
+  std::cerr<<"SPXDataSteeringFile::GetDataCutXmin: something is wrong i= "<<i<<" size= "<<DataCutXmin.size()<<std::endl;
+  return false;
+ }
+
+ if (!RemoveXbins.at(i)) std::cout<<cn<<mn<<"WARNING: RemoveXbin flag is not ON "<<std::endl;
+
+ return DataCutXmin.at(i);
+}
+
+double SPXSteeringFile::GetDataCutXmax(int i){
+ std::string mn = "GetDataCutXmax: ";
+ if (DataCutXmax.size()==0) {
+   if (debug) std::cout<<cn<<mn<<"GetDataCutXmax.size()==0 return HUGE_VAL "<<std::endl;
+   return HUGE_VAL;
+  }
+
+  if (i>DataCutXmax.size()) {
+   std::cout<<cn<<mn<<"Something is wrong i= "<<i<<" size= "<<DataCutXmax.size()<<std::endl;
+   std::cerr<<cn<<mn<<"Something is wrong i= "<<i<<" size= "<<DataCutXmax.size()<<std::endl;
+   return HUGE_VAL;
+  }
+
+  if (!RemoveXbins.at(i)) std::cout<<cn<<mn<<"WARNING: RemoveXbin flag is not ON "<<std::endl;
+
+  return DataCutXmax.at(i);
+}
+
+bool SPXSteeringFile::GetDataRemoveXbinsFlag(int i) {
+ std::string mn = "GetDataRemoveXbinsFlag: ";
+ if (debug) std::cout<<cn<<mn<<" i= "<<i<<std::endl;
+
+ if (RemoveXbins.size()==0) {
+   if (debug) std::cout<<cn<<mn<<"RemoveXbins.size()==0 return false "<<std::endl;
+  return false;
+  }
+
+ if (i>RemoveXbins.size()) std::cout<<cn<<mn<<"Something is wrong i= "<<i<<" size= "<<RemoveXbins.size()<<std::endl;
+  return RemoveXbins.at(i);
 }

@@ -346,13 +346,12 @@ void SPXData::ParseSpectrum(void) {
 				// Fill required vectors with temp variables
                                 // remove bins if required in steering
                                 if (RemoveXbins) {
-
-				 if ( xlow_t <= DataCutXmin) {
+				 if ( xlow_t < DataCutXmin) {
 				  if (debug) std::cout<<cn<<mn<<"------> Remove bin "<<bin_count<<" with xlow_t= " <<xlow_t <<" DataCutXmin= "<<DataCutXmin<<std::endl;
                                   continue;
                                  }
 
-				 if ( xhigh_t >= DataCutXmax) {
+				 if ( xhigh_t > DataCutXmax) {
 				  if (debug) std::cout<<cn<<mn<<"------> Remove bin "<<bin_count<<" with xhigh_t= "<<xhigh_t<<" DataCutXmax= "<<DataCutXmax<<std::endl;
                                   continue;
                                  } 

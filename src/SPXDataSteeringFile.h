@@ -281,12 +281,12 @@ public:
 	}
 
         double GetDataCutXmin(){
-	 if (!RemoveXbins) std::cout<<"SPXDataSteering::GetDataCutXmin:: WARNING: RemoveXbin flag is not ON "<<std::cout;
+	 if (!RemoveXbins) std::cout<<"SPXDataSteeringFile::GetDataCutXmin:: WARNING: RemoveXbin flag is not ON "<<std::cout;
 	 return DataCutXmin;
         }
 
         double GetDataCutXmax(){
-	 if (!RemoveXbins) std::cout<<"SPXDataSteering::GetDataCutXmin:: WARNING: RemoveXbin flag is not ON "<<std::cout;
+	 if (!RemoveXbins) std::cout<<"SPXDataSteeringFile::GetDataCutXmin:: WARNING: RemoveXbin flag is not ON "<<std::cout;
 	 return DataCutXmax;
         }
 

@@ -183,8 +183,6 @@ public:
 		return data["stat"];
 	}
 
-
-
 	//NOTE: Returns average of postive and negative error
 	//std::vector<double> & GetSystematicErrorVector(void) {
 	//  return 0.5*(data["syst_p"]+data["syst_n"]);

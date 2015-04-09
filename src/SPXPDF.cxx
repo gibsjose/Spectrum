@@ -146,7 +146,7 @@ void SPXPDF::SetUpParameters(SPXPDFSteeringFile *psf) {
 
  ReadPDFSteeringFile(psf);
 
- h_PDFBand_results=0;
+ h_PDF_results=0;
  h_AlphaS_results=0;
  h_Scale_results=0;
  h_Total_results=0;
@@ -359,7 +359,7 @@ void SPXPDF::Initialize()
 //#endif
 
  static const int nFlavours = 5;
- h_errors_PDFBand.clear();
+ h_errors_PDF.clear();
  h_errors_AlphaS.clear();
  h_errors_Scale.clear();
 
@@ -464,10 +464,10 @@ void SPXPDF::Initialize()
   if (h_Scale_results) h_Scale_results->SetName(name);
  }
  if (do_PDFBand) {
-  h_PDFBand_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
+  h_PDF_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
   TString name="xsec_pdf_"+default_pdf_set_name;
   if (spxgrid) name+="_"+spxgrid->GetName();
-  if (h_PDFBand_results) h_PDFBand_results->SetName(name);
+  if (h_PDF_results) h_PDF_results->SetName(name);
  }
 
  // Now do the scale variations
@@ -851,14 +851,15 @@ void SPXPDF::Initialize()
     std::cout<<cn<<mn<<"TIMER convolute done t0= "<< t0.time()<<" [ms]"<<std::endl;
 #endif
 
-    TString hname=temp_hist->GetName()+TString("_pdf_")+default_pdf_set_name;
+    TString hname=temp_hist->GetName()+TString("_pdf_")+default_pdf_set_name+"_id_";
+    hname+=pdferri;
     if (spxgrid) hname+="_"+spxgrid->GetName();
     temp_hist->SetName(hname);
 
    } else {
     if (debug) std::cout<<cn<<mn<<"Histogram from PDF not applgrid ! "<<std::endl;
     TH1D *tmp=this->FillPdfHisto();
-    if (!tmp) std::cout<<cn<<mn<<" tmp histogram not found "<<std::endl;
+    if (!tmp) std::cout<<cn<<mn<<"tmp histogram not found "<<std::endl;
     temp_hist=(TH1D*)tmp->Clone(tmp->GetName());
     temp_hist->SetName(tmp->GetName());
    }
@@ -885,23 +886,23 @@ void SPXPDF::Initialize()
     }
    }
 
-   h_errors_PDFBand.push_back(temp_hist);
+   h_errors_PDF.push_back(temp_hist);
 
   /*
    if (defaultpdfid==pdferri) {
-    h_PDFBand_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
-    h_PDFBand_results->SetName(temp_hist->GetName());
+    h_PDF_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
+    h_PDF_results->SetName(temp_hist->GetName());
 
-    h_PDFBand_results->SetFillStyle(fillStyleCode);
-    h_PDFBand_results->SetMarkerColor(fillColorCode);
-    h_PDFBand_results->SetLineColor(fillColorCode);
-    h_PDFBand_results->SetFillColor(fillColorCode);
+    h_PDF_results->SetFillStyle(fillStyleCode);
+    h_PDF_results->SetMarkerColor(fillColorCode);
+    h_PDF_results->SetLineColor(fillColorCode);
+    h_PDF_results->SetFillColor(fillColorCode);
    }
   */
   }   /// pdf errors loop
 
   if (debug) std::cout<<cn<<mn<<"End of PDF errors loop"<<std::endl;
- }  /// do_PDFBand
+ }  /// do_PDFBAND
 
 #ifdef TIMER     
     std::cout<<cn<<mn<<"TIMER call CalcSystErrors  running... " << std::endl;
@@ -917,10 +918,10 @@ void SPXPDF::Initialize()
 
  if (debug) std::cout<<cn<<mn<<"Now fill map  Mapallbands "<<std::endl;
 
- if (do_PDFBand) if(h_PDFBand_results) {
-  if (debug) std::cout<<cn<<mn<<" Fill in map "<<h_PDFBand_results->GetName()<<std::endl;
+ if (do_PDFBand) if(h_PDF_results) {
+  if (debug) std::cout<<cn<<mn<<" Fill in map "<<h_PDF_results->GetName()<<std::endl;
   if (Mapallbands.count("pdf")>0) std::cout<<cn<<mn<<"WARNING: Mapallbands[pdf] already filled ! "<<std::endl;
-  Mapallbands["pdf"]=h_PDFBand_results;
+  Mapallbands["pdf"]=h_PDF_results;
  }
 
  if (do_Scale) if(h_Scale_results){
@@ -948,8 +949,8 @@ void SPXPDF::Initialize()
    h_AlphaS_results->Print("all");
   }
   if (do_PDFBand) {
-   std::cout<<cn<<mn<<"h_PDFBand_results: "<<std::endl;
-   h_PDFBand_results->Print("all");
+   std::cout<<cn<<mn<<"h_PDF_results: "<<std::endl;
+   h_PDF_results->Print("all");
    std::cout<<cn<<mn<<"default= "<<defaultpdfid<<std::endl;
    hpdfdefault->Print("all");
   }
@@ -992,13 +993,13 @@ void SPXPDF::CalcPDFBandErrors()
  TString defname=PDFtype+"_default_set= ";
  defname+=defaultpdfid;
 
- if (h_errors_PDFBand.size()<1) {
+ if (h_errors_PDF.size()<1) {
   std::ostringstream oss;
-  oss << cn << mn << "ERROR: h_error_PDFBand is too small "<<h_errors_PDFBand.size(); 
+  oss << cn << mn << "ERROR: h_error_PDF is too small "<<h_errors_PDF.size(); 
   throw SPXParseException(oss.str());
  }
 
- hpdfdefault=(TH1D*)h_errors_PDFBand.at(defaultpdfid)->Clone(defname);
+ hpdfdefault=(TH1D*)h_errors_PDF.at(defaultpdfid)->Clone(defname);
 
  if (debug) {
   std::cout<<cn<<mn<<"Cross section for defaultpdf: "<<std::endl;
@@ -1007,7 +1008,7 @@ void SPXPDF::CalcPDFBandErrors()
   std::cout<<cn<<mn<<"ErrorPropagationType= "<<ErrorPropagationType<<std::endl;
  }
 
- for (int bi = 1; bi <= h_errors_PDFBand.at(0)->GetNbinsX(); bi++) { // loop over bins
+ for (int bi = 1; bi <= h_errors_PDF.at(0)->GetNbinsX(); bi++) { // loop over bins
   if (debug) std::cout<<cn<<mn<<" bin= "<<bi<<std::endl;
 
   double this_err_up         = 0.;
@@ -1022,22 +1023,22 @@ void SPXPDF::CalcPDFBandErrors()
   if (ErrorPropagationType==StyleNNPDF) {
    // NNPDF are replicatas, calculate the RMS
    // better use formulaa with sum^2 and sum ?
-   for (int pdferri = 0; pdferri < (int) h_errors_PDFBand.size(); pdferri++) {
-    average += h_errors_PDFBand.at(pdferri)->GetBinContent(bi);
+   for (int pdferri = 0; pdferri < (int) h_errors_PDF.size(); pdferri++) {
+    average += h_errors_PDF.at(pdferri)->GetBinContent(bi);
    }
-   average /= h_errors_PDFBand.size()-1;
+   average /= h_errors_PDF.size()-1;
    hpdfdefault->SetBinContent(bi,average);
 
-   for (int pdferri = 1; pdferri < (int) h_errors_PDFBand.size(); pdferri++)  {
-    this_err_up += pow(h_errors_PDFBand.at(pdferri)->GetBinContent(bi)-average, 2.);
+   for (int pdferri = 1; pdferri < (int) h_errors_PDF.size(); pdferri++)  {
+    this_err_up += pow(h_errors_PDF.at(pdferri)->GetBinContent(bi)-average, 2.);
    }
-   this_err_up = TMath::Sqrt(this_err_up / (h_errors_PDFBand.size()-1));
+   this_err_up = TMath::Sqrt(this_err_up / (h_errors_PDF.size()-1));
    // error with respect to average
    this_err_down = this_err_up;
   } else if (ErrorPropagationType==EigenvectorSymmetricHessian) {
    // Symmetric hessian
-   for (int pdferri = 1; pdferri < (int) h_errors_PDFBand.size()-1; pdferri += 2) {
-    this_err_up += pow( h_errors_PDFBand.at(pdferri)->GetBinContent(bi) - h_errors_PDFBand.at(pdferri+1)->GetBinContent(bi), 2.);
+   for (int pdferri = 1; pdferri < (int) h_errors_PDF.size()-1; pdferri += 2) {
+    this_err_up += pow( h_errors_PDF.at(pdferri)->GetBinContent(bi) - h_errors_PDF.at(pdferri+1)->GetBinContent(bi), 2.);
    }
    // here errors are symmetrized
    this_err_up = 0.5*TMath::Sqrt(this_err_up);
@@ -1053,18 +1054,18 @@ void SPXPDF::CalcPDFBandErrors()
   //
   // Asymmetric hessian
   //
-   central_val = h_errors_PDFBand.at(defaultpdfid)->GetBinContent(bi);
+   central_val = h_errors_PDF.at(defaultpdfid)->GetBinContent(bi);
    //https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/TopPdfUncertainty
    //>>>> modifications by P. Berta 28th August
    //
-   //for (int pdferri = 1; pdferri < (int) h_errors_PDFBand.size(); pdferri ++) {
-   // mod_val = h_errors_PDFBand.at(pdferri)->GetBinContent(bi);
+   //for (int pdferri = 1; pdferri < (int) h_errors_PDF.size(); pdferri ++) {
+   // mod_val = h_errors_PDF.at(pdferri)->GetBinContent(bi);
    // if (mod_val > central_val ) this_err_up  += pow(mod_val-central_val, 2.);
    // else                        this_err_down+= pow(central_val - mod_val, 2.);
    //}
-   for (int pdferri = 1; pdferri < (int) h_errors_PDFBand.size()-1; pdferri += 2) {
-    double delta_up_variation  =h_errors_PDFBand.at(pdferri)  ->GetBinContent(bi)-central_val;
-    double delta_down_variation=h_errors_PDFBand.at(pdferri+1)->GetBinContent(bi)-central_val;
+   for (int pdferri = 1; pdferri < (int) h_errors_PDF.size()-1; pdferri += 2) {
+    double delta_up_variation  =h_errors_PDF.at(pdferri)  ->GetBinContent(bi)-central_val;
+    double delta_down_variation=h_errors_PDF.at(pdferri+1)->GetBinContent(bi)-central_val;
     if (delta_up_variation>0   && delta_up_variation>delta_down_variation) this_err_up+=pow(delta_up_variation,2.);
     if (delta_down_variation>0 && delta_down_variation>delta_up_variation) this_err_up+=pow(delta_down_variation,2.);
     if (delta_up_variation<0   && delta_up_variation<delta_down_variation) this_err_down+=pow(delta_up_variation,2.);
@@ -1083,20 +1084,20 @@ void SPXPDF::CalcPDFBandErrors()
     std::cout<<cn<<mn<<"defaultpdfid= "<<defaultpdfid<<" defaultpdfidvar= "<<defaultpdfidvar<<std::endl;
    }
 
-   central_val = h_errors_PDFBand.at(defaultpdfid)->GetBinContent(bi);
+   central_val = h_errors_PDF.at(defaultpdfid)->GetBinContent(bi);
 
    if (debug) std::cout<<cn<<mn<<"Default sample id= "<<defaultpdfid<<" "<<" central_val= "<<central_val<<std::endl;
    if (includeEIG) {
     for (int pdferri = firsteig; pdferri <=lasteig; pdferri += 2) {   //// experimental errors
-     this_err_up += pow( 0.5*(h_errors_PDFBand.at(pdferri+1)->GetBinContent(bi)
-                            - h_errors_PDFBand.at(pdferri)  ->GetBinContent(bi)), 2.);
+     this_err_up += pow( 0.5*(h_errors_PDF.at(pdferri+1)->GetBinContent(bi)
+                            - h_errors_PDF.at(pdferri)  ->GetBinContent(bi)), 2.);
 
      if (debug) std::cout<<cn<<mn<<" "<<PDFtype.c_str()
 		    <<"pdferri= "<<pdferri<<" , "<<pdferri+1<<" EIG "
 		    <<" this_err_up= "<<this_err_up
-		    <<" diff/nom= "<<(h_errors_PDFBand.at(pdferri+1)->GetBinContent(bi)-h_errors_PDFBand.at(pdferri)  ->GetBinContent(bi))/central_val
-		    <<" (var+1)/nom= "<<h_errors_PDFBand.at(pdferri+1)->GetBinContent(bi)/central_val
-		    <<" (var)/nom= "  <<h_errors_PDFBand.at(pdferri)  ->GetBinContent(bi)/central_val
+		    <<" diff/nom= "<<(h_errors_PDF.at(pdferri+1)->GetBinContent(bi)-h_errors_PDF.at(pdferri)  ->GetBinContent(bi))/central_val
+		    <<" (var+1)/nom= "<<h_errors_PDF.at(pdferri+1)->GetBinContent(bi)/central_val
+		    <<" (var)/nom= "  <<h_errors_PDF.at(pdferri)  ->GetBinContent(bi)/central_val
 		    <<std::endl;
     }
    }
@@ -1107,31 +1108,31 @@ void SPXPDF::CalcPDFBandErrors()
 
    int firstvar=lasteig+1; // uncertainties start at last eigenvector previous set + default of variation samle
 
-   central_val = h_errors_PDFBand.at(firstvar+defaultpdfidvar)->GetBinContent(bi);
+   central_val = h_errors_PDF.at(firstvar+defaultpdfidvar)->GetBinContent(bi);
    if (debug) std::cout<<cn<<mn<<" variation sample id= "<<firstvar+defaultpdfidvar<<" "<<" central_val= "<<central_val<<std::endl;
    if (includeQUAD) {
     for (int pdferri = firstvar+firstquadvar; pdferri < firstvar+lastquadvar; pdferri++) {// parameterisation errors
-     if (h_errors_PDFBand.at(pdferri)->GetBinContent(bi) > central_val ) {
-      this_err_up  += pow( h_errors_PDFBand.at(pdferri)->GetBinContent(bi) - central_val, 2.);
+     if (h_errors_PDF.at(pdferri)->GetBinContent(bi) > central_val ) {
+      this_err_up  += pow( h_errors_PDF.at(pdferri)->GetBinContent(bi) - central_val, 2.);
       this_err_down+= 0.;
      } else  {
       this_err_up  += 0.;
-      this_err_down+= pow( central_val - h_errors_PDFBand.at(pdferri)->GetBinContent(bi), 2.);
+      this_err_down+= pow( central_val - h_errors_PDF.at(pdferri)->GetBinContent(bi), 2.);
      }
      if (debug) std::cout<<cn<<mn<<" "<<PDFtype.c_str()
 			 <<" pdferri= "<<pdferri<<" , "<<pdferri+1<<" parameterisation "
 			 <<" this_err_up= "<<this_err_up
 			 <<" this_err_down= "<<this_err_down
-			 <<" (var)/nom= "  <<h_errors_PDFBand.at(pdferri)  ->GetBinContent(bi)/central_val
+			 <<" (var)/nom= "  <<h_errors_PDF.at(pdferri)  ->GetBinContent(bi)/central_val
 			 <<std::endl;
     }
    }
 
    if (includeMAX) {
     for (int pdferri = firstvar+firstmaxvar; pdferri < firstvar+lastmaxvar; pdferri++) { // model errors
-     diff_central = h_errors_PDFBand.at(pdferri)->GetBinContent(bi) - central_val;
+     diff_central = h_errors_PDF.at(pdferri)->GetBinContent(bi) - central_val;
      //if (debug) std::cout<<cn<<mn<<" diff_central= "<<diff_central
-     //                    <<" var/nom= "<<h_errors_PDFBand.at(pdferri)->GetBinContent(bi)/central_val
+     //                    <<" var/nom= "<<h_errors_PDF.at(pdferri)->GetBinContent(bi)/central_val
      //                    <<endl;
      if (diff_central > 0 && diff_central > extreme_pos_diff ) extreme_pos_diff = diff_central;
      if (diff_central < 0 && diff_central < extreme_neg_diff ) extreme_neg_diff = diff_central;
@@ -1167,9 +1168,9 @@ void SPXPDF::CalcPDFBandErrors()
 
   if (ErrorPropagationType==StyleNNPDF) {
    double x_val, y_val;
-   h_PDFBand_results->GetPoint(bi-1, x_val, y_val);
-   h_PDFBand_results->SetPoint(bi-1, x_val,average);
-   //h_PDFBand_results->SetPoint(bi-1, x_val,y_val);
+   h_PDF_results->GetPoint(bi-1, x_val, y_val);
+   h_PDF_results->SetPoint(bi-1, x_val,average);
+   //h_PDF_results->SetPoint(bi-1, x_val,y_val);
    // Update also other defaults
    if(h_Scale_results)  h_Scale_results ->SetPoint(bi-1, x_val,average);
    if(h_AlphaS_results) h_AlphaS_results->SetPoint(bi-1, x_val,average);
@@ -1177,13 +1178,13 @@ void SPXPDF::CalcPDFBandErrors()
 
   }
 
-  h_PDFBand_results->SetPointEYhigh(bi-1, this_err_up);
-  h_PDFBand_results->SetPointEYlow (bi-1, this_err_down);
+  h_PDF_results->SetPointEYhigh(bi-1, this_err_up);
+  h_PDF_results->SetPointEYlow (bi-1, this_err_down);
 
   if (debug) {
    double x_val;
    double y_val;
-   h_PDFBand_results->GetPoint(bi-1, x_val, y_val);
+   h_PDF_results->GetPoint(bi-1, x_val, y_val);
    if (y_val!=0) {
     std::cout<<cn<<mn<<" bin= "<<bi<<" (y_val+this_err_up)/y_val= "  <<(y_val+this_err_up)/y_val
 	     <<" (y_val-this_err_down)/y_val= "<<(y_val-this_err_down)/y_val<<std::endl;
@@ -1473,8 +1474,8 @@ void SPXPDF::DrawPDFBand(){
  TH1D* hpdf=this->GetPdfdefault();
  hpdf->Draw("same");
 
- //h_PDFBand_results->Print("all");
- h_PDFBand_results->Draw("E2,same");
+ //h_PDF_results->Print("all");
+ h_PDF_results->Draw("E2,same");
 
  if (!hpdf) std::cout<<cn<<mn<<" test histo not found "<<std::endl;
  hpdf->Draw("same");
@@ -1491,7 +1492,7 @@ void SPXPDF::DrawPDFRatio(int iset1, int iset2){
 }
 
 double SPXPDF::GetMaximum(int iset){
- return h_errors_PDFBand[iset]->GetMaximum();
+ return h_errors_PDF[iset]->GetMaximum();
 }
 
 
@@ -1504,7 +1505,7 @@ TH1D* SPXPDF::GetPDFRatio(int iset1, int iset2)
   std::cout<<cn<<mn<<" iset2= "<< iset2<<" iset1= "<<iset1
 	   <<" n_PDFMembers= "<<n_PDFMembers<<std::endl;
 
- TString ratio_to_ref_name = (TString) h_PDFBand_results->GetName() + " Set=";
+ TString ratio_to_ref_name = (TString) h_PDF_results->GetName() + " Set=";
  ratio_to_ref_name +=iset1;
  ratio_to_ref_name +=" / Set=";
  ratio_to_ref_name +=iset2;
@@ -1521,8 +1522,8 @@ TH1D* SPXPDF::GetPDFRatio(int iset1, int iset2)
  }
  if (debug) std::cout<<cn<<mn<<" "<< ratio_to_ref_name.Data()<<std::endl;
 
- TH1D *hratio=(TH1D*) h_errors_PDFBand[iset1]->Clone( ratio_to_ref_name);
- TH1D *htmp=(TH1D*) h_errors_PDFBand[iset2]->Clone("htmp");
+ TH1D *hratio=(TH1D*) h_errors_PDF[iset1]->Clone( ratio_to_ref_name);
+ TH1D *htmp=(TH1D*) h_errors_PDF[iset2]->Clone("htmp");
  hratio->Divide(htmp);
 
  hratio->SetLineColor(fillColorCode);
@@ -1541,7 +1542,7 @@ double SPXPDF::GetPDFWeight(int iset1, double x1, double x2){
  double hpdfx1=hpdf->GetBinContent(hpdf->FindBin(x1));
  double hpdfx2=hpdf->GetBinContent(hpdf->FindBin(x2));
 
- TH1D *htmp=h_errors_PDFBand[iset1];
+ TH1D *htmp=h_errors_PDF[iset1];
  double htmpx1=htmp->GetBinContent(htmp->FindBin(x1));
  double htmpx2=htmp->GetBinContent(htmp->FindBin(x2));
 
@@ -1731,9 +1732,9 @@ void SPXPDF::SetAlphaSPDFSetNameUp(std::string _name) {
 void SPXPDF::CleanUpSPXPDF() {
   if (debug) std::cout<<cn<<" CleanUpSPXPDF: Starting to clean up..."<<std::endl;
 
- if (h_errors_PDFBand.size()>0) {
-  for (int i=0; i<h_errors_PDFBand.size(); ++i) {
-   delete h_errors_PDFBand.at(i);
+ if (h_errors_PDF.size()>0) {
+  for (int i=0; i<h_errors_PDF.size(); ++i) {
+   delete h_errors_PDF.at(i);
   }
  }
 
@@ -2194,4 +2195,66 @@ bool SPXPDF::HasDetailedBands(){
  return detailedband;
 };
 
+TH1D* SPXPDF::GetIndividualPDFComponent(int ipdf){
+ std::string mn = "GetIndividualPDFComponent: ";
 
+ if (debug) std::cout<<cn<<mn<<"Return PDF id= "<<ipdf<<std::endl;
+
+ TH1D *h1=0;
+ 
+ if (h_errors_PDF.size()==0) {
+   if (debug) std::cout<<cn<<mn<<"h_errors_PDF.size()==0 return 0 "<<std::endl;
+   return h1;
+  }
+
+ if (ipdf>h_errors_PDF.size()) {
+  std::cout<<cn<<mn<<"Something is wrong PDF id= "<<ipdf<<" but size= "<<h_errors_PDF.size()<<std::endl;
+  return h1;
+ }
+
+ return h_errors_PDF.at(ipdf);
+
+}
+
+TH1D* SPXPDF::GetIndividualScaleVariation(int iscale){
+ std::string mn = "GetIndividualScaleVariation: ";
+
+ if (debug) std::cout<<cn<<mn<<"Return scale variation i= "<<iscale<<std::endl;
+
+ TH1D *h1=0;
+ 
+ if (h_errors_Scale.size()==0) {
+   if (debug) std::cout<<cn<<mn<<"h_errors_Scale.size()==0 return 0 "<<std::endl;
+   return h1;
+  }
+
+ if (iscale>h_errors_Scale.size()) {
+  std::cout<<cn<<mn<<"Something is wrong scale i= "<<iscale<<" but size= "<<h_errors_Scale.size()<<std::endl;
+  return h1;
+ }
+
+ return h_errors_Scale.at(iscale);
+
+}
+
+
+TH1D* SPXPDF::GetIndividualAlphaSVariation(int ialphas){
+ std::string mn = "GetIndividualAlphaSVariation: ";
+
+ if (debug) std::cout<<cn<<mn<<"Return scale variation i= "<<ialphas<<std::endl;
+
+ TH1D *h1=0;
+ 
+ if (h_errors_AlphaS.size()==0) {
+   if (debug) std::cout<<cn<<mn<<"h_errors_AlphaS.size()==0 return 0 "<<std::endl;
+   return h1;
+  }
+
+ if (ialphas>h_errors_AlphaS.size()) {
+  std::cout<<cn<<mn<<"Something is wrong AlphaS id= "<<ialphas<<" but size= "<<h_errors_AlphaS.size()<<std::endl;
+  return h1;
+ }
+
+ return h_errors_AlphaS.at(ialphas);
+
+}

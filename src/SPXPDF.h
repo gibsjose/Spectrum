@@ -123,6 +123,22 @@ class SPXPDF {
         TH1D * GetPdfdefault() { return hpdfdefault;};
         TH1D * GetPDFNominal() { return hpdfdefault; };
 
+	TH1D* GetIndividualPDFComponent(int ipdf);
+
+	int GetNumberOfIndividualPDFComponents() {
+	  return h_errors_PDF.size();
+        }
+
+	TH1D* GetIndividualScaleVariation(int iscale);
+	int GetNumberOfIndividualScaleVariations() {
+	  return h_errors_Scale.size();
+        }
+
+	TH1D* GetIndividualAlphaSVariation(int ialphas);
+	int GetNumberOfIndividualAlphaSVariations() {
+	  return h_errors_AlphaS.size();
+        }
+
         TGraphAsymmErrors *GetTotalBand() {
          return h_Total_results;   
         }
@@ -151,8 +167,6 @@ class SPXPDF {
         void SetAlphaSmemberNumUp(int _memberNum);
         void SetAlphaSPDFSetNameDown(std::string _name);
         void SetAlphaSPDFSetNameUp(std::string _name);
-        //void SetAlphaSPDFSetHistNameDown(string _name);
-        //void SetAlphaSPDFSetHistNameUp(string _name);
 
         void SetAlphaS_value_worldAverage(double setalpha) {alphaS_value_worldAverage=setalpha;};
         void SetAlphaS_absUnc_worldAverage(double setalpha){alphaS_absUnc_worldAverage=setalpha;};
@@ -179,7 +193,7 @@ class SPXPDF {
         //bool correctedgrid;    // flag to indicated if Mapallbands are corrected
                                // by hadronisation, electroweak effects etc.
         // bands for individual uncertainties
-        TGraphAsymmErrors *h_PDFBand_results; // PDF uncertainty
+        TGraphAsymmErrors *h_PDF_results; // PDF uncertainty
         TGraphAsymmErrors *h_AlphaS_results;  // alphas uncertainty
         TGraphAsymmErrors *h_Scale_results;   // scale uncertainty
         TGraphAsymmErrors *h_Total_results;   // total uncertainty
@@ -233,11 +247,10 @@ class SPXPDF {
         SPXGrid *spxgrid;
 
         std::vector<TH1D*> h_errors_AlphaS;
-        std::vector<TH1D*> h_errors_PDFBand;
+        std::vector<TH1D*> h_errors_PDF;
         std::vector<TH1D*> h_errors_Scale;
 
         TH1D *hpdfdefault;
-
         std::vector<double> alphaS_variations;  // the values of alphaS variations corresponding to the histograms stored in h_errors_AlphaS
 
 	std::string gridName;

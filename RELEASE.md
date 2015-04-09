@@ -6,6 +6,8 @@
 
 ## Change Log
 
+ -SPXPDF: give access to individual PDF, alphas and scale components
+
  -SPXData: included possibility to cut on xmin and xmax
            Parse and CreateGraph need now be called from outside,
            since xmin and max cuts can be given by main steering
