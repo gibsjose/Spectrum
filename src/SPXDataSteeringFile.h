@@ -85,6 +85,10 @@ private:
 
         bool addLumiSystematic;                // Add luminosity uncertainty as additional systematic components 
 
+        bool RemoveXbins;                     // if ON points below/above DataCutXmin/DataCutXmax are removed
+        double DataCutXmin;                   // Value below which data points are removed if  RemoveXbins=true
+        double DataCutXmax;                   // Value above which data points are removed if  RemoveXbins=true
+
 	void SetDefaults(void);
 
 public:
@@ -272,10 +276,35 @@ public:
 		return lumiValue;
 	}
 
-	double GetDatasetUncertainty(void) const {
+	double GetDatasetLumiUncertainty(void) const {
 		return lumiError;
 	}
 
+        double GetDataCutXmin(){
+	 if (!RemoveXbins) std::cout<<"SPXDataSteering::GetDataCutXmin:: WARNING: RemoveXbin flag is not ON "<<std::cout;
+	 return DataCutXmin;
+        }
+
+        double GetDataCutXmax(){
+	 if (!RemoveXbins) std::cout<<"SPXDataSteering::GetDataCutXmin:: WARNING: RemoveXbin flag is not ON "<<std::cout;
+	 return DataCutXmax;
+        }
+
+        void SetDataCutXmin(double xmin){
+          RemoveXbins=true;
+          DataCutXmin=xmin;
+	  return;
+        }
+
+        void SetDataCutXmax(double xmax){
+          RemoveXbins=true;
+          DataCutXmax=xmax;
+	  return;
+        }
+
+        bool GetDataRemoveXbinsFlag() {
+         return RemoveXbins;
+        }
 
 };
 

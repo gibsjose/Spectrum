@@ -38,7 +38,7 @@ extern "C" void evolvepdf_(const double *, const double *, double *);
 //inline void   initPDFset(const string & name) {  initpdfsetc_(name.c_str());}
 inline void   initPDF(const int & mem) {initpdf_(&mem);}
 inline double alphasPDF(const double & Q) {return alphaspdf_(&Q);}
-inline double alphasUnity(const double & Q) {return 1.0000000;}
+inline double alphasUnity(const double & Q) { return 1.0000000;}
 
 // returns x*f(x,Q^2) in a C-style array where f[0] is tbar, etc.
 // f should of course be defined f[13]...

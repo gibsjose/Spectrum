@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include <map>
+#include <math.h>
 #include <vector>
 #include <string>
 #include <sstream>
@@ -41,8 +42,11 @@
 const int STYLE_EMPTY = -1;
 const int COLOR_EMPTY = -1;
 
-const long long MAX_EMPTY = -1e10;
-const long long MIN_EMPTY = 1e10;
+//const long long MAX_EMPTY = -1e10;
+//const long long MIN_EMPTY = 1e10;
+
+const double MAX_EMPTY = -HUGE_VAL;
+const double MIN_EMPTY =  HUGE_VAL;
 
 class SPXSteeringFile {
 
@@ -67,6 +71,10 @@ private:
                                     // when true all positive/negative uncertainty are added to total negative/positive total error
                                     //      false uncertainties are taken as such
 
+	std::vector <bool> RemoveXbins;           // if ON points below/above DataCutXmin/DataCutXmax are removed
+	std::vector <double> DataCutXmin;         // Value below which data points are removed if  RemoveXbins=true
+	std::vector <double> DataCutXmax;         // Value above which data points are removed if  RemoveXbins=true
+        
 	bool gridCorr;		//Flag to indicate that, if specified in the steering, the grid corrections should be applied
 	bool labelSqrtS;	//Flag to indicate that the Sqrt(s) value should be shown in the legend
 
@@ -371,6 +379,43 @@ public:
 	SPXPDFSteeringFile & GetPDFSteeringFile(unsigned int pci, unsigned int pcii) {
 		return plotConfigurations.at(pci).GetPlotConfigurationInstance(pcii).pdfSteeringFile;
 	}
+        double GetDataCutXmin(int i){
+	 if (DataCutXmin.size()==0) {
+  	  if (debug) std::cout<<"SPXDataSteering::GetDataCutXmin: (GetDataCutXmin.size()==0 return false "<<std::endl;
+          return false;
+         }
+	 if (i>DataCutXmin.size()) {
+          std::cout<<"SPXDataSteeringFile::GetDataCutXmin: something is wrong i= "<<i<<" size= "<<DataCutXmin.size()<<std::endl;
+          std::cerr<<"SPXDataSteeringFile::GetDataCutXmin: something is wrong i= "<<i<<" size= "<<DataCutXmin.size()<<std::endl;
+          return false;
+         }
+	 if (!RemoveXbins.at(i)) std::cout<<"SPXDataSteering::GetDataCutXmin: WARNING: RemoveXbin flag is not ON "<<std::cout;
+	 return DataCutXmin.at(i);
+        }
+
+        double GetDataCutXmax(int i){
+	 if (DataCutXmax.size()==0) {
+  	  if (debug) std::cout<<"SPXDataSteering::GetDataCutXmax: (GetDataCutXmax.size()==0 return false "<<std::endl;
+          return false;
+         }
+	 if (i>DataCutXmax.size()) {
+          std::cout<<"SPXDataSteeringFile::GetDataCutMax: something is wrong i= "<<i<<" size= "<<DataCutXmax.size()<<std::endl;
+          std::cerr<<"SPXDataSteeringFile::GetDataCutMax: something is wrong i= "<<i<<" size= "<<DataCutXmax.size()<<std::endl;
+          return false;
+         }
+	 if (!RemoveXbins.at(i)) std::cout<<"SPXDataSteering::GetDataCutXmin: WARNING: RemoveXbin flag is not ON "<<std::cout;
+	 return DataCutXmax.at(i);
+        }
+
+        bool GetDataRemoveXbinsFlag(int i) {
+	 if (debug) std::cout<<"SPXDataSteering::GetDataRemoveXbinsFlag: i= "<<i<<std::endl;
+         if (RemoveXbins.size()==0) {
+  	  if (debug) std::cout<<"SPXDataSteering::GetDataRemoveXbinsFlag: (RemoveXbins.size()==0 return false "<<std::endl;
+          return false;
+         }
+	 if (i>RemoveXbins.size()) std::cout<<"SPXDataSteering::GetDataRemoveXbinsFlag: something is wrong i= "<<i<<" size= "<<RemoveXbins.size()<<std::endl;
+	 return RemoveXbins.at(i);
+        }
 
 };
 

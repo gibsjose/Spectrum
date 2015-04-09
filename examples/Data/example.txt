@@ -102,3 +102,7 @@ lumi_value = 20                                                 ;[OPtional] Lumi
 lumi_error = 5                                                  ;[OPtional] Lumionsity uncertainty in percent
 add_lumi_uncertainty_to_systematics = true                      ;[Optional] add lumi uncertainty as systematic uncertainty components 
 divided_by_doublediff_bin_width = false                         ;[Optional] indicate if data are divided by bin width of double differential bin 
+;
+data_cut_xmax = 0.                                        ;[Optional] remove points below/above xmin/xmax 
+data_cut_xmin = 0.                                        ;            from data map and systematics
+                                                          ; by default nothing is removed

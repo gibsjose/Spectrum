@@ -2022,7 +2022,7 @@ void SPXPlot::InitializeCrossSections(void) {
 		}
 	}
 
-	if(debug) std::cout << cn << mn << "Loop over cross section size=" << crossSections.size() <<std::endl;
+	if(debug) std::cout<<cn<<mn<<"Loop over cross section size=" << crossSections.size() <<std::endl;
 
 	for(int i = 0; i < crossSections.size(); i++) {
 	      SPXPlotConfigurationInstance &pci = pcis[i];
@@ -2378,9 +2378,25 @@ void SPXPlot::InitializeData(void) {
 
                 SPXData *dataInstance = new SPXData(pci);
                 if (!dataInstance) throw SPXGeneralException(cn+mn+"Problem to create dataInstance");
+
                 if (steeringFile->GetTakeSignforTotalError()) {
                  dataInstance->SetTakeSignforTotalError(true);
 		}
+
+		if(debug) std::cout<<cn<<mn<<"Call GetDataRemoveFlag for i= "<<i << std::endl;
+ 
+                if (steeringFile->GetDataRemoveXbinsFlag(i)) {
+		 double xmax=steeringFile->GetDataCutXmax(i);
+		 double xmin=steeringFile->GetDataCutXmin(i);
+
+                 if (debug) std::cout<<cn<<mn<<"Remove bins from data with value > "<<xmax<<" and < "<<xmin<<std::endl;
+
+                 dataInstance->SetDataCutXmin(xmin);
+                 dataInstance->SetDataCutXmax(xmax);
+
+		}
+
+                dataInstance->Parse();
 
                 dataInstance->CreateGraphs();
 
@@ -2405,7 +2421,7 @@ void SPXPlot::InitializeData(void) {
 		}
 	}
 
-	if(debug) std::cout << cn << mn << " Loop over data with size" <<data.size()<< std::endl;
+	if(debug) std::cout<<cn<<mn<<"Loop over data with size= " <<data.size()<< std::endl;
 	//Go through data objects and create graphs, modify settings, etc.
 	for(int i = 0; i < data.size(); i++) {
 
@@ -2476,7 +2492,8 @@ void SPXPlot::InitializeData(void) {
 		    icountsyst++;
 
                     Color_t icol=SPXUtilities::ICol(icountsyst);
-                    vsyst.at(isyst)->SetFillStyle(1000);
+                    //vsyst.at(isyst)->SetFillStyle(3001);
+                    vsyst.at(isyst)->SetFillStyle(3002);
                     SPXGraphUtilities::SetColors(vsyst.at(isyst),icol);
 
  		    dataFileGraphMap.insert(StringGraphPair_T(systname, vsyst.at(isyst)));

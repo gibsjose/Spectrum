@@ -14,7 +14,7 @@
 #define SPXPDF_H
 
 // if set timer is on
-#define TIMER
+//#define TIMER
 
 #include <stdlib.h> // exit()
 #include <sstream>  // needed for internal io

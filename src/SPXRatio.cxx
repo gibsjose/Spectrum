@@ -405,12 +405,21 @@ void SPXRatio::Divide(void) {
    if (numeratorGraph.size()==0)
     throw SPXGraphException(cn + mn + "No numeratorGraph found !");
 
+   if (debug) {
+    std::cout<<cn<<mn<<"Match binning for denominatorGraph= "<<denominatorGraph->GetName()<<std::endl;
+    //denominatorGraph->Print();
+   }
+
    for (int i=0; i<numeratorGraph.size(); i++){
     try {
       if (debug) std::cout<<cn<<mn<<"Match binning for numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName()
                           <<" denominatorGraph= "<<denominatorGraph->GetName()<<std::endl;
 
       SPXGraphUtilities::MatchBinning(denominatorGraph, numeratorGraph[i], true);
+      if (debug) {
+       std::cout<<cn<<mn<<"After Match binning for numeratorGraph["<<i<<"]= "<<std::endl;
+       //numeratorGraph[i]->Print();
+      }
     } catch(const SPXException &e) {
      std::cerr << e.what() << std::endl;
      std::ostringstream oss;

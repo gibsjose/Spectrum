@@ -130,7 +130,6 @@ struct SPXPlotConfigurationInstance {
 	bool IsEmpty(void) const {
 		std::string mn = "IsEmpty: ";
 
-
 		if(!dataSteeringFile.GetFilename().empty()) {
 		 if(debug) std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Data steering file = " << dataSteeringFile.GetFilename() << std::endl;
 		 //return false;
@@ -179,10 +178,10 @@ struct SPXPlotConfigurationInstance {
 	bool IsValid(void) const {
 		std::string mn = "IsValid: ";
 
-		//Empty, but valid
+		//Empty, but valid 
 		if(this->IsEmpty()) {
-			if(debug) std::cout << mn << "IsEmpty" << std::endl;
-			return true;
+		  //if(debug) std::cout << mn << "IsEmpty" << std::endl;
+		  return true;
 		}
 
 		//Not empty, but fields are missing

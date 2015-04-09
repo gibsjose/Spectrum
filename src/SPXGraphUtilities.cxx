@@ -249,7 +249,7 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
 
         if(debug) {
             std::cout << std::endl;
-            std::cout << cn << mn << "Checking master bin number " << i <<" xmin= "<<m_exl<<" xmax= "<< m_exh<< std::endl;
+            std::cout << cn << mn << "Checking master bin number " << i <<" x= "<<m_x<<" xmin= "<<m_exl<<" xmax= "<< m_exh<< std::endl;
         }
 
         //Recompute number of slave bins
@@ -267,6 +267,8 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
             s_exl = s_x - s_exl;
             s_exh = s_x + s_exh;
             s_bw = s_exh - s_exl;
+
+            //if (debug) std::cout<<cn<<mn<<"          Slave bin number " << j <<" x= "<<s_x<<" xmin= "<<s_exl<<" xmax= "<< s_exh<< std::endl;
 
             //Exception if point lies within master bin AND slave bin width is greater than master bin width
             if(((s_x >= m_exl) && (s_x <= m_exh)) && (s_bw > m_bw)) {
@@ -729,9 +731,11 @@ TH1D *SPXGraphUtilities::GetEdgeHistogram(TGraphAsymmErrors * g, bool low) {
      throw SPXGraphException(cn + mn + "Graph provided was invalid");
     }
 
-    TString name=TString("h")+g->GetName();
+    //TString name=TString("h")+g->GetName();
+    TString name="";
     if (low) name+="LowEdge";
     else     name+="HighEdge";
+    name+=g->GetName();
 
     //std::cout<<cn<<mn<<" name= "<<name<<std::endl;
   
@@ -1296,8 +1300,9 @@ void SPXGraphUtilities::AddinQuadrature(TGraphAsymmErrors* g1, TGraphAsymmErrors
   if ((EYhigh2[i]>0 && EYlow2[i]>0) || (EYhigh2[i]<0 && EYlow2[i]<0)) {
    Double_t x2=0., y2=0.;
    g2->GetPoint(i, x2,y2);
-   if (y2=0.) y2=1.;
-   std::cout<<cn<<mn<<"INFO: low and high errors have the same sign signs  g2= "<<g2->GetName()<<" EYhigh2["<<i<<"]= " << EYhigh2[i]/y2 <<" EYlow2["<<i<<"]= "<<EYlow2[i]/y2<< std::endl;   
+   if (y2==0.) y2=1.;
+   std::cout<<cn<<mn<<"INFO: low and high errors have the same sign signs  g2= "<<g2->GetName()
+                    <<" relative EYhigh2["<<i<<"]= " << EYhigh2[i]/y2 <<" EYlow2["<<i<<"]= "<<EYlow2[i]/y2<< std::endl;   
   }
 
   eyh=sqrt(EYhigh1[i]*EYhigh1[i]+EYhigh2[i]*EYhigh2[i]);

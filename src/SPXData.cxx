@@ -27,8 +27,22 @@ SPXData::SPXData(const SPXPlotConfigurationInstance &pci) {
  std::string mn = "SPXData: ";
 
  this->pci = pci;
- this->dataFormat = pci.dataSteeringFile.GetDataFormat();
+ this->dataFormat  = this->pci.dataSteeringFile.GetDataFormat();
  dividedByBinWidth = this->pci.dataSteeringFile.IsDividedByBinWidth();
+
+ RemoveXbins=this->pci.dataSteeringFile.GetDataRemoveXbinsFlag();
+ if (debug) std::cout<<cn<<mn<<"RemoveXbins "<< ( RemoveXbins ? "ON" : "OFF")<< std::endl;
+
+
+ if (RemoveXbins) {
+  DataCutXmin=this->pci.dataSteeringFile.GetDataCutXmin();
+  DataCutXmax=this->pci.dataSteeringFile.GetDataCutXmax();
+
+  if (debug) std::cout<<cn<<mn<<"Remove bins with values < "<<DataCutXmin<<" and > "<<DataCutXmax<<std::endl;
+ } else 
+  if (debug) std::cout<<cn<<mn<<"All data are kept ...unless main steering over-rules "<<std::endl;
+
+ TakeSignforTotalError=true;
   
  //set pointer to zero
  statisticalErrorGraph=0;
@@ -45,13 +59,18 @@ SPXData::SPXData(const SPXPlotConfigurationInstance &pci) {
 
  individualsystematicErrorGraph.clear();
 
+ //
+ // The below function must be call outside the SPXData class
+ // to allow for setting from the main steering
  // Parse in data
-  
- if (debug) std::cout<<cn<<mn<<"Parse in Data"<<std::endl;
- this->Parse();
-
+ // 
+ //if (debug) std::cout<<cn<<mn<<"Parse in Data"<<std::endl;
+ //this->Parse();
+ //
  //if (debug) std::cout<<cn<<mn<<"Create graphs"<<std::endl;
  // this->CreateGraphs(); // is now called outside
+
+ if (debug) std::cout<<cn<<mn<<"Finished SPXData constructor"<<std::endl;
 
  return;
 }
@@ -137,6 +156,8 @@ void SPXData::ParseSpectrum(void) {
 
 	//Bin count
 	unsigned int bin_count = 0;
+
+	std::map<int, int> keepbin;
 
 	//Number of columns (used to determine symmetric, asymmetric, or no total systematic error)
 	unsigned int numberOfColumns = 0;
@@ -313,22 +334,49 @@ void SPXData::ParseSpectrum(void) {
 					syst_n.push_back(syst_n_t);
 				}
 
-				//Increment bin count
-				bin_count++;
-
-
                                 if (faclumi!=1) {
-				  //if (debug) std::cout<<cn<<mn<<" rescale data by factor "<<faclumi<<std::endl;
+				 //if (debug) std::cout<<cn<<mn<<" rescale data by factor "<<faclumi<<std::endl;
                                  sigma_t*=faclumi;
                                  stat_t *=faclumi;
                                 }
 
-				//Fill required vectors with temp variables
-				xm.push_back(xm_t);
-				xlow.push_back(xlow_t);
-				xhigh.push_back(xhigh_t);
-				sigma.push_back(sigma_t);
-				stat.push_back(stat_t);
+				//Increment bin count
+				bin_count++;
+
+				// Fill required vectors with temp variables
+                                // remove bins if required in steering
+                                if (RemoveXbins) {
+
+				 if ( xlow_t <= DataCutXmin) {
+				  if (debug) std::cout<<cn<<mn<<"------> Remove bin "<<bin_count<<" with xlow_t= " <<xlow_t <<" DataCutXmin= "<<DataCutXmin<<std::endl;
+                                  continue;
+                                 }
+
+				 if ( xhigh_t >= DataCutXmax) {
+				  if (debug) std::cout<<cn<<mn<<"------> Remove bin "<<bin_count<<" with xhigh_t= "<<xhigh_t<<" DataCutXmax= "<<DataCutXmax<<std::endl;
+                                  continue;
+                                 } 
+
+				 if (debug) {
+				  std::cout<<cn<<mn<<"------> Keep bin "<<bin_count<<" with xlow_t= "<<xlow_t<<" and xhigh_t= "<<xhigh_t<<std::endl;
+                                 }
+
+				 xm.push_back(xm_t);
+				 xlow.push_back(xlow_t);
+				 xhigh.push_back(xhigh_t);
+				 sigma.push_back(sigma_t);
+				 stat.push_back(stat_t);
+   
+                                 // bin_count starts at 1
+                                 keepbin[bin_count-1]=xm.size()-1;
+
+                                } else {
+				 xm.push_back(xm_t);
+				 xlow.push_back(xlow_t);
+				 xhigh.push_back(xhigh_t);
+				 sigma.push_back(sigma_t);
+				 stat.push_back(stat_t);
+				}
 			}
 		}
 	}
@@ -343,6 +391,19 @@ void SPXData::ParseSpectrum(void) {
 	  std::cerr << cn << mn << "WARNING: Different number of positive/negative systematic errors: Data errors could be skewed pos_count= " << pos_count << " neg_count= "<<neg_count << std::endl;
 	}
 
+        if (debug&&RemoveXbins) {
+	 std::cout<<cn<<mn<<"After looping over data: The following bins will be kept: " << std::endl;
+	 std::cout<<cn<<mn<<"INFO keepbin[ keptbinindex ]= newbinindex " <<std::endl;
+	 for(std::map<int,int>::iterator it = keepbin.begin(); it != keepbin.end(); it++)
+	   std::cout<<cn<<mn <<"keepbin["<<it->first<<"]= " <<  it->second<<std::endl;
+
+	 std::cout<<cn<<mn <<" " <<std::endl;
+
+	 //std::cout<<cn<<mn <<"Number of bins= " <<  bin_count<<std::endl;
+         //for (int i=0; i<bin_count; i++)
+	 // std::cout<<cn<<mn << " keepbin.count("<<i<<")= " << keepbin.count(i)<<std::endl;
+        }
+   
 	//Set master size to number of bins
 	int masterSize = bin_count;
 	if(debug) std::cout << cn << mn << "Master size set to size of \"bin_count\": " << masterSize << std::endl;
@@ -354,14 +415,17 @@ void SPXData::ParseSpectrum(void) {
 
 	if (pci.dataSteeringFile.AddLuminosityUncertainyToSystematics()) {
 	 if(debug) std::cout<<cn<<mn<<"Add luminosity as systematic components"<<std::endl;
-         double elumi=pci.dataSteeringFile.GetDatasetUncertainty();
-	 std::vector<double> tmp_syst(masterSize,elumi);
+         double elumi=pci.dataSteeringFile.GetDatasetLumiUncertainty();
+	 std::vector<double> tmp_systp(masterSize, elumi);
+	 std::vector<double> tmp_systn(masterSize,-elumi);
 	 std::string name="syst_lumi";
-         StringDoubleVectorPair_T p_pair(name+"+", tmp_syst);
+         StringDoubleVectorPair_T p_pair(name+"+", tmp_systp);
 	 individualSystematics.insert(p_pair);
-         StringDoubleVectorPair_T n_pair(name+"-", tmp_syst);
+         StringDoubleVectorPair_T n_pair(name+"-", tmp_systn);
 	 individualSystematics.insert(n_pair);
         }
+
+	if(debug) std::cout<<" "<<std::endl;
 
 	//If necessary, compute/compare total positive/negative systematics for each bin using the individual systematic errors
 	if(pos_count) {
@@ -375,16 +439,25 @@ void SPXData::ParseSpectrum(void) {
 			p_errors.clear();
 			n_errors.clear();
 
+                        if (RemoveXbins) {
+                         if (keepbin.count(i)==0) {
+			  if (debug) std::cout<<cn<<mn<<"-----> Bin i= "<<i<<" is removed ! "<<std::endl;
+                          continue;
+                         } else {
+			  if (debug) std::cout<<cn<<mn<<"-----> Bin i= "<<i<<" is kept "<<std::endl;
+			 }
+                        }
+
 			for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); ++it) {
 
-				const std::string &name = it->first;
+				const std::string   &name = it->first;
 				std::vector<double> &syst = it->second;
 
 				//std::cout<<cn<<mn<<" i= "<<i<<" syst.size()= "<<syst.size()<<std::endl;
 
 			        if (i>=syst.size()) { 
 				 std::ostringstream oss;
-				 oss << cn << mn << "Systematic uncertainty vector too small syst.size()= "<<syst.size()<<" i= "<<i<<" Check number of bins in systematic text file name= "<<name.c_str();
+				 oss<<cn<<mn<<"Systematic uncertainty vector too small syst.size()= "<<syst.size()<<" i= "<<i<<" Check number of bins in systematic text file name= "<<name.c_str();
 				 throw SPXParseException(oss.str());
                                 }
 
@@ -467,6 +540,65 @@ void SPXData::ParseSpectrum(void) {
 			}
 		}
 	}
+
+        /*
+        if (debug&&RemoveXbins) {
+	 std::cout<<cn<<mn << "The following bins will be kept: " << std::endl;
+	 std::cout<<cn<<mn << "INFO keepbin[ keptbinindex ]= newbinindex " <<std::endl;
+	 for(std::map<int,int>::iterator it = keepbin.begin(); it != keepbin.end(); it++)
+	  std::cout<<cn<<mn << " keepbin["<<it->first<<"]= " <<  it->second <<std::endl;
+
+         //for (int i=0; i<bin_count; i++)
+	 // std::cout<<cn<<mn << " keepbin.count("<<i<<")= " << keepbin.count(i)<<std::endl;
+        }
+        */
+
+        if (RemoveXbins) {
+         int newmaster=keepbin.size();
+	 // remove bins from vector in the map
+	 for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
+	  const std::string   &syst_name  = it->first;
+	  std::vector<double> &systematic = it->second;
+          
+	  std::vector<double> vsyst;
+          for (int i=0; i<systematic.size(); i++) {
+
+	  /*
+	  std::cout<<cn<<mn << " TEST "<<std::endl;
+          for (int ii=0; ii<bin_count; ii++) {
+	    //std::cout<<cn<<mn << " keepbin.count("<<ii<<")= " << keepbin.count(ii)<<std::endl;
+
+	   if (debug) std::cout<<cn<<mn<<" i= "<< i<<" keepbin.count("<< i<<")= "<<keepbin.count(i)
+	 		              <<" ii= "<<ii<<" keepbin.count("<<ii<<")= "<<keepbin.count(ii)<<std::endl;
+	  }
+          */
+	   if (keepbin.count(i)>0) {
+	    vsyst.push_back(systematic.at(i));
+	    //if (debug) std::cout<<cn<<mn<<"Loop over systematics Bin i= "<<i<<" new size= "<<vsyst.size() <<std::endl;
+           } else {
+	    //if (debug) std::cout<<cn<<mn<<"Loop over systematics Bin i= "<<i<<" is removed  "<<std::endl;
+           }
+          } 
+
+	  if (debug) std::cout<<cn<<mn<<"New size of "<<syst_name<<" is "<< vsyst.size()<<" masterSize= "<<masterSize<< " newmaster= "<<newmaster<<std::endl;
+          it->second=vsyst;
+         }
+
+	 if (debug) std::cout<<" "<<std::endl;
+
+	 if (masterSize!=newmaster) {
+	  if (debug) std::cout<<cn<<mn<<"Some bins are removed -> update old masterSize= "<<masterSize<<" to "<<newmaster<<std::endl;
+	  masterSize = newmaster;
+	 } else 
+	  if (debug) std::cout<<cn<<mn<<"No bins removed old masterSize "<<masterSize<<" = "<<newmaster<<std::endl;
+	}
+
+        if (masterSize==0) {
+	 if (RemoveXbins) {
+	  throw SPXParseException(cn+mn+"No data found or all data removed !");
+	 } else
+	  throw SPXParseException(cn+mn+"No data found !");
+        }
 
 	//Check vector sizes: all vectors should be the same size
 	if(debug) std::cout << std::endl;
@@ -1541,8 +1673,17 @@ void SPXData::PrintSystematics(StringDoubleVectorMap_T syst) {
  std::cout<<cn<<mn<<" Number of systematics uncertainties= "<<syst.size()<<std::endl;
 
  for(StringDoubleVectorMap_T::iterator it = syst.begin(); it != syst.end(); it++) {
-  const std::string &syst_name = it->first;
+  const std::string   &syst_name  = it->first;
   std::vector<double> &systematic = it->second;
+
+  if (systematic.size()==0) {
+   if (RemoveXbins) {
+    std::cout<<cn<<mn<<"WARNING: systematic error vector is empty ! " << std::endl;
+    std::cout<<cn<<mn<<"WARNING: data_cut_xmax= " << DataCutXmax<<" data_cut_xmin= " << DataCutXmin << std::endl;
+   } else {
+    std::cout<<cn<<mn<<"INFO: systematic error vector is empty ! " << std::endl;
+   }
+  }
 
   std::cout << std::left << std::setw(24) << syst_name << "  ";
   std::cout << std::fixed;
@@ -1584,7 +1725,7 @@ std::vector <TGraphAsymmErrors *>  SPXData::GetSystematicsErrorGraphs(void){
 
  if ( individualsystematicErrorGraph.size()==0) {
   if (debug) {
-   std::cout<<cn<<mn<<"XXX Fill individualsystematicErrorGraph vector from map"<<std::endl;  
+   std::cout<<cn<<mn<<"Fill individualsystematicErrorGraph vector from map"<<std::endl;  
    //std::cout<<cn<<mn<<"Copy values from graph= "<<systematicErrorGraph->GetName()<<std::endl;
    //systematicErrorGraph->Print();
   }
@@ -1621,16 +1762,16 @@ std::vector <TGraphAsymmErrors *>  SPXData::GetSystematicsErrorGraphs(void){
 
    if (csystp.size()==0) {
     std::ostringstream oss;
-    oss <<cn<<mn<<"Systematics vector csyst is empty ! " 
-                <<" corresponding to "<<syst_name.c_str();
-    throw SPXParseException(oss.str());
+    std::cerr<<cn<<mn<<"Systematics vector csyst is empty ! " <<" corresponding to "<<syst_name.c_str();
+    //oss <<cn<<mn<<"Systematics vector csyst is empty ! " <<" corresponding to "<<syst_name.c_str();
+    //throw SPXParseException(oss.str());
    }
 
    if (csystn.size()==0) {
     std::ostringstream oss;
-    oss <<cn<<mn<<"Corresponding systematics vector not found for " <<syst_namen.c_str()
-                <<" corresponding to "<<syst_name.c_str();
-    throw SPXParseException(oss.str());
+    std::cerr<<cn<<mn<<"Corresponding systematics vector not found for " <<syst_namen.c_str()<<" corresponding to "<<syst_name.c_str();
+    //oss <<cn<<mn<<"Corresponding systematics vector not found for " <<syst_namen.c_str()<<" corresponding to "<<syst_name.c_str();
+    //throw SPXParseException(oss.str());
    }
 
    if (csystp.size()!=csystn.size()) {
@@ -1661,10 +1802,10 @@ std::vector <TGraphAsymmErrors *>  SPXData::GetSystematicsErrorGraphs(void){
     double eyl=csystn.at(ibin)/100*fabs(value);
   
     if ((eyh<0 && eyl<0) || (eyh>0 && eyl>0) )
-     std::cout<<cn<<mn<<"WARNING: in ibin= "<<ibin<<" errors have the same sign !  eyh= "<<eyh<<" eyl= "<<eyl<<std::endl;
+     std::cout<<cn<<mn<<"WARNING: in ibin= "<<ibin<<" errors have same sign:  eyh= "<<eyh<<" eyl= "<<eyl<<std::endl;
 
     if (eyh<0 && eyl>0) {
-     std::cout<<cn<<mn<<"INFO: in ibin= "<<ibin<<" eyh<0 and exl>0 errors have switched sign !  eyh= "<<eyh<<" eyl= "<<eyl<<std::endl;
+     std::cout<<cn<<mn<<"INFO: in ibin= "<<ibin<<" eyh<0 and exl>0 errors have switched sign:  eyh= "<<eyh<<" eyl= "<<eyl<<std::endl;
      //double tmp=eyh;
      //eyh=eyl;
      //eyl=tmp;

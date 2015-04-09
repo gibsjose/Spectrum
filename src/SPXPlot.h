@@ -20,7 +20,7 @@
 #include <map>
 
 // if set timer is on
-#define TIMER
+//#define TIMER
 #ifdef TIMER
 #include "appl_grid/appl_timer.h"
 #endif

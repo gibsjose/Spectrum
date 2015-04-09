@@ -144,6 +144,10 @@ pdf_steering_files = CT10.txt				  ;[REQUIRED] List of all PDF steering files
 data_marker_style = 20					  ;[REQUIRED] List of data marker styles
 data_marker_color = 1					  ;[REQUIRED] List of data marker colors
 ;
+data_cut_xmax = 0.                                        ;[Optional] remove points below/above xmin/xmax 
+data_cut_xmin = 0.                                        ;            from data map and systematics
+                                                          ; by default nothing is removed
+
 display_systematic_group = JES, JER                       ;[Optional] List of groups of systematics to be displayed
                                                           ;           active only for DataOVerData
                                                           ;           to be active show_individual_systemtics=0

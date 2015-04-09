@@ -89,7 +89,7 @@ $(BIN): $(OBJ)
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cxx
 	@echo
 	@echo -n "Building $<"
-	@$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
+	@$(CXX) $(CXXFLAGS) -D TIMER $(INC) -c $< -o $@
 	@echo " ---> Done"
 
 clean:

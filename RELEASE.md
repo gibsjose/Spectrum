@@ -6,8 +6,13 @@
 
 ## Change Log
 
- -SPXPDF and SPXPlot: added Mark times if define TIMER on
+ -SPXData: included possibility to cut on xmin and xmax
+           Parse and CreateGraph need now be called from outside,
+           since xmin and max cuts can be given by main steering
 
+ -SPXPDF and SPXPlot: added Mark times if define TIMER on
+  can be activated via makefile
+ 
  -SPXPlot: add systematics groups
 
  -SPXROOT: include TString

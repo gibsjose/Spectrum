@@ -95,10 +95,8 @@ void SPXDataSteeringFile::SetDefaults(void) {
 
 	doublediffBinValueMin=0.;
 	if(debug) std::cout << cn << mn << "doublediffBinValueMin set to default= "<< doublediffBinValueMin<< std::endl;
-
 	doublediffBinValueMax=0.;
 	if(debug) std::cout << cn << mn << "doublediffBinValueMax set to default= "<< doublediffBinValueMax<< std::endl;
-
 	doublediffBinWidth=1.;
 	if(debug) std::cout << cn << mn << "oublediffBinWidth set to default= "<< doublediffBinWidth<< std::endl;
 
@@ -135,6 +133,14 @@ void SPXDataSteeringFile::SetDefaults(void) {
 	lumiError = 0.0;
 	if(debug) std::cout << cn << mn << "lumi uncertainty lumiError set to default: \"0.0\"" << std::endl;
 
+        RemoveXbins=false;
+	if(debug) std::cout << cn << mn << "RemoveXbins  set to default: OFF" << std::endl;
+
+        DataCutXmin=-HUGE_VAL;
+	if(debug) std::cout << cn << mn << "DataCutXmin set to default: "<< DataCutXmin << std::endl;
+
+        DataCutXmax=-HUGE_VAL;
+	if(debug) std::cout << cn << mn << "DataCutXmax set to default: "<< DataCutXmin << std::endl;
 
 }
 
@@ -183,6 +189,11 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t\t Errors given in percentages? " << (errorInPercent ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Luminosity Scale Factor: " << lumiScaleFactor << std::endl << std::endl;
 	std::cout << "\t\t Data Divided by Bin Width of double differential variable? " << (dividedByDoubleDiffBinWidth? "YES" : "NO") << std::endl;
+
+        if (RemoveXbins) {
+	  std::cout << "\t\t Remove bins with values < "<<DataCutXmin<<" and > "<<DataCutXmax<<std::endl;
+        }
+       
 }
 
 //@TODO Create Correlation Matrix Class and parse correlation matrix here if there is one (correlation_matrix = true)!
@@ -452,6 +463,14 @@ void SPXDataSteeringFile::Parse(void) {
 
 	lumiValue = reader->GetReal("DATA", "lumi_value", lumiValue);
 	lumiError = reader->GetReal("DATA", "lumi_error", lumiError);
+
+        double defDataCutXmin=DataCutXmin;
+	DataCutXmin = reader->GetReal("DATA", "data_cut_xmin", defDataCutXmin);
+        if (DataCutXmin!=defDataCutXmin) RemoveXbins=true;
+
+        double defDataCutXmax=DataCutXmax;
+	DataCutXmax = reader->GetReal("DATA", "data_cut_xmax", defDataCutXmax);
+        if (DataCutXmax!=defDataCutXmax) RemoveXbins=true;
 
 	addLumiSystematic = reader->GetBoolean("DATA", "add_lumi_uncertainty_to_systematics", false);
 	if(debug) std::cout << cn << mn << "Add luminosity systematic as additional systematic componenent: " << (addLumiSystematic ? "ON" : "OFF") << std::endl;

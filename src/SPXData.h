@@ -52,9 +52,36 @@ public:
 		debug = b;
 	}
 
+        double GetDataCutXmin(){
+	 if (!RemoveXbins) std::cout<<"SPXDataSteering::GetDataCutXmin:: WARNING: RemoveXbin flag is not ON "<<std::cout;
+	 return DataCutXmin;
+        }
+
+        double GetDataCutXmax(){
+	 if (!RemoveXbins) std::cout<<"SPXDataSteering::GetDataCutXmin:: WARNING: RemoveXbin flag is not ON "<<std::cout;
+	 return DataCutXmax;
+        }
+
+        void SetDataCutXmin(double xmin){
+          RemoveXbins=true;
+          DataCutXmin=xmin;
+	  return;
+        }
+
+        void SetDataCutXmax(double xmax){
+          RemoveXbins=true;
+          DataCutXmax=xmax;
+	  return;
+        }
+
+        bool GetDataRemoveXbinsFlag() {
+         return RemoveXbins;
+        }
+
         void SetTakeSignforTotalError(bool mybool){
          TakeSignforTotalError=mybool; 
         }
+
 	const SPXDataFormat & GetDataFormat(void) {
 		return pci.dataSteeringFile.GetDataFormat();
 	}
@@ -204,15 +231,20 @@ public:
         TMatrixT <double> * GetDataSystCovarianceMatrix()  {return cov_matrixsyst;};
 
 private:
-	static bool debug;				//Flag indicating debug mode
-	std::ifstream *dataFile;			//Must declare as pointer... ifstream's copy constructor is private
-	SPXPlotConfigurationInstance pci;		//Frame options instance which contains the data steering file as well as the plot options
-	SPXDataFormat dataFormat;			//Format of this data: Included directly simply to cut down on syntax in implementation
-	bool dividedByBinWidth;				//Flag indicating whether the initial data was already divided by the bin width
+	static bool debug;		   //Flag indicating debug mode
+	std::ifstream *dataFile;	   //Must declare as pointer... ifstream's copy constructor is private
+	SPXPlotConfigurationInstance pci;  //Frame options instance which contains the data steering file as well as the plot options
+	SPXDataFormat dataFormat;	   //Format of this data: Included directly simply to cut down on syntax in implementation
+	bool dividedByBinWidth;		   //Flag indicating whether the initial data was already divided by the bin width
 
         bool TakeSignforTotalError; // When adding up components to total error, if true
                                     // keep all negative systematics in lower total error
                                     // keep all positive systematics in higher total error
+
+        bool RemoveXbins;           // if ON points below/above DataCutXmin/DataCutXmax are removed
+        double DataCutXmin;         // Value below which data points are removed if  RemoveXbins=true
+        double DataCutXmax;         // Value above which data points are removed if  RemoveXbins=true
+
 
 	//Number of bins in data map
 	unsigned int numberOfBins;

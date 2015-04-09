@@ -67,6 +67,10 @@ void SPXSteeringFile::SetDefaults(void) {
 	TakeSignforTotalError = true;
 	if(debug) std::cout << cn << mn << "TakeSignforTotalError set to default: \"true\"" << std::endl;
 
+	RemoveXbins.clear(); 
+	DataCutXmin.clear();
+	DataCutXmax.clear();
+
 	gridCorr = false;
 	if(debug) std::cout << cn << mn << "gridCorr set to default: \"false\"" << std::endl;
 
@@ -276,6 +280,7 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Grid Corrections are: " << (gridCorr ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Take sign when adding total error: " << (TakeSignforTotalError? "ON" : "OFF") << std::endl;
 
+
 	std::cout << "\t\t Label Sqrt(s) on Legend: " << (labelSqrtS ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Add luminosity label on Legend: " << (AddLumi ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Add journal label on Legend: " << (AddJournal ? "YES" : "NO") << std::endl;
@@ -291,12 +296,34 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Y information Legend: " << yInfoLegend << std::endl;
 	std::cout << "\t\t X Data uncertainty box: " <<  XDataBoxLabel << std::endl;
 	std::cout << "\t\t Y Data uncertainty box: " <<  YDataBoxLabel << std::endl;
-	std::cout << "\t\t Y Overlay Min: " << yOverlayMin << std::endl;
-	std::cout << "\t\t Y Overlay Max: " << yOverlayMax << std::endl;
-	std::cout << "\t\t X Overlay Min: " << xOverlayMin << std::endl;
-	std::cout << "\t\t X Overlay Max: " << xOverlayMax << std::endl;
-	std::cout << "\t\t Y Ratio Min: " << yRatioMin << std::endl;
-	std::cout << "\t\t Y Ratio Max: " << yRatioMax << std::endl << std::endl;
+
+        if (yOverlayMin!=HUGE_VAL)
+	 std::cout << "\t\t Y Overlay Min: " << yOverlayMin << std::endl;
+        if (yOverlayMax!=HUGE_VAL)
+	 std::cout << "\t\t Y Overlay Max: " << yOverlayMax << std::endl;
+        if (xOverlayMin!=HUGE_VAL)
+	 std::cout << "\t\t X Overlay Min: " << xOverlayMin << std::endl;
+        if (xOverlayMax!=HUGE_VAL)
+	 std::cout << "\t\t X Overlay Max: " << xOverlayMax << std::endl;
+
+	std::cout << "\t\t Y Ratio Min: "   << yRatioMin << std::endl;
+	std::cout << "\t\t Y Ratio Max: "   << yRatioMax << std::endl << std::endl;
+
+        //if (debug) std::cout<<cn<<"RemoveXbins.size() = "<<RemoveXbins.size()<<std::endl;
+        //if (debug) std::cout<<cn<<"DataCutXmax..size()= "<<DataCutXmax.size()<<std::endl;
+        //if (debug) std::cout<<cn<<"DataCutXmin..size()= "<<DataCutXmin.size()<<std::endl;
+
+        for (int i=0; i<RemoveXbins.size(); i++) {
+	 if (RemoveXbins.at(i)) {
+	   std::cout << "\t\t Remove bins IS ON  "<<std::endl;
+           if (i<DataCutXmin.size())
+	    std::cout << "\t\t DataCutXmin= "<<DataCutXmin.at(i)<<std::endl;
+           if (i<DataCutXmax.size())
+	    std::cout << "\t\t DataCutXmax= "<<DataCutXmax.at(i)<<std::endl;
+         } else {
+          std::cout << "\t\t Remove no bins "<<std::endl;
+         }
+        }
 
         std::cout<<"\t Number of Scale variations:"<<RenScales.size()<<std::endl;
         if (RenScales.size()!=FacScales.size()) {
@@ -607,7 +634,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 
 		if(!tmp.compare("EMPTY") ) {
 		  //throw SPXINIParseException(plotSection, "grid_steering_files", "You MUST specify the grid_steering_files");
-		  std::cout<<"INFO no grid_steering_file found "<<std::endl;
+		  std::cout<<cn<<mn<<"INFO no grid_steering_file found "<<std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -628,7 +655,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		tmp = reader->Get(plotSection, "pdf_steering_files", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 		  //throw SPXINIParseException(plotSection, "pdf_steering_files", "You MUST specify the pdf_steering_files");
-		 std::cout<<"INFO no pdf_steering_file found "<<std::endl;
+		  std::cout<<cn<<mn<<"INFO no pdf_steering_file found "<<std::endl;
 		} else {
 			//Parse into vector
 			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
@@ -667,10 +694,70 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 				SPXStringUtilities::VectorToCommaSeparatedList(configurations["data_marker_style"]) << std::endl;
 		}
 
+                // Read in cuts on xmin and xmax in data  
+		// XXX
+
+       	        if(debug) std::cout<<cn<<mn<<"Start parsing data_cut_xmin " << std::endl;
+
+		tmp = reader->Get(plotSection, "data_cut_xmin", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout<<cn<<mn<<"INFO: No plot option for data_cut_xmin found"<< std::endl;
+		} else {
+		 //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		 if(debug) std::cout<<cn<<mn<<"data_cut_xmin configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		  DataCutXmin.push_back(atoi(tmpVector.at(j).c_str()));
+		  if (debug) std::cout<<cn<<mn<< "\t" << tmpVector.at(j).c_str() << std::endl;
+		 }
+		}
+
+       	        if(debug) std::cout<<cn<<mn<<"Start parsing data_cut_xmax " << std::endl;
+
+		tmp = reader->Get(plotSection, "data_cut_xmax", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout<<cn<<mn<<"INFO: No plot option for data_cut_xmax found"<< std::endl;
+		} else {
+		 //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		 if(debug) std::cout<<cn<<mn<<"data_cut_xmax configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		  DataCutXmax.push_back(atoi(tmpVector.at(j).c_str()));
+		  if (debug) std::cout<<cn<<mn<< "\t" << tmpVector.at(j).c_str() << std::endl;
+		 }
+		}
+
+		if (DataCutXmax.size()!=DataCutXmin.size()) {
+		    std::cout<<cn<<mn<<"DataCutXmax.size()= "<<DataCutXmax.size() 
+                                     <<"DataCutXmin.size()= "<<DataCutXmin.size() 
+			             <<" should not be different or one of them is zero "
+                                     << std::endl;
+                }
+                if (DataCutXmax.size()==0) {
+		 for(int j = 0; j < DataCutXmin.size(); j++) {
+		  RemoveXbins.push_back(true);
+		 }
+                }
+                if (DataCutXmin.size()==0) {
+		 for(int j = 0; j < DataCutXmax.size(); j++) {
+		  RemoveXbins.push_back(true);
+		 }
+		}
+                if (DataCutXmin.size()==DataCutXmin.size()) {
+		 for(int j = 0; j < DataCutXmax.size(); j++) {
+		  RemoveXbins.push_back(true);
+		 }
+                }
+	        //XXX
+
+
+
                 // 
 		//Get the systematic class
-		
+		//
+
        	        if(debug) std::cout<<cn<<mn<<"Start parsing display_systematic_group " << std::endl;
+
 		tmp = reader->Get(plotSection, "display_systematic_group", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 		 std::cout<<cn<<mn<<"INFO: No plot option for display_systematic_group found"<< std::endl;
@@ -1670,6 +1757,7 @@ void SPXSteeringFile::Parse(void) {
 	plotStaggered  = reader->GetBoolean("GRAPH", "plot_staggered", plotStaggered);
 	matchBinning   = reader->GetBoolean("GRAPH", "match_binning", matchBinning);
 	TakeSignforTotalError = reader->GetBoolean("GRAPH", "take_sign_intoaccount_for_total_error", TakeSignforTotalError);
+
 	gridCorr       = reader->GetBoolean("GRAPH", "apply_grid_corr", gridCorr);
 	labelSqrtS     = reader->GetBoolean("GRAPH", "label_sqrt_s", labelSqrtS);
 
@@ -1690,8 +1778,8 @@ void SPXSteeringFile::Parse(void) {
 
 	yOverlayMin = reader->GetReal("GRAPH", "y_overlay_min", yOverlayMin);
 	yOverlayMax = reader->GetReal("GRAPH", "y_overlay_max", yOverlayMax);
-	yRatioMin = reader->GetReal("GRAPH", "y_ratio_min", yRatioMin);
-	yRatioMax = reader->GetReal("GRAPH", "y_ratio_max", yRatioMax);
+	yRatioMin   = reader->GetReal("GRAPH", "y_ratio_min", yRatioMin);
+	yRatioMax   = reader->GetReal("GRAPH", "y_ratio_max", yRatioMax);
 
 
 	CalculateChi2 = reader->GetInteger("GRAPH", "calculate_chi2", CalculateChi2);
