@@ -1113,8 +1113,9 @@ void SPXPlot::DrawLegend(void) {
 
    TString datalabel=data.at(idata)->GetLegendLabel();
    if (datalabel.EqualTo(datalabelold)) {
-    std::cout<<cn<<mn<<"datalabel= "<<datalabel.Data()<<" equal to old "<<std::endl;
+     if (debug) std::cout<<cn<<mn<<"datalabel= "<<datalabel.Data()<<" equal to old "<<std::endl;
    } else {
+     if (debug) std::cout<<cn<<mn<<"datalabel= "<<datalabel.Data()<<" changed ! old= "<<datalabelold.Data()<<std::endl;
     datalabelold=datalabel;
     if (idata>0) onedataset=false;
    }
@@ -1205,7 +1206,7 @@ void SPXPlot::DrawLegend(void) {
  double charactersize=0.04;    
  if (etascan) {
   charactersize=0.03;
-  if (debug) std::cout<<cn<<mn<<"Set characetersize= "<< charactersize <<std::endl;
+  if (debug) std::cout<<cn<<mn<<"Set charactersize= "<< charactersize <<std::endl;
  }
 
  float linesize=0.07; 
@@ -1368,36 +1369,40 @@ void SPXPlot::DrawLegend(void) {
       leg->AddEntry((TObject*)0, datalabel, "");
       // leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
      }
-     double binmin = data.at(idata)->GetDoubleBinValueMin();
-     double binmax = data.at(idata)->GetDoubleBinValueMax();
-     TString varname=data.at(idata)->GetDoubleBinVariableName();
-     TString datalabel;
-     if (binmin!=0) {
-      datalabel.Form(" %3.2f ",binmin); 
-     } else {
-      varname.ReplaceAll("#leq","");
-      varname.ReplaceAll("","");
-     }
-     datalabel+=varname;
-     datalabel+=Form(" %3.2f ",binmax);
 
-     SPXPlotConfigurationInstance mypci=pc.GetPlotConfigurationInstance(idata);
-     double yScale = mypci.yScale;
-     if (etascan&&yScale!=1) {
-     /*
-      int exp; double x;
-      SPXMathUtilities::frexp10(yScale, exp, x);
-      if (debug) std::cout<<cn<<mn<<"value= "<<yScale<<" x= "<<x<<" 10^"<<exp<<std::endl;
-      //datalabel+=Form(" #fontsize{0.02}{ (#times %1.1f 10^{%d})}",x,exp);
-      //datalabel+=Form("#font[8]{ (#times %1.1f 10^{%d}) }",x,exp);
-      datalabel+=Form("(#times %1.1f 10^{%d}) ",x,exp);
-     */
-      datalabel+="(#times";
-      datalabel=SPXDrawUtilities::FormatwithExp(yScale);
-      datalabel+=")";
-     }
+     //if (debug) std::cout<<cn<<mn<<" onlysyst= "<< (onlysyst ? "ON" : "OFF")<<std::endl;
 
      if (!onlysyst) { // for systematics only move Data label to leginfo
+      double binmin = data.at(idata)->GetDoubleBinValueMin();
+      double binmax = data.at(idata)->GetDoubleBinValueMax();
+      TString varname=data.at(idata)->GetDoubleBinVariableName();
+      TString datalabel;
+      if (binmin!=0) {
+       datalabel.Form(" %3.2f ",binmin); 
+      } else {
+       varname.ReplaceAll("#leq","");
+       varname.ReplaceAll("","");
+      }
+      datalabel+=varname;
+      datalabel+=Form(" %3.2f ",binmax);
+
+      SPXPlotConfigurationInstance mypci=pc.GetPlotConfigurationInstance(idata);
+      double yScale = mypci.yScale;
+      std::cout<<cn<<mn<<" etascan= "<< (etascan ? "ON" : "OFF")<<" yScale= "<<yScale<<std::endl;
+      if (etascan&&yScale!=1) {
+       /*
+        int exp; double x;
+        SPXMathUtilities::frexp10(yScale, exp, x);
+        if (debug) std::cout<<cn<<mn<<"value= "<<yScale<<" x= "<<x<<" 10^"<<exp<<std::endl;
+        //datalabel+=Form(" #fontsize{0.02}{ (#times %1.1f 10^{%d})}",x,exp);
+        //datalabel+=Form("#font[8]{ (#times %1.1f 10^{%d}) }",x,exp);
+        datalabel+=Form("(#times %1.1f 10^{%d}) ",x,exp);
+       */
+       datalabel+="(#times";
+       datalabel+=SPXDrawUtilities::FormatwithExp(yScale);
+       datalabel+=")";
+      }
+
       if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
       if (debug) std::cout<<cn<<mn<<"Add to legend data label: "<<datalabel.Data()<< " namesize= "<<namesize<<std::endl;
       leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
@@ -1655,26 +1660,34 @@ void SPXPlot::DrawLegend(void) {
  }
 
  double csize=charactersize; 
- if (nraw>5) csize =charactersize*0.5; 
- if (nraw>8) csize =charactersize*0.4; 
+ if (onlysyst) {
+  if (nraw>5) csize =charactersize*0.5; 
+  if (nraw>8) csize =charactersize*0.4; 
+ }
  leg->SetTextSize(csize); 
 
- if (nraw>5)  leg->SetNColumns(2);
- if (nraw>8)  leg->SetNColumns(3);
- if (nraw>12) leg->SetNColumns(4);
+ if (onlysyst) {
+  if (nraw>5)  leg->SetNColumns(2);
+  if (nraw>8)  leg->SetNColumns(3);
+  if (nraw>12) leg->SetNColumns(4);
+ }
 
  double fac=0.45, xfac=1.0;
  if (namesize<20) fac=0.4;
  if (namesize>30) fac=0.2;
- if (nraw>5) fac*=1.2;
- if (nraw>8) {fac*=1.75; xfac*=1.1;}
+ if (onlysyst) {
+  if (nraw>5) fac*=1.2;
+  if (nraw>8) {fac*=1.75; xfac*=1.1;}
+ }
  x1 = xlegend-(fac*namesize*charactersize); x2=xfac*xlegend;
  //x1 = xlegend-(namesize*charactersize), x2=xlegend;
  int lsize=nraw;
+
  if (nraw>3)  lsize*=0.6;
- if (nraw>8)  lsize*=0.4;
- if (nraw>20) lsize*=0.25;
- //if (nraw>8) ylegend*=1.05;
+ if (onlysyst) {
+  if (nraw>8)  lsize*=0.4;
+  if (nraw>20) lsize*=0.25;
+ } 
  y1 = ylegend-(lsize*linesize);  y2=ylegend;
   
  if (debug) { 
@@ -1698,7 +1711,6 @@ void SPXPlot::DrawLegend(void) {
  leginfo->SetFillColor(0);
  leginfo->SetFillStyle(0);
  leginfo->SetMargin(0.2);
- //leginfo->SetTextSize(csize);
 
  sqrtsval = -1.; sqrtsvalold = -1.; jetR    = -1.; jetRold = -1.;
  lumiold ="NOVALUE";
@@ -1718,7 +1730,8 @@ void SPXPlot::DrawLegend(void) {
    leginfo->AddEntry((TObject*)0, datalabel, "");
   }
 
-  if (!etascan&&steeringFile->GetInfoLegendLabel().size()>0) {
+  //if (!etascan&&steeringFile->GetInfoLegendLabel().size()>0) {
+  if (steeringFile->GetInfoLegendLabel().size()>0) {
    TString label=steeringFile->GetInfoLegendLabel();
    if (debug) std::cout<<cn<<mn<<"Add to info legend idata= "<<idata<<" add info legend label "<<label.Data()<<std::endl;
    if (label.Sizeof()>leginfomax) leginfomax=label.Sizeof();
@@ -1853,7 +1866,8 @@ void SPXPlot::DrawLegend(void) {
  }
 
  csize=charactersize;
- if (nraw>5) csize=0.8*charactersize;
+ if (onlysyst)
+  if (nraw>5) csize=0.8*charactersize;
  leginfo->SetTextSize(csize);
 
  leginfo->SetX1NDC(x1info);

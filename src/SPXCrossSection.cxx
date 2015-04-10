@@ -228,7 +228,7 @@ void SPXCrossSection::ApplyCorrections() {
 
 std::vector<std::string> SPXCrossSection::GetCorrectionLabels() {
  std::string mn = "GetCorrectionLabels: ";
- if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+ //if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  correctionlabels.clear();
 
@@ -238,9 +238,9 @@ std::vector<std::string> SPXCrossSection::GetCorrectionLabels() {
   return correctionlabels;
  }
 
- if (debug) {
-  std::cout << cn << mn <<"corrections ncorr= " << ncorr << std::endl;
- }
+ // if (debug) {
+ // std::cout << cn << mn <<"corrections ncorr= " << ncorr << std::endl;
+ //}
  
  correctionlabels.clear();
 
@@ -251,9 +251,10 @@ std::vector<std::string> SPXCrossSection::GetCorrectionLabels() {
   
   correctionlabels.push_back(corrLabel);
 
-  if (debug) {
-   std::cout<<cn<<mn<<"corrLabel= "<<corrLabel.c_str()<<std::endl;
-  } 
+  //if (debug) {
+  // std::cout<<cn<<mn<<"corrLabel= "<<corrLabel.c_str()<<std::endl;
+  //}
+ 
  }
  return correctionlabels;
 }
