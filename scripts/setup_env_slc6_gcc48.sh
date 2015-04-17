@@ -1,8 +1,9 @@
 #!/bin/bash
-# EXAMPLE STRIPPED SETUP SCRIPT FOR LXPLUS THAT Cameron Embree USED.
-#
+# 
+# 
 ### generic setup to be run at the start of EVERY LXPLUS session
-
+#  SLC6 system with gcc4.8
+#
 #Get the first letter of the user's name
 user=$USER
 U=${user:0:1}
@@ -13,7 +14,8 @@ export platform=x86_64-slc6-gcc48-opt
 # 
 #Install directory for installation of APPLgrid Hoppet  etc.
 #export INSTALLDIR=/afs/cern.ch/work/$U/$USER/public/usr-slc6/
-export INSTALLDIR=/afs/cern.ch/work/$U/$USER/public/${platform}
+#export INSTALLDIR=/afs/cern.ch/work/$U/$USER/public/${platform}
+export INSTALLDIR=/afs/cern.ch/work/a/applgrid/public/${platform}
 #export BASEDIR=/afs/cern.ch/user/$U/$USER/www/Spectrum 
 export BASEDIR=`pwd`
 #
