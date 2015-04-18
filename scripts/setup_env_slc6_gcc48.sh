@@ -25,7 +25,7 @@ export releases=/afs/cern.ch/sw/lcg/app/releases
 export contrib=/afs/cern.ch/sw/lcg/contrib
 #
 #source ${contrib}/gcc/4.6/${platform}/setup.sh
-source ${contrib}/gcc/4.8/${platform}/setup.sh
+source ${contrib}/gcc/4.8.1/${platform}/setup.sh
 #
 #
 #
