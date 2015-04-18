@@ -33,8 +33,8 @@ source ${contrib}/gcc/4.8.1/${platform}/setup.sh
 
 ### ROOT ###
 # Uncomment to use ROOT v5.34.05
-export ROOTSYS=/afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.05/${platform}/root
-#export  ROOTSYS=/afs/cern.ch/sw/lcg/app/releases/ROOT/6.02.05/${platform}/root
+#export ROOTSYS=/afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.05/${platform}/root
+export  ROOTSYS=/afs/cern.ch/sw/lcg/app/releases/ROOT/6.02.05/${platform}/root
 
 ### LHAPDF ###
 # version 5
