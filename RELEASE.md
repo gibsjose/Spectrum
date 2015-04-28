@@ -6,6 +6,8 @@
 
 ## Change Log
 
+ -SPXData: also remove bins from syst_p and syst_n of some data bins are removed
+
  -SPXPDF: give access to individual PDF, alphas and scale components
 
  -SPXData: included possibility to cut on xmin and xmax

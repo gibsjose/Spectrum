@@ -566,12 +566,33 @@ void SPXData::ParseSpectrum(void) {
 
         if (RemoveXbins) {
          int newmaster=keepbin.size();
+
+	 if(numberOfColumns >5) {
+          // remove bins from syst vector
+  	  std::vector<double> vsyst;
+          for (int i=0; i<syst_p.size(); i++) {
+	   if (keepbin.count(i)>0) {
+	     vsyst.push_back(syst_p.at(i));
+	   }
+          }
+          syst_p=vsyst;
+
+  	  vsyst.clear();
+          for (int i=0; i<syst_n.size(); i++) {
+	   if (keepbin.count(i)>0) {
+	     vsyst.push_back(syst_n.at(i));
+	   }
+          }
+          syst_n=vsyst;
+         
+	 }
 	 // remove bins from vector in the map
 	 for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
 	  const std::string   &syst_name  = it->first;
 	  std::vector<double> &systematic = it->second;
           
 	  std::vector<double> vsyst;
+          //vsyst.clear();
           for (int i=0; i<systematic.size(); i++) {
 
 	  /*

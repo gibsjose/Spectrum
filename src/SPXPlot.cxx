@@ -1732,10 +1732,12 @@ void SPXPlot::DrawLegend(void) {
 
   //if (!etascan&&steeringFile->GetInfoLegendLabel().size()>0) {
   if (steeringFile->GetInfoLegendLabel().size()>0) {
-   TString label=steeringFile->GetInfoLegendLabel();
-   if (debug) std::cout<<cn<<mn<<"Add to info legend idata= "<<idata<<" add info legend label "<<label.Data()<<std::endl;
-   if (label.Sizeof()>leginfomax) leginfomax=label.Sizeof();
-   leginfo->AddEntry((TObject*)0, label,"");
+    if (idata==0) { // Draw info lable only once
+    TString label=steeringFile->GetInfoLegendLabel();
+    if (debug) std::cout<<cn<<mn<<"Add to info legend idata= "<<idata<<" add info legend label "<<label.Data()<<std::endl;
+    if (label.Sizeof()>leginfomax) leginfomax=label.Sizeof();
+    leginfo->AddEntry((TObject*)0, label,"");
+   }
   }
 
   if (!differentsqrts && steeringFile->GetLabelSqrtS()) {
