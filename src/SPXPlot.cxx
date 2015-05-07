@@ -17,10 +17,7 @@
 #include <string.h> //memcpy
 
 #include "SPXPlot.h"
-#include "SPXUtilities.h"
-#ifdef DEVELOP
-#include "SPXpValue.h"
-#endif      
+
 const std::string cn = "SPXPlot::";
 
 //Must define the static debug variable in the implementation
@@ -113,6 +110,7 @@ void SPXPlot::Plot(void) {
 	SPXpValue* pvalue= new SPXpValue(data,crossSections, steeringFile);
         pvalue->SetPlotNumber(id); 
 #endif      
+	SPXLatexTable *ltable= new SPXLatexTable(data,crossSections, steeringFile);
 
 
 	UpdateCanvas();
@@ -1308,7 +1306,7 @@ void SPXPlot::DrawLegend(void) {
   for (int idata = 0; idata < data.size(); idata++) {                 
 
    TString datalabel=data.at(idata)->GetLegendLabel();
-   //datalabel.ReplaceAll("comb","");
+   datalabel.ReplaceAll("high-mu","");
 
    if (!etascan) {
 
@@ -2144,7 +2142,7 @@ void SPXPlot::InitializeCrossSections(void) {
 	       }
 	       //StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
 	       //Update the Reference File Map
-    	       if(debug) std::cout << cn << mn << i<<"Get reference Graph" <<std::endl;
+    	       if(debug) std::cout << cn << mn << i<<" Get reference Graph" <<std::endl;
 	       TGraphAsymmErrors *refGraph = crossSections[i].GetGridReference();
                if (!refGraph) std::cout << cn << mn << i<<" reference Graph not found !" <<std::endl;
 	       referenceFileGraphMap.insert(StringPairGraphPair_T(convolutePair, refGraph));

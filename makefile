@@ -12,6 +12,8 @@ STD = $(shell echo $(CXX_STD))
 CXXFLAGS += -g -O3 $(STD) -MP -MMD 
 # -std need for unordered_map in SPXPlot
 
+#DEBUGFLAG = -D TIMER
+
 #ROOT
 ROOTINCS = $(shell root-config --cflags)
 ROOTLIBS = $(shell root-config --glibs)
@@ -38,7 +40,7 @@ PLT_DIR = ./plots
 INI_SRC =	$(INI_DIR)/ini.c $(INI_DIR)/INIReader.cpp
 INI_OBJ = 	$(OBJ_DIR)/ini.o $(OBJ_DIR)/INIReader.o
 
-RAW_SRC = SPXGraphUtilities.cxx SPXUtilities.cxx SPXDrawUtilities.cxx Spectrum.cxx SPXSteeringFile.cxx SPXRatioStyle.cxx SPXDisplayStyle.cxx SPXOverlayStyle.cxx \
+RAW_SRC = SPXLatexTable.cxx SPXGraphUtilities.cxx SPXUtilities.cxx SPXDrawUtilities.cxx Spectrum.cxx SPXSteeringFile.cxx SPXRatioStyle.cxx SPXDisplayStyle.cxx SPXOverlayStyle.cxx \
 	SPXPDFBandType.cxx SPXPDFErrorType.cxx SPXPDFErrorSize.cxx SPXPlotConfiguration.cxx SPXPDFSteeringFile.cxx \
 	SPXGridSteeringFile.cxx SPXDataSteeringFile.cxx SPXDataFormat.cxx SPXData.cxx SPXPlot.cxx SPXCrossSection.cxx \
 	SPXGrid.cxx SPXPDF.cxx SPXRatio.cxx SPXPlotType.cxx SPXAtlasStyle.cxx SPXGridCorrections.cxx SPXChi2.cxx
@@ -89,7 +91,7 @@ $(BIN): $(OBJ)
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cxx
 	@echo
 	@echo -n "Building $<"
-	@$(CXX) $(CXXFLAGS) -D TIMER $(INC) -c $< -o $@
+	@$(CXX) $(CXXFLAGS) $(DEBUGFLAG) $(INC) -c $< -o $@
 	@echo " ---> Done"
 
 clean:

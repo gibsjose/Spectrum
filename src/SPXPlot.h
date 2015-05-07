@@ -30,6 +30,12 @@
 #include "SPXRatio.h"
 #include "SPXCrossSection.h"
 #include "SPXData.h"
+#include "SPXUtilities.h"
+#ifdef DEVELOP
+#include "SPXpValue.h"
+#endif      
+
+#include "SPXLatexTable.h"
 
 #include "SPXException.h"
 

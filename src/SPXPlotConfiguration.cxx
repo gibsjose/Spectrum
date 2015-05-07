@@ -881,23 +881,23 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	else if(plotType.IsType2()) {
 		if(dsfSize <= 1) {
 		  std::ostringstream oss;
-		  oss<<cn<<mn<<"Size of data_steering_files "<< dsfSize <<" vector MUST be > 1 for Plot Type 2 (data[], grid[], pdf)";
+		  oss<<cn<<mn<<"Size of data_steering_files ("<< dsfSize <<") vector MUST be > 1 for Plot Type 2 (data[], grid[], pdf)";
 		  throw SPXParseException(oss.str());
 		}
 		if(gsfSize <= 1) {
 		  std::ostringstream oss;
-		  oss<<cn<<mn<<"Size of grid_steering_files "<<gsfSize<<" vector MUST be > 1 for Plot Type 2 (data[], grid[], pdf)";
+		  oss<<cn<<mn<<"Size of grid_steering_files ("<<gsfSize<<") vector MUST be > 1 for Plot Type 2 (data[], grid[], pdf)";
 		  throw SPXParseException(oss.str());
 		}
 		if(psfSize != 1) {
 		  std::ostringstream oss;
-		  oss<<cn<<mn<<"Size of pdf_steering_files vector "<<psfSize<<" MUST be 1 (ONE) for Plot Type 2 (data[], grid[], pdf)";
+		  oss<<cn<<mn<<"Size of pdf_steering_files vector ("<<psfSize<<") MUST be 1 (ONE) for Plot Type 2 (data[], grid[], pdf)";
 		  throw SPXParseException(oss.str());
 		}
 
 		if(dsfSize != gsfSize) {
 		  std::ostringstream oss;
-		  oss<<cn<<mn<<"Size of data_steering_files vector"<<dsfSize<<" MUST match the size of the grid_steering_files vector "<<gsfSize<<" for Plot Type 2";
+		  oss<<cn<<mn<<"Size of data_steering_files vector ("<<dsfSize<<") MUST match the size of the grid_steering_files vector "<<gsfSize<<" for Plot Type 2";
 		  throw SPXParseException(oss.str());
 		}
 
