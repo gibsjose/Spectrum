@@ -21,7 +21,7 @@ plot_staggered = true
 ;match_binning = true
 apply_grid_corr = true
 label_sqrt_s = true
-
+calculate_chi2 = 1
 ;show_individual_systematics = 1.
 
 ;band_with_pdf= false
