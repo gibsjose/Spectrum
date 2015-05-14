@@ -388,9 +388,9 @@ void SPXSteeringFile::Print(void) {
 			std::cout << "\t\t\t Grid Directory: " << tmp.gridDirectory << std::endl << std::endl;
 			std::cout << "\t\t\t Data Steering File " << j << ": " << tmp.dataSteeringFile.GetFilename() << std::endl;
 			std::cout << "\t\t\t Grid Steering File " << j << ": " << tmp.gridSteeringFile.GetFilename() << std::endl;
-			std::cout << "\t\t\t PDF Steering File " << j << ": " << tmp.pdfSteeringFile.GetFilename() << std::endl;
-			std::cout << "\t\t\t Data Marker Style " << j << ": " << tmp.dataMarkerStyle << std::endl;
-			std::cout << "\t\t\t Data Marker Color " << j << ": " << tmp.dataMarkerColor << std::endl;
+			std::cout << "\t\t\t PDF Steering File "  << j << ": " << tmp.pdfSteeringFile.GetFilename() << std::endl;
+			std::cout << "\t\t\t Data Marker Style "  << j << ": " << tmp.dataMarkerStyle << std::endl;
+			std::cout << "\t\t\t Data Marker Color "  << j << ": " << tmp.dataMarkerColor << std::endl;
 			std::cout << "\t\t\t PDF Fill Style "     << j << ": " << tmp.pdfFillStyle << std::endl;
 			std::cout << "\t\t\t PDF Fill Color "     << j << ": " << tmp.pdfFillColor << std::endl;
 			std::cout << "\t\t\t PDF Marker Style "   << j << ": " << tmp.pdfMarkerStyle << std::endl;

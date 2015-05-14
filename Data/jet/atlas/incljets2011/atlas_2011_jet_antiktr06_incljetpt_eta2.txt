@@ -39,4 +39,5 @@ error_in_percent = true
 ;
 lumi_value = 4.5
 lumi_error = 1.8
-add_lumi_uncertainty_to_systematics = true
+;add_lumi_uncertainty_to_systematics = true
+systematics_uncorrellated_between_bins = syst_statmc

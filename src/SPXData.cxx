@@ -112,6 +112,7 @@ void SPXData::Parse(void) {
 	} else {
 	 throw SPXParseException("DataSteeringFile " + pci.dataSteeringFile.GetFilename() + " has invalid data format");
 	}
+
 	return;
 }
 
@@ -672,7 +673,38 @@ void SPXData::ParseSpectrum(void) {
 	data.insert(StringDoubleVectorPair_T("syst_p", syst_p));
 	data.insert(StringDoubleVectorPair_T("syst_n", syst_n));
 
-	if(debug) std::cout << cn << mn << "Successfully added data to map" << std::endl;
+	if(debug) std::cout<<cn<<mn<<"Successfully added data to map" << std::endl;
+
+	if(debug) std::cout<<cn<<mn<<"Filling correlation Type of systematics components" << std::endl;
+        std::vector<std::string> SystematicsUncorrelatedBetweenBins=pci.dataSteeringFile.GetUncertaintyCorrelationTypeVector();
+	for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); ++it) {
+	 const std::string &syst_name = it->first;
+         individualSystematicsIsCorrelated[syst_name]=true;
+
+	 for (int i=0; i<SystematicsUncorrelatedBetweenBins.size(); i++) {
+          const std::string &syst_uncorr_name = SystematicsUncorrelatedBetweenBins.at(i);
+	  //if (debug) std::cout<<cn<<mn<<"name= "<<syst_uncorr_name.c_str()<<std::endl;
+	  std::string systp=syst_uncorr_name; std::string systn=syst_uncorr_name; 
+          if (syst_uncorr_name.find("+") != std::string::npos || syst_uncorr_name.find("-") != std::string::npos) {
+	   //if (debug) std::cout<<cn<<mn<<"Uncorrelated systematics specified with + and - "<<syst_uncorr_name.c_str()<<std::endl;
+          } else {
+	   systp+="+"; systn+="-";
+          }
+          //if(syst_name.compare(syst_uncorr_name) == 0) {
+          if(syst_name.compare(systp) == 0 || syst_name.compare(systn) == 0) {
+	   //if (debug) std::cout<<cn<<mn<<"name "<<syst_uncorr_name.c_str()<<" filling false "<<std::endl;
+	   individualSystematicsIsCorrelated[syst_name]=false; // map replaces entry if already there !
+          }
+         }
+        }
+
+        if (debug) {
+	  std::cout<<cn<<mn<<"Print correlation type map filled: "<<std::endl;
+	 for(std::map<std::string, bool>::iterator it =  individualSystematicsIsCorrelated.begin(); it != individualSystematicsIsCorrelated.end(); ++it) {
+	   std::cout<<cn<<mn<<"name= "<<it->first.c_str()<<(it->second ? " CORRELATED" : " UNCORRELATED") <<std::endl;
+         }
+        }
+
 }
 
 /*
@@ -1579,24 +1611,19 @@ void SPXData::CalculateSystematicCovarianceMatrix() {
  corr_matrixsyst= new TMatrixT<double>(Nbin, Nbin);
 
  double covmatrixsyst[Nbin][Nbin];
- for (int ibin=0; ibin<Nbin; ibin++)
-  for (int jbin=0; jbin<Nbin; jbin++)
+ double covmatrixuncorrsyst[Nbin][Nbin];
+ for (int ibin=0; ibin<Nbin; ibin++) {
+  for (int jbin=0; jbin<Nbin; jbin++) {
    covmatrixsyst[ibin][jbin]=0.;
-
- //if (debug) {
- // std::cout<<cn<<mn<<"Orginal systematics uncertainty "<< std::endl;
- // this->PrintSystematics(individualSystematics);
- //}
+   covmatrixuncorrsyst[ibin][jbin]=0.;
+  }
+ }
 
  StringDoubleVectorMap_T symsystmap=SPXData::SymmetrizeSystemicUncertaintiesMatrix(individualSystematics);
 
- if (debug) {
-  std::cout<<" "<< std::endl;
-  std::cout<<cn<<mn<<"Symmetrized systematics uncertainty "<< std::endl;
-  this->PrintSystematics(symsystmap);
- }
 
- for(StringDoubleVectorMap_T::iterator it =symsystmap.begin(); it != symsystmap.end(); ++it) {
+
+ for(StringDoubleVectorMap_T::iterator it = symsystmap.begin(); it != symsystmap.end(); ++it) {
 
   const std::string   &name = it->first;
   std::vector<double> &syst = it->second;
@@ -1615,20 +1642,35 @@ void SPXData::CalculateSystematicCovarianceMatrix() {
    throw SPXParseException(oss.str());
   }
 
-  //if (debug) std::cout<<cn<<mn<<"Loop over Nbin: "<<syst.size()  << std::endl;
+  bool systtype=this->GetSystematicCorrelationType(name);
+  if (debug) std::cout<<cn<<mn<<"name= "<<name.c_str() << " type= "<<(systtype ? " CORRELATED" : " UNCORRELATED") << std::endl;
+
+  if (debug) std::cout<<cn<<mn<<"Loop over Nbin: "<<syst.size()  << std::endl;
   for ( int ibin=0; ibin<Nbin; ibin++ ){
    for ( int jbin=0; jbin<Nbin; jbin++ ){
-     // if (debug) std::cout<<cn<<mn<<ibin<<" "<<jbin<<" systematic name= "<<name
-     //		             <<" erri= "<<syst.at(ibin)<<" errj= "<<syst.at(jbin)
-     //                        <<std::endl;          
+    // if (debug) std::cout<<cn<<mn<<ibin<<" "<<jbin<<" systematic name= "<<name
+    //		             <<" erri= "<<syst.at(ibin)<<" errj= "<<syst.at(jbin)
+    //                       <<< (systtype ? " CORRELATED" : " UNCORRELATED")
+    //                        <<std::endl;       
+    if (systtype) {   
      covmatrixsyst[ibin][jbin]+=syst.at(ibin)*syst.at(jbin);          
+    } else { 
+     covmatrixuncorrsyst[ibin][jbin]+=syst.at(ibin)*syst.at(ibin);          
+    }
    }
+  }
+ }
+
+ for ( int ibin=0; ibin<Nbin; ibin++ ){
+  for ( int jbin=0; jbin<Nbin; jbin++ ){
+   covmatrixsyst[ibin][jbin]+=covmatrixuncorrsyst[ibin][jbin];          
   }
  }
 
  // Fill covariance matrix
  for (int ibin=0; ibin<Nbin; ibin++) {
   for (int jbin=0; jbin<Nbin; jbin++) {
+   //(*cov_matrixsyst)(ibin,jbin)=covmatrixsyst[ibin][jbin];
    (*cov_matrixsyst)(ibin,jbin)=covmatrixsyst[ibin][jbin];
    double err=covmatrixsyst[ibin][ibin]*covmatrixsyst[jbin][jbin];
    if (err>0) err=sqrt(err);
@@ -1720,13 +1762,15 @@ void SPXData::PrintSystematics(StringDoubleVectorMap_T syst) {
   std::vector<double> &systematic = it->second;
 
   if (systematic.size()==0) {
+   std::cout<<cn<<mn<<"WARNING: systematic error vector is empty ! " << std::endl;
    if (RemoveXbins) {
-    std::cout<<cn<<mn<<"WARNING: systematic error vector is empty ! " << std::endl;
     std::cout<<cn<<mn<<"WARNING: data_cut_xmax= " << DataCutXmax<<" data_cut_xmin= " << DataCutXmin << std::endl;
    } else {
     std::cout<<cn<<mn<<"INFO: systematic error vector is empty ! " << std::endl;
    }
   }
+
+  bool systtype=this->GetSystematicCorrelationType(syst_name);
 
   std::cout << std::left << std::setw(24) << syst_name << "  ";
   std::cout << std::fixed;
@@ -1735,6 +1779,7 @@ void SPXData::PrintSystematics(StringDoubleVectorMap_T syst) {
    std::cout.width(10);
    std::cout << systematic.at(j) << " ";
   }
+  std::cout << " Type= "<<(systtype ? " CORRELATED" : " UNCORRELATED")<<std::endl;
   std::cout << std::endl;
  }
 
@@ -1899,3 +1944,76 @@ std::string SPXData::GetCorrespondingSystematicName(std::string syst_name){
  
  return newsystname;
 };
+
+void SPXData::OpenDataFile(void) {
+ std::string filepath = pci.dataSteeringFile.GetDataFile();
+
+ if(filepath.empty()) {
+  throw SPXFileIOException("Data Filepath is empty");
+ }
+
+ try {
+  dataFile = new std::ifstream();
+  dataFile->open(filepath.c_str());
+
+  if(*dataFile) {
+    if (debug) std::cout << "SPXData::OpenDataFile: Successfully opened data file: " << filepath << std::endl;
+  } else {
+   throw SPXFileIOException(filepath, "Unable to open data file");
+  }
+ } catch(const std::exception &e) {
+  throw;
+ }
+}
+
+void SPXData::CheckVectorSize(const std::vector<double> & vector, const std::string & name, unsigned int masterSize) {
+ if(vector.size() != masterSize) {
+  std::ostringstream oss;
+  oss << "Size error: \"" << name << "\" vector has different size (" << vector.size() << ") than master size (" << masterSize << ")" << std::endl;
+  throw SPXParseException(pci.dataSteeringFile.GetDataFile(), oss.str());
+ } else {
+  if (debug) std::cout << "SPXData::" << "CheckVectorSize: " << "\t -->  Success: \"" << name << "\" vector size matches master size" << std::endl;
+ }
+}
+
+
+bool SPXData::GetSystematicCorrelationType(std::string name) {
+ bool type=true;
+ bool found=false;
+
+ if (name.find("+") != std::string::npos || name.find("-") != std::string::npos) {
+  if (individualSystematicsIsCorrelated.count(name)>0) {
+   found=true;
+   type=individualSystematicsIsCorrelated[name];
+  }
+ } else {
+  if (individualSystematicsIsCorrelated.count(name)>0) {
+   found=true;
+   type=individualSystematicsIsCorrelated[name];
+  } else {
+   std::string namep=name+"+";  std::string namen=name+"-";
+   if (individualSystematicsIsCorrelated.count(namep)>0) {
+    found=true;
+    type=individualSystematicsIsCorrelated[namep];
+   }
+   if (individualSystematicsIsCorrelated.count(namen)>0) {
+    found=true;
+    type=individualSystematicsIsCorrelated[namen];
+   }
+  }
+ }
+
+ /*
+  if (debug) {
+   std::cout<<cn<<"GetSystematicCorrelationType: name= "<<name.c_str()<< (found ? " found" : " not found")
+                                            << (type  ? " CORRELATED" : " UNCORRELATED")<<std::endl; 
+  }
+ */
+ if (!found) {
+  throw SPXGeneralException(cn+"GetSystematicCorrelationType: Can not find systematics in individualSystematicsIsCorrelated map name= "+name);
+ }
+
+ return type;
+}
+
+

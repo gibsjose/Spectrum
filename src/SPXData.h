@@ -30,6 +30,7 @@
 #include "SPXException.h"
 #include "SPXUtilities.h"
 
+
 class SPXData {
 
 public:
@@ -97,7 +98,6 @@ public:
         const std::string & GetJournalYear(void) {
 	 return pci.dataSteeringFile.GetReferenceJournalYear();
         }
-
 
         const double GetSqrtS(void) {
 	 return pci.dataSteeringFile.GetSqrtS();
@@ -216,7 +216,6 @@ public:
 	  return this->systematicErrorGraph;
 	}
 
-
 	TGraphAsymmErrors * GetTotalErrorGraph(void) {
 	 if(!this->totalErrorGraph) {
 	  throw SPXGraphException("Total Error Graph pointer is NULL: You MUST call ::CreateGraphs() before obtaining the graph");
@@ -227,6 +226,8 @@ public:
         TMatrixT <double> * GetDataTotalCovarianceMatrix() {return cov_matrixtot; };
         TMatrixT <double> * GetDataStatCovarianceMatrix()  {return cov_matrixstat;};
         TMatrixT <double> * GetDataSystCovarianceMatrix()  {return cov_matrixsyst;};
+
+        bool GetSystematicCorrelationType(std::string name);
 
 private:
 	static bool debug;		   //Flag indicating debug mode
@@ -243,12 +244,12 @@ private:
         double DataCutXmin;         // Value below which data points are removed if  RemoveXbins=true
         double DataCutXmax;         // Value above which data points are removed if  RemoveXbins=true
 
-
 	//Number of bins in data map
 	unsigned int numberOfBins;
 
 	//Individual Systematic Errors
 	StringDoubleVectorMap_T individualSystematics;
+        std::map<std::string, bool> individualSystematicsIsCorrelated;
 
 	//Actual data map
 	StringDoubleVectorMap_T data;
@@ -281,7 +282,6 @@ private:
 
         StringDoubleVectorMap_T SymmetrizeSystemicUncertaintiesMatrix(StringDoubleVectorMap_T syst);
 
-
         // parsing and print methods
 
 	void ParseSpectrum(void);
@@ -292,36 +292,9 @@ private:
 
         void PrintSystematics(StringDoubleVectorMap_T syst);
 
-	void OpenDataFile(void) {
-	 std::string filepath = pci.dataSteeringFile.GetDataFile();
+	void OpenDataFile(void);
+	void CheckVectorSize(const std::vector<double> & vector, const std::string & name, unsigned int masterSize);
 
-	 if(filepath.empty()) {
-	  throw SPXFileIOException("Data Filepath is empty");
-	 }
-
-	 try {
-	  dataFile = new std::ifstream();
-	  dataFile->open(filepath.c_str());
-
-	  if(*dataFile) {
-	   if(debug) std::cout << "SPXData::OpenDataFile: Successfully opened data file: " << filepath << std::endl;
-	  } else {
-	   throw SPXFileIOException(filepath, "Unable to open data file");
-	  }
-	 } catch(const std::exception &e) {
-	  throw;
-	 }
-	}
-
-	void CheckVectorSize(const std::vector<double> & vector, const std::string & name, unsigned int masterSize) {
-	 if(vector.size() != masterSize) {
-	  std::ostringstream oss;
-	  oss << "Size error: \"" << name << "\" vector has different size (" << vector.size() << ") than master size (" << masterSize << ")" << std::endl;
-	  throw SPXParseException(pci.dataSteeringFile.GetDataFile(), oss.str());
-	 } else {
-	  if(debug) std::cout << "SPXData::" << "CheckVectorSize: " << "\t -->  Success: \"" << name << "\" vector size matches master size" << std::endl;
-	 }
-	}
 };
 
 #endif

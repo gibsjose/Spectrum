@@ -86,7 +86,7 @@ void SPXGridSteeringFile::SetDefaults(void) {
 
 //Print the Grid Steering File Data in a nice format
 void SPXGridSteeringFile::Print(void) {
-	std::cout << "Grid Steering File: " << filename << std::endl;
+	std::cout << "\n Grid Steering File: " << filename << std::endl;
 	std::cout << "\t General Options [GEN]" << std::endl;
 	std::cout << "\t\t Debug is " << (debug ? "ON" : "OFF") << std::endl << std::endl;
 	std::cout << "\t Description [DESC]" << std::endl;

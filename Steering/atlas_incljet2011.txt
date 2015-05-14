@@ -17,11 +17,12 @@ debug = true
 plot_band = false
 ; plot_error_ticks = true
 plot_marker = true
-plot_staggered = true
+;plot_staggered = true
 ;match_binning = true
 apply_grid_corr = true
 label_sqrt_s = true
 calculate_chi2 = 1
+;dump_latex_tables=1
 ;show_individual_systematics = 1.
 
 ;band_with_pdf= false
@@ -50,8 +51,8 @@ plot_type = data, grid, pdf
 pdf_directory = PDF
 data_directory = Data/jet/atlas/incljets2011
 grid_directory = Grids/jet/atlas/incljets2011/nlojet
-data_steering_files = atlas_2011_jet_antiktr06_incljetpt_eta1.txt
-grid_steering_files = atlas_2011_jet_antiktr06_incljetpt_eta1.txt
+data_steering_files = atlas_2011_jet_antiktr04_incljetpt_eta1.txt
+grid_steering_files = atlas_2011_jet_antiktr04_incljetpt_eta1.txt
 pdf_steering_files = CT10.txt
 ;
 x_scale = 1.0

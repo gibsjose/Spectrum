@@ -193,7 +193,15 @@ void SPXDataSteeringFile::Print(void) {
         if (RemoveXbins) {
 	  std::cout << "\t\t Remove bins with values < "<<DataCutXmin<<" and > "<<DataCutXmax<<std::endl;
         }
-       
+
+        if (SystematicsUncorrelatedBetweenBins.size()>0) {       
+	 std::cout<<"\t\t Number of systematics uncorrelated between bins "<<std::endl;
+	 for (int i=0; i<SystematicsUncorrelatedBetweenBins.size(); i++) {
+	  std::cout<<"\t\t name= "<<SystematicsUncorrelatedBetweenBins.at(i).c_str()<<std::endl;
+         }
+        } else {
+	 if(debug) std::cout<<"\t\t No systematics uncorrelated between bins "<<std::endl;
+        }
 }
 
 //@TODO Create Correlation Matrix Class and parse correlation matrix here if there is one (correlation_matrix = true)!
@@ -475,5 +483,18 @@ void SPXDataSteeringFile::Parse(void) {
 	addLumiSystematic = reader->GetBoolean("DATA", "add_lumi_uncertainty_to_systematics", false);
 	if(debug) std::cout << cn << mn << "Add luminosity systematic as additional systematic componenent: " << (addLumiSystematic ? "ON" : "OFF") << std::endl;
 
+	tmp = reader->Get("DATA", "systematics_uncorrellated_between_bins", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+	 //if (debug) 
+         std::cout<<cn<<mn<<"INFO There are no systematics that are uncorrelated between bins "<<std::endl;
+	} else {
 
+         SystematicsUncorrelatedBetweenBins = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+	 if (debug) {
+	  std::cout<<cn<<mn<<"Number of systematics not correlated between bins "<<SystematicsUncorrelatedBetweenBins.size()<<std::endl;
+	  for (int i=0; i<SystematicsUncorrelatedBetweenBins.size(); i++) {
+	   std::cout<<cn<<mn<<" i= "<<" name= "<<SystematicsUncorrelatedBetweenBins.at(i).c_str()<<std::endl;
+          }
+         }  
+	}
 }

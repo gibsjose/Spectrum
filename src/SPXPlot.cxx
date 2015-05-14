@@ -110,7 +110,7 @@ void SPXPlot::Plot(void) {
 	SPXpValue* pvalue= new SPXpValue(data,crossSections, steeringFile);
         pvalue->SetPlotNumber(id); 
 #endif      
-
+	//if (debug) std::cout<<cn<<mn<<"Dump Latex table "<<steeringFile->GetDumpTables()<<std::endl;         
         if (steeringFile->GetDumpTables()!=0) {
 	 SPXLatexTable *ltable= new SPXLatexTable(data,crossSections, steeringFile);
         }

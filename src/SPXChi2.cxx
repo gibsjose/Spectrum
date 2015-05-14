@@ -84,9 +84,6 @@ double SPXChi2::CalculateSimpleChi2(SPXPDF *pdf, SPXData *data) {
    theory_cov_matrix->Print();
   }
 
-// vtheorycovmatrix.push_back(theory_cov_matrix);
-// }
-
  // Add theory matrices together
  // TMatrixT<double> *theory_tot_cov_matrix = 0;
  //for (int i=0; i<vtheorycovmatrix.size(): i++) {

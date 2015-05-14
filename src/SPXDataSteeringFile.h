@@ -39,30 +39,30 @@ private:
 	bool debug;
 
 	//[DESC]
-	std::string name;					//Name of Steering Data
-	std::string comments;				//Data comments
-	std::string experiment;				//Experiment
-	std::string reaction;				//Reaction name
-	std::string datasetYear;			//Year of dataset
-	std::string datasetLumilabel;			//Dataset luminosity label string 
-	std::string referenceJournalName;	//Name of journal
-	std::string referenceJournalYear;	//Year of publication in journal
-	std::string referenceArXivNumber;	//ID number of arXiv
-	std::string referenceArXivYear;		//Year of arXiv
-	std::string publicationStatus;		//Status of publication
+	std::string name;			// Name of Steering Data
+	std::string comments;			// Data comments
+	std::string experiment;			// Experiment
+	std::string reaction;			// Reaction name
+	std::string datasetYear;		// Year of dataset
+	std::string datasetLumilabel;		// Dataset luminosity label string 
+	std::string referenceJournalName;	// Name of journal
+	std::string referenceJournalYear;	// Year of publication in journal
+	std::string referenceArXivNumber;	// ID number of arXiv
+	std::string referenceArXivYear;		// Year of arXiv
+	std::string publicationStatus;		// Status of publication
 
 	//[GRAPH]
-	double sqrtS;				//Sqrt(s) value for dataset
-	std::string legendLabel; 		//Legend label describing the data set
-	std::string xLabel;		        //X-Axis label
-	std::string yLabel;			//Y-Axis label
-	std::string xUnits;			//X-Axis units
-	std::string yUnits;			//Y-Axis units
-	std::string yBinWidthUnits;		//Y-Axis Bin Width Units used when normalizing, if DividedByBinWidth is true
+	double sqrtS;				// Sqrt(s) value for dataset
+	std::string legendLabel; 		// Legend label describing the data set
+	std::string xLabel;		        // X-Axis label
+	std::string yLabel;			// Y-Axis label
+	std::string xUnits;			// X-Axis units
+	std::string yUnits;			// Y-Axis units
+	std::string yBinWidthUnits;		// Y-Axis Bin Width Units used when normalizing, if DividedByBinWidth is true
 	// NOTE: For some data the units of the data is different for the y-axis and the x-axis
 	//			EG: Y-Axis is in [1/TeV], but X-Axis is GeV...
-	std::string jetAlgorithmLabel;	        //Jet algorithm label
-	int jetAlgorithmRadius;			//Jet algorithm radius
+	std::string jetAlgorithmLabel;	        // Jet algorithm label
+	int jetAlgorithmRadius;			// Jet algorithm radius
 
         std::string doublediffBinname;          // name of double differential bin variable
         double doublediffBinValueMin;           // minimum value of double differential variable
@@ -70,26 +70,28 @@ private:
         double doublediffBinWidth;              // bin width of double differential variable
 
 	//[DATA]
-	SPXDataFormat dataFormat;		//The format of the data: Current supported formats are: Spectrum, HERAPDF
-	std::string dataFilepath;		//The data filepath
+	SPXDataFormat dataFormat;		// The format of the data: Current supported formats are: Spectrum, HERAPDF
+	std::string dataFilepath;		// The data filepath
         std::string corrtotalfilename;          // name of correlation file
         std::string corrstatfilename;           // name of correlation file
 
-        bool dividedByDoubleDiffBinWidth;      //Flag to indicate if data are divided by double differential bin width 
-	bool dividedByBinWidth;			//Flag to indicate that data has been divided by the bin width
-	bool normalizedToTotalSigma;	        //Flag to indicate that cross section data is normalized to the total cross section
-	bool errorInPercent;			//Flag to indicate the errors in the data file are given in percents
-	double lumiScaleFactor;			//Luminosity scale factor: Default to 1.0
-	double lumiValue;			//Luminosity value:      
-	double lumiError;			//Luminosity uncertainty 
+        bool dividedByDoubleDiffBinWidth;       // Flag to indicate if data are divided by double differential bin width 
+	bool dividedByBinWidth;			// Flag to indicate that data has been divided by the bin width
+	bool normalizedToTotalSigma;	        // Flag to indicate that cross section data is normalized to the total cross section
+	bool errorInPercent;			// Flag to indicate the errors in the data file are given in percents
+	double lumiScaleFactor;			// Luminosity scale factor: Default to 1.0
+	double lumiValue;			// Luminosity value:      
+	double lumiError;			// Luminosity uncertainty 
 
-        bool addLumiSystematic;                // Add luminosity uncertainty as additional systematic components 
+        bool addLumiSystematic;                 // Add luminosity uncertainty as additional systematic components 
 
-        bool RemoveXbins;                     // if ON points below/above DataCutXmin/DataCutXmax are removed
-        double DataCutXmin;                   // Value below which data points are removed if  RemoveXbins=true
-        double DataCutXmax;                   // Value above which data points are removed if  RemoveXbins=true
+        bool RemoveXbins;                       // if ON points below/above DataCutXmin/DataCutXmax are removed
+        double DataCutXmin;                     // Value below which data points are removed if  RemoveXbins=true
+        double DataCutXmax;                     // Value above which data points are removed if  RemoveXbins=true
 
 	void SetDefaults(void);
+
+        std::vector<std::string> SystematicsUncorrelatedBetweenBins; // list of systematics that are uncorrelated between bins
 
 public:
 
@@ -129,7 +131,6 @@ public:
 	const std::string & GetDatasetLumi(void) const {
 		return datasetLumilabel;
 	}
-
 
 	const std::string & GetReferenceJournalName(void) const {
 		return referenceJournalName;
@@ -203,7 +204,6 @@ public:
 		return dividedByDoubleDiffBinWidth;
 	}
 
-
 	double GetDoubleBinValueWidth(void) const {
 		return doublediffBinWidth;
 	}
@@ -211,7 +211,6 @@ public:
 	const SPXDataFormat & GetDataFormat(void) const {
 		return dataFormat;
 	}
-
 
 	const std::string & GetDataFile(void) const {
 		return dataFilepath;
@@ -224,7 +223,6 @@ public:
 	void PrependDataFile(std::string & path) {
 		dataFilepath = path + "/" + dataFilepath;
 	}
-
 
 	const std::string & GetTotalCorrellationFileName(void) const {
 		return corrtotalfilename;
@@ -267,7 +265,6 @@ public:
 		return addLumiSystematic;
 	}
 
-
 	double GetLumiScaleFactor(void) const {
 		return lumiScaleFactor;
 	}
@@ -304,6 +301,10 @@ public:
 
         bool GetDataRemoveXbinsFlag() {
          return RemoveXbins;
+        }
+
+        std::vector<std::string> GetUncertaintyCorrelationTypeVector(){
+         return SystematicsUncorrelatedBetweenBins; 
         }
 
 };
