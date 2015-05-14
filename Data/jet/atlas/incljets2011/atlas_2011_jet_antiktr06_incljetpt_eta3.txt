@@ -30,6 +30,8 @@ doublediff_bin_width  =  1.0
 [DATA]
 data_format = spectrum
 data_file =atlas_2011_jet_antiktr06_incljetpt_eta3_data.txt
+corr_statistical_file_name = atlas_2011_jet_antiktr06_incljetpt_eta3_cov.txt
+;
 divided_by_bin_width = true
 divided_by_doublediff_bin_width = false
 error_in_percent = true

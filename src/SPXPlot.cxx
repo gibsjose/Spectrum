@@ -110,8 +110,10 @@ void SPXPlot::Plot(void) {
 	SPXpValue* pvalue= new SPXpValue(data,crossSections, steeringFile);
         pvalue->SetPlotNumber(id); 
 #endif      
-	SPXLatexTable *ltable= new SPXLatexTable(data,crossSections, steeringFile);
 
+        if (steeringFile->GetDumpTables()!=0) {
+	 SPXLatexTable *ltable= new SPXLatexTable(data,crossSections, steeringFile);
+        }
 
 	UpdateCanvas();
 

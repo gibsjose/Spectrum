@@ -20,18 +20,16 @@ x_units = GeV
 y_units = pb
 y_bin_width_units= GeV
 jet_algorithm_label = Anti-k_{t}
-jet_algorithm_radius = 6
-
+jet_algorithm_radius = 4
 doublediff_binname = #leq |y| < 
-doublediff_bin_value_min  =  0.5
-doublediff_bin_value_max  =  1.0
+doublediff_bin_value_min  =  2.0
+doublediff_bin_value_max  =  2.5
 doublediff_bin_width  =  1.0
-
 
 [DATA]
 data_format = spectrum
-data_file =atlas_2011_jet_antiktr06_incljetpt_eta2_data.txt
-corr_statistical_file_name = atlas_2011_jet_antiktr06_incljetpt_eta2_cov.txt
+data_file = atlas_2011_jet_antiktr04_incljetpt_eta5_data.txt
+corr_statistical_file_name = atlas_2011_jet_antiktr04_incljetpt_eta5_cov.txt
 ;
 divided_by_bin_width = true
 divided_by_doublediff_bin_width = false

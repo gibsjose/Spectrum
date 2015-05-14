@@ -1199,7 +1199,6 @@ void SPXData::ReadCorrelation()
  std::string corrstatfilename=pci.dataSteeringFile.GetStatCorrellationFileName();
  if (debug) std::cout <<cn<<mn<<"Read statistical correlations corrfilename= "<<corrstatfilename<< std::endl;
 
-
  if (!totalErrorGraph) {
   throw SPXParseException(cn+mn+"Total data graph totalErrorGraph not found !");
  }
@@ -1389,24 +1388,36 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
    if (TString(line).Contains("is_totalerror"))       istotal=true;
    if (TString(line).Contains("is_statisticserror"))  isstat=true;
 
-   if(isdigit((int)SPXStringUtilities::LeftTrim(line).at(0)) || line.at(0)=='-') {
+   if (isdigit((int)SPXStringUtilities::LeftTrim(line).at(0)) || line.at(0)=='-') {
     //if(debug) std::cout << cn << mn << bin_count<<" Line: " << line << std::endl;
 
     //Convert all tabs to spaces
     std::string formatted_line = SPXStringUtilities::ReplaceAll(line, "\t", " ");
     std::vector<double> vrow = SPXStringUtilities::ParseStringToDoubleVector(formatted_line, ' ');
-    if (debug) std::cout << cn << mn << "Number of columns read: " << vrow.size() << std::endl;
+    if (debug) std::cout << cn << mn << "Number of columns read: " << vrow.size() <<" number of bins= "<< nbin << std::endl;
 
+    /*
+    if (debug) {
+     std::cout<<cn<<mn<<"line= " << line.c_str() << std::endl;
+     std::cout<<cn<<mn<<"push vrow to matrix bin_count= " << bin_count << std::endl;
+     for (int j=0; j<vrow.size(); j++) {
+      std::cout<<" j= "<<j<<" vrow= "<<vrow[j]<<std::endl;
+     }
+    }
+    */
     //Set number of columns
     if(vrow.size()!= nbin) {
      std::ostringstream oss;
-     oss << cn<<mn<<"Number of columns read= "<< vrow.size() <<"  but nbin= "<<nbin<< filename;
+     oss<<cn<<mn<<"Number of columns read= "<< vrow.size() <<"  but nbin= "<<nbin<<" for filename= "<<filename;
+     //std::cout<<cn<<mn<<"Number of columns read= "<< vrow.size() <<"  but nbin= "<<nbin<< std::endl;
      throw SPXParseException(oss.str());
     }
     bin_count++;
+
     vmatrix.push_back(vrow);
-   } 
-  }
+    //if (debug) std::cout<<cn<<mn<<"pushed vrow to matrix bin_count= " << bin_count << std::endl;
+   } //else if (debug) std::cout<<cn<<mn<<"Line does not start with a digit " << line.c_str() << std::endl;
+  } //else if (debug)  std::cout<<cn<<mn<<"Line  " << line.c_str() << std::endl;
  }
 
  /*

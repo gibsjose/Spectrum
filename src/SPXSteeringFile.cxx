@@ -119,6 +119,9 @@ void SPXSteeringFile::SetDefaults(void) {
 	CalculateChi2 = 0;
 	if(debug) std::cout << cn << mn << "CalculateChi2 set to default: OFF" << std::endl;
 
+	DumpTables = 0;
+	if(debug) std::cout << cn << mn << "DumpTables set to default: 0" << std::endl;
+
         AddLumi=false;
 	if(debug) std::cout << cn << mn << "Addlumi set to default: OFF" << std::endl;
 
@@ -277,6 +280,7 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Match Binning is: " << (matchBinning ? "ON" : "OFF") << std::endl;
         if (CalculateChi2==0) std::cout << "\t\t Calculate Chi2: OFF" << std::endl;
         if (CalculateChi2==1) std::cout << "\t\t Calculate Simple Chi2" << std::endl;
+        if (DumpTables==0) std::cout << "\t\t Dump Latex tables ON" << std::endl;
 	std::cout << "\t\t Grid Corrections are: " << (gridCorr ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Take sign when adding total error: " << (TakeSignforTotalError? "ON" : "OFF") << std::endl;
 
@@ -1781,6 +1785,8 @@ void SPXSteeringFile::Parse(void) {
 
 
 	CalculateChi2 = reader->GetInteger("GRAPH", "calculate_chi2", CalculateChi2);
+
+	DumpTables = reader->GetInteger("GRAPH", "dump_latex_tables", DumpTables);
 
 	AddLumi       = reader->GetBoolean("GRAPH", "label_lumi", AddLumi);
 	AddJournal    = reader->GetBoolean("GRAPH", "label_journalreference", AddJournal);

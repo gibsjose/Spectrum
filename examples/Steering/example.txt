@@ -80,6 +80,9 @@ band_with_gridcorrection = true                 ;[Optional] include grid correct
 
 calculate_chi2 0 ;[Optional] calculate chi2 0=off [default]
 ;                                           1 simple chi2 CalculateSimpleChi2                             
+dump_latex_tables 0 ;[Optional] calculate chi2 0=off [default]
+;                                              1 dump latex tables  
+;
 ;--------------------------------------------------------------
 ; NOTE:
 ;

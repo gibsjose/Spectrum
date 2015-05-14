@@ -110,6 +110,7 @@ private:
 	double yRatioMax;	    //Force Y-Axis maximum for ratio section
 
         int CalculateChi2;      // Calculate Chi2
+        int DumpTables;      // Dump Latex tables
 
         bool AddLumi;             // add luminosity label in info legend
         bool AddJournal;          // add journal label in legend
@@ -273,6 +274,14 @@ public:
 
 	void SetCalculateChi2(int newchi2) {
 		CalculateChi2= newchi2;
+	}
+
+	int GetDumpTables(void) const {
+		return this->DumpTables;
+	}
+
+	void SetDumpTables(int newdump) {
+		DumpTables= newdump;
 	}
 
 	bool GetBandwithPDF(void) const {

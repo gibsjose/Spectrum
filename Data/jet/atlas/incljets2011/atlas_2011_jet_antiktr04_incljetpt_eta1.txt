@@ -2,13 +2,14 @@
 debug = false
 
 [DESC]
-;reference_journal_year=
-reference_arxiv_year=2014
-data_set_year=2011
-data_set_lumi=4.5
-publication_status=published
-reference_arxiv_number=arXiv:1410.8857
-reference_journal_name=none
+comments = This is a test comment
+reference_journal_year = unknown
+reference_arxiv_year = 2014
+data_set_year = 2011
+data_set_lumi = 4.5 fb^{-1}
+publication_status = published
+reference_arxiv_number = arXiv:1410.8857
+reference_journal_name = none
 experiment = ATLAS
 
 [GRAPH]
@@ -20,7 +21,7 @@ x_units = GeV
 y_units = pb
 y_bin_width_units= GeV
 jet_algorithm_label = Anti-k_{t}
-jet_algorithm_radius = 6
+jet_algorithm_radius = 4
 doublediff_binname = #leq |y| < 
 doublediff_bin_value_min  =  0.0
 doublediff_bin_value_max  =  0.5
@@ -28,13 +29,17 @@ doublediff_bin_width  =  1.0
 
 [DATA]
 data_format = spectrum
-data_file =atlas_2011_jet_antiktr06_incljetpt_eta1_data.txt
-corr_statistical_file_name = atlas_2011_jet_antiktr06_incljetpt_eta1_cov.txt
+data_file = atlas_2011_jet_antiktr04_incljetpt_eta1_data.txt
+;corr_total_file_name = atlas_2011_jet_antiktr04_incljetpt_eta1_total_cov.txt
+corr_statistical_file_name = atlas_2011_jet_antiktr04_incljetpt_eta1_cov.txt
 ;
 divided_by_bin_width = true
 divided_by_doublediff_bin_width = false
 error_in_percent = true
-;
+lumi_scale_factor = 1.0
 lumi_value = 4.5
 lumi_error = 1.8
 add_lumi_uncertainty_to_systematics = true
+
+; 
+ 
