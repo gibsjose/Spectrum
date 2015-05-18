@@ -22,7 +22,7 @@
 #include "SPXData.h"
 #include "SPXPDF.h"
 
-static bool debug=true;
+static bool debug=false;
 
 class SPXChi2 {
 

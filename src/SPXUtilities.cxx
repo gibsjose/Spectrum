@@ -294,11 +294,11 @@ Color_t SPXUtilities::IColBlue(int i){
   if (i== 8) return kViolet-2;
   if (i== 9) return kCyan-4;
   if (i==10) return kCyan-8;
-  //if (i==11) return kCyan-2;
+
   if (i>10 && i<=20) return kPink  +i-10;
   if (i>20 && i<=30) return kPink  -i+20;
-  if (i>30 && i< 40) return kAzure -i+30;
-  if (i>40 && i< 50) return kAzure +i-40;
+  if (i>30 && i<=40) return kAzure -i+30;
+  if (i>40 && i<=50) return kAzure +i-40;
   if (i>50 && i<=60) return kViolet+i-50;
   if (i>60 && i<=70) return kViolet-i+60;
   if (i>70 && i<=80) return kCyan  +i-70;

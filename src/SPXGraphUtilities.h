@@ -63,6 +63,7 @@ public:
         static double GetLargestRelativeError(TGraphAsymmErrors* graphs);
 
 	static void MatchBinning(TGraphAsymmErrors *master, TGraphAsymmErrors *slave, bool dividedByBinWidth);
+	static TH1D* MatchBinning(TGraphAsymmErrors *master, TH1D *slave, bool dividedByBinWidth);
 
 	static TGraphAsymmErrors * Divide(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, DivideErrorType_t dt);
 
@@ -77,11 +78,12 @@ public:
 
         static void SPXCopyGraphProperties(TGraphErrors* g1, TGraphErrors* g2);
 
-	static TH1D* GraphToHistogram(TGraphAsymmErrors * g);
-
 	static TH1D* GetEdgeHistogram(TGraphAsymmErrors * g, bool low = false);
 
+	static TH1D* GraphToHistogram(TGraphAsymmErrors * g);
+
 	static void HistogramToGraph(TGraphAsymmErrors * g, TH1 *h);
+
 	static void ClearGraph(TGraphAsymmErrors * g);
 
 	static double GetYBinWidthUnitsScale(std::string master, std::string slave);

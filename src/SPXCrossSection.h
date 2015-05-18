@@ -97,7 +97,7 @@ private:
 
 	SPXPDFSteeringFile *psf;	       // Fully parsed PDF Steering File
 	SPXPlotConfigurationInstance *pci;     // Fully parsed Plot configuration instance (contains grid steering file)
-        SPXSteeringFile *mainsteeringFile;       // pointer to main steering file frpm SPXPlot
+        SPXSteeringFile *mainsteeringFile;     // pointer to main steering file from SPXPlot
 
 	SPXGrid *grid;			       // Grid
 	SPXPDF *pdf;			       // PDF

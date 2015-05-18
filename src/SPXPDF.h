@@ -115,6 +115,8 @@ class SPXPDF {
         TGraphAsymmErrors *GetBand(int i);
 	std::string GetBandType(int i);
 
+        TGraphAsymmErrors *GetTotalBand() {return h_Total_results;}
+
         int GetAlphaSmemberNumDown() const{return AlphaSmemberNumDown;};
         int GetAlphaSmemberNumUp() const{return AlphaSmemberNumUp;};
 	std::string GetAlphaSPDFSetNameDown() const{return AlphaSPDFSetNameDown;};
@@ -123,25 +125,17 @@ class SPXPDF {
         TH1D * GetPdfdefault() { return hpdfdefault;};
         TH1D * GetPDFNominal() { return hpdfdefault; };
 
+	int GetNumberOfIndividualPDFComponents() {return h_errors_PDF.size();}
 	TH1D* GetIndividualPDFComponent(int ipdf);
+	void SetIndividualPDFComponent(int ipdf, TH1D *h); 
 
-	int GetNumberOfIndividualPDFComponents() {
-	  return h_errors_PDF.size();
-        }
-
+	int GetNumberOfIndividualScaleVariations() {return h_errors_Scale.size();}
 	TH1D* GetIndividualScaleVariation(int iscale);
-	int GetNumberOfIndividualScaleVariations() {
-	  return h_errors_Scale.size();
-        }
+	void  SetIndividualScaleVariation(int iscale, TH1D *h); 
 
+	int GetNumberOfIndividualAlphaSVariations() {return h_errors_AlphaS.size();}
 	TH1D* GetIndividualAlphaSVariation(int ialphas);
-	int GetNumberOfIndividualAlphaSVariations() {
-	  return h_errors_AlphaS.size();
-        }
-
-        TGraphAsymmErrors *GetTotalBand() {
-         return h_Total_results;   
-        }
+	void  SetIndividualAlphaSVariation(int iscale, TH1D *h); 
 
         //mutator methods
         void SetDebug(bool _debug);

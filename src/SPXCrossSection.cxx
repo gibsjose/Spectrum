@@ -20,7 +20,7 @@
 const std::string cn = "SPXCrossSection::";
 
 //Must define the static debug variable in the implementation
-bool SPXCrossSection::debug=true;
+bool SPXCrossSection::debug=false;
 
 //Create the CrossSection
 void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
@@ -333,7 +333,58 @@ void SPXCrossSection::MatchBinning(StringGraphMap_T dataFileGraphMap) {
    std::cout << cn <<mn<<"Number of bins "<<nominal->GetN()<<std::endl;
   }
 
+ //>> update also PDF histograms
+ 
+  int npdfcomponents=pdf->GetNumberOfIndividualPDFComponents();
+  if (debug) {
+   std::cout<<cn<<mn<<"Number of individual PDF components  " << npdfcomponents << std::endl;
+  }
+  for (int ipdf=0; ipdf<npdfcomponents; ipdf++) {
+   TH1D *hcomp= pdf->GetIndividualPDFComponent(ipdf);
+   if (!hcomp) {std::cout<<cn<<mn<<"Histogram for component ipdf= "<<ipdf<<" not found "<<std::endl; continue;}
+  
+   TH1D* hnew=SPXGraphUtilities::MatchBinning(master, hcomp, true);  
+   if (debug) {
+    std::cout<<cn<<mn<<"After MatchBinning for Histogram "<<hnew->GetName()<<std::endl;   
+    hnew->Print("all");
+   }
+   pdf->SetIndividualPDFComponent(ipdf,hnew); 
+  }
+
+  int nscalecomponents=pdf->GetNumberOfIndividualScaleVariations();
+  if (debug) {
+   std::cout<<cn<<mn<<"Number of individual scale variations  " << nscalecomponents << std::endl;
+  }
+  for (int iscale=0; iscale<nscalecomponents; iscale++) {
+   TH1D *hcomp= pdf->GetIndividualScaleVariation(iscale);
+   if (!hcomp) {std::cout<<cn<<mn<<"Histogram for component iscale= "<<iscale<<" not found ! "<<std::endl; continue;}
+   TH1D* hnew=SPXGraphUtilities::MatchBinning(master, hcomp, true);  
+   if (debug) {
+    std::cout<<cn<<mn<<"After MatchBinning for Histogram "<<hnew->GetName()<<std::endl;   
+    hnew->Print("all");
+   }
+   pdf->SetIndividualScaleVariation(iscale,hnew); 
+  }
+  // read alphas uncertainty components
+  int nalphascomponents=pdf->GetNumberOfIndividualAlphaSVariations();
+  if (debug) {
+   std::cout<<cn<<mn<<"Number of individual alphas variations  " << nalphascomponents << std::endl;
+  }
+
+  for (int ialphas=0; ialphas<nalphascomponents; ialphas++) {
+   TH1D *hcomp= pdf->GetIndividualAlphaSVariation(ialphas);
+   if (!hcomp) {std::cout<<cn<<mn<<"Histogram for component ialphas= "<<ialphas<<" not found ! "<<std::endl; continue;}
+   TH1D* hnew=SPXGraphUtilities::MatchBinning(master, hcomp, true);  
+   if (debug) {
+    std::cout<<cn<<mn<<"After MatchBinning for Histogram "<<hnew->GetName()<<std::endl;   
+    hnew->Print("all");
+   }
+   pdf->SetIndividualAlphaSVariation(ialphas,hnew); 
+  }
+ //<<
+
  }
+
 
 }
 

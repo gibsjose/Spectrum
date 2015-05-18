@@ -406,6 +406,27 @@ void SPXPDF::Initialize()
  // double x=0.1, Q=10.;
  // std::cout << "xf_g = " << mypdf->xfxQ(21, x, Q) << std::endl;
 
+ const LHAPDF::PDFSet set(default_pdf_set_name.c_str());
+ //const size_t nmem = set.size()-1;
+ int npdfmemberfromset = set.size()-1;
+
+ if (debug) {
+  std::cout<<cn<<mn<<"Number of PDF members from steering=  "<<n_PDFMembers<<" from PDF set= "<<npdfmemberfromset <<std::endl;
+ }
+
+ if (npdfmemberfromset!=n_PDFMembers) {
+  std::cout<<cn<<mn<<"ERROR: Number of PDF members from steering=  "<<n_PDFMembers<<" from PDF set= "<<npdfmemberfromset <<std::endl;
+  std::cout<<cn<<mn<<"ERROR: Correct Steering file " <<std::endl;
+ }
+ 
+ const std::vector<LHAPDF::PDF*> pdfs = set.mkPDFs();
+ mypdf=pdfs[defaultpdfid];
+ //vector<double> xgAll, xuAll;
+ //for (size_t imem = 0; imem <= nmem; imem++) {
+ // xgAll.push_back(pdfs[imem]->xfxQ(21,x,Q)); // gluon distribution
+ // xuAll.push_back(pdfs[imem]->xfxQ(2,x,Q)); // up-quark distribution
+ //}
+
 #else
  if (debug) {
   std::cout<<cn<<mn<<"  "<<std::endl;
@@ -1856,7 +1877,7 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
   // throw SPXParseException(cn+mn+"Map is empty");
  } 
 
- for(BandMap_T::const_iterator it = Mapallbands.begin(); it != Mapallbands.end(); ++it) {
+ for (BandMap_T::const_iterator it = Mapallbands.begin(); it != Mapallbands.end(); ++it) {
   std::cout <<cn<<mn<< " " << std::endl;
   if (debug) std::cout <<cn<<mn<< "map["<<it->first<<"]="<< " " << it->second->GetName() << std::endl;
 
@@ -1933,6 +1954,41 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
  if (debug) {
   std::cout <<cn<<mn<< "After Print hpdfdefault: "<< hpdfdefault->GetName()<< std::endl;
   hpdfdefault->Print("all");
+ }
+
+ //>> update also PDF histograms
+ 
+ for (int ipdf=0; ipdf<h_errors_PDF.size(); ipdf++) {
+  TString hname=h_errors_PDF.at(ipdf)->GetName();
+  hname+="_"+corrLabel;
+  if (h_errors_PDF.at(ipdf)->GetNbinsX()==hcorr->GetNbinsX()){
+   std::cout<<cn<<mn<<" Do not know what to do bins of histograms are not equal "<<std::endl;
+   std::cerr<<cn<<mn<<" Do not know what to do bins of histograms are not equal "<<std::endl;
+  }
+  h_errors_PDF.at(ipdf)->Multiply(hcorr);
+  h_errors_PDF.at(ipdf)->SetName(hname);
+ }
+
+ for (int iscale=0; iscale<h_errors_Scale.size(); iscale++) {
+  TString hname=h_errors_Scale.at(iscale)->GetName();
+  hname+="_"+corrLabel;
+  if (h_errors_Scale.at(iscale)->GetNbinsX()==hcorr->GetNbinsX()){
+   std::cout<<cn<<mn<<" Do not know what to do bins of histograms are not equal "<<std::endl;
+   std::cerr<<cn<<mn<<" Do not know what to do bins of histograms are not equal "<<std::endl;
+  }
+  h_errors_Scale.at(iscale)->Multiply(hcorr);
+  h_errors_Scale.at(iscale)->SetName(hname);
+ }
+ // read alphas uncertainty components
+ for (int ialphas=0; ialphas<h_errors_AlphaS.size(); ialphas++) {
+  TString hname=h_errors_AlphaS.at(ialphas)->GetName();
+  hname+="_"+corrLabel;
+  if (h_errors_AlphaS.at(ialphas)->GetNbinsX()==hcorr->GetNbinsX()){
+   std::cout<<cn<<mn<<" Do not know what to do bins of histograms are not equal "<<std::endl;
+   std::cerr<<cn<<mn<<" Do not know what to do bins of histograms are not equal "<<std::endl;
+  }
+  h_errors_AlphaS.at(ialphas)->Multiply(hcorr);
+  h_errors_AlphaS.at(ialphas)->SetName(hname);
  }
 
  if (Mapallbands.empty()) {
@@ -2216,6 +2272,21 @@ TH1D* SPXPDF::GetIndividualPDFComponent(int ipdf){
 
 }
 
+void SPXPDF::SetIndividualPDFComponent(int ipdf, TH1D *h){ 
+ std::string mn = "GetIndividuallPDFComponent: ";
+ if (ipdf>h_errors_PDF.size()) {
+  std::ostringstream oss;
+  oss<<cn<<mn<<" ipdf= "<<ipdf<<" > maximum= "<<h_errors_PDF.size();
+  throw SPXParseException(oss.str());
+ }
+
+ if (!h) std::cout<<cn<<mn<<"WARNING histogram not found !"<<std::endl;
+
+ h_errors_PDF.at(ipdf)=h; 
+
+ return;
+}
+
 TH1D* SPXPDF::GetIndividualScaleVariation(int iscale){
  std::string mn = "GetIndividualScaleVariation: ";
 
@@ -2237,11 +2308,24 @@ TH1D* SPXPDF::GetIndividualScaleVariation(int iscale){
 
 }
 
+void SPXPDF::SetIndividualScaleVariation(int iscale, TH1D *h){ 
+ std::string mn = "SetIndividualScaleVariation: ";
+ if (iscale>h_errors_Scale.size()) {
+  std::ostringstream oss;
+  oss<<cn<<mn<< "iscale= "<<iscale<<" > maximum= "<<h_errors_Scale.size();
+  throw SPXParseException(oss.str());
+ }
+
+ if (!h) std::cout<<cn<<mn<<"WARNING histogram not found !"<<std::endl;
+
+ h_errors_Scale.at(iscale)=h; 
+ return;
+}
 
 TH1D* SPXPDF::GetIndividualAlphaSVariation(int ialphas){
  std::string mn = "GetIndividualAlphaSVariation: ";
 
- if (debug) std::cout<<cn<<mn<<"Return scale variation i= "<<ialphas<<std::endl;
+ if (debug) std::cout<<cn<<mn<<"Return AlphaS variation i= "<<ialphas<<std::endl;
 
  TH1D *h1=0;
  
@@ -2257,4 +2341,19 @@ TH1D* SPXPDF::GetIndividualAlphaSVariation(int ialphas){
 
  return h_errors_AlphaS.at(ialphas);
 
+}
+
+void SPXPDF::SetIndividualAlphaSVariation(int ialphas, TH1D *h){ 
+ std::string mn = "SetIndividualAlphaSVariation: ";
+ if (ialphas>h_errors_AlphaS.size()) {
+  std::ostringstream oss;
+  oss<<cn<<mn<< "ialphas= "<<ialphas<<" > maximum= "<<h_errors_AlphaS.size();
+  throw SPXParseException(oss.str());
+ }
+
+ if (!h) std::cout<<cn<<mn<<"WARNING histogram not found !"<<std::endl;
+
+ h_errors_AlphaS.at(ialphas)=h; 
+
+ return;
 }

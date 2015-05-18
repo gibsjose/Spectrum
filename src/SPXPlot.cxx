@@ -2533,6 +2533,7 @@ void SPXPlot::InitializeData(void) {
                  if (debug) {
                   std::cout<<cn<<mn<<"Number of systematic groups= " <<systematicsgroups.size() <<std::endl;                  
                   for (int igroup=0; igroup<systematicsgroups.size(); igroup++) {
+                   std::cout<<cn<<mn<<" " <<std::endl;                  
                    std::cout<<cn<<mn<<igroup<<" systematic group= " <<systematicsgroups.at(igroup)
                                             <<" color= "<< systematicsgroupscolor.at(igroup) <<std::endl;
                   }
@@ -2757,7 +2758,7 @@ void SPXPlot::DrawBand(SPXPDF *pdf, std::string option, SPXPlotConfigurationInst
   }
 
   if (debug) std::cout<<cn<<mn<<"edgecolor= "<<edgecolor<<" edgestyle= "<<edgestyle
-                              <<"fillcolor= "<<fillcolor<<" fillstyle= "<<fillstyle<<std::endl;
+                              <<" fillcolor= "<<fillcolor<<" fillstyle= "<<fillstyle<<std::endl;
  
   if (edgecolor!=0) { // 0 is default in SPXPlotConfiguration.h
    TH1D *hedgelow =SPXGraphUtilities::GetEdgeHistogram(gband,true);

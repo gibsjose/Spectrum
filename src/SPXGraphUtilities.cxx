@@ -173,6 +173,52 @@ TGraphAsymmErrors* SPXGraphUtilities::TH1TOTGraphAsymm(TH1 *h1)
 }
 
 
+//Match binning of slave graph to the binning of the master graph
+TH1D* SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TH1D *hslave, bool dividedByBinWidth) {
+ std::string mn = "MatchBinning: ";
+
+ bool debug = true;
+
+ // Make sure graphs are valid
+ if (!master) {
+  throw SPXGraphException(cn + mn + "Master graph is invalid");
+ }
+
+ if (!hslave) {
+  throw SPXGraphException(cn + mn + "Slave histogram is invalid");
+ }
+
+ //TGraphAsymmErrors* gslave= SPXGraphUtilities::TH1TOTGraphAsymm(hslave2);
+ TGraphAsymmErrors* gslave= SPXGraphUtilities::TH1TOTGraphAsymm(hslave);
+ if (!gslave) {
+  throw SPXGraphException(cn + mn + "Slave graph could not be created ");
+ }
+
+ if (debug) {
+  std::cout<<cn<<mn<<" graph from histogram "<<hslave->GetName()<<" is: "<<std::endl;
+  gslave->Print();
+ }
+
+ SPXGraphUtilities::MatchBinning(master, gslave,dividedByBinWidth);
+
+ if (debug) {
+  std::cout<<cn<<mn<<"After MatchBinning graph "<<gslave->GetName()<<" is: "<<std::endl;
+  gslave->Print();
+ }
+
+ TH1D* hslave2=SPXGraphUtilities::GraphToHistogram(gslave);
+ if (!hslave2) {
+  throw SPXGraphException(cn + mn + "Problem converting graph to histogram ");
+ }
+
+ if (debug) {
+  std::cout<<cn<<mn<<"After MatchBinning histogram "<<hslave2->GetName()<<" is: "<<std::endl;
+  hslave2->Print("all");
+ }
+
+ return hslave2;
+
+}
 
 //Match binning of slave graph to the binning of the master graph
 void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmErrors *slave, bool dividedByBinWidth) {
@@ -674,6 +720,24 @@ void SPXGraphUtilities::HistogramToGraph(TGraphAsymmErrors * g, TH1 *h) {
     }
     g->SetName(h->GetName());
 }
+
+/*
+static void SPXGraphUtilities::CopyHistogramToHistogram(TH1D* h1,TH1D *h2){
+ std::string mn = CopyHistogramToHistogram": ";
+
+ if(!h1) {
+  throw SPXGraphException(cn + mn + "Histogram h1 not found");
+ }
+
+ if(!h2) {
+  throw SPXGraphException(cn + mn + "Histogram h2 not found");
+ }
+
+ h1->Reset();
+ 
+ return;
+}
+*/
 
 TH1D *SPXGraphUtilities::GraphToHistogram(TGraphAsymmErrors * g) {
     std::string mn = "GraphToHistogram: ";

@@ -25,11 +25,11 @@ calculate_chi2 = 1
 ;dump_latex_tables=1
 ;show_individual_systematics = 1.
 
-;band_with_pdf= false
-;band_with_alphas= false
-;band_with_scale = true
-;band_with_gridcorrection = false
-;band_total = false
+band_with_pdf= true
+band_with_alphas= true
+band_with_scale = true
+band_with_gridcorrection = true
+band_total = false
 
 ;x_legend = 0.75
 ;y_legend = 0.9

@@ -6,6 +6,12 @@
 
 ## Change Log
 
+ -SPXPDF: Added function to set histograms containing the individual uncertainty histograms
+          AddCorrection now also changes individual uncertainty histograms
+          
+ -SPXCrossSection: 
+          change individual uncertainties in PDF class for corrections and re-binning
+
  -SPXData: add correlation type of systematics uncertainty
            true if correllated among bins, false if uncorrelated
  

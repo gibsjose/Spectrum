@@ -417,8 +417,9 @@ void SPXRatio::Divide(void) {
 
       SPXGraphUtilities::MatchBinning(denominatorGraph, numeratorGraph[i], true);
       if (debug) {
-       std::cout<<cn<<mn<<"After Match binning for numeratorGraph["<<i<<"]= "<<std::endl;
-       //numeratorGraph[i]->Print();
+       std::cout<<cn<<mn<<"After Match binning for numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName()
+                          <<" denominatorGraph= "<<denominatorGraph->GetName()<<std::endl;
+       numeratorGraph[i]->Print();
       }
     } catch(const SPXException &e) {
      std::cerr << e.what() << std::endl;
