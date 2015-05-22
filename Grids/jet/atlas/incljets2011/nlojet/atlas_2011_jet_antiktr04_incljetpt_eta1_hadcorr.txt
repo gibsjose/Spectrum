@@ -1,4 +1,7 @@
 ;hadronisation corrections 
+name=ATLAS2011
+comment=variour tunes
+errortype=relative
 ;  mean  xmin  xmax  npc  npc_up npc_down 
  108.0 100.0 116.0 0.96 1.008 0.931
  125.0 116.0 134.0 0.96 0.998 0.931

@@ -167,23 +167,23 @@ void SPXCrossSection::ApplyCorrections() {
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if(!mainsteeringFile)
-  throw SPXParseException(cn+mn+"main steering file not found !");
+  throw SPXParseException(cn+mn+"Main steering file not found !");
 
  if(mainsteeringFile->ApplyGridCorr()) {
-   if (debug) std::cout << cn << mn << "INFO: grid corrections will be applied to cross sections !" << std::endl;
+   if (debug) std::cout<<cn<<mn<<"INFO: grid corrections will be applied to cross sections !" << std::endl;
  } else {
-   if (debug) std::cout << cn << mn << "INFO: No grid correction asked for in steering file ! return " << std::endl;
+   if (debug) std::cout<<cn<<mn<<"INFO: No grid correction asked for in steering file ! return " << std::endl;
    return;
  }
 
- if (debug) std::cout << cn << mn << "Parse grid corrections" << std::endl;
+ if (debug) std::cout<<cn<<mn<<"Parse grid corrections" << std::endl;
  this->ParseCorrections();
 
  int bncorr=mainsteeringFile->GetNumberofCorrectionToBand();
 
  int ncorr=pci->gridSteeringFile.GetNumberOfCorrectionFiles(); 
- if(ncorr == 0) {
-  std::cout << cn << mn << "WARNING: No grid correction file specified, but ApplyCorrection called !" << std::endl;
+ if (ncorr == 0) {
+  std::cout<<cn<<mn<<"WARNING: No grid correction file specified, but ApplyCorrection called !"<<std::endl;
   return;
  }
 
@@ -192,14 +192,14 @@ void SPXCrossSection::ApplyCorrections() {
                   <<" and main steering file "<<bncorr<<" do not match"<<std::endl;
  }
 
- if (debug) std::cout << cn << mn << ">>>>>>>>>>>>>>>>> APPLY CORRECTIONS <<<<<<<<<<<<<<<<<" << std::endl;
+ if (debug) std::cout<<cn<<mn<<">>>>>>>>>>>>>>>>> APPLY CORRECTIONS <<<<<<<<<<<<<<<<<"<<std::endl;
 
  if (debug) {
-  std::cout << cn << mn << "Available corrections from Grid ncorr= " << ncorr << " requested to include bncorr= "<<bncorr<< std::endl;
+  std::cout<<cn<<mn<<"Available corrections from Grid ncorr= "<<ncorr<<" requested to include bncorr= "<<bncorr<<std::endl;
  }
 
  if (corrections==0)
-  std::cout << cn << mn << "WARNING: No correction found but ncorr= " << ncorr << std::endl;
+  std::cout<<cn<<mn<<"WARNING: No correction found but ncorr= "<<ncorr<<std::endl;
 
  for (int i=0; i<ncorr; i++) {
   std::string filename = pci->gridSteeringFile.GetCorrectionFile(i);
@@ -211,10 +211,11 @@ void SPXCrossSection::ApplyCorrections() {
 
   TGraphAsymmErrors *gcorr=corrections->GetCorrectionGraph(filename);
   if (!gcorr) {
-   throw SPXGraphException(cn + mn + "Correction graph not found for filename= "+filename);
+   throw SPXGraphException(cn+mn+"Correction graph not found for filename= "+filename);
   }
+
   if (debug) {
-   std::cout<<cn<<mn<<"Print correction graph: "<<gcorr->GetName()<<std::endl;
+   std::cout<<cn<<mn<<"Print correction graph gcorr: "<<gcorr->GetName()<<std::endl;
    gcorr->Print();
   }
 
@@ -222,7 +223,7 @@ void SPXCrossSection::ApplyCorrections() {
   pdf->ApplyBandCorrection(gcorr,corrLabel,includeinband);
  }
 
- if (debug) std::cout << cn << mn << "APPLY CORRECTIONS finished !" << std::endl;
+ if (debug) std::cout<<cn<<mn<<"finished !"<<std::endl;
 }
 
 
@@ -333,8 +334,8 @@ void SPXCrossSection::MatchBinning(StringGraphMap_T dataFileGraphMap) {
    std::cout << cn <<mn<<"Number of bins "<<nominal->GetN()<<std::endl;
   }
 
- //>> update also PDF histograms
- 
+  // Now also match the individual histograms
+
   int npdfcomponents=pdf->GetNumberOfIndividualPDFComponents();
   if (debug) {
    std::cout<<cn<<mn<<"Number of individual PDF components  " << npdfcomponents << std::endl;
@@ -381,10 +382,6 @@ void SPXCrossSection::MatchBinning(StringGraphMap_T dataFileGraphMap) {
    }
    pdf->SetIndividualAlphaSVariation(ialphas,hnew); 
   }
- //<<
-
  }
-
-
 }
 

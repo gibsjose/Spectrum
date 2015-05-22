@@ -1,4 +1,7 @@
 ;hadronisation corrections 
+name=ATLAS2011 2.76TeV
+comment=Pythia6 AUET2BL**,AUET2LO**,AMBT@CTEQ6L1,AMBT1,Perugia2010,Perugia2010 Pythia8 4C Herwig++ UE7000-2,AMBT2B CTEQ6L1
+errortype=absolute
 ; xmean xlow xhigh hadcorr err+  err-
  25.0  20.0  30.0 0.884031 0.07 0.12
  37.5  30.0  45.0 0.911044 0.06 0.09

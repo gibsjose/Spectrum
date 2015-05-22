@@ -64,6 +64,7 @@ public:
 
 	static void MatchBinning(TGraphAsymmErrors *master, TGraphAsymmErrors *slave, bool dividedByBinWidth);
 	static TH1D* MatchBinning(TGraphAsymmErrors *master, TH1D *slave, bool dividedByBinWidth);
+        static TH1D* MatchandMultiply(TH1D *hcorr, TH1D* hist, bool dividedByBinWidth);
 
 	static TGraphAsymmErrors * Divide(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, DivideErrorType_t dt);
 

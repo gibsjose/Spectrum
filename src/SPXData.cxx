@@ -158,7 +158,8 @@ void SPXData::ParseSpectrum(void) {
 	//Bin count
 	unsigned int bin_count = 0;
 
-	std::map<int, int> keepbin;
+
+	keepbin.clear();
 
 	//Number of columns (used to determine symmetric, asymmetric, or no total systematic error)
 	unsigned int numberOfColumns = 0;
@@ -1285,7 +1286,7 @@ void SPXData::ReadCorrelation()
   this->ReadCorrelationMatrix(corrstatfilename);
 
  } else {
-  cov_matrixstat = 0;  
+  cov_matrixstat  = 0;  
   corr_matrixstat = 0;
  }
 
@@ -1346,9 +1347,9 @@ void SPXData::ReadCorrelation()
   }
  
   // add up stat and syst covariance matrice
-  std::cout <<cn<<mn<<"INFO  add up stat and syst covariance matrices to be implemented ! "<< std::endl; 
+  //std::cout <<cn<<mn<<"INFO  add up stat and syst covariance matrices to be implemented ! "<< std::endl; 
   // calculate total covariance
-  std::cout <<cn<<mn<<"INFO calculate total covariance  matrix to be implemented ! "<< std::endl; 
+  //std::cout <<cn<<mn<<"INFO calculate total covariance  matrix to be implemented ! "<< std::endl; 
 
  }
 
@@ -1378,6 +1379,8 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
 
  //Bin count to make sure that always the same number of bins is read
  unsigned int bin_count = 0;
+ // Line count
+ unsigned int line_count = 0;
 
  //Number of columns (used to determine symmetric, asymmetric, or no total systematic error)
  unsigned int numberOfColumns = 0;
@@ -1405,12 +1408,12 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
  while (infile.good()) {
   //Skip comments
   std::getline(infile, line);
-  if(line.empty()) continue;
+  if (line.empty()) continue;
   //String stream to parse the individual lines
   std::istringstream iss(line);
   //if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
 
-  if(!line.empty() && (line[0] == ';')) {
+  if (!line.empty() && (line[0] == ';')) {
    continue;
   } else if(!line.empty()) {
 
@@ -1426,7 +1429,10 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
     //Convert all tabs to spaces
     std::string formatted_line = SPXStringUtilities::ReplaceAll(line, "\t", " ");
     std::vector<double> vrow = SPXStringUtilities::ParseStringToDoubleVector(formatted_line, ' ');
-    if (debug) std::cout << cn << mn << "Number of columns read: " << vrow.size() <<" number of bins= "<< nbin << std::endl;
+
+    if (debug) std::cout<<cn<<mn<<"Number of columns read: "<<vrow.size()<<" number of bins= "<<nbin<<std::endl;
+
+    line_count++;
 
     /*
     if (debug) {
@@ -1437,16 +1443,61 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
      }
     }
     */
+
+    if (RemoveXbins) {
+     if (debug) {
+      std::cout<<cn<<mn<<"Remove bins with values < "<<DataCutXmin<<" and > "<<DataCutXmax<<std::endl;
+
+      std::cout<<cn<<mn<<"After looping over data: The following bins will be kept: " << std::endl;
+      std::cout<<cn<<mn<<"INFO keepbin[ keptbinindex ]= newbinindex " <<std::endl;
+      for (std::map<int,int>::iterator it = keepbin.begin(); it != keepbin.end(); it++) {
+       std::cout<<cn<<mn <<"keepbin["<<it->first<<"]= " <<  it->second<<std::endl;
+      }
+      std::cout<<cn<<mn <<" " <<std::endl;
+
+     }
+
+     std::vector<double> vrowtmp;
+     for (int i=0; i<vrow.size(); i++) {
+      if (debug) std::cout<<cn<<mn<<"vrow[ "<<i<<"]= "<<vrow.at(i)<<std::endl;
+      if (keepbin.count(i)>0) {
+       vrowtmp.push_back(vrow.at(i));
+      } else {
+       if (debug) std::cout<<cn<<mn<<"-----> Bin i= "<<i<<" is removed ! "<<std::endl;
+      }
+     }
+     if (debug) {
+      for (int i=0; i<vrowtmp.size(); i++) {
+       if (debug) std::cout<<cn<<mn<<"vrowtmp[ "<<i<<"]= "<<vrowtmp.at(i)<<std::endl;
+      }
+     }
+     // replace vrow vector
+     vrow=vrowtmp;
+
+    }
+
+    //
     //Set number of columns
+    //
     if(vrow.size()!= nbin) {
      std::ostringstream oss;
      oss<<cn<<mn<<"Number of columns read= "<< vrow.size() <<"  but nbin= "<<nbin<<" for filename= "<<filename;
-     //std::cout<<cn<<mn<<"Number of columns read= "<< vrow.size() <<"  but nbin= "<<nbin<< std::endl;
+     std::cout<<cn<<mn<<"Number of columns read= "<< vrow.size() <<"  but nbin= "<<nbin<<" for filename= "<<filename<<std::endl;
      throw SPXParseException(oss.str());
     }
-    bin_count++;
 
-    vmatrix.push_back(vrow);
+    if (RemoveXbins) {
+     if (keepbin.count(line_count)>0) {
+      bin_count++;
+      if (debug) std::cout<<cn<<mn<<"vmatrix are bin_count= "<<bin_count<<" is filled with vrow["<<line_count<<"]"<<std::endl;
+      vmatrix.push_back(vrow);
+     } else {
+      if (debug) std::cout<<cn<<mn<<"bin is removed from vmatrix "<<std::endl;
+     }
+    } else {
+     bin_count++;
+     vmatrix.push_back(vrow);
+    }
     //if (debug) std::cout<<cn<<mn<<"pushed vrow to matrix bin_count= " << bin_count << std::endl;
    } //else if (debug) std::cout<<cn<<mn<<"Line does not start with a digit " << line.c_str() << std::endl;
   } //else if (debug)  std::cout<<cn<<mn<<"Line  " << line.c_str() << std::endl;
@@ -2010,7 +2061,7 @@ bool SPXData::GetSystematicCorrelationType(std::string name) {
   }
  */
  if (!found) {
-  throw SPXGeneralException(cn+"GetSystematicCorrelationType: Can not find systematics in individualSystematicsIsCorrelated map name= "+name);
+  throw SPXParseException(cn+"GetSystematicCorrelationType: Can not find systematics in individualSystematicsIsCorrelated map name= "+name);
  }
 
  return type;

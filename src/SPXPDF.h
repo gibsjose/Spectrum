@@ -175,6 +175,7 @@ class SPXPDF {
         bool BandsHaveDifferentFillStyle();
 
         bool HasDetailedBands();
+        bool HasBandofType(std::string bandtype);
 
     private:
         //VARIABLES

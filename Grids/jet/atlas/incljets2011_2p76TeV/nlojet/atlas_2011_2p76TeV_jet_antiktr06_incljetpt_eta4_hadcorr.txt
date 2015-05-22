@@ -1,4 +1,7 @@
 ; hadronisation corrections
+name=ATLAS2011 2.76TeV
+comment=Pythia6 AUET2BL**,AUET2LO**,AMBT@CTEQ6L1,AMBT1,Perugia2010,Perugia2010 Pythia8 4C Herwig++ UE7000-2,AMBT2B CTEQ6L1
+errortype=absolute
 ;  mean  xmin  xmax  npc  npc_up npc_down 
  25.0  20.0  30.0 1.238859 0.09 0.11
  37.5  30.0  45.0 1.124042 0.08 0.06

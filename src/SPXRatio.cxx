@@ -499,13 +499,13 @@ void SPXRatio::Divide(void) {
   //Determine how to divide based on ratioStyle: zeroNumErrors/zeroDenErrors set with '!'
   DivideErrorType_t divideType;
 
-  if(ratioStyle.GetZeroNumeratorErrors() && ratioStyle.GetZeroDenominatorErrors()) {
+  if (ratioStyle.GetZeroNumeratorErrors() && ratioStyle.GetZeroDenominatorErrors()) {
    if (debug) std::cout<<cn<<mn<<"Zero all error "<<std::endl;
    divideType = ZeroAllErrors;
-  } else if(ratioStyle.GetZeroNumeratorErrors()) {
+  } else if (ratioStyle.GetZeroNumeratorErrors()) {
    if (debug) std::cout<<cn<<mn<<"Zero numerator error "<<std::endl;
    divideType = ZeroNumGraphErrors;
-  } else if(ratioStyle.GetZeroDenominatorErrors()) {
+  } else if (ratioStyle.GetZeroDenominatorErrors()) {
    if (debug) std::cout<<cn<<mn<<"Zero denominator error "<<std::endl;
    divideType = ZeroDenGraphErrors;
   } else {
@@ -514,7 +514,7 @@ void SPXRatio::Divide(void) {
   }
 
   //Divide graphs
-
+  debug=true;
   if (debug) std::cout<<cn<<mn<<"Now divide graph "<<std::endl;
 
   if (numeratorGraph.size()==0)
@@ -526,14 +526,34 @@ void SPXRatio::Divide(void) {
 
    if (debug) {
      std::cout <<cn<<mn<<"numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName()
+               <<" nbin= "<<numeratorGraph[i]->GetN()
+               <<" denominatorGraph= "<<denominatorGraph->GetName()
+               <<" nbin= "<<denominatorGraph->GetN()
+               <<" divideType= "<<divideType<<std::endl;
+
+     std::cout <<cn<<mn<<"numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName()
                <<" denominatorGraph= "<<denominatorGraph->GetName()<<" divideType= "<<divideType<<std::endl;
+
+   }
+
+   if ( numeratorGraph[i]->GetN()!=denominatorGraph->GetN()) {
+    if (debug) {
+     std::cout<<cn<<mn<<"Bins are differents "<<std::endl;
+     std::cout<<cn<<mn<<"Match binning for numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName()
+                       <<" denominatorGraph= "<<denominatorGraph->GetName()<<std::endl;
+    }
+    if (numeratorGraph[i]->GetN()>denominatorGraph->GetN() ) {
+     SPXGraphUtilities::MatchBinning(denominatorGraph, numeratorGraph[i], true);
+    } else {
+     SPXGraphUtilities::MatchBinning(numeratorGraph[i], denominatorGraph, true);
+    }
    }
 
    TGraphAsymmErrors *graph = SPXGraphUtilities::Divide(numeratorGraph[i], denominatorGraph,divideType); 
-   if (!graph) throw SPXGraphException(cn + mn + "graph not found !");
+   if (!graph) throw SPXGraphException(cn + mn + "Graph not found !");
 
-   if(debug) {
-     std::cout << cn + mn + "\nFill Options for graph "<<i<<" with name: " << graph->GetName() << std::endl;
+   if (debug) {
+    std::cout << cn + mn + "\nFill Options for graph "<<i<<" with name: " << graph->GetName() << std::endl;
     std::cout << "\t Fill Style = " << graph->GetFillStyle() << std::endl;
     std::cout << "\t Fill Color = " << graph->GetFillColor() << std::endl;
     std::cout << "\t Marker Style= "<< graph->GetMarkerStyle() << std::endl;
@@ -543,7 +563,7 @@ void SPXRatio::Divide(void) {
   }
 
   // add statistical error from Data as separate graph for Data/convolute
-  if(ratioStyle.IsDataOverConvolute()) {
+  if (ratioStyle.IsDataOverConvolute()) {
 
    for (int i=0; i<numeratorGraphstatonly.size(); i++){
     TGraphAsymmErrors *graph = SPXGraphUtilities::Divide(numeratorGraphstatonly[i], denominatorGraph,divideType); 

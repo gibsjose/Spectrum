@@ -20,209 +20,251 @@ const std::string cn = "SPXGridCorrections::";
 bool SPXGridCorrections::debug;
 
 void SPXGridCorrections::Parse(void) {
-    std::string mn = "Parse: ";
-    if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+ std::string mn = "Parse: ";
+ if (debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
-    unsigned int numberOfCorrectionFiles = pci.gridSteeringFile.GetNumberOfCorrectionFiles();
-    numberOfBins = 0;
+ unsigned int numberOfCorrectionFiles = pci.gridSteeringFile.GetNumberOfCorrectionFiles();
+ numberOfBins = 0;
 
-    //Total correction scales
-    std::vector<double> t_x;
-    std::vector<double> t_xmin;
-    std::vector<double> t_xmax;
-    std::vector<double> tot_y;
-    std::vector<double> tot_eyl;
-    std::vector<double> tot_eyh;
+ //Total correction scales
+ std::vector<double> t_x;
+ std::vector<double> t_xmin;
+ std::vector<double> t_xmax;
+ std::vector<double> tot_y;
+ std::vector<double> tot_eyl;
+ std::vector<double> tot_eyh;
 
-    if(debug) std::cout << cn << mn << "Number of correction files: " << numberOfCorrectionFiles  << std::endl;
-    if(debug) std::cout << cn << mn << "Grid directory= "<<pci.gridDirectory<<std::endl;
+ if (debug) std::cout<<cn<<mn<<"Number of correction files: " << numberOfCorrectionFiles  << std::endl;
+ if (debug) std::cout<<cn<<mn<<"Grid directory= "<<pci.gridDirectory<<std::endl;
 
-    for(int i = 0; i < numberOfCorrectionFiles; i++) {
-        std::string filename = pci.gridSteeringFile.GetCorrectionFile(i);
-      
-        filename=pci.gridDirectory+'/'+filename;
+ for (int i = 0; i < numberOfCorrectionFiles; i++) {
+  std::string filename = pci.gridSteeringFile.GetCorrectionFile(i);
+  filename=pci.gridDirectory+'/'+filename;
 
-        if(debug) std::cout << std::endl;
-        if(debug) std::cout << cn << mn << "Beginning to parse correction file: " << filename << std::endl;
+  if (debug) std::cout << std::endl;
+  if (debug) std::cout << cn << mn << "Beginning to parse correction file: " << filename << std::endl;
 
-        //Open the file
-        OpenCorrectionFile(filename);
-        if(!(*correctionFile)) {
-            throw SPXFileIOException("Something went awry with the correctionFile ifstream...");
-        }
+  //Open the file
+  OpenCorrectionFile(filename);
+  if (!(*correctionFile)) {
+   throw SPXFileIOException("Something went wrong with the correctionFile ifstream...");
+  }
 
-        std::string line;
-        std::vector<double> x;
-        std::vector<double> xmin;
-        std::vector<double> xmax;
-        std::vector<double> y;
-        std::vector<double> eyl;
-        std::vector<double> eyh;
-        unsigned int bin_count = 0;
-        unsigned int numberOfColumns = 0;
+  std::string line;
+  std::vector<double> x;
+  std::vector<double> xmin;
+  std::vector<double> xmax;
+  std::vector<double> y;
+  std::vector<double> eyl;
+  std::vector<double> eyh;
+  unsigned int bin_count = 0;
+  unsigned int numberOfColumns = 0;
 
-        try {
-            //Process the file
-            while(correctionFile->good()) {
-                std::getline(*correctionFile, line);
+  name="";
+  comment="";
+  errortype="relative";
 
-                //Skip empty lines
-                if(line.empty()) {
-                    continue;
-                }
+   try {
+    //Process the file
+    while (correctionFile->good()) {
+     std::getline(*correctionFile, line);
 
-                
+     if (line.empty() || (line[0] == ';')) {
+      continue;
+     } 
+     if (isalpha((int)SPXStringUtilities::LeftTrim(line).at(0))) {
+      std::vector<std::string> vtmp=SPXStringUtilities::ParseString(line,'=');
+      if (vtmp.size()!=2) {
+       std::cout<<cn<<mn<<"Vector should have exactly size= 2 but is "<<vtmp.size()<<" line= "<<line<<std::endl;
+      }
 
-                //Read in line if it starts with a digit
-                if(isdigit((int)SPXStringUtilities::LeftTrim(line).at(0))) {
+      if (TString(vtmp.at(0)).Contains("name")) { 
+       name    =vtmp.at(1);
+       if (debug) std::cout<<cn<<mn<<"name= "<<name.c_str()<<std::endl;
+      }
 
-                    if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
+      if (TString(vtmp.at(0)).Contains("comment")) { 
+       comment  =vtmp.at(1);
+       if (debug) std::cout<<cn<<mn<<"comment= "<<comment.c_str()<<std::endl;
+      }
 
-                    //Parse line into vector
-                    //Convert all tabs to spaces
-                    std::string formatted_line = SPXStringUtilities::ReplaceAll(line, "\t", " ");
-                    std::vector<double> tmp = SPXStringUtilities::ParseStringToDoubleVector(formatted_line, ' ');
+      if (TString(vtmp.at(0)).Contains("errortype")) {
+       errortype=vtmp.at(1);
+       if (debug) std::cout<<cn<<mn<<"errortype= "<<errortype.c_str()<<std::endl;
+      }
 
-                    if(tmp.size() < 4) {
-                        throw SPXParseException(cn + mn + "There must be at least 4 correction columns (xm, xlow, xhigh, sigma corr)");
-                    }
+     }
 
-                    //Set number of columns to the size of the 0th bin
-                    if(!bin_count) {
-                        //Set number of columns
-                        numberOfColumns = tmp.size();
+     //Read in line if it starts with a digit
+     if (isdigit((int)SPXStringUtilities::LeftTrim(line).at(0))) {
 
-                        //Only 2 options: 4 columns or 6 columns (without eyl/eyh or with)
-                        if((numberOfColumns != 4) && (numberOfColumns != 6)) {
-                            throw SPXParseException(cn + mn + "There can only be either 4 or 6 columns in correction file");
-                        }
+      if (debug) std::cout << cn << mn << "Line: " << line << std::endl;
 
-                        if (debug) std::cout << cn << mn << "The remaining bins MUST also have exactly " << numberOfColumns << " columns" << std::endl;
-                    }
+      // Parse line into vector
+      // Convert all tabs to spaces
+      std::string formatted_line = SPXStringUtilities::ReplaceAll(line, "\t", " ");
+      std::vector<double> tmp = SPXStringUtilities::ParseStringToDoubleVector(formatted_line, ' ');
 
-                    //After the 0th bin, make sure all other bins have the exact same number of columns
-                    else {
-                        if(tmp.size() != numberOfColumns) {
-                            std::ostringstream oss;
-                            oss << cn << mn << "Number of columns for bin " << bin_count + 1<< " (" << tmp.size() << \
-                            ") does NOT match expected (" << numberOfColumns << ")" << std::endl;
-                            throw SPXParseException(oss.str());
+      if (tmp.size() < 4) {
+       throw SPXParseException(cn + mn + "There must be at least 4 correction columns (xm, xlow, xhigh, sigma corr)");
+      }
 
-                        }
-                    }
+      // Set number of columns to the size of the 0th bin
+      if (!bin_count) {
+       //Set number of columns
+       numberOfColumns = tmp.size();
 
-                    //Increment bin count
-                    bin_count++;
+       // Only 2 options: 4 columns or 6 columns (without eyl/eyh or with)
+       if ((numberOfColumns != 4) && (numberOfColumns != 6)) {
+        throw SPXParseException(cn + mn + "There can only be either 4 or 6 columns in correction file");
+       }
 
-                    //Obtain the correction type (SPXGridCorrectionType???)
-                    //Build the matrix based on the xm, dx-, dx+, sigma, dsigma-, dsigma+
-                    x.push_back(tmp[0]);
-                    xmin.push_back(tmp[1]);
-                    xmax.push_back(tmp[2]);
+       if (debug) std::cout << cn << mn << "The remaining bins MUST also have exactly " << numberOfColumns << " columns" << std::endl;
+      }
 
-                    if(numberOfColumns == 4) { // no uncertainties given
-                        y.push_back(tmp[3]);
-			//eyl.push_back(tmp[3]);
-                        //eyh.push_back(tmp[3]);
-			  eyl.push_back(0.);
-                          eyh.push_back(0.);
-                    } else if(numberOfColumns == 6) {
-                        y.push_back(tmp[3]);
-                        eyh.push_back(tmp[4]);
-                        eyl.push_back(tmp[5]);
-                    }
-                }
-            }
-        } catch(const SPXException &e) {
-            std::cerr << e.what() << std::endl;
-            throw SPXParseException(cn + mn + "Unable to parse corrections file: " + filename);
-        }
+      //After the 0th bin, make sure all other bins have the exact same number of columns
+      else {
+       if (tmp.size() != numberOfColumns) {
+        std::ostringstream oss;
+        oss << cn << mn << "Number of columns for bin " << bin_count + 1<< " (" << tmp.size() << ") does NOT match expected (" << numberOfColumns << ")" << std::endl;
+        throw SPXParseException(oss.str());
 
-        //Set number of bins to match the first corrections vector's xm size
-        if(!numberOfBins) {
-            numberOfBins = x.size();
-            if(debug) std::cout << cn << mn << "Setting the number of bins to first correction's x size: " << numberOfBins << std::endl;
+       }
+      }
 
-            //Fill total vectors with '1.0'
-            for(int j = 0; j < numberOfBins; j++) {
-                tot_y.push_back(1.0);
-                tot_eyl.push_back(0.0);
-                tot_eyh.push_back(0.0);
-            }
-        }
+      // Increment bin count
+      bin_count++;
 
-        //Check vector sizes
-        try {
-            CheckVectorSize(x, "x", numberOfBins);
-            CheckVectorSize(xmin, "xmin", numberOfBins);
-            CheckVectorSize(xmax, "xmax", numberOfBins);
-            CheckVectorSize(y, "y", numberOfBins);
-            CheckVectorSize(eyl, "eyl", numberOfBins);
-            CheckVectorSize(eyh, "eyh", numberOfBins);
-        } catch(const SPXException &e) {
-            std::cerr << e.what() << std::endl;
+     //Obtain the correction type (SPXGridCorrectionType???)
+     //Build the matrix based on the xm, dx-, dx+, sigma, dsigma-, dsigma+
+     x.push_back(tmp[0]);
+     xmin.push_back(tmp[1]);
+     xmax.push_back(tmp[2]);
 
-            throw SPXParseException(cn + mn + "Unable to parse corrections file: " + filename);
-        }
+     if (numberOfColumns == 4) { // no uncertainties given
+      y.push_back(tmp[3]);
+      eyl.push_back(0.);
+      eyh.push_back(0.);
+     } else if(numberOfColumns == 6) { // uncertainties are given
+      y.push_back(tmp[3]);
+      if (errortype.compare("relative")==0) {
 
-        //Create the double vector map based on the 6 vectors
-        StringDoubleVectorMap_T m;
-        m.insert(StringDoubleVectorPair_T("x", x));
-        m.insert(StringDoubleVectorPair_T("xmin", xmin));
-        m.insert(StringDoubleVectorPair_T("xmax", xmax));
-        m.insert(StringDoubleVectorPair_T("y", y));
-        m.insert(StringDoubleVectorPair_T("eyl", eyl));
-        m.insert(StringDoubleVectorPair_T("eyh", eyh));
-
-        //Insert it into the map
-        corrections.insert(CorrectionsPair_T(filename, m));
-
-        //Set the total corrections x, xmin, xmax vectors based on the first file
-        // 
-        if(i == 0) {
-            t_x = x;
-            t_xmin = xmin;
-            t_xmax = xmax;
-        }
-
-        //Multiply total vectors by scale to maintain total scaling
-        for(int j = 0; j < numberOfBins; j++) {
-            tot_y[j] *= y[j];
-            tot_eyl[j] += eyl[j]*eyl[j]/(y[j]*y[j]);
-            tot_eyh[j] += eyh[j]*eyh[j]/(y[j]*y[j]);
-        }
-
-        if(debug) std::cout << cn << mn <<" i= "<<i<< " ---> Successfully added correction to map" << std::endl;
-
-        //Close the file
-        CloseCorrectionFile();
-    }
-
-    // add up relative errors in quadrature
-    for (int j=0; j<tot_y.size(); j++) {
-     if (tot_y[j]!=0.) {
-      tot_eyl[j] =sqrt(tot_eyl[j])*tot_y[j];
-      tot_eyh[j] =sqrt(tot_eyh[j])*tot_y[j];
-     } else {
-      tot_eyl[j] =0.;
-      tot_eyh[j] =0.;
+       eyh.push_back(tmp[3]-tmp[4]*tmp[3]);
+       eyl.push_back(tmp[5]*tmp[3]-tmp[3]);
+      } else if (errortype.compare("absolute")==0) {
+       eyh.push_back(tmp[4]);
+       eyl.push_back(tmp[5]);
+      } else {
+       std::cout<<cn<<mn<<"Do not know what to do errortype= "<<errortype.c_str()<<std::endl;
+       throw SPXParseException(cn+mn+"Do not know what to do errortype= "+errortype);
+      }
+      if (debug) {
+	std::cout<<cn<<mn<<" y= "<<y.back()<<" eyl= "<<eyl.back()<<" eyh= "<<eyh.back()<<std::endl;
+      }
      }
     }
+   }
+  } catch(const SPXException &e) {
+   std::cerr << e.what() << std::endl;
+   throw SPXParseException(cn + mn + "Unable to parse corrections file: " + filename);
+  }
 
-    //Insert the x, xmin, xmax, and total vectors into the totalCorrections map
-    totalCorrections.insert(StringDoubleVectorPair_T("x", t_x));
-    totalCorrections.insert(StringDoubleVectorPair_T("xmin", t_xmin));
-    totalCorrections.insert(StringDoubleVectorPair_T("xmax", t_xmax));
-    totalCorrections.insert(StringDoubleVectorPair_T("y", tot_y));
-    totalCorrections.insert(StringDoubleVectorPair_T("eyl", tot_eyl));
-    totalCorrections.insert(StringDoubleVectorPair_T("eyh", tot_eyh));
+  // Set number of bins to match the first corrections vector's xm size
+  if (!numberOfBins) {
+   numberOfBins = x.size();
+   if (debug) std::cout << cn << mn << "Setting the number of bins to first correction's x size: " << numberOfBins << std::endl;
 
-    if(debug) {
-     std::cout << cn << mn << "Successfully added all corrections to map" << std::endl;
-     //std::cout << cn << mn << "Print map" << std::endl;
-     //string test="testing map: ";
-     //PrintMap(test,totalCorrections);
-    }
+   // Fill total vectors with '1.0'
+   for (int j = 0; j < numberOfBins; j++) {
+    tot_y.push_back(1.0);
+    tot_eyl.push_back(0.0);
+    tot_eyh.push_back(0.0);
+   }
+  }
+
+  // Check vector sizes
+  try {
+   CheckVectorSize(x,   "x",    numberOfBins);
+   CheckVectorSize(xmin,"xmin", numberOfBins);
+   CheckVectorSize(xmax,"xmax", numberOfBins);
+   CheckVectorSize(y,   "y",    numberOfBins);
+   CheckVectorSize(eyl, "eyl",  numberOfBins);
+   CheckVectorSize(eyh, "eyh",  numberOfBins);
+  } catch(const SPXException &e) {
+   std::cerr << e.what() << std::endl;
+   throw SPXParseException(cn + mn + "Unable to parse corrections file: " + filename);
+  }
+
+  //Create the double vector map based on the 6 vectors
+  StringDoubleVectorMap_T m;
+  m.insert(StringDoubleVectorPair_T("x", x));
+  m.insert(StringDoubleVectorPair_T("xmin", xmin));
+  m.insert(StringDoubleVectorPair_T("xmax", xmax));
+  m.insert(StringDoubleVectorPair_T("y", y));
+  m.insert(StringDoubleVectorPair_T("eyl", eyl));
+  m.insert(StringDoubleVectorPair_T("eyh", eyh));
+
+  //Insert it into the map
+  corrections.insert(CorrectionsPair_T(filename, m));
+
+  //Set the total corrections x, xmin, xmax vectors based on the first file
+  // 
+  if (i == 0) {
+   t_x = x;
+   t_xmin = xmin;
+   t_xmax = xmax;
+  }
+
+  // Calculate total uncertainty
+  for (int j = 0; j < numberOfBins; j++) {
+   tot_y[j] *= y[j];
+   // relative error add up in quadrature
+   tot_eyl[j] += eyl[j]*eyl[j]/(y[j]*y[j]);
+   tot_eyh[j] += eyh[j]*eyh[j]/(y[j]*y[j]);
+
+   if (debug) std::cout<<cn<<mn<<" i= "<<i<<" j= "<<j
+                       << " y= "<<y[j]<<" eyl= "<<eyl[j] <<" eyh= "<<eyh[j] 
+                       << " tot_y= "<<tot_y[j]<<" tot_eyl= "<<tot_eyl[j] <<" tot_eyh= "<<tot_eyh[j]<< std::endl;
+  }
+
+  if (debug) std::cout << cn << mn <<" i= "<<i<< " ---> Successfully added correction to correction map" << std::endl;
+
+  //Close the file
+  CloseCorrectionFile();
+ }
+
+ // add up relative errors in quadrature
+ for (int j=0; j<tot_y.size(); j++) {
+  if (tot_y[j]!=0.) {
+   tot_eyl[j] =sqrt(tot_eyl[j])*tot_y[j];
+   tot_eyh[j] =sqrt(tot_eyh[j])*tot_y[j];
+  } else {
+   tot_eyl[j] =0.;
+   tot_eyh[j] =0.;
+  }
+ }
+
+ //Insert the x, xmin, xmax, and total vectors into the totalCorrections map
+ totalCorrections.insert(StringDoubleVectorPair_T("x", t_x));
+ totalCorrections.insert(StringDoubleVectorPair_T("xmin", t_xmin));
+ totalCorrections.insert(StringDoubleVectorPair_T("xmax", t_xmax));
+ totalCorrections.insert(StringDoubleVectorPair_T("y", tot_y));
+ totalCorrections.insert(StringDoubleVectorPair_T("eyl", tot_eyl));
+ totalCorrections.insert(StringDoubleVectorPair_T("eyh", tot_eyh));
+
+ if (debug) {
+  std::cout << cn << mn << "Successfully added all corrections to map" << std::endl;
+
+  std::cout<<cn<<mn<<"name= "<<name.c_str() << std::endl;
+  std::cout<<cn<<mn<<"comment= "<<comment.c_str() << std::endl;
+  std::cout<<cn<<mn<<"errortype= "<<errortype.c_str() << std::endl;
+
+  //this->Print();
+  //PrintMap(test,totalCorrections);
+  //string test="testing map: ";
+  //PrintMap(test,m);
+  std::cout<<cn<<mn<<"finished " << std::endl;
+ }
     
 }
 
@@ -366,11 +408,35 @@ TGraphAsymmErrors * SPXGridCorrections::GetCorrectionGraph(std::string &filename
 
   // Note, text file contain relative uncertainty
   gcorr->SetPoint(i, c_x,c_y);
-  gcorr->SetPointError(i,c_x-c_xmin,c_xmax-c_x,c_eyl*c_y,c_eyh*c_y);
+
+  double eyl=0., eyh=0.;
+  double exl=c_x-c_xmin;
+  double exh=c_xmax-c_x;
+  //if (errortype.compare("relative")==0) {
+   // original number are relative errors
+   // eyl=c_eyl*c_y;
+   // eyh=c_eyh*c_y;
+   // such differences are stored in the TGraph 
+   // eyl=c_y-c_eyl;
+   // eyh=c_eyh-c_y;
+   //eyl=c_eyl;
+   //eyh=c_eyh;
+  
+   //if (debug) 
+   // std::cout<<" c_eyl= "<<c_eyl<<" c_eyh= "<<c_eyh<<" c_y= "<<c_y<<" eyl= "<<eyl<<" eyh= "<<eyh<<std::endl;
+   //} else if (errortype.compare("absolute")==0) {
+   // eyl=c_eyl;
+   // eyh=c_eyh;
+   //} else {
+   // std::cout<<cn<<mn<<"Do not know what to do errortype="<<errortype.c_str()<<std::endl;
+   // throw SPXParseException(cn+mn+"Do not know what to do ! errortype="+errortype);
+   //}
+   //gcorr->SetPointError(i,exl,exh,eyl,eyh);
+   gcorr->SetPointError(i,exl,exh,c_eyl,c_eyh);
  }
 
  if (debug) {
-  std::cout<<cn<<mn<<"Print graph"<<std::endl;
+  std::cout<<cn<<mn<<"Print graph gcorr= "<<gcorr->GetName()<<std::endl;
   gcorr->Print("all");
  }
 

@@ -29,7 +29,7 @@ band_with_pdf= true
 band_with_alphas= true
 band_with_scale = true
 band_with_gridcorrection = true
-band_total = false
+band_total = true
 
 ;x_legend = 0.75
 ;y_legend = 0.9
@@ -55,6 +55,10 @@ data_steering_files = atlas_2011_jet_antiktr04_incljetpt_eta1.txt
 grid_steering_files = atlas_2011_jet_antiktr04_incljetpt_eta1.txt
 pdf_steering_files = CT10.txt
 ;
+data_cut_xmax = 1000. 
+data_cut_xmin = 400. 
+;
+
 x_scale = 1.0
 y_scale = 1.0
 x_log = true

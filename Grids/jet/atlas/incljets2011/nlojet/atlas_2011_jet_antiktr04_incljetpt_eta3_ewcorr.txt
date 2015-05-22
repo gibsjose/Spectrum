@@ -1,4 +1,7 @@
-; electroweak corrections 
+; electroweak corrections
+name=ewcorr 
+comment=Dittmaier, Huss, Speckner JHEP11(2012)095 arXiv:1210.0438
+errortype=absolute 
 ; ewc  ewc_tree ewc_loop 
  108.0 100.0 116.0 1.00 1.00 1.00
  125.0 116.0 134.0 1.00 1.00 1.00

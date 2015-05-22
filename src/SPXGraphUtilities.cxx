@@ -172,12 +172,55 @@ TGraphAsymmErrors* SPXGraphUtilities::TH1TOTGraphAsymm(TH1 *h1)
         return g1;
 }
 
+TH1D* SPXGraphUtilities::MatchandMultiply(TH1D *hfact, TH1D* hist, bool dividedByBinWidth) {
+ std::string mn = "MatchandMultiply: ";
+ bool debug=false;
+ 
+ if (debug) {
+
+  std::cout<<cn<<mn<<"Print hist= "<<hist->GetName()<<std::endl;
+  hist->Print("all");
+
+  std::cout<<cn<<mn<<"Print hfact= "<<hfact->GetName()<<std::endl;
+  hfact->Print("all");
+
+ }
+
+ if (hist->GetNbinsX()!=hfact->GetNbinsX()){
+   
+  std::cout<<cn<<mn<<"Need to match histograms binning before multiplying "<<
+  hist ->GetName()<<" nbin= "<< hist ->GetNbinsX()<<" "<<
+  hfact->GetName()<<" nbin= "<< hfact->GetNbinsX()<<std::endl;
+
+  TGraphAsymmErrors *gfact = new TGraphAsymmErrors();
+  SPXGraphUtilities::HistogramToGraph(gfact, hfact);
+  if (!gfact) {
+   throw SPXGraphException(cn+mn+"Graph gfact can not be created !");
+  }
+  if (debug) {
+   std::cout<<cn<<mn<<"Print correction graph "<<std::endl;
+   gfact->Print("all");
+  }
+  //SPXGraphUtilities::HistogramToGraph(gband, hist);
+  TH1D* htmp=SPXGraphUtilities::MatchBinning(gfact,hist,dividedByBinWidth);
+  hist=htmp;
+ }
+
+ hist->Multiply(hfact);
+
+ if (debug) {
+  std::cout<<cn<<mn<<"After multiplication Print hist= "<<hist->GetName()<<std::endl;
+  hist->Print("all");
+ }
+
+ return hist;
+
+}
 
 //Match binning of slave graph to the binning of the master graph
 TH1D* SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TH1D *hslave, bool dividedByBinWidth) {
  std::string mn = "MatchBinning: ";
-
- bool debug = true;
+ bool debug = false;
 
  // Make sure graphs are valid
  if (!master) {
@@ -195,14 +238,14 @@ TH1D* SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TH1D *hslave, b
  }
 
  if (debug) {
-  std::cout<<cn<<mn<<" graph from histogram "<<hslave->GetName()<<" is: "<<std::endl;
+  std::cout<<cn<<mn<<"Graph from histogram hslave "<<hslave->GetName()<<" is: "<<std::endl;
   gslave->Print();
  }
 
  SPXGraphUtilities::MatchBinning(master, gslave,dividedByBinWidth);
 
  if (debug) {
-  std::cout<<cn<<mn<<"After MatchBinning graph "<<gslave->GetName()<<" is: "<<std::endl;
+  std::cout<<cn<<mn<<"After MatchBinning graph gslave "<<gslave->GetName()<<" is: "<<std::endl;
   gslave->Print();
  }
 
@@ -212,7 +255,7 @@ TH1D* SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TH1D *hslave, b
  }
 
  if (debug) {
-  std::cout<<cn<<mn<<"After MatchBinning histogram "<<hslave2->GetName()<<" is: "<<std::endl;
+  std::cout<<cn<<mn<<"After MatchBinning histogram hslave2 "<<hslave2->GetName()<<" is: "<<std::endl;
   hslave2->Print("all");
  }
 
@@ -326,15 +369,15 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
 		 std::cout<< s_x<< ", " << s_y << ", " << s_exl << ", " << s_exh << ", " << s_eyl << ", " \
                     << s_eyh << ")" << std::endl;
                 
-                if(debug) std::cout << cn << mn << "Master point (index, x, y, exl, exh, eyl, eyh) = (" \
-                        << i << ", " << m_x << ", " << m_y << ", " << m_exl << ", " << m_exh << ", " << m_eyl << ", " \
-                        << m_eyh << ")" << std::endl;
+                 std::cout << cn << mn << "Master point (index, x, y, exl, exh, eyl, eyh) = (" \
+                           << i << ", " << m_x << ", " << m_y << ", " << m_exl << ", " << m_exh << ", " << m_eyl << ", " \
+                           << m_eyh << ")" << std::endl;
                 }
                 std::ostringstream oss;
 
                 oss << cn << mn << "Slave bin width (" << s_bw << ") greater than master bin witdh (" << m_bw << "):" <<
-                    "\n\tSlave Point: (s index, x, exl, exh) = (" << j << ", " << s_x << ", " << s_exl << ", " << s_exh << ")" <<
-                    "\n\tMater Point: (m index, x, exl, exh) = (" << i << ", " << m_x << ", " << m_exl << ", " << m_exh << ")" << std::endl;
+                    "\n\tSlave  Point: (s index, x, exl, exh) = (" << j << ", " << s_x << ", " << s_exl << ", " << s_exh << ")" <<
+                    "\n\tMaster Point: (m index, x, exl, exh) = (" << i << ", " << m_x << ", " << m_exl << ", " << m_exh << ")" << std::endl;
 
                 throw SPXGraphException(oss.str());
             }
@@ -342,7 +385,21 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
             //Exception if there is a phase shift (slave xlow is below master xlow AND slave xhigh is
             //	above, or vice versa for the master xhigh)
             if(((s_exl < m_exl) && (s_exh > m_exl)) || ((s_exh > m_exh) && (s_exl < m_exh))) {
-                throw SPXGraphException(cn + mn + "Slave graph is phase-shifted with respect to master: Unable to match binning");
+
+	      std::cout<<cn<<mn<<" Master: "<<master->GetName()<<std::endl;
+              master->Print("all");
+	      std::cout<<cn<<mn<<" Slave: "<<slave->GetName()<<std::endl;
+              slave->Print("all");
+              std::cout<< cn << mn << "Slave point  (index, x, y, exl, exh, eyl, eyh) = (" << j << ", "; 
+	      std::cout.width(10);
+	      std::cout<< s_x<< ", " << s_y << ", " << s_exl << ", " << s_exh << ", " << s_eyl << ", " \
+                        << s_eyh << ")" << std::endl;
+                
+              std::cout << cn << mn << "Master point (index, x, y, exl, exh, eyl, eyh) = (" \
+                        << i << ", " << m_x << ", " << m_y << ", " << m_exl << ", " << m_exh << ", " << m_eyl << ", " \
+                        << m_eyh << ")" << std::endl;
+
+              throw SPXGraphException(cn + mn + "Slave graph is phase-shifted with respect to master: Unable to match binning");
             }
 
             //
@@ -1101,7 +1158,7 @@ void SPXGraphUtilities::Multiply(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, i
     if (y2[i]*y2[i]!=0.)
      eyh=sqrt(eyh1[i]*eyh1[i]/(y1[i]*y1[i])+myeyh2*myeyh2/(y2[i]*y2[i]))*(y1[i]*y2[i]);
 
-    if(debug) std::cout << cn << mn << "Bins Match (i, j): (" << i << ", " << j << ")" 
+    if (debug) std::cout << cn << mn << "Bins Match (i, j): (" << i << ", " << j << ")" 
                         <<" New y1= "<<y1[i]<<" eyl= "<<eyl<<" eyh= "<<eyh<< std::endl;
 
     g1->SetPoint(i, x1[i],y1[i]);

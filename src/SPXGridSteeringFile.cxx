@@ -114,15 +114,23 @@ void SPXGridSteeringFile::Print(void) {
 	for(int i = 0; i < correctionFiles.size(); i++) {
 		std::cout << "\t\t\t " << correctionFiles.at(i) << std::endl;
 	}
+
+	std::cout << "\t\t Correction Labels: " << std::endl;
 	for(int i = 0; i < correctionFilesLabel.size(); i++) {
 		std::cout << "\t\t\t " << correctionFilesLabel.at(i) << std::endl;
 	}
+
+	std::cout << "\t\t Correction Authors: " << std::endl;
 	for(int i = 0; i < correctionFilesAuthor.size(); i++) {
 		std::cout << "\t\t\t " << correctionFilesAuthor.at(i) << std::endl;
 	}
+
+	std::cout << "\t\t Correction Programs: " << std::endl;
 	for(int i = 0; i < correctionFilesProgram.size(); i++) {
 		std::cout << "\t\t\t " << correctionFilesProgram.at(i) << std::endl;
 	}
+
+	std::cout << "\t\t Correction Refereces: " << std::endl;
 	for(int i = 0; i < correctionFilesReference.size(); i++) {
 		std::cout << "\t\t\t " << correctionFilesReference.at(i) << std::endl;
 	}
@@ -313,6 +321,12 @@ void SPXGridSteeringFile::Parse(void) {
 			std::cout << " " << std::endl;
 		}
 	 }
+         if (correctionFilesLabel.size()!=correctionFiles.size()) {
+          std::ostringstream oss;
+          oss <<cn<<mn<<"Correction file size "<<correctionFiles.size()
+                      <<" is different from correction Label size= "<<correctionFilesLabel.size();
+          throw SPXParseException(oss.str());
+         }
 	}
 
         if (correctionFiles.size()>0) {
@@ -332,6 +346,12 @@ void SPXGridSteeringFile::Parse(void) {
 			std::cout << " " << std::endl;
 		}
 	 }
+         if (correctionFilesProgram.size()!=correctionFiles.size() && correctionFilesProgram.size()!=0 ) {
+          std::ostringstream oss;
+          oss <<cn<<mn<<"Correction file size "<<correctionFiles.size()
+                      <<" is different from correction Program size= "<<correctionFilesProgram.size();
+          throw SPXParseException(oss.str());
+         }
 	}
 
         if (correctionFiles.size()>0) {
@@ -351,6 +371,12 @@ void SPXGridSteeringFile::Parse(void) {
 			std::cout << " " << std::endl;
 		}
 	 }
+         if (correctionFiles.size()!=correctionFilesAuthor.size() && correctionFilesAuthor.size()!=0 ) {
+          std::ostringstream oss;
+          oss <<cn<<mn<<"Correction file size "<<correctionFiles.size()
+                      <<" is different from correction Label size= "<<correctionFilesAuthor.size();
+          throw SPXParseException(oss.str());
+         }
 	}
 
         if (correctionFiles.size()>0) {
@@ -370,6 +396,12 @@ void SPXGridSteeringFile::Parse(void) {
 			std::cout << " " << std::endl;
 		}
 	 }
+         if (correctionFilesReference.size()!=correctionFiles.size() && correctionFilesReference.size()!=0 ) {
+          std::ostringstream oss;
+          oss <<cn<<mn<<"Correction file size "<<correctionFiles.size()
+                      <<" is different from correction Reference size= "<<correctionFilesReference.size();
+          throw SPXParseException(oss.str());
+         }
 	}
 
 

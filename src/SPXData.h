@@ -243,6 +243,7 @@ private:
         bool RemoveXbins;           // if ON points below/above DataCutXmin/DataCutXmax are removed
         double DataCutXmin;         // Value below which data points are removed if  RemoveXbins=true
         double DataCutXmax;         // Value above which data points are removed if  RemoveXbins=true
+	std::map<int, int> keepbin; // TFlag which bin is kept
 
 	//Number of bins in data map
 	unsigned int numberOfBins;

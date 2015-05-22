@@ -1,4 +1,7 @@
 ; electroweak corrections 
+name=ewcorr 
+comment=Dittmaier, Huss, Speckner JHEP11(2012)095 arXiv:1210.0438
+errortype=absolute
 ; The ewc is (1+deltaTree)*(1+deltaLoop) = 1 +  deltaTree + deltaLoop + deltaTree * deltaLoop
 ; xmean xmin xmax   ewc no errors ewc_tree ewc_loop 
  108.0 100.0 116.0 1.00 0.00 0.00 

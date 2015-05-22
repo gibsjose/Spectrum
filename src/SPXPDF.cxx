@@ -407,16 +407,17 @@ void SPXPDF::Initialize()
  // std::cout << "xf_g = " << mypdf->xfxQ(21, x, Q) << std::endl;
 
  const LHAPDF::PDFSet set(default_pdf_set_name.c_str());
- //const size_t nmem = set.size()-1;
- int npdfmemberfromset = set.size()-1;
+ int npdfmemberfromset = set.size();
 
  if (debug) {
   std::cout<<cn<<mn<<"Number of PDF members from steering=  "<<n_PDFMembers<<" from PDF set= "<<npdfmemberfromset <<std::endl;
  }
 
- if (npdfmemberfromset!=n_PDFMembers) {
+ if (npdfmemberfromset!=n_PDFMembers  && !(ErrorPropagationType==StyleHeraPDF)) {
+
+  std::cerr<<cn<<mn<<"ERROR: Number of PDF members from steering=  "<<n_PDFMembers<<" from PDF set= "<<npdfmemberfromset <<std::endl;
   std::cout<<cn<<mn<<"ERROR: Number of PDF members from steering=  "<<n_PDFMembers<<" from PDF set= "<<npdfmemberfromset <<std::endl;
-  std::cout<<cn<<mn<<"ERROR: Correct Steering file " <<std::endl;
+  std::cout<<cn<<mn<<"ERROR: Correct the steering file !" <<std::endl;
  }
  
  const std::vector<LHAPDF::PDF*> pdfs = set.mkPDFs();
@@ -509,10 +510,10 @@ void SPXPDF::Initialize()
     for (int iscale=0; iscale<RenScales.size(); iscale++){
      TH1D* h_scale_temp= my_grid->convolute( getPDF, alphasPDF, nLoops,RenScales[iscale],FacScales[iscale]);
      char rs[100];
-     sprintf(rs,"#xi_{R}=%3.1f   #xi_{F}=%3.1f",RenScales[iscale],FacScales[iscale]);
+     sprintf(rs,"%s #xi_{R}=%3.1f   #xi_{F}=%3.1f",PDFname.c_str(),RenScales[iscale],FacScales[iscale]);
      if (debug) std::cout<<cn<<mn<<iscale<<" "<<rs<<std::endl;
      char rname[100];
-     sprintf(rname,"muR%3.1f_muF%3.1f",RenScales[iscale],FacScales[iscale]);
+     sprintf(rname,"%s muR%3.1f_muF%3.1f",PDFname.c_str(),RenScales[iscale],FacScales[iscale]);
      h_scale_temp->SetTitle(rs);
      h_scale_temp->SetName(rname);
      //if (debug) {
@@ -1404,7 +1405,7 @@ void SPXPDF::CalcTotalErrors()
 
  int nbin=0; 
  int nbinold=(Mapallbands.begin()->second)->GetN();
- for(BandMap_T::const_iterator it = Mapallbands.begin(); it != Mapallbands.end(); ++it) {
+ for (BandMap_T::const_iterator it = Mapallbands.begin(); it != Mapallbands.end(); ++it) {
   if (debug) std::cout <<cn<<mn<< "Do: " <<  it->second->GetName() << std::endl;
 
   nbin=it->second->GetN();
@@ -1439,7 +1440,7 @@ void SPXPDF::CalcTotalErrors()
 
   double xold=-99999, yold=-99999.;
   int icount=0, ioldx=-1, ioldy=-1;
-  for(BandMap_T::const_iterator it = Mapallbands.begin(); it !=Mapallbands.end(); ++it) {
+  for (BandMap_T::const_iterator it = Mapallbands.begin(); it !=Mapallbands.end(); ++it) {
    // add now everything that is enabled in quadrature
  
    double x=0., y=0.;
@@ -1842,7 +1843,7 @@ std::string SPXPDF::GetBandType(int i){
   throw SPXParseException(oss.str());
  }
  int j=0.;
- for(BandMap_T::const_iterator it = Mapallbands.begin(); it != Mapallbands.end(); ++it) {
+ for (BandMap_T::const_iterator it = Mapallbands.begin(); it != Mapallbands.end(); ++it) {
   //if (debug) std::cout<<cn<<"GetBands: i= "<<i<<" j= "<<j<<" bandname= "<<it->second->GetName()<<std::endl;
   if (j==i) {
     return it->first;
@@ -1854,7 +1855,7 @@ std::string SPXPDF::GetBandType(int i){
 
 void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel, bool includeinband){
  std::string mn = "ApplyBandCorrections: ";
- if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+ if (debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if (!gcorr) {
   std::ostringstream oss;
@@ -1866,6 +1867,8 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
   std::cout<<cn<<mn<<"Apply "<<corrLabel.c_str()<<" correction from graph: "<<gcorr->GetName()<<std::endl;
   gcorr->Print();
  }
+ 
+ bool dividebybinwidth=true;
 
  //if (debug) std::cout<<cn<<mn<<" map size= "<<Mapallbands.size()<<std::endl;
 
@@ -1888,16 +1891,17 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
    throw SPXParseException(oss.str());
   }
 
-  //if (debug) {
-  // std::cout <<cn<<mn<< "Before correction Print "<< gband->GetName()<< std::endl;
-  // gband->Print("all");
-  //} 
-
-  //std::cout <<cn<<mn<< "Before multiply: gcorr: " << gcorr->GetName()<< std::endl;
-  //gcorr->Print();
+  if (debug) {
+   std::cout <<cn<<mn<< "Before correction Print gband "<< gband->GetName()<< std::endl;
+   gband->Print("all");
+  } 
 
   if (gband->GetN()!=gcorr->GetN()) {
-   SPXGraphUtilities::MatchBinning(gband, gcorr, false);
+   if (debug) std::cout <<cn<<mn<< "Bins not equal. Need to match bins " 
+			<< gband->GetName()<<" nbins= "<<gband->GetN()<<" "
+			<< gcorr->GetName()<<" nbins= "<<gcorr->GetN()<<" "<< std::endl;
+
+   SPXGraphUtilities::MatchBinning(gband, gcorr, dividebybinwidth);
   }
 
   if (gband->GetN()!=gcorr->GetN()) {
@@ -1907,13 +1911,20 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
    throw SPXParseException(oss.str());
   }
 
+  if (debug) {
+   std::cout <<cn<<mn<< "After MatchBinning and before multiply: gcorr: " << gcorr->GetName()<< std::endl;
+   gcorr->Print();
+  }
+
   SPXGraphUtilities::Multiply(gband,gcorr,1);
 
-  if (debug) std::cout <<cn<<mn<< "After multiply: gcorr: " << gcorr->GetName()<< std::endl;
-  //gcorr->Print();
+  //if (debug) { 
+  // std::cout<<cn<<mn<<"After multiply: gcorr: " << gcorr->GetName()<< std::endl;
+  // gcorr->Print();
+  //}
 
   TString newname=gband->GetName(); 
-  if (debug) std::cout <<cn<<mn<< " gband name: " << gband->GetName()<< std::endl;
+  if (debug) std::cout <<cn<<mn<<"Alter multiplication gband name: " << gband->GetName()<< std::endl;
   newname+="_"+corrLabel;
   gband->SetName(newname);
 
@@ -1924,9 +1935,8 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
   gband2=(TGraphAsymmErrors*)gband->Clone();;
  }
 
-
  if (debug) {
-  std::cout <<cn<<mn<< "Before Print hpdfdefault: "<< hpdfdefault->GetName()<< std::endl;
+  std::cout <<cn<<mn<<"Before correction Print hpdfdefault: "<< hpdfdefault->GetName()<< std::endl;
   hpdfdefault->Print("all");
  }
 
@@ -1938,58 +1948,85 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
  TH1D*  hcorr=SPXGraphUtilities::GraphToHistogram(gcorr2);
 
  if (debug) {
-  std::cout <<cn<<mn<< "Before Print hcorr: "<< hcorr->GetName()<< std::endl;
+  std::cout <<cn<<mn<<"Print hcorr: "<< hcorr->GetName()<< std::endl;
   hcorr->Print("all");
  }
 
- if (hpdfdefault->GetNbinsX()==hcorr->GetNbinsX()){
-  hpdfdefault->Multiply(hcorr);
- } else {
-  // neeed to recalculate hpdfdefault
-  hpdfdefault=SPXGraphUtilities::GraphToHistogram(gband2);
- }
-
+  //if (hpdfdefault->GetNbinsX()==hcorr->GetNbinsX()){
+  //if (debug)  std::cout <<cn<<mn<<" Multiply "<< hpdfdefault->GetName()<<" with "<<hcorr->GetName()<<std::endl;
+  //hpdfdefault->Multiply(hcorr);
+  //} else {
+  // if (debug) {
+  //  std::cout <<cn<<mn<<hpdfdefault->GetName()<<" has Nbin= "<< hpdfdefault->GetNbinsX()<<" "<<
+  //                       hcorr->GetName()      <<" has Nbin= "<< hcorr->GetNbinsX()<<std::endl;
+  //std::cout <<cn<<mn<<"recalculate "<< hpdfdefault->GetName()<<std::endl;
+  //}
+  //if (!gband2) {
+  // std::ostringstream oss;
+  // oss<<cn<<mn<<"ERROR Band not found May be turned off in steering ? --> can not recalculate Histograms ";
+  // throw SPXParseException(oss.str());
+  //}
+  // need to recalculate hpdfdefault
+ if (debug) std::cout <<cn<<mn<<"Call MatchandMultiply "<< hpdfdefault->GetName()<< std::endl;
+ TH1D* htmp=SPXGraphUtilities::MatchandMultiply(hcorr, hpdfdefault,dividebybinwidth);
+ hpdfdefault=htmp;
+ //}
  hpdfdefault->SetName(hname);
- 
+
  if (debug) {
-  std::cout <<cn<<mn<< "After Print hpdfdefault: "<< hpdfdefault->GetName()<< std::endl;
+  std::cout <<cn<<mn<< "After Correction Print hpdfdefault: "<< hpdfdefault->GetName()<< std::endl;
   hpdfdefault->Print("all");
+
+  std::cout <<cn<<mn<< "After Correction Print hcorr: "<< hcorr->GetName()<< std::endl;
+  hcorr->Print("all");
  }
 
- //>> update also PDF histograms
- 
+ //
+ // update also PDF, scale and alphas histograms
+ //
+ //if (!gband2) {
+ // std::ostringstream oss;
+ // oss<<cn<<mn<<"ERROR Band not found May be turned off in steering ? --> can not recalculate Histograms ";
+ // throw SPXParseException(oss.str());
+ //}
+
  for (int ipdf=0; ipdf<h_errors_PDF.size(); ipdf++) {
   TString hname=h_errors_PDF.at(ipdf)->GetName();
   hname+="_"+corrLabel;
-  if (h_errors_PDF.at(ipdf)->GetNbinsX()==hcorr->GetNbinsX()){
-   std::cout<<cn<<mn<<" Do not know what to do bins of histograms are not equal "<<std::endl;
-   std::cerr<<cn<<mn<<" Do not know what to do bins of histograms are not equal "<<std::endl;
+
+  TH1D* htmp=SPXGraphUtilities::MatchandMultiply(hcorr,h_errors_PDF.at(ipdf),false);
+  if (debug) {
+   std::cout <<cn<<mn<< "After MatchandMultiply Print hcorr: "<< hcorr->GetName()<< std::endl;
+   hcorr->Print("all");
   }
-  h_errors_PDF.at(ipdf)->Multiply(hcorr);
+  h_errors_PDF.at(ipdf)=htmp;
   h_errors_PDF.at(ipdf)->SetName(hname);
+
+  if (debug) {
+    std::cout <<cn<<mn<< "After MatchandMultiply Print h_errors_PDF.at("<<ipdf<<"): "<< h_errors_PDF.at(ipdf)->GetName()<< std::endl;
+   h_errors_PDF.at(ipdf)->Print("all");
+  }
  }
 
  for (int iscale=0; iscale<h_errors_Scale.size(); iscale++) {
   TString hname=h_errors_Scale.at(iscale)->GetName();
   hname+="_"+corrLabel;
-  if (h_errors_Scale.at(iscale)->GetNbinsX()==hcorr->GetNbinsX()){
-   std::cout<<cn<<mn<<" Do not know what to do bins of histograms are not equal "<<std::endl;
-   std::cerr<<cn<<mn<<" Do not know what to do bins of histograms are not equal "<<std::endl;
-  }
-  h_errors_Scale.at(iscale)->Multiply(hcorr);
+
+  TH1D* htmp=SPXGraphUtilities::MatchandMultiply(hcorr,h_errors_Scale.at(iscale),false);
+  h_errors_Scale.at(iscale)=htmp;
   h_errors_Scale.at(iscale)->SetName(hname);
+
  }
  // read alphas uncertainty components
  for (int ialphas=0; ialphas<h_errors_AlphaS.size(); ialphas++) {
   TString hname=h_errors_AlphaS.at(ialphas)->GetName();
   hname+="_"+corrLabel;
-  if (h_errors_AlphaS.at(ialphas)->GetNbinsX()==hcorr->GetNbinsX()){
-   std::cout<<cn<<mn<<" Do not know what to do bins of histograms are not equal "<<std::endl;
-   std::cerr<<cn<<mn<<" Do not know what to do bins of histograms are not equal "<<std::endl;
-  }
-  h_errors_AlphaS.at(ialphas)->Multiply(hcorr);
+
+  TH1D* htmp=SPXGraphUtilities::MatchandMultiply(hcorr,h_errors_AlphaS.at(ialphas),false);
+  h_errors_AlphaS.at(ialphas)=htmp;
   h_errors_AlphaS.at(ialphas)->SetName(hname);
  }
+
 
  if (Mapallbands.empty()) {
   gband2=SPXGraphUtilities::TH1TOTGraphAsymm(hpdfdefault);
@@ -2017,13 +2054,16 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
 
  for (int ibin=0; ibin<nbin; ibin++) {
 
+  double ycorr=0., xcorr=0.; 
+  gcorr->GetPoint(ibin,xcorr,ycorr);
+
   double exh=gcorr->GetErrorXhigh(ibin);
   double exl=gcorr->GetErrorXlow(ibin);
   double eyh=gcorr->GetErrorYhigh(ibin);
   double eyl=gcorr->GetErrorYlow(ibin);
 
-  double ycorr=0., xcorr=0.; 
-  gcorr->GetPoint(ibin,xcorr,ycorr);
+  //double reyl=(ycorr-eyl)/ycorr;
+  //double reyh=(ycorr+eyh)/ycorr;
 
   double reyl=eyl/ycorr;
   double reyh=eyh/ycorr;
@@ -2031,9 +2071,12 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
   double x=0., y=0.;
   gband2->GetPoint(ibin,x,y);
 
-  if (debug) std::cout <<cn<<mn<< "ibin= "<<ibin<<" y= "<<y<<" reyl= "<<reyl<<" reyh= "<<reyh<< std::endl;
+  if (debug) std::cout<<cn<<mn<<"ibin= "<<ibin<<" y= "<<y<<" reyl= "<<reyl<<" reyh= "<<reyh
+                      << " "<<(ycorr+eyh)/ycorr<<" "<<(ycorr-eyl)/ycorr<<std::endl;
 
   double eyl2 = reyl*y, eyh2 = reyh*y;
+  //double eyl2 = (1-reyl*y, eyh2 = (1+reyh)*y;
+  //double eyl2 = ycorr-eyl, eyh2 = eyh;
 
   gband2->SetPoint(ibin,x,y);
   gband2->SetPointError(ibin,exl,exh,eyl2,eyh2);
@@ -2041,14 +2084,21 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
  }
  
  // insert graph to band
+ if (debug) {
+  std::cout <<cn<<mn<< "Put corrLabel "<<corrLabel.c_str()<<" gband2= "<<gband2->GetName()<<" to map !"<< std::endl;   
+ }
 
  if (Mapallbands.count(corrLabel)==0) {
-   if (includeinband) {
-    Mapallbands[corrLabel]=gband2;
-    if (debug) std::cout <<cn<<mn<< "Correction "<<gcorr->GetName()<<" included in Map "<< std::endl;
-   } else {
-     if (debug) std::cout <<cn<<mn<< "Correction "<<gcorr->GetName()<<" Not requested to include in Map "<< std::endl;
+  if (includeinband) {
+   if (debug) {
+    std::cout <<cn<<mn<< "Correction band uncertainty as it goes to map["<<corrLabel<<"]: gband2= "<<gband2->GetName()<< std::endl;   
+    gband2->Print("all");
    }
+   Mapallbands[corrLabel]=gband2;
+   if (debug) std::cout<<cn<<mn<< "Correction "<<gband2->GetName()<<" included in Map "<< std::endl;   
+  } else {
+   if (debug) std::cout<<cn<<mn<< "Correction "<<gband2->GetName()<<" Not requested to include in Map "<< std::endl;
+  }
  } else {
   std::ostringstream oss;
   oss << cn << mn << "Band correction apply twice corrections= "<<corrLabel;
@@ -2249,6 +2299,36 @@ bool SPXPDF::HasDetailedBands(){
   else               std::cout <<cn<<mn<< " FALSE" << std::endl;
  }
  return detailedband;
+};
+
+
+bool SPXPDF::HasBandofType(std::string bandtype){
+ std::string mn = "HasBandofType: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ if (Mapallbands.empty()) {
+  std::cout<<cn<<mn<<"WARNING: Band map is empty; can only show grid corrections, if specified "<<std::endl;
+ } 
+ // 
+ bool hasband=false;
+
+ for (BandMap_T::const_iterator it = Mapallbands.begin(); it != Mapallbands.end(); ++it) {
+  if (debug) std::cout <<cn<<mn<< "map["<<it->first<<"]="<< " " << it->second->GetName() << std::endl;
+  TGraphAsymmErrors *gband=it->second;
+  if (!gband) {
+   std::ostringstream oss;
+   oss << cn << mn << "Graph in band not found !";
+   throw SPXParseException(oss.str());
+  }
+  TString gname=gband->GetName();
+  if (gname.Contains(bandtype.c_str())) hasband=true;
+ }
+
+ if (debug) {
+  if (hasband)  std::cout <<cn<<mn<< " TRUE" << std::endl;
+  else          std::cout <<cn<<mn<< " FALSE" << std::endl;
+ }
+ return hasband;
 };
 
 TH1D* SPXPDF::GetIndividualPDFComponent(int ipdf){

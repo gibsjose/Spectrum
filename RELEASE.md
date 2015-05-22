@@ -6,6 +6,17 @@
 
 ## Change Log
 
+ -SPXPlot::DrawLegend: special treatment for figure showing only hadronisation uncertainty 
+
+ -SPXGridCorrection: simplied logic
+                     can read in different format of corrections
+                     like relative or absolute error (as given in correction file 
+                     stored is always the absolute error in map and graph
+
+ -SPXPDF: add HadBandOfType
+
+ -SPXDATA: Remove bin also on correlation matrices
+
  -SPXPDF: Added function to set histograms containing the individual uncertainty histograms
           AddCorrection now also changes individual uncertainty histograms
           
@@ -15,7 +26,7 @@
  -SPXData: add correlation type of systematics uncertainty
            true if correllated among bins, false if uncorrelated
  
- -SPXData: also remove bins from syst_p and syst_n of some data bins are removed
+ -SPXData: also remove bins from syst_p and syst_n of some data bins
 
  -SPXPDF: give access to individual PDF, alphas and scale components
 

@@ -123,6 +123,10 @@ private:
     //  columns correspond to x, eyl, eyh, y, eyl, and eyh corrections, and the rows correspond to each bin
     CorrectionsMap_T corrections;
 
+    std::string name;
+    std::string comment;
+    std::string errortype;
+
     //Total correction map: These are the product of all scales from all the individual corrections. The format for the map is:
     //  Keys: "x", "exl", "exh", "y", "eyl", and "eyh", Values: Vector of corresponding x or corrections, with length N (N = # of Bins)
     StringDoubleVectorMap_T totalCorrections;

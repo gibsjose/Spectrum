@@ -1086,7 +1086,7 @@ void SPXPlot::DrawLegend(void) {
  if (overlay) overlayPad->cd();
  if (ratioonly) ratioPad->cd();
 
-  if (debug&&ratioonly) std::cout << cn << mn <<"Is ratio only "<< std::endl;
+ if (debug&&ratioonly) std::cout << cn << mn <<"Is ratio only "<< std::endl;
 
  // Analyse what data are there...
  //
@@ -1224,27 +1224,42 @@ void SPXPlot::DrawLegend(void) {
  int old_fill_style=-999, old_fill_color=-999;
  int old_marker_style=-999, old_marker_color=-999;
  bool bandsdifferent=false;
-
+ bool hadcorronly=false;
+ 
  for(int icross = 0; icross < crossSections.size(); icross++) {
   SPXPDF * pdf=crossSections[icross].GetPDF();
 
   if (debug) {
-   std::cout << cn << mn <<" "<< std::endl;
-   std::cout << cn << mn <<"icross= "<<icross<<" Test band properties "<< std::endl;
+   std::cout<<cn<<mn<<" "<< std::endl;
+   std::cout<<cn<<mn<<"icross= "<<icross<<" Test band properties "<< std::endl;
   }
+
+  bool bscale  =pdf->HasBandofType("_scale_");
+  bool bpdf    =pdf->HasBandofType("_pdf_");
+  bool balphas =pdf->HasBandofType("_alphas_");
+  bool bhadcorr=pdf->HasBandofType("_corrections_");
+
+  if (bhadcorr && !(bscale&&bpdf&&balphas)) hadcorronly=true;
+
   bandsdifferent=pdf->BandsHaveDifferentProperties();
   if (debug) {
-   if (bandsdifferent) std::cout << cn << mn <<"icross= "<<icross<<" Bands have different properties !"<< std::endl;
-   else                std::cout << cn << mn <<"icross= "<<icross<<" Bands have same properties ! "<< std::endl;
+   if (bandsdifferent) std::cout<<cn<<mn<<"icross= "<<icross<<" Bands have different properties !"<< std::endl;
+   else                std::cout<<cn<<mn<<"icross= "<<icross<<" Bands have same properties ! "<< std::endl;
+
+   if (bscale)  std::cout<<cn<<mn<<"Bands contains scale uncertainty"<< std::endl;
+   if (bpdf)    std::cout<<cn<<mn<<"Bands contains PDF uncertainty"<< std::endl;
+   if (balphas) std::cout<<cn<<mn<<"Bands contains AlphaS uncertainty"<< std::endl;
+   if (bhadcorr)std::cout<<cn<<mn<<"Bands contains corrections uncertainty"<< std::endl;
+   if (hadcorronly)std::cout<<cn<<mn<<"Bands contains ONLY corrections uncertainty"<< std::endl;
   }
  }
 
  if (debug) {
-  if (bandsdifferent) std::cout << cn << mn <<"One Cross section with Bands with have different properties !"<< std::endl;
-  else                std::cout << cn << mn <<"All cross section have bands with have same properties ! "<< std::endl;
+  if (bandsdifferent) std::cout<<cn<<mn<<"One Cross section with Bands with have different properties !"<< std::endl;
+  else                std::cout<<cn<<mn<<"All cross section have bands with have same properties ! "<< std::endl;
  }
 
- if (debug) std::cout << cn << mn <<" "<< std::endl;
+ if (debug) std::cout<<cn<<mn<<" "<< std::endl;
 
   // Now analyse ratio
 
@@ -1355,7 +1370,12 @@ void SPXPlot::DrawLegend(void) {
      if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
      if (!onlysyst) {
       if (debug) std::cout<<cn<<mn<<"Add to legend Data Label: "<<datalabel.Data()<<" namesize= "<<namesize<<std::endl;
-      leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
+      if (!hadcorronly) {
+       leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
+      } else {
+       if (debug) std::cout<<cn<<mn<<"correction only does not need marker "<<std::endl;
+       leg->AddEntry((TObject*)0, datalabel, "P");
+      }
      }
     } else 
      if (debug) std::cout<<cn<<mn<<"Ratio only or data.size==0  "<<std::endl;
@@ -1612,8 +1632,9 @@ void SPXPlot::DrawLegend(void) {
      }
 
      if (nbands==1) { // band has same properties because there is only one uncertainty
-       if (debug) std::cout<<cn<<mn<<"icross= "<<icross<<"Add legend nbands=1 add in legend iband= "<<iband<<" gtype= "<<gtype.c_str()<<std::endl;
+       if (debug) std::cout<<cn<<mn<<"icross= "<<icross<<" nbands==1"<<std::endl;
        if (vpdf.size()!=1) {
+	if (debug) std::cout<<cn<<mn<<" Add legend gband= "<<gband->GetName()<<" gtype= "<<gtype.c_str()<<std::endl;
         leg->AddEntry(gband, TString(gtype), "LF");
        }
      } else {
@@ -2066,7 +2087,7 @@ void SPXPlot::InitializeCrossSections(void) {
 		std::string         gtype   =pdf->GetBandType(iband);
 		if (!gband) {
                  std::ostringstream oss;
-                 oss << cn <<mn<<"GetBands:"<<"Band "<<iband<<" not found at index "<<i;
+                 oss<<cn<<mn<<"GetBands:"<<"Band "<<iband<<" not found at index "<<i;
                  throw SPXParseException(oss.str());
                 }
                 if (debug) std::cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<std::endl;
@@ -2146,7 +2167,7 @@ void SPXPlot::InitializeCrossSections(void) {
 	       //Update the Reference File Map
     	       if(debug) std::cout << cn << mn << i<<" Get reference Graph" <<std::endl;
 	       TGraphAsymmErrors *refGraph = crossSections[i].GetGridReference();
-               if (!refGraph) std::cout << cn << mn << i<<" reference Graph not found !" <<std::endl;
+               if (!refGraph) std::cout<<cn<<mn<<i<<" reference Graph not found !" <<std::endl;
 	       referenceFileGraphMap.insert(StringPairGraphPair_T(convolutePair, refGraph));
 
 	       //Update the Nominal File Map
@@ -2622,7 +2643,8 @@ void SPXPlot::InitializeData(void) {
                  if (debug) {
 		  std::cout<<cn<<mn<<"Number of systematic groups= " <<vsystgroups.size() <<" syst not in group "<<inotingroup<<std::endl;                  
                   for (int igroup=0; igroup<vsystgroups.size(); igroup++) {
-		    std::cout<<cn<<mn<<igroup<<" systematic group = " <<vsystgroups.at(igroup)->GetName()
+		   std::cout<<" "<<std::endl;
+		   std::cout<<cn<<mn<<" igroup= "<<igroup<<" systematic group= " <<vsystgroups.at(igroup)->GetName()
                                              <<" icol= "<<vsystgroups.at(igroup)->GetLineColor()<<std::endl;
 		   vsystgroups.at(igroup)->Print();
                   }
