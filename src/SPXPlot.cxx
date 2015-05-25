@@ -1286,14 +1286,19 @@ void SPXPlot::DrawLegend(void) {
      gname.ReplaceAll("syst_","");
      //double emax=SPXGraphUtilities::GetLargestRelativeError(ratiographs.at(igraph));
      //gname+=Form(" %3.2f",emax*100);
-     if (debug) std::cout<<cn<<mn<<"Add in legend gname= "<<gname.Data()<<" color= "<<ratiographsordered.at(igraph)->GetLineColor()<<std::endl;
+     if (debug) std::cout<<cn<<mn<<"Add in legend gname= "<<gname.Data()<<" color= "<<ratiographsordered.at(igraph)->GetLineColor()<<" size= "<<TString(gname).Sizeof()<<std::endl;
+
+     double scale=1.0;
+     TString gname2=gname;
      if (TString(gname).Sizeof()>16) {
-      TString gname2=gname;
-      gname.Form("#scale[0.9]{%s}",gname2.Data());
-      if (TString(gname).Sizeof()>20) gname.Form("#scale[0.85]{%s}",gname2.Data());
-      if (TString(gname).Sizeof()>25) gname.Form("#scale[0.90]{%s}",gname2.Data());
-      if (TString(gname).Sizeof()>35) gname.Form("#scale[0.70]{%s}",gname2.Data());
+      scale=0.9;
+      if (TString(gname).Sizeof()>20) scale=0.85;
+      if (TString(gname).Sizeof()>35) scale=0.70;
+      gname.Form("#scale[%3.2f]{%s}",scale,gname2.Data());
      }
+     if (TString(gname2).Sizeof()*scale>namesize) namesize=TString(gname2).Sizeof()*scale;
+     if (debug) std::cout<<cn<<mn<<"scale= "<<scale<<" namesize= "<<namesize<<std::endl;
+
      if (ratiographsordered.at(igraph)->GetLineColor()>0)
       leg->AddEntry(ratiographsordered.at(igraph), gname, "F");
      else {
@@ -1305,11 +1310,14 @@ void SPXPlot::DrawLegend(void) {
   }
  }
 
+ // if (debug) std::cout<<cn<<mn<<"A namesize= "<<namesize<<std::endl;
+
  if (debug&&onlysyst) {
   std::cout<<cn<<mn<<" "<< std::endl;
   std::cout<<cn<<mn<<"Only systematics to legend, data label in information legend "<< std::endl;
  }
- if(os.ContainsData()) {
+
+ if (os.ContainsData()) {
   if (debug) { 
    std::cout<<cn<<mn<<" "<< std::endl;
    std::cout<<cn<<mn<<"Contains data "<< std::endl;
@@ -1323,11 +1331,11 @@ void SPXPlot::DrawLegend(void) {
   for (int idata = 0; idata < data.size(); idata++) {                 
 
    TString datalabel=data.at(idata)->GetLegendLabel();
-   datalabel.ReplaceAll("high-mu","");
+   //datalabel.ReplaceAll("high-mu","");
 
    if (!etascan) {
 
-    if(differentsqrts) {
+    if (differentsqrts) {
      datalabel+=" ";
      double sqrtsval = data.at(idata)->GetSqrtS();
      datalabel+=this->FormatSqrtLabel(sqrtsval);
@@ -1367,8 +1375,8 @@ void SPXPlot::DrawLegend(void) {
 
     //if (!ratioonly && data.size()>0) { // ratioonly figures have data in the ratio, no separate label
     if (data.size()>0) { 
-     if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
      if (!onlysyst) {
+      if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
       if (debug) std::cout<<cn<<mn<<"Add to legend Data Label: "<<datalabel.Data()<<" namesize= "<<namesize<<std::endl;
       if (!hadcorronly) {
        leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
@@ -1380,17 +1388,19 @@ void SPXPlot::DrawLegend(void) {
     } else 
      if (debug) std::cout<<cn<<mn<<"Ratio only or data.size==0  "<<std::endl;
 
+    //if (debug) std::cout<<cn<<mn<<"B namesize= "<<namesize<<std::endl;
+
    } else { // This is for the eta-scan
     if (onedataset) {
      if (idata==0) {
       TString datalabel=data.at(idata)->GetLegendLabel();
       if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
-      if (debug) std::cout << cn << mn <<"Add data label to legend: "<<datalabel.Data()<< " namesize= "<<namesize<<std::endl;
+      if (debug) std::cout<<cn<<mn<<"Add data label to legend: "<<datalabel.Data()<< " namesize= "<<namesize<<std::endl;
       leg->AddEntry((TObject*)0, datalabel, "");
       // leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
      }
 
-     //if (debug) std::cout<<cn<<mn<<" onlysyst= "<< (onlysyst ? "ON" : "OFF")<<std::endl;
+     if (debug) std::cout<<cn<<mn<<" onlysyst= "<< (onlysyst ? "ON" : "OFF")<<std::endl;
 
      if (!onlysyst) { // for systematics only move Data label to leginfo
       double binmin = data.at(idata)->GetDoubleBinValueMin();
@@ -1436,17 +1446,18 @@ void SPXPlot::DrawLegend(void) {
 
  //if (debug) leg->Print();
 
+ //if (debug) std::cout<<cn<<mn<<"C namesize= "<<namesize<<std::endl;
 
  bool nlolabel=true;
  SPXRatioStyle ratioStyle = pc.GetRatioStyle(0);
  //if (ratioStyle.IsDataOverConvolute()) nlolabel=false;
 
- if(os.ContainsConvolute()) {
-  if (debug) std::cout << cn << mn <<"Contains convolute "<< std::endl;
+ if (os.ContainsConvolute()) {
+  if (debug) std::cout<<cn<<mn<<"Contains convolute "<< std::endl;
   std::vector<TString> vpdf;
 
   int npdf=0; int iold=-1;
-  for(int icross = 0; icross < crossSections.size(); icross++) {
+  for (int icross = 0; icross < crossSections.size(); icross++) {
    // Now analyze PDF-object
    // Get PDF object
    SPXPDF * pdf=crossSections[icross].GetPDF();
@@ -1458,7 +1469,7 @@ void SPXPlot::DrawLegend(void) {
    bool gridcorrectionfound=false;
 
    for (int iband=0; iband<nbands; iband++) {
-    std::string gtype    = pdf->GetBandType(iband);
+    std::string gtype = pdf->GetBandType(iband);
     TGraphAsymmErrors * gband = pdf->GetBand(iband);
     if (gtype.compare(std::string("alphas"))==0) nlouncertainty=true;
     if (gtype.compare(std::string("scale"))==0)  nlouncertainty=true;
@@ -1575,12 +1586,12 @@ void SPXPlot::DrawLegend(void) {
        } else {
         if (label.Sizeof()>namesize) namesize=label.Sizeof();
 	if (debug) std::cout<<cn<<mn<<" hedge= "<<hname<<" not found. Fill band "<<std::endl;      
-        if (debug) std::cout<<cn<<mn<<"Add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<std::endl;
+        if (debug) std::cout<<cn<<mn<<"Add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<" namesize= "<<namesize<<std::endl;
         leg->AddEntry(gband, label, TString(opt));
        }
       } else {
-       if (debug) std::cout<<cn<<mn<<"Add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<std::endl;
        if (label.Sizeof()>namesize) namesize=label.Sizeof();
+       if (debug) std::cout<<cn<<mn<<"Add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<" namesize= "<<namesize<<std::endl;
        leg->AddEntry(gband, label, TString(opt));
       }
      } else
@@ -1653,7 +1664,7 @@ void SPXPlot::DrawLegend(void) {
 	std::vector<std::string> corrlabel=crossSections[icross].GetCorrectionLabels();
         if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
         for(int ic = 0; ic < corrlabel.size(); ic++) {
-	  if (debug) std::cout<<cn<<mn<<"add in legend ic= "<<ic<<" label= "<<corrlabel[ic].c_str()<<std::endl;       
+	 if (debug) std::cout<<cn<<mn<<"add in legend ic= "<<ic<<" label= "<<corrlabel[ic].c_str()<<std::endl;       
          leg->AddEntry(gband, TString(corrlabel[ic]), "LF");
         }
        } else if (debug) std::cout << cn << mn <<"No grid corrections specified "<< std::endl;
@@ -1682,8 +1693,9 @@ void SPXPlot::DrawLegend(void) {
 
  double csize=charactersize; 
  if (onlysyst) {
-  if (nraw>5) csize =charactersize*0.5; 
-  if (nraw>8) csize =charactersize*0.4; 
+  if (nraw>5)  csize =charactersize*0.5; 
+  if (nraw>8)  csize =charactersize*0.4; 
+  //if (nraw>10) csize =charactersize*0.2; 
  }
  leg->SetTextSize(csize); 
 
@@ -1693,21 +1705,39 @@ void SPXPlot::DrawLegend(void) {
   if (nraw>12) leg->SetNColumns(4);
  }
 
- double fac=0.45, xfac=1.0;
- if (namesize<20) fac=0.4;
- if (namesize>30) fac=0.2;
+ double fac=0.50, xfac=1.0;
+ //if (namesize<20) fac=0.4;
+ //if (namesize>30) fac=0.2;
  if (onlysyst) {
-  if (nraw>5) fac*=1.2;
-  if (nraw>8) {fac*=1.75; xfac*=1.1;}
+  //if (nraw>5) {fac*=1.2; xfac*=1.0;}
+  //if (nraw>8) {fac*=1.75; xfac*=1.1;}
+  //else if (nraw>10) {fac*=1.0; xfac*=1.1;}
+  if (leg->GetNColumns()>3)      {fac*=1.0; xfac*=1.5;}
+  else if (leg->GetNColumns()>2) {fac*=0.9; xfac*=1.4;}
+
  }
- x1 = xlegend-(fac*namesize*charactersize); x2=xfac*xlegend;
- //x1 = xlegend-(namesize*charactersize), x2=xlegend;
+
+ double bwidth=fac*namesize*charactersize; 
+ x1 = xlegend-bwidth; x2=xfac*xlegend;
+ double xmin=0.18;
+ if (debug) {
+  std::cout<<cn<<mn<<"fac= "<<fac<<" xfac= "<<xfac<<std::endl;
+  std::cout<<cn<<mn<<"x1= "<<x1<<" y1= "<<y1<<std::endl;
+  std::cout<<cn<<mn<<"x2= "<<x2<<" y2= "<<y2<<std::endl;
+ }
+ if (x1<xmin) {x1=xmin; x2+=xmin;}
+
  int lsize=nraw;
 
  if (nraw>3)  lsize*=0.6;
  if (onlysyst) {
-  if (nraw>8)  lsize*=0.4;
-  if (nraw>20) lsize*=0.25;
+   //if (nraw>8)  lsize*=0.4;
+   //if (nraw>20) lsize*=0.25;
+   if (leg->GetNRows()>10)     {lsize*=0.15;}
+   else if (leg->GetNRows()>6) {lsize*=0.2;}
+   else if (leg->GetNRows()>4) {lsize*=0.3;}
+   else if (leg->GetNRows()>3) {lsize*=0.4;}
+
  } 
  y1 = ylegend-(lsize*linesize);  y2=ylegend;
   
@@ -2507,7 +2537,7 @@ void SPXPlot::InitializeData(void) {
 		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename() + "_stat", statGraph));
 
 		std::vector <TGraphAsymmErrors *> vsyst=data[i]->GetSystematicsErrorGraphs();
-		if(debug) std::cout<<cn<<mn<<"Number of systematic found= " << vsyst.size() <<std::endl;
+		if (debug) std::cout<<cn<<mn<<"Number of systematic found= " << vsyst.size() <<std::endl;
 
                 if (steeringFile->ShowIndividualSystematics()!=0) {
 
@@ -2530,7 +2560,6 @@ void SPXPlot::InitializeData(void) {
 		    icountsyst++;
 
                     Color_t icol=SPXUtilities::ICol(icountsyst);
-                    //vsyst.at(isyst)->SetFillStyle(3001);
                     vsyst.at(isyst)->SetFillStyle(3002);
                     SPXGraphUtilities::SetColors(vsyst.at(isyst),icol);
 
@@ -2538,7 +2567,7 @@ void SPXPlot::InitializeData(void) {
 		   } else {
 		    //if (debug) std::cout<<cn<<mn<<"systematics "<<systname.c_str()<<" too small ! Largest systematics= "<<emax<<" < " << steeringFile->ShowIndividualSystematics() <<std::endl;
                    }
-                  }  
+                  }
                 } else {
 		 //
 		 // displaying groups only make sense if all systematics should be shown 
@@ -2605,6 +2634,7 @@ void SPXPlot::InitializeData(void) {
 		    }
                    }
                   }
+
                   if (!ingroup) {
                    TString systname=vsyst.at(isyst)->GetName();
                    bool others=false;
@@ -2641,6 +2671,7 @@ void SPXPlot::InitializeData(void) {
                  }
 
                  if (debug) {
+                  std::cout<<cn<<mn<<"  "<<std::endl;
 		  std::cout<<cn<<mn<<"Number of systematic groups= " <<vsystgroups.size() <<" syst not in group "<<inotingroup<<std::endl;                  
                   for (int igroup=0; igroup<vsystgroups.size(); igroup++) {
 		   std::cout<<" "<<std::endl;
@@ -2650,6 +2681,7 @@ void SPXPlot::InitializeData(void) {
                   }
 	         }             
 
+                 if (debug) std::cout<<cn<<mn<<"  "<<std::endl;
                  for (int igroup=0; igroup<vsystgroups.size(); igroup++) {
 		  std::string systname=vsystgroups.at(igroup)->GetName();
                   if (debug) std::cout<<cn<<mn<<" Enter "<<systname.c_str()<<" to dataFileGraphMap "<<std::endl;
@@ -2664,6 +2696,14 @@ void SPXPlot::InitializeData(void) {
 		} else {
 		 std::cerr << "---> Warning: Unable to add data to map: [" << pci.dataSteeringFile.GetFilename() << "]" << std::endl;
 		}
+
+                if (steeringFile->OrderColorSystematicNamesByAlphabeth()) {
+ 		 // order color surviving systematics by alphabeth
+                 // above SetColor is overwritten as all systematics are contain in vsyst
+		 if (debug) std::cout<<cn<<mn<<"Order systematics color by name alphabetical order"<<std::endl;
+                 OrderSystVectorColorsByAlphabeth(vsyst);
+                }
+
 	}
 }
 
@@ -2850,4 +2890,47 @@ TString SPXPlot::FormatetabinLabel(TString varname, double binmin, double binmax
  return infolabel;
 };
 
+
+void SPXPlot::OrderSystVectorColorsByAlphabeth(std::vector<TGraphAsymmErrors *> vsyst){
+ std::string mn = "OrderSystVectorColorsByAlphabeth: ";
+ if (debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ if (vsyst.size()==0) {
+  std::cout<<cn<<mn<<"WARNING: no input graph found ! "<<std::endl;
+  return;
+ }
+
+ std::vector<TGraphAsymmErrors *> vsysttmp;
+ // vsysttmp.reserve(vsyst.size());
+ copy(vsyst.begin(),vsyst.end(),back_inserter(vsysttmp));
+
+ // std::cout<<" XXX graph copied ! "<<std::endl;
+ // Now sort graph according to alphabethical order of graph names
+ //
+ sort(vsysttmp.begin(), vsysttmp.end(), SPXUtilities::SortbyAlphabeth);
+
+ std::cout<<cn<<mn<<"Sorted graph members "<<vsysttmp.size()<<std::endl;
+
+ for (int i=0; i<vsysttmp.size(); i++){
+ 
+  TGraphAsymmErrors * graph=vsysttmp.at(i);
+  if (!graph) {  
+   throw SPXGraphException(cn+mn+"Graph not found");
+  }
+
+ 
+  Color_t icol=SPXUtilities::ICol(i);
+ 
+  if (debug) {
+   std::cout<<cn<<mn<<"graphname= "<<graph->GetName()<<" icol= "<<icol<<std::endl;
+  }
+
+  SPXGraphUtilities::SetColors(vsysttmp.at(i),icol);
+ }
+
+ vsysttmp.clear();
+
+ return;
+
+};
 

@@ -6,6 +6,10 @@
 
 ## Change Log
 
+ -SPXPlot: steering to order systematics according to name of systematics
+
+ -SPXUtilities: sort function to order graph according alphabethical order of names
+
  -SPXPlot::DrawLegend: special treatment for figure showing only hadronisation uncertainty 
 
  -SPXGridCorrection: simplied logic

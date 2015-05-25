@@ -79,6 +79,7 @@ private:
 	bool labelSqrtS;	//Flag to indicate that the Sqrt(s) value should be shown in the legend
 
 	double showIndividualSystematics; //Flag to show individual systematics data uncertainties
+        bool ordersystematiccolorbyalphabeth; // Flag if color should be ordered according to systematic names
 
         double XDataBoxLabel;    // X-coordinate of data box label
         double YDataBoxLabel;    // Y-coordinate of data box label
@@ -201,6 +202,10 @@ public:
 
         double ShowIndividualSystematics(){
 	 return showIndividualSystematics; 
+        }
+
+        bool OrderColorSystematicNamesByAlphabeth(){
+	 return ordersystematiccolorbyalphabeth; 
         }
 
 	double GetXDataBoxLabel(void) const {

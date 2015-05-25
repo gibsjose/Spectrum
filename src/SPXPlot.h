@@ -158,6 +158,8 @@ private:
         TString FormatjetRLabel(double jet);
         TString FormatetabinLabel(TString varname, double binmin, double binmax);
         TString FormatwithExp(double xinput);
+
+        void   OrderSystVectorColorsByAlphabeth(std::vector<TGraphAsymmErrors *> vsyst);
 };
 
 #endif

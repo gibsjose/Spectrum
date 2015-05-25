@@ -44,6 +44,7 @@ public:
 
     static bool SortLargestRelativeError(TGraphAsymmErrors * g1, TGraphAsymmErrors * g2);
     static bool SortLargestBinNumber    (TGraphAsymmErrors * g1, TGraphAsymmErrors * g2);
+    static bool SortbyAlphabeth         (TGraphAsymmErrors * g1, TGraphAsymmErrors * g2);
 
     static std::map<int, TGraphAsymmErrors * > OrderBandMap(std::vector< TGraphAsymmErrors *> inputgraph);
     //static std::vector<TGraphAsymmErrors * > OrderGraphVector(std::vector< TGraphAsymmErrors *> inputgraph);

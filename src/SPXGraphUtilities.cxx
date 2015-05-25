@@ -114,20 +114,20 @@ double SPXGraphUtilities::GetYMax(std::vector<TGraphAsymmErrors *> graphs) {
 double SPXGraphUtilities::GetLargestRelativeError(TGraphAsymmErrors* graph) {
  // return systematics in the bin where it is largest
  // the low variation is negative, the high variation is positive 
- double errormax = -1e30;
+ double errormax = 0.;
     
- for(int j = 0; j < graph->GetN(); j++) {
+ for (int j = 0; j < graph->GetN(); j++) {
   //Loop over bins
   double x = 0., y = 0., error = 0.;
 
   graph->GetPoint(j, x, y);
   //error = (graph->GetErrorYlow(j) +  graph->GetErrorYhigh(j))/2.;
-  error = graph->GetErrorYhigh(j);
-  if (graph->GetErrorYlow(j)>error) error=graph->GetErrorYlow(j);
+  error = fabs(graph->GetErrorYhigh(j));
+  if (fabs(graph->GetErrorYlow(j))>error) error=graph->GetErrorYlow(j);
   error/=y; // relative error
   //error = graph->GetErrorYlow(j)/y;
 
-  if(errormax < error) {
+  if (fabs(errormax) < fabs(error)) {
    errormax = error;
   }
   //std::cout<<cn<<"GetLargestRelativeError: j= "<<j<<" error= "<<error<<" errormax= "<<errormax<<std::endl;

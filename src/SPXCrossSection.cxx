@@ -261,16 +261,16 @@ std::vector<std::string> SPXCrossSection::GetCorrectionLabels() {
 }
 void SPXCrossSection::MatchBinning(StringGraphMap_T dataFileGraphMap) {
  std::string mn = "MatchBinning: ";
- if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+ if (debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  //Match binning of all graphs within each PCI, if matchBinning set
- if(mainsteeringFile->GetMatchBinning()) {
+ if (mainsteeringFile->GetMatchBinning()) {
 
   TGraphAsymmErrors *master=0;
 
-  if(debug) std::cout << cn << mn << "Matched binning is ON" << std::endl;
+  if (debug) std::cout << cn << mn << "Matched binning is ON" << std::endl;
 
-  if(debug) std::cout << cn << mn << "Matching cross section bands to data master" << std::endl;
+  if (debug) std::cout << cn << mn << "Matching cross section bands to data master" << std::endl;
 
   std::string dataKey = pci->dataSteeringFile.GetFilename();
   std::string gridKey = pci->gridSteeringFile.GetFilename();

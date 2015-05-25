@@ -13,98 +13,125 @@
 
 const std::string cn = "SPXUtilities::";
 
+bool SPXUtilities::SortbyAlphabeth(TGraphAsymmErrors * g1, TGraphAsymmErrors * g2){
+ std::string mn = "SortbyAlphabeth: ";
+ // Sort function for TGraphs to sort their name in alphabethical order
+
+ if (!g1) {
+  std::cout<<cn<<mn<<"WARNING: no input graph g1 found ! "<<std::endl;
+  return false;
+ }
+
+ if (!g2) {
+  std::cout<<cn<<mn<<"WARNING: no input graph g2 found ! "<<std::endl;
+  return false;
+ }
+
+ //std::cout<<" g1= "<<g1->GetName()<<" g2= "<<g2->GetName()<<std::endl;
+
+ std::string g1name=g1->GetName();
+ std::string g2name=g2->GetName();
+
+ std::transform(g1name.begin(), g1name.end(), g1name.begin(), ::tolower);
+ std::transform(g2name.begin(), g2name.end(), g2name.begin(), ::tolower);
+
+  return g1name<g2name;
+};
+
 bool SPXUtilities::SortLargestRelativeError(TGraphAsymmErrors * g1, TGraphAsymmErrors * g2){
-  std::string mn = "SortLargestRelativeError: ";
+ std::string mn = "SortLargestRelativeError: ";
 
-  if (!g1) {
-   std::cout<<cn<<mn<<"WARNING: no input graph g1 found ! "<<std::endl;
-   return false;
-  }
+ if (!g1) {
+  std::cout<<cn<<mn<<"WARNING: no input graph g1 found ! "<<std::endl;
+  return false;
+ }
 
-  if (!g2) {
-   std::cout<<cn<<mn<<"WARNING: no input graph g2 found ! "<<std::endl;
-   return false;
-  }
+ if (!g2) {
+  std::cout<<cn<<mn<<"WARNING: no input graph g2 found ! "<<std::endl;
+  return false;
+ }
 
-  double emax1= SPXGraphUtilities::GetLargestRelativeError(g1);  
-  double emax2= SPXGraphUtilities::GetLargestRelativeError(g2);  
+ double emax1= SPXGraphUtilities::GetLargestRelativeError(g1);  
+ double emax2= SPXGraphUtilities::GetLargestRelativeError(g2);  
 
-  bool sort=false;
-  if (fabs(emax1)>fabs(emax2)) sort=true;
+ bool sort=false;
+ if (fabs(emax1)>fabs(emax2)) sort=true;
 
-  //if (sort) std::cout<<cn<<mn<<" sort= "<<sort<<std::endl;
-  //std::cout<<cn<<mn<<" g1= "<<g1->GetName()<<" emax1= "<<emax1<<" g2= "<<g2->GetName()<<" emax2= "<<emax2<<std::endl;
+ //if (sort) std::cout<<cn<<mn<<" sort= "<<sort<<std::endl;
+ //std::cout<<cn<<mn<<" g1= "<<g1->GetName()<<" emax1= "<<emax1<<" g2= "<<g2->GetName()<<" emax2= "<<emax2<<std::endl;
  
-  return sort;
+ return sort;
 };
 
 bool SPXUtilities::SortLargestBinNumber(TGraphAsymmErrors * g1, TGraphAsymmErrors * g2){
-  std::string mn = "SortLargestBinNumber: ";
+ std::string mn = "SortLargestBinNumber: ";
 
-  if (!g1) {
-   std::cout<<cn<<mn<<"WARNING: no input graph g1 found ! "<<std::endl;
-   return false;
-  }
+ if (!g1) {
+  std::cout<<cn<<mn<<"WARNING: no input graph g1 found ! "<<std::endl;
+  return false;
+ }
 
-  if (!g2) {
-   std::cout<<cn<<mn<<"WARNING: no input graph g2 found ! "<<std::endl;
-   return false;
-  }
+ if (!g2) {
+  std::cout<<cn<<mn<<"WARNING: no input graph g2 found ! "<<std::endl;
+  return false;
+ }
 
-  int n1=SPXGraphUtilities::CompareValues(g1, g2, true);
-  int n2=SPXGraphUtilities::CompareValues(g2, g1, true);
+ int n1=SPXGraphUtilities::CompareValues(g1, g2, true);
+ int n2=SPXGraphUtilities::CompareValues(g2, g1, true);
 
-  bool sort=false;
-  if (n1>n2) sort=true;
+ bool sort=false;
+ if (n1>n2) sort=true;
 
-  //if (sort) std::cout<<cn<<mn<<" sort= "<<sort<<std::endl;
-  //std::cout<<cn<<mn<<" g1= "<<g1->GetName()<<" n1= "<<n1<<" g2= "<<g2->GetName()<<" n2= "<<n2<<std::endl;
+ //if (sort) std::cout<<cn<<mn<<" sort= "<<sort<<std::endl;
+ //std::cout<<cn<<mn<<" g1= "<<g1->GetName()<<" n1= "<<n1<<" g2= "<<g2->GetName()<<" n2= "<<n2<<std::endl;
  
-  return sort;
+ return sort;
 };
 
 std::vector<TGraphAsymmErrors * >  SPXUtilities::OrderLargestRelativeErrorGraphVector(std::vector< TGraphAsymmErrors *> inputgraph){
-  std::string mn = "OrderLargestRelativeGraphVector: ";
-  //
-  // order graphs according to largest relative errors in nay of the bins
-  //
+ std::string mn = "OrderLargestRelativeGraphVector: ";
+ //
+ // order graphs according to largest relative errors in nay of the bins
+ //
 
-  std::vector<TGraphAsymmErrors * > outputgraph;
-  outputgraph.clear();  
+ std::vector<TGraphAsymmErrors * > outputgraph;
+ outputgraph.clear();  
 
-  if (inputgraph.size()==0) {
-   std::cout<<cn<<mn<<"WARNING: no input graph found ! "<<std::endl;
-   return outputgraph;
-  }
+ if (inputgraph.size()==0) {
+  std::cout<<cn<<mn<<"WARNING: no input graph found ! "<<std::endl;
+  return outputgraph;
+ }
 
-  sort(inputgraph.begin(), inputgraph.end(), SortLargestRelativeError);
-  outputgraph=inputgraph;
+ sort(inputgraph.begin(), inputgraph.end(), SortLargestRelativeError);
+ outputgraph=inputgraph;
   
-  //std::cout<<cn<<mn<<" After ordering: "<<std::endl;
-  //for (int igraph1=0; igraph1 < inputgraph.size(); igraph1++) {
-  // TGraphAsymmErrors *graph1 = inputgraph.at(igraph1);
-  // std::cout<<cn<<mn<<" graph "<<graph1->GetName()<<" emax= "<< SPXGraphUtilities::GetLargestRelativeError(graph1)<<std::endl;
-  //}
+ //std::cout<<cn<<mn<<" After ordering: "<<std::endl;
+ //for (int igraph1=0; igraph1 < inputgraph.size(); igraph1++) {
+ // TGraphAsymmErrors *graph1 = inputgraph.at(igraph1);
+ // std::cout<<cn<<mn<<" graph "<<graph1->GetName()<<" emax= "<< SPXGraphUtilities::GetLargestRelativeError(graph1)<<std::endl;
+ //}
 
 }
 
+
+
 std::vector<TGraphAsymmErrors * > SPXUtilities::OrderLargestBinNumberGraphVector (std::vector< TGraphAsymmErrors *> inputgraph){
-  std::string mn = "OrderLargestBinNumberGraphVector: ";
-  //
-  // order graphs according to the largest number of bins that have larger errors 
-  //
+ std::string mn = "OrderLargestBinNumberGraphVector: ";
+ //
+ // order graphs according to the largest number of bins that have larger errors 
+ //
 
-  std::vector<TGraphAsymmErrors * > outputgraph;
-  outputgraph.clear();  
+ std::vector<TGraphAsymmErrors * > outputgraph;
+ outputgraph.clear();  
 
-  if (inputgraph.size()==0) {
-   std::cout<<cn<<mn<<"WARNING: no input graph found ! "<<std::endl;
-   return outputgraph;
-  }
+ if (inputgraph.size()==0) {
+  std::cout<<cn<<mn<<"WARNING: no input graph found ! "<<std::endl;
+  return outputgraph;
+ }
 
-  sort(inputgraph.begin(), inputgraph.end(), SortLargestBinNumber);
+ sort(inputgraph.begin(), inputgraph.end(), SortLargestBinNumber);
 
-  outputgraph=inputgraph;
+ outputgraph=inputgraph;
 
 };
 
@@ -193,7 +220,6 @@ std::map<int, TGraphAsymmErrors * >  SPXUtilities::OrderBandMap(std::vector< TGr
    return bands;
   }
 
-  
   for (int igraph1=0; igraph1 < inputgraph.size(); igraph1++) {
    TGraphAsymmErrors *graph1 = inputgraph.at(igraph1);
    if (!graph1) {

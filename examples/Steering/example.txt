@@ -50,6 +50,8 @@ apply_grid_corr = true				;[Optional] Apply the grid corrections (e.g. hadronisa
 
 show_individual_systemtics = 0                  ;[Optional] Show individual systematic on data above x%
 
+order_systematic_colorbyalphabeth = false       ;[Optional] if set systematics colors are order by alphabethical order of name
+
 label_sqrt_s = true				;[Optional] Specify to show the Sqrt(s) on the legend - [default = false]
 ;label_lumi                                     ;[Optional] Add luminosity label 
 ;label_journalreference                         ;[Optional] Add journal reference label
