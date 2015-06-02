@@ -44,7 +44,7 @@ bool SPXRatio::debug;
 //		convolute / reference
 //
 void SPXRatio::Parse(std::string &s) {
-    std::string mn = "Parse: ";
+    std::string mn = "Parse:";
     if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	std::string numBlob;
@@ -213,7 +213,7 @@ void SPXRatio::Parse(std::string &s) {
         denominatorConvolutePDFFile = v_den.at(1);
 
         //Check for alias
-        std::string numeratorDataAlias = CheckForAlias(numeratorDataFile, "data");
+        std::string numeratorDataAlias  = CheckForAlias(numeratorDataFile, "data");
         std::string denominatorGridAlias= CheckForAlias(denominatorConvoluteGridFile, "grid");
         std::string denominatorPDFAlias = CheckForAlias(denominatorConvolutePDFFile, "pdf");
 
@@ -623,6 +623,26 @@ std::string SPXRatio::CheckForAlias(std::string &original, const std::string ali
    } else if(!alias_type.compare("grid")) {
     alias = plotConfiguration.GetPlotConfigurationInstance(index).gridSteeringFile.GetFilename();
     gridDirectory = plotConfiguration.GetPlotConfigurationInstance(index).gridDirectory;
+    // special case if the same grid directory is given
+    // In this case key name is _i (see SPXPlot::InitializeCrossSections)
+
+    if (index>0) { 
+     bool doubleentry=false;
+     for (int i=0; i<index; i++) {
+      std::string aliasold = plotConfiguration.GetPlotConfigurationInstance(i).gridSteeringFile.GetFilename();
+      if (alias==aliasold) {
+       doubleentry=true;
+       std::cout<<cn<<mn<<"Double entry in grid directories for index= "<<i<<" "<<alias.c_str()<<std::endl;
+      }
+     }
+ 
+     if (doubleentry) {
+      std::stringstream newname;
+      newname << alias<<"_"<< index;
+      alias=newname.str();
+      std::cout<<cn<<mn<<"Same grid directories are used !  set alias to"<<alias.c_str()<<std::endl;
+     }
+    }
    } else if(!alias_type.compare("pdf")) {
     alias = plotConfiguration.GetPlotConfigurationInstance(index).pdfSteeringFile.GetFilename();
     pdfDirectory = plotConfiguration.GetPlotConfigurationInstance(index).pdfDirectory;
@@ -813,9 +833,12 @@ void SPXRatio::GetGraphs(void) {
    throw SPXGraphException(cn + mn + oss.str());
   }
 
-  SPXPDF *pdf= (*convoluteFilePDFMap)[convoluteKey];
+  if (debug) {
+   std::cout<<cn<<mn<<"ConvoluteOverNominal Look for convolute key [" <<convoluteKey.first.c_str()<<", "<< convoluteKey.second.c_str()<<"]"<< std::endl;
+  }
 
-  if (!pdf) throw SPXGraphException(cn + mn + "PDF not found ");
+  SPXPDF *pdf= (*convoluteFilePDFMap)[convoluteKey];
+  if (!pdf) throw SPXGraphException(cn + mn + "PDF not found for convolutekey="+convoluteKey.first);
   else 
    std::cout << cn << mn << "Found pdf= " << pdf->GetPDFName() << std::endl;
   int nbands=pdf->GetNBands();
@@ -876,6 +899,13 @@ void SPXRatio::GetGraphs(void) {
    std::cout << cn << mn << "Data Key = [" << dataKey << "]" << std::endl;
    std::cout << cn << mn << "Data Key stat only= [" << dataKeystat << "]" << std::endl;
    std::cout << cn << mn << "Convolute Key = [" << convoluteKey.first << ", " << convoluteKey.second << "]" << std::endl;
+
+   PrintDataFileGraphMapKeys(std::cout);
+
+   //PrintConvoluteFileGraphMapKeys(std::cout);
+
+   PrintConvoluteFilePDFMapKeys(std::cout);
+
   }
 
   //Check for existence of data key
@@ -932,10 +962,26 @@ void SPXRatio::GetGraphs(void) {
    if (debug) std::cout << cn << mn << "data graph is  "<< numeratorGraphstatonly[i]->GetName() << std::endl;
   }
 
+  if (debug) {
+   std::cout<<cn<<mn<<"DataOverConvolute Look for convolute key [" <<convoluteKey.first.c_str()<<", "<< convoluteKey.second.c_str()<<"]"<< std::endl;
+  }
+
+
   //denominatorGraph = (*convoluteFileGraphMap)[convoluteKey];
   SPXPDF *pdf= (*convoluteFilePDFMap)[convoluteKey];
+  if (convoluteFilePDFMap->count(convoluteKey) == 0) {
+   std::cout<<cn<<mn<<"DataOverConvolute key [" <<convoluteKey.first.c_str()<<", "<< convoluteKey.second.c_str()<<"] not found !"<< std::endl;   
 
-  if (!pdf) throw SPXGraphException(cn + mn + "PDF not found ");
+   //PrintConvoluteFilePDFMapKeys(std::cout);
+  } else if (debug) {
+   std::cout<<cn<<mn<<"DataOverConvolute key [" <<convoluteKey.first.c_str()<<", "<< convoluteKey.second.c_str()<<"] found !"<< std::endl;   
+  }
+
+  if (!pdf) {
+   std::cout<<cn<<mn<<"DataOverConvolute PDF not found !"<< std::endl;      
+   PrintConvoluteFilePDFMapKeys(std::cout);
+   throw SPXGraphException(cn + mn + "PDF object not found ! ");
+  }
   else 
    std::cout << cn << mn << "Found pdf= " << pdf->GetPDFName() << std::endl;
 
@@ -1015,8 +1061,13 @@ void SPXRatio::GetGraphs(void) {
   //numeratorGraph.push_back((*convoluteFileGraphMap)[convoluteKey]);
   //numeratorGraph.push_back(it->second);
 
-  SPXPDF *pdf= (*convoluteFilePDFMap)[convoluteKey];
+  if (debug) {
+   std::cout<<cn<<mn<<"Look for convolute key [" <<convoluteKey.first.c_str()<<", "<< convoluteKey.second.c_str()<<"]"<< std::endl;
+  }
 
+ 
+
+  SPXPDF *pdf= (*convoluteFilePDFMap)[convoluteKey];
   if (!pdf) throw SPXGraphException(cn + mn + "PDF not found ");
   else 
    std::cout << cn << mn << "Found pdf= " << pdf->GetPDFName() << std::endl;
@@ -1081,7 +1132,6 @@ void SPXRatio::GetGraphs(void) {
   //Keys exist, grab graphs
 
   // now check if map contains systematic uncertainties
-  // XXX
   // PrintDataFileGraphMapKeys();
 
    if (DataFileGraphMapHasSystematics()) {

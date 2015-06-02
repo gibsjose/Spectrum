@@ -658,7 +658,11 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 			}
 
 			//Add to configurations map
-			configurations.insert(std::pair<std::string, std::vector<std::string> >("grid_steering_files", tmpVector));
+                        //if (configurations.count("grid_steering_files")>0) {
+                        // std::cout<<cn<<mn<<
+                        //} else {
+			 configurations.insert(std::pair<std::string, std::vector<std::string> >("grid_steering_files", tmpVector));
+			 //}
 			if(debug) std::cout << cn << mn << "configurations[grid_steering_files] = " << \
 				SPXStringUtilities::VectorToCommaSeparatedList(configurations["grid_steering_files"]) << std::endl;
 		}

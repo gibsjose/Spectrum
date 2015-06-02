@@ -6,6 +6,12 @@
 
 ## Change Log
 
+ -SPXPlot and SPXRatio: Introduced logic such that the same grid file path name can
+                        be used, if needed. Introduce in MAP a new key with 
+                        newname=oldname_index (where index is the position in the grid name file                   
+
+ -SPXGraphUtilities: Addition protection for last bins in MatchBinning
+
  -SPXPlot: steering to order systematics according to name of systematics
 
  -SPXUtilities: sort function to order graph according alphabethical order of names

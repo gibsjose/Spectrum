@@ -86,6 +86,13 @@ public:
 		return nominal;
 	}
 
+	std::string GetGridName() {return gridname;}
+        
+        void SetGridName(std::string myname) {
+	 gridname=myname; 
+         return;                        
+        }
+
         std::vector<std::string> GetCorrectionLabels();
 
         void MatchBinning(StringGraphMap_T dataFileGraphMap);
@@ -100,6 +107,7 @@ private:
         SPXSteeringFile *mainsteeringFile;     // pointer to main steering file from SPXPlot
 
 	SPXGrid *grid;			       // Grid
+	std::string gridname;                  // name of the grid
 	SPXPDF *pdf;			       // PDF
 	SPXGridCorrections *corrections;       // Grid corrections
 	bool dividedByBinWidth;		       // Flag indicating that the grid was already divided by the bin width

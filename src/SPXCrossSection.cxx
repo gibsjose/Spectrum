@@ -28,12 +28,17 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  mainsteeringFile=mainsteeringfile;
- if(!mainsteeringFile)
+ if (!mainsteeringFile)
   throw SPXParseException(cn+mn+"main steering file not found !");
 
  //Attempt to create the Grid
  try {
   grid = new SPXGrid(pci);
+
+  if (debug) std::cout<<cn<<mn<<"Create grid with name= "<<gridname.c_str()<<std::endl;
+
+  grid->SetGridName(gridname);
+  grid->CreateGrid();
  } catch(const SPXException &e) {
   throw;
  }
@@ -89,6 +94,7 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
    pdf->SetDoAlphaS  (mainsteeringFile->GetBandwithAlphaS());
   if (mainsteeringFile->GetBandwithScales()==false) 
    pdf->SetDoScale   (mainsteeringFile->GetBandwithScales());
+
   if (mainsteeringFile->GetBandTotal()==false) 
    pdf->SetDoTotError(mainsteeringFile->GetBandTotal());
 
@@ -127,7 +133,7 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
   //std::cout<<cn<<mn<<" nominal PDF histogram "<<std::endl;
   //pdf->GetPDFNominal()->Print("all");
 
-  std::cout<<cn<<mn<<" nominal Nbins= "<<nominal->GetN()<<std::endl;
+  std::cout<<cn<<mn<<"nominal graph "<<nominal->GetName()<<" Nbins= "<<nominal->GetN()<<std::endl;
   nominal->Print();
  }
 }
@@ -273,13 +279,15 @@ void SPXCrossSection::MatchBinning(StringGraphMap_T dataFileGraphMap) {
   if (debug) std::cout << cn << mn << "Matching cross section bands to data master" << std::endl;
 
   std::string dataKey = pci->dataSteeringFile.GetFilename();
-  std::string gridKey = pci->gridSteeringFile.GetFilename();
-  std::string pdfKey  = pci->pdfSteeringFile.GetFilename();
+  //std::string gridKey = pci->gridSteeringFile.GetFilename();
+  //std::string pdfKey  = pci->pdfSteeringFile.GetFilename();
 
-  StringPair_T convoluteKey(gridKey, pdfKey);
+  //StringPair_T convoluteKey(gridKey, pdfKey);
 
-  if(debug) std::cout << cn << mn << "dataKey= "<<dataKey
-                                  <<" gridKey= "<<gridKey <<" pdfKey= "<<pdfKey<< std::endl;
+  //if(debug) std::cout << cn << mn << "dataKey= "<<dataKey
+  //                                <<" gridKey= "<<gridKey <<" pdfKey= "<<pdfKey<< std::endl;
+
+  if (debug) std::cout << cn << mn << "dataKey= "<<dataKey<< std::endl;
 
   master = dataFileGraphMap[dataKey];
   if (!master) {

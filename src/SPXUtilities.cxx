@@ -13,6 +13,13 @@
 
 const std::string cn = "SPXUtilities::";
 
+//std::string SPXUtilities::ReplaceAll(std::string name, std::string oldstring, std::string newstring){
+
+//  TString Tname=TString(name);
+//  Tname.ReplaceAll(oldstring.c_str(),newstring.c_str());
+//  return Tname.Data();
+//}
+
 bool SPXUtilities::SortbyAlphabeth(TGraphAsymmErrors * g1, TGraphAsymmErrors * g2){
  std::string mn = "SortbyAlphabeth: ";
  // Sort function for TGraphs to sort their name in alphabethical order

@@ -29,7 +29,10 @@ public:
 
 	explicit SPXGrid(SPXPlotConfigurationInstance *pci) {
 		this->pci = pci;
-		CreateGrid();
+
+                gridname=pci->gridSteeringFile.GetGridFilepath();
+
+		//CreateGrid();
 	}
 
 	//@TODO Delete here: Could be a source of errors
@@ -48,11 +51,17 @@ public:
 	}
 
 	const std::string & GetGridName(void) const {
-		return pci->gridSteeringFile.GetGridFilepath();
+	 return gridname;
+	  //	return pci->gridSteeringFile.GetGridFilepath();
 	}
 
+        void SetGridName(std::string newname) {
+	 gridname=newname;
+         return;
+        }
+
 	const std::string & GetName(void) const {
-		return pci->gridSteeringFile.GetName();
+	 return pci->gridSteeringFile.GetName();
 	}
 
 	//Creates the Grid and return the reference histogram
@@ -71,11 +80,12 @@ public:
 
 
 private:
-	static bool debug;						//Flag indicating debug mode
-	SPXPlotConfigurationInstance *pci;		//Plot configuration instance
-	appl::grid *grid;						//APPLGrid Grid
-	bool referenceHistogramCorrupted;		//Flag indicating that the reference histogram has been corrupted
-	TH1D * referenceHistogram;				//Reference histogram
+	static bool debug;		     // Flag indicating debug mode
+	SPXPlotConfigurationInstance *pci;   // Plot configuration instance
+	appl::grid *grid;		     // APPLGrid Grid
+	bool referenceHistogramCorrupted;    // Flag indicating that the reference histogram has been corrupted
+	TH1D * referenceHistogram;	     //Reference histogram
+	std::string gridname;                     // will give name to root object (graphs, histograms)
 };
 
 #endif

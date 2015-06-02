@@ -63,6 +63,7 @@ void SPXGridCorrections::Parse(void) {
   name="";
   comment="";
   errortype="relative";
+  xbinformat="normal";
 
    try {
     //Process the file
@@ -93,6 +94,11 @@ void SPXGridCorrections::Parse(void) {
        if (debug) std::cout<<cn<<mn<<"errortype= "<<errortype.c_str()<<std::endl;
       }
 
+      if (TString(vtmp.at(0)).Contains("xbinformat")) {
+       xbinformat=vtmp.at(1);
+       if (debug) std::cout<<cn<<mn<<"xbinformat= "<<xbinformat.c_str()<<std::endl;
+      }
+
      }
 
      //Read in line if it starts with a digit
@@ -105,8 +111,8 @@ void SPXGridCorrections::Parse(void) {
       std::string formatted_line = SPXStringUtilities::ReplaceAll(line, "\t", " ");
       std::vector<double> tmp = SPXStringUtilities::ParseStringToDoubleVector(formatted_line, ' ');
 
-      if (tmp.size() < 4) {
-       throw SPXParseException(cn + mn + "There must be at least 4 correction columns (xm, xlow, xhigh, sigma corr)");
+      if (tmp.size() < 3) {
+       throw SPXParseException(cn + mn + "There must be at least 3 correction columns");
       }
 
       // Set number of columns to the size of the 0th bin
@@ -114,9 +120,20 @@ void SPXGridCorrections::Parse(void) {
        //Set number of columns
        numberOfColumns = tmp.size();
 
+       int ncol=0;
+       if (xbinformat=="xminxmaxonly") ncol=2;       // only xmin and xmax is given
+       else                            ncol=3;       // central value, xmin and xmax are given
+       if (errortype=="noerror")       ncol=ncol+1;  // only central value no error
+       else ncol=ncol+3;                             // central value and errors
+
+
+
        // Only 2 options: 4 columns or 6 columns (without eyl/eyh or with)
-       if ((numberOfColumns != 4) && (numberOfColumns != 6)) {
-        throw SPXParseException(cn + mn + "There can only be either 4 or 6 columns in correction file");
+       //if ((numberOfColumns != 4) && (numberOfColumns != 6)) {
+       if (numberOfColumns != ncol) {
+        std::ostringstream oss;
+        oss<<cn<<mn<<"There should be "<<ncol<<" columns xbinformat="<<xbinformat<<" errortype="<<errortype;
+        throw SPXParseException(oss.str());
        }
 
        if (debug) std::cout << cn << mn << "The remaining bins MUST also have exactly " << numberOfColumns << " columns" << std::endl;
@@ -137,23 +154,34 @@ void SPXGridCorrections::Parse(void) {
 
      //Obtain the correction type (SPXGridCorrectionType???)
      //Build the matrix based on the xm, dx-, dx+, sigma, dsigma-, dsigma+
-     x.push_back(tmp[0]);
-     xmin.push_back(tmp[1]);
-     xmax.push_back(tmp[2]);
+     int ioff=0;
+     if (xbinformat=="xminxmaxonly") {
+      ioff=-1;
+      double xm=(tmp[ioff+1]+tmp[ioff+2])/2.;
+      x.push_back(xm);
+     } else {
+      x.push_back(tmp[0]);
+     }
+     xmin.push_back(tmp[ioff+1]);
+     xmax.push_back(tmp[ioff+2]);
 
-     if (numberOfColumns == 4) { // no uncertainties given
-      y.push_back(tmp[3]);
+     //if (debug) std::cout<<cn<<mn<<"ioff= "<<ioff<<std::endl;
+
+     //std::cout<<cn<<mn<<" Number of bins= "<<numberOfBins<<std::endl;
+
+     if (numberOfColumns == ioff+4) { // no uncertainties given
+      y.push_back(tmp[ioff+3]);
       eyl.push_back(0.);
       eyh.push_back(0.);
-     } else if(numberOfColumns == 6) { // uncertainties are given
-      y.push_back(tmp[3]);
+     } else if(numberOfColumns == ioff+6) { // uncertainties are given
+      y.push_back(tmp[ioff+3]);
       if (errortype.compare("relative")==0) {
 
-       eyh.push_back(tmp[3]-tmp[4]*tmp[3]);
-       eyl.push_back(tmp[5]*tmp[3]-tmp[3]);
+       eyh.push_back(tmp[ioff+3]-tmp[ioff+4]*tmp[ioff+3]);
+       eyl.push_back(tmp[ioff+5]*tmp[ioff+3]-tmp[ioff+3]);
       } else if (errortype.compare("absolute")==0) {
-       eyh.push_back(tmp[4]);
-       eyl.push_back(tmp[5]);
+       eyh.push_back(tmp[ioff+4]);
+       eyl.push_back(tmp[ioff+5]);
       } else {
        std::cout<<cn<<mn<<"Do not know what to do errortype= "<<errortype.c_str()<<std::endl;
        throw SPXParseException(cn+mn+"Do not know what to do errortype= "+errortype);
@@ -161,12 +189,20 @@ void SPXGridCorrections::Parse(void) {
       if (debug) {
 	std::cout<<cn<<mn<<" y= "<<y.back()<<" eyl= "<<eyl.back()<<" eyh= "<<eyh.back()<<std::endl;
       }
+     } else {
+      std::ostringstream oss;
+      oss<<cn<<mn<<"Do not know what to do numberOfColumns="<<numberOfColumns;
+      throw SPXParseException(oss.str());
      }
     }
    }
   } catch(const SPXException &e) {
    std::cerr << e.what() << std::endl;
    throw SPXParseException(cn + mn + "Unable to parse corrections file: " + filename);
+  }
+
+  if (debug) {
+    std::cout<<cn<<mn<<" Number of bins= "<<numberOfBins<<" xsize= "<< x.size()<<std::endl;
   }
 
   // Set number of bins to match the first corrections vector's xm size
@@ -183,6 +219,12 @@ void SPXGridCorrections::Parse(void) {
   }
 
   // Check vector sizes
+
+  if (debug) {
+    std::cout<<cn<<mn<<" Number of bins= "<<numberOfBins<<" xsize= "<< x.size()<<" check if corrections files have different sizes "<<std::endl;
+
+  }
+
   try {
    CheckVectorSize(x,   "x",    numberOfBins);
    CheckVectorSize(xmin,"xmin", numberOfBins);
@@ -412,27 +454,9 @@ TGraphAsymmErrors * SPXGridCorrections::GetCorrectionGraph(std::string &filename
   double eyl=0., eyh=0.;
   double exl=c_x-c_xmin;
   double exh=c_xmax-c_x;
-  //if (errortype.compare("relative")==0) {
-   // original number are relative errors
-   // eyl=c_eyl*c_y;
-   // eyh=c_eyh*c_y;
-   // such differences are stored in the TGraph 
-   // eyl=c_y-c_eyl;
-   // eyh=c_eyh-c_y;
-   //eyl=c_eyl;
-   //eyh=c_eyh;
-  
-   //if (debug) 
-   // std::cout<<" c_eyl= "<<c_eyl<<" c_eyh= "<<c_eyh<<" c_y= "<<c_y<<" eyl= "<<eyl<<" eyh= "<<eyh<<std::endl;
-   //} else if (errortype.compare("absolute")==0) {
-   // eyl=c_eyl;
-   // eyh=c_eyh;
-   //} else {
-   // std::cout<<cn<<mn<<"Do not know what to do errortype="<<errortype.c_str()<<std::endl;
-   // throw SPXParseException(cn+mn+"Do not know what to do ! errortype="+errortype);
-   //}
-   //gcorr->SetPointError(i,exl,exh,eyl,eyh);
-   gcorr->SetPointError(i,exl,exh,c_eyl,c_eyh);
+
+  gcorr->SetPointError(i,exl,exh,c_eyl,c_eyh);
+
  }
 
  if (debug) {

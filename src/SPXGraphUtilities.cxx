@@ -267,7 +267,7 @@ TH1D* SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TH1D *hslave, b
 void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmErrors *slave, bool dividedByBinWidth) {
     std::string mn = "MatchBinning: ";
 
-    bool debug = false;
+    bool debug=false;
 
     //Make sure graphs are valid
     if(!master) {
@@ -530,6 +530,42 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
             }
         }
     }
+
+
+    // In this matching procedure, last bin might still be different
+    // check this
+    int nmaster=master->GetN(); 
+    int nslave =slave->GetN(); 
+    if (nmaster!=nslave) {
+     std::cout<<cn<<mn<<"Different number of bins nmaster="<<nmaster<<" nslave= "<<nslave<< std::endl;
+     std::cout<<cn<<mn<<"\nDifferent number of bins master: "<< master->GetName()<<std::endl;
+     master->Print("all");
+
+     std::cout<<cn<<mn<<"\nDifferent number of bins slave: "<< slave->GetName()<<std::endl;
+     slave->Print("all");
+
+     std::ostringstream oss;
+     oss<<cn<<mn<<"Different number of bins nmaster="<<nmaster<<" nslave= "<<nslave<< std::endl;     
+     throw SPXParseException(oss.str());
+    }
+    
+    double s_x, s_y, m_x, m_y;
+    slave ->GetPoint(nslave-1,  s_x, s_y);    
+    master->GetPoint(nmaster-1, m_x, m_y);    
+
+    if (debug) {
+     std::cout<<cn<<mn<<"Number of bins nmaster="<<nmaster<<" nslave= "<<nslave<< std::endl;
+     std::cout<<cn<<mn<<"Last bin master: x="<<m_x<<" slave: x= "<<s_x<< std::endl;
+    }
+
+    if (s_x!=m_x) {
+     std::cout<<cn<<mn<< "Different last bins master="<<m_x<<" slave= "<<s_x<< std::endl;
+     std::ostringstream oss;
+     oss<<cn<<mn<<"Different last bins master="<<m_x<<" slave= "<<s_x<<std::endl;
+     throw SPXParseException(oss.str());
+    }
+    
+
 
     //Print Graphs
     if(debug) {

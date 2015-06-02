@@ -1,0 +1,79 @@
+;==============================================================
+;
+; Description:
+; ATLAS inclusive jet cross sections 2012 sqrt(s)=8 TeV
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = false
+
+;==============================================================
+; Graphing Options
+;==============================================================
+[GRAPH]
+plot_band = false
+; plot_error_ticks = true
+plot_marker = true
+;
+match_binning = false
+apply_grid_corr = true
+label_sqrt_s = true
+;x_legend = 0.95
+;y_legend = 0.95
+band_with_pdf= false
+band_with_alphas= false
+band_with_scale = false
+band_with_gridcorrection = true
+band_total = false
+;--------------------------------------------------------------
+;==============================================================
+; Plot 0 Options
+;==============================================================
+[PLOT_0]
+#plot_type = data[], grid[], pdf
+plot_type = data, grid, pdf
+pdf_directory = PDF
+data_directory = Data/jet/atlas/incljets2012
+grid_directory = Grids/jet/atlas/incljets2012/nlojet
+data_steering_files = atlas_2012_jet_antiktr04_incljetpt_eta1_comb.txt
+grid_steering_files = atlas_2012_jet_antiktr04_incljetpt_eta1.txt
+pdf_steering_files = CT10.txt
+;
+total_fill_style=3002
+total_fill_color=401
+;total_marker_style=21
+
+pdf_fill_style=3005
+pdf_fill_color=801
+;pdf_marker_style=22
+
+;scale_fill_style=3005
+scale_fill_style=3004
+scale_fill_color=399
+;scale_marker_style=23
+
+alphas_fill_style=3001
+alphas_fill_color=803
+alphas_marker_style=24
+
+corrections_fill_style = 3001
+corrections_fill_color = 3
+corrections_marker_style = 24
+corrections_marker_color = 1
+
+x_scale = 1.0
+y_scale = 1.0
+x_log=true
+y_log=true
+desc = atlas_inclusive_jet2012_hadronisationcorrections_r06_eta1
+
+;display_style = overlay,ratio
+display_style = ratio
+overlay_style = data, convolute
+
+ratio_title = Hadronisation correction
+ratio_style_0 = convolute / nominal
+ratio_0 = ([grid_0, pdf_0])

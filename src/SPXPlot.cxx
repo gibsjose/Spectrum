@@ -2054,25 +2054,37 @@ void SPXPlot::InitializeCrossSections(void) {
 
 		//Don't add the cross section to the cross section vector if there is already a cross section with
 		// the same exact grid and pdf file...
-		StringPair_T key = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
+		std::string keyname=pci.gridSteeringFile.GetFilename();
+                //keyname=SPXUtilities::ReplaceAll(keyame,".txt","");
+		StringPair_T key = StringPair_T(keyname, pci.pdfSteeringFile.GetFilename());
 
 		if(debug) std::cout << cn << mn << "Checking for prior existence of convolute with key = [" << key.first << \
 			", " << key.second << "]" << std::endl;
 
 		if(crossSectionSet.count(key) != 0) {
-			if(debug) std::cout << cn << mn << "Convolute with grid filename \"" << key.first << "\" and pdf filename \"" \
-				<< key.second << "\" has already been processed: Will not process duplicate" << std::endl;
+		  //	if(debug) std::cout << cn << mn << "Convolute with grid filename \"" << key.first << "\" and pdf filename \"" \
+		  //		<< key.second << "\" has already been processed: Will not process duplicate" << std::endl;
 
-			continue;
-		}
+		  //				continue;
+                  std::cout<<cn<<mn<<" is ok to process duplicates -> to be checked "<<std::endl;
+ 
+                  std::stringstream newname;
+                  newname << keyname<<"_"<< i;
+		  std::cout<<cn<<mn<<"enter this grid with name= "<<newname.str()<<std::endl;
+		  key = StringPair_T(newname.str(), pci.pdfSteeringFile.GetFilename());
+	       }
 
+                
 		crossSectionSet.insert(key);
+
 		if(debug) std::cout << cn << mn << "Added convolute with key = [" << key.first << ", " << key.second << "] to crossSectionsSet" << std::endl;
 
 		try {
 
  		        SPXCrossSection crossSectionInstance = SPXCrossSection(&pci);
 			pcis.push_back(pci);
+
+			crossSectionInstance.SetGridName(key.first);
 
 			crossSectionInstance.Create(steeringFile);
 
@@ -2089,9 +2101,9 @@ void SPXPlot::InitializeCrossSections(void) {
 		}
 	}
 
-	if(debug) std::cout<<cn<<mn<<"Loop over cross section size=" << crossSections.size() <<std::endl;
+	if (debug) std::cout<<cn<<mn<<"Loop over cross section size=" << crossSections.size() <<std::endl;
 
-	for(int i = 0; i < crossSections.size(); i++) {
+	for (int i = 0; i < crossSections.size(); i++) {
 	      SPXPlotConfigurationInstance &pci = pcis[i];
 
               SPXPDF *pdf=crossSections[i].GetPDF();
@@ -2107,10 +2119,20 @@ void SPXPlot::InitializeCrossSections(void) {
                throw SPXParseException(cn+mn+"No bands found in pdf");
               }
 
-   	      //StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), theoryname);
-              StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
+
+              //StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
+	      std::string keyname=pci.gridSteeringFile.GetFilename();
+              StringPair_T convolutePair = StringPair_T(keyname, pci.pdfSteeringFile.GetFilename());
+              if (convoluteFilePDFMap.count(convolutePair)>0) {
+	       if (debug) std::cout<<cn<<mn<<"Already in map key= " <<keyname.c_str()<< std::endl;
+               std::stringstream newname;
+               newname << keyname<<"_"<< i;
+	       std::cout<<cn<<mn<<"enter this grid with name= "<<newname.str()<<std::endl;
+	       convolutePair = StringPair_T(newname.str(), pci.pdfSteeringFile.GetFilename());
+              } 
+
               convoluteFilePDFMap.insert(StringPairPDFPair_T(convolutePair, pdf));
- 
+
               for (int iband=0; iband<nbands; iband++) {
 
 		TGraphAsymmErrors * gband   =pdf->GetBand(iband);

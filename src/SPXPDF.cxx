@@ -129,7 +129,7 @@ SPXPDF::SPXPDF(SPXPDFSteeringFile *psf, SPXGrid *grid)
 
   spxgrid=grid;
   gridName=grid->GetGridName();
-
+  //gridName=SPXStringUtilities::ReplaceAll(gridName,".txt","");
   std::cout<<cn<<"constructor called via SPXGrid name= "<<gridName.c_str()<<std::endl;
 
   SetUpParameters(psf);
@@ -449,7 +449,8 @@ void SPXPDF::Initialize()
 
   temp_hist= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
   TString name="xsec_pdf_"+default_pdf_set_name;
-  if (spxgrid) name+="_"+spxgrid->GetName();
+  if (spxgrid) name+="_"+gridName;
+  if (debug) std::cout<<cn<<mn<<"Set temp_hist name to "<<name.Data()<<std::endl;
   temp_hist->SetName(name);
 
 #ifdef TIMER
@@ -476,19 +477,19 @@ void SPXPDF::Initialize()
   h_errors_AlphaS.push_back(temp_hist);
   h_AlphaS_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
   TString name="xsec_alphas_"+default_pdf_set_name;
-  if (spxgrid) name+="_"+spxgrid->GetName();
+  if (spxgrid) name+="_"+gridName;;
   if (h_AlphaS_results) h_AlphaS_results->SetName(name);
  }
  if (do_Scale)   {
   h_Scale_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
   TString name="xsec_scale_"+default_pdf_set_name;
-  if (spxgrid) name+="_"+spxgrid->GetName();
+  if (spxgrid) name+="_"+gridName;;
   if (h_Scale_results) h_Scale_results->SetName(name);
  }
  if (do_PDFBand) {
   h_PDF_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
   TString name="xsec_pdf_"+default_pdf_set_name;
-  if (spxgrid) name+="_"+spxgrid->GetName();
+  if (spxgrid) name+="_"+gridName;
   if (h_PDF_results) h_PDF_results->SetName(name);
  }
 
@@ -556,7 +557,7 @@ void SPXPDF::Initialize()
      if (!hvar) std::cout<<cn<<mn<<"hvariation["<<iscale<<"] Histogram hvar not found "<<std::endl;
      TString hname=TString("hratio_")+hdef->GetName()+TString("_divided_by_");
      hname+=hvar->GetName();
-     if (spxgrid) hname+="_"+spxgrid->GetName();
+     if (spxgrid) hname+="_"+gridName;;
      TH1D * hratio=(TH1D*) hvar->Clone(hname);
      hratio->Divide(hdef);
      //std::cout<<cn<<mn<<" hvariation["<<iscale<<"]="<<hvar->GetName()<<std::endl;
@@ -875,7 +876,7 @@ void SPXPDF::Initialize()
 
     TString hname=temp_hist->GetName()+TString("_pdf_")+default_pdf_set_name+"_id_";
     hname+=pdferri;
-    if (spxgrid) hname+="_"+spxgrid->GetName();
+    if (spxgrid) hname+="_"+gridName;
     temp_hist->SetName(hname);
 
    } else {
@@ -896,7 +897,7 @@ void SPXPDF::Initialize()
      temp_hist->Print("all");
     } else {
      std::cout<<cn<<"Initialize ratio pdferri=  "<<pdferri<<" to default= "<<defaultpdfid<<std::endl;
-     TString hname=TString("hratio_")+temp_hist->GetName()+TString("pdf_");
+     TString hname=TString("hratio_")+temp_hist->GetName()+TString("_pdf_");
      hname+=pdferri;
      hname+="_Divided_by_pdf_";
      hname+=defaultpdfid;
