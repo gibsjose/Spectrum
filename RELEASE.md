@@ -6,6 +6,10 @@
 
 ## Change Log
 
+ -SPXGraphUtilities::GetYUnitsScale: 
+   corrected problem with order of pb and fb
+   when transforming pb -> fb was applying 10^-3 instead of 10^3
+
  -SPXPlot and SPXRatio: Introduced logic such that the same grid file path name can
                         be used, if needed. Introduce in MAP a new key with 
                         newname=oldname_index (where index is the position in the grid name file                   

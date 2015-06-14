@@ -992,7 +992,7 @@ double SPXGraphUtilities::GetXUnitsScale(std::string master, std::string slave) 
         throw SPXGraphException(cn + mn + "Slave units (\"" + slave + "\") are invalid");
     }
 
-    if(debug) std::cout << cn << mn << "Calculated scale = " << pow(10.0, ((double)(masterIndex - slaveIndex) * 3.0)) << std::endl;
+    if (debug) std::cout << cn << mn << "Calculated scale = " << pow(10.0, ((double)(masterIndex - slaveIndex) * 3.0)) << std::endl;
 
     return pow(10.0, ((double)(masterIndex - slaveIndex) * 3.0));
 }
@@ -1000,19 +1000,27 @@ double SPXGraphUtilities::GetXUnitsScale(std::string master, std::string slave) 
 //Returns how to scale the SLAVE units to match the MASTER units
 double SPXGraphUtilities::GetYUnitsScale(std::string master, std::string slave) {
     std::string mn = "GetYUnitsScale: ";
+    bool debug = false;
 
-    //Possible Y units are 'pb', 'fb'		pb = 1000x fb
-    //std::vector<std::string> units = {"FB", "PB"};
-        std::vector<std::string> units;
-        units.push_back("FB");
-        units.push_back("PB");
-        units.push_back("NB");
+    if(debug) std::cout << "=======================================================" << std::endl;
+    if(debug) std::cout << "         GetYUnitsScale                                " << std::endl;
+    if(debug) std::cout << "=======================================================" << std::endl << std::endl;
+
+    if(debug) std::cout << "master = " << master << ", slave = " << slave << std::endl;
+
+    //Possible Y units are 'nb', 'pb', 'fb'		pb = 1000x fb
+    std::vector<std::string> units;
+    units.push_back("NB");
+    units.push_back("PB");
+    units.push_back("FB");
+
     int masterIndex;
     int slaveIndex;
 
     //Get the index of the master string
     try {
         masterIndex = SPXStringUtilities::GetIndexOfStringInVector(units, SPXStringUtilities::ToUpper(master));
+        if (debug) std::cout << cn << mn << "Found masterIndex = " << masterIndex << std::endl;
     } catch(const SPXException &e) {
         std::cerr << e.what() << std::endl;
 
@@ -1022,12 +1030,14 @@ double SPXGraphUtilities::GetYUnitsScale(std::string master, std::string slave) 
     //Get the index of the slave string
     try {
         slaveIndex = SPXStringUtilities::GetIndexOfStringInVector(units, SPXStringUtilities::ToUpper(slave));
+        if (debug) std::cout << cn << mn << "Found slaveIndex = " << slaveIndex << std::endl;
     } catch(const SPXException &e) {
         std::cerr << e.what() << std::endl;
 
         throw SPXGraphException(cn + mn + "Slave units (\"" + slave + "\") are invalid");
     }
 
+    if (debug) std::cout << cn << mn << "Calculated scale = " << pow(10.0, ((double)(masterIndex - slaveIndex) * 3.0)) << std::endl;
     return pow(10.0, ((double)(masterIndex - slaveIndex) * 3.0));
 }
 
