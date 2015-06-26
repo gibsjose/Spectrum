@@ -1,0 +1,276 @@
+;==============================================================
+;
+; Description:		
+; CMS inclusive jet cross sections
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = true
+
+;==============================================================
+; Graphing Options
+;==============================================================
+[GRAPH]
+plot_band = false
+; plot_error_ticks = true
+plot_marker = true
+plot_staggered = true
+match_binning = true
+apply_grid_corr = false
+label_sqrt_s = true
+;
+band_with_pdf= true                             ;[Optional] Include PDF uncertainty in band
+band_with_alphas= true                          ;[Optional] Include alphas uncertainty in band
+band_with_scale = true                          ;[Optional] Include scale uncertainty in band
+band_total = true                               ;[Optional] Include total uncertainty in band
+band_with_gridcorrection = true                 ;[Optional] include grid correction in band
+
+;x_legend = 0.90
+;y_legend = 0.93
+;label_informationlegend = ATLAS internal 
+;
+;x_info_legend = 0.35
+;y_info_legend = 0.93
+;
+; y_overlay_min =
+; y_overlay_max =
+; y_ratio_min =
+; y_ratio_max =
+;--------------------------------------------------------------
+;==============================================================
+; Plot 0 Options
+;==============================================================
+[PLOT_0]
+;plot_type = data, grid, pdf[]
+plot_type = data, grid, pdf
+pdf_directory = PDF
+;
+data_directory = Data/jet/cms/incljets2012lowpt
+grid_directory = Grids/jet/cms/incljets8TeV/nlojet/
+;
+data_steering_files = cms_2012_jet_antiktr07_incljetpt_eta1.txt
+;
+grid_steering_files = cms_2012_jet_antiktr07_incljetpt_eta1.txt
+;
+;
+desc = cms_inclusive_jet2012_r07_eta1
+;
+x_log = true                                              
+y_log = true
+;
+pdf_steering_files = CT10.txt
+;display_style = ratio
+display_style = overlay, ratio
+;
+overlay_style = data, convolute
+;
+ratio_title =Theory/Data
+;
+ratio_style_0 = data_tot
+ratio_0 = data_0
+;
+ratio_style_1 = data_stat
+ratio_1 = data_0
+;
+ratio_style_2 = convolute / !data
+ratio_2 = ([grid_0, pdf_0]) / (data_0)
+;
+
+;==============================================================
+; Plot 0 Options
+;==============================================================
+[PLOT_1]
+;plot_type = data, grid, pdf[]
+plot_type = data, grid, pdf
+pdf_directory = PDF
+;
+data_directory = Data/jet/cms/incljets2012lowpt
+grid_directory = Grids/jet/cms/incljets8TeV/nlojet/
+;
+data_steering_files = cms_2012_jet_antiktr07_incljetpt_eta2.txt
+;
+grid_steering_files = cms_2012_jet_antiktr07_incljetpt_eta2.txt
+;
+;
+desc = cms_inclusive_jet2012_r07_eta2
+;
+pdf_steering_files = CT10.txt
+
+x_log = true                                              
+y_log = true
+;display_style = ratio
+display_style = overlay, ratio
+;
+overlay_style = data, convolute
+;
+ratio_title =Theory/Data
+;
+ratio_style_0 = data_tot
+ratio_0 = data_0
+;
+ratio_style_1 = data_stat
+ratio_1 = data_0
+;
+ratio_style_2 = convolute / !data
+ratio_2 = ([grid_0, pdf_0]) / (data_0)
+;
+;==============================================================
+; Plot 2 Options
+;==============================================================
+[PLOT_2]
+;plot_type = data, grid, pdf[]
+plot_type = data, grid, pdf
+pdf_directory = PDF
+;
+data_directory = Data/jet/cms/incljets2012lowpt
+grid_directory = Grids/jet/cms/incljets8TeV/nlojet/
+;
+data_steering_files = cms_2012_jet_antiktr07_incljetpt_eta3.txt
+;
+grid_steering_files = cms_2012_jet_antiktr07_incljetpt_eta3.txt
+;
+;
+desc = cms_inclusive_jet2012_r07_eta3
+;
+pdf_steering_files = CT10.txt
+;display_style = ratio
+
+x_log = true                                              
+y_log = true
+;
+display_style = overlay, ratio
+;
+overlay_style = data, convolute
+;
+ratio_title =Theory/Data
+;
+ratio_style_0 = data_tot
+ratio_0 = data_0
+;
+ratio_style_1 = data_stat
+ratio_1 = data_0
+;
+ratio_style_2 = convolute / !data
+ratio_2 = ([grid_0, pdf_0]) / (data_0)
+;
+
+;==============================================================
+; Plot 3 Options
+;==============================================================
+[PLOT_3]
+;plot_type = data, grid, pdf[]
+plot_type = data, grid, pdf
+pdf_directory = PDF
+;
+data_directory = Data/jet/cms/incljets2012lowpt
+grid_directory = Grids/jet/cms/incljets8TeV/nlojet/
+;
+data_steering_files = cms_2012_jet_antiktr07_incljetpt_eta4.txt
+;
+grid_steering_files = cms_2012_jet_antiktr07_incljetpt_eta4.txt
+;
+;
+desc = cms_inclusive_jet2012_r07_eta4
+x_log = true                                              
+y_log = true
+;
+pdf_steering_files = CT10.txt
+;display_style = ratio
+display_style = overlay, ratio
+;
+overlay_style = data, convolute
+;
+ratio_title =Theory/Data
+;
+ratio_style_0 = data_tot
+ratio_0 = data_0
+;
+ratio_style_1 = data_stat
+ratio_1 = data_0
+;
+ratio_style_2 = convolute / !data
+ratio_2 = ([grid_0, pdf_0]) / (data_0)
+;
+
+;==============================================================
+; Plot 4 Options
+;==============================================================
+[PLOT_4]
+;plot_type = data, grid, pdf[]
+plot_type = data, grid, pdf
+pdf_directory = PDF
+;
+data_directory = Data/jet/cms/incljets2012lowpt
+grid_directory = Grids/jet/cms/incljets8TeV/nlojet/
+;
+data_steering_files = cms_2012_jet_antiktr07_incljetpt_eta5.txt
+;
+grid_steering_files = cms_2012_jet_antiktr07_incljetpt_eta5.txt
+;
+;
+desc = cms_inclusive_jet2012_r07_eta5
+;
+pdf_steering_files = CT10.txt
+;display_style = ratio
+display_style = overlay, ratio
+;
+x_log = true                                              
+y_log = true
+;
+overlay_style = data, convolute
+;
+ratio_title =Theory/Data
+;
+ratio_style_0 = data_tot
+ratio_0 = data_0
+;
+ratio_style_1 = data_stat
+ratio_1 = data_0
+;
+ratio_style_2 = convolute / !data
+ratio_2 = ([grid_0, pdf_0]) / (data_0)
+;
+
+;==============================================================
+; Plot 5 Options
+;==============================================================
+[PLOT_5]
+;plot_type = data, grid, pdf[]
+plot_type = data, grid, pdf
+pdf_directory = PDF
+;
+data_directory = Data/jet/cms/incljets2012lowpt
+grid_directory = Grids/jet/cms/incljets8TeV/nlojet/
+;
+data_steering_files = cms_2012_jet_antiktr07_incljetpt_eta6.txt
+;
+grid_steering_files = cms_2012_jet_antiktr07_incljetpt_eta6.txt
+;
+;
+desc = cms_inclusive_jet2012_r07_eta6
+;
+pdf_steering_files = CT10.txt
+x_log = true                                              
+y_log = true
+;
+;display_style = ratio
+display_style = overlay, ratio
+;
+overlay_style = data, convolute
+;
+ratio_title =Theory/Data
+;
+ratio_style_0 = data_tot
+ratio_0 = data_0
+;
+ratio_style_1 = data_stat
+ratio_1 = data_0
+;
+ratio_style_2 = convolute / !data
+ratio_2 = ([grid_0, pdf_0]) / (data_0)
+;
+
+

@@ -23,6 +23,10 @@ const std::string cn = "SPXSteeringFile::";
 const int DEFAULT_DATA_MARKER_STYLE = 20;	//Circle
 const int DEFAULT_DATA_MARKER_COLOR = 1;	//Black
 
+const int DEFAULT_GRID_MARKER_STYLE = 20;	
+const int DEFAULT_GRID_FILL_STYLE = 1001;	
+const int DEFAULT_GRID_MARKER_COLOR = 1;	
+
 void SPXSteeringFile::SetDefaults(void) {
 	std::string mn = "SetDefaults: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
@@ -31,6 +35,9 @@ void SPXSteeringFile::SetDefaults(void) {
 
 	plotBand = false;
 	if(debug) std::cout << cn << mn << "plotBand set to default: \"false\"" << std::endl;
+
+        addonLegendNLOProgramName= false;
+	if(debug) std::cout << cn << mn << " addonLegendNLOProgramName set to default: \"false\"" << std::endl;
 
 	plotErrorTicks = true;
 	if(debug) std::cout << cn << mn << "plotErrorTicks set to default: \"true\"" << std::endl;
@@ -73,6 +80,9 @@ void SPXSteeringFile::SetDefaults(void) {
 	RemoveXbins.clear(); 
 	DataCutXmin.clear();
 	DataCutXmax.clear();
+
+        set_grid_styles=false;    
+	if(debug) std::cout << cn << mn << "set_grid_styles set to default: \"false\"" << std::endl;
 
 	gridCorr = false;
 	if(debug) std::cout << cn << mn << "gridCorr set to default: \"false\"" << std::endl;
@@ -277,16 +287,24 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Plot cross section Uncertainties with PDF uncertainties: " << (BandwithPDF ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot cross section Uncertainty with AlphaS uncertainties: " << (BandwithAlphaS ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot cross section Uncertainty with ren&fac scale uncertainties: " << (BandwithScales ? "ON" : "OFF") << std::endl;    std::cout << "\t\t Plot Cross section Uncertainties with total uncertainties: " << (BandTotal ? "ON" : "OFF") << std::endl;
+
+	std::cout << "\t\t Add NLO program name on Legend: " << ( addonLegendNLOProgramName? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Error Ticks is: " << (plotErrorTicks ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Marker is: " << (plotMarker ? "ON" : "OFF") << std::endl;
+	std::cout << "\t\t Set grid properties " << (set_grid_styles ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Staggered is: " << (plotStaggered ? "ON" : "OFF") << std::endl;
+
+	std::cout << "set_grid_styles set to default: \"false\"" << std::endl;
+
 	std::cout << "\t\t Match Binning is: " << (matchBinning ? "ON" : "OFF") << std::endl;
+
         if (CalculateChi2==0) std::cout << "\t\t Calculate Chi2: OFF" << std::endl;
         if (CalculateChi2==1) std::cout << "\t\t Calculate Simple Chi2" << std::endl;
+
         if (DumpTables==0) std::cout << "\t\t Dump Latex tables ON" << std::endl;
+
 	std::cout << "\t\t Grid Corrections are: " << (gridCorr ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Take sign when adding total error: " << (TakeSignforTotalError? "ON" : "OFF") << std::endl;
-
 
 	std::cout << "\t\t Label Sqrt(s) on Legend: " << (labelSqrtS ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Add luminosity label on Legend: " << (AddLumi ? "YES" : "NO") << std::endl;
@@ -396,17 +414,30 @@ void SPXSteeringFile::Print(void) {
 			std::cout << "\t\t\t Data Steering File " << j << ": " << tmp.dataSteeringFile.GetFilename() << std::endl;
 			std::cout << "\t\t\t Grid Steering File " << j << ": " << tmp.gridSteeringFile.GetFilename() << std::endl;
 			std::cout << "\t\t\t PDF Steering File "  << j << ": " << tmp.pdfSteeringFile.GetFilename() << std::endl;
+
+                        std::cout <<" " << std::endl;
 			std::cout << "\t\t\t Data Marker Style "  << j << ": " << tmp.dataMarkerStyle << std::endl;
 			std::cout << "\t\t\t Data Marker Color "  << j << ": " << tmp.dataMarkerColor << std::endl;
+
+                        std::cout <<" " << std::endl;
+			std::cout << "\t\t\t Grid Marker Style "  << j << ": " << tmp.gridMarkerStyle << std::endl;
+			std::cout << "\t\t\t Grid Fill Style "  << j << ": "   << tmp.gridFillStyle << std::endl;
+			std::cout << "\t\t\t Grid Marker Color "  << j << ": " << tmp.gridMarkerColor << std::endl;
+
+                        std::cout <<" " << std::endl;
 			std::cout << "\t\t\t PDF Fill Style "     << j << ": " << tmp.pdfFillStyle << std::endl;
 			std::cout << "\t\t\t PDF Fill Color "     << j << ": " << tmp.pdfFillColor << std::endl;
 			std::cout << "\t\t\t PDF Marker Style "   << j << ": " << tmp.pdfMarkerStyle << std::endl;
+
 			std::cout << "\t\t\t Scale Fill Style "   << j << ": " << tmp.scaleFillStyle << std::endl;
 			std::cout << "\t\t\t Scale Fill Color "   << j << ": " << tmp.scaleFillColor << std::endl;
 			std::cout << "\t\t\t Scale Marker Style " << j << ": " << tmp.scaleMarkerStyle << std::endl;
+
 			std::cout << "\t\t\t AlphaS Fill Style "  << j << ": " << tmp.alphasFillStyle << std::endl;
 			std::cout << "\t\t\t AlphaS Fill Color "  << j << ": " << tmp.alphasFillColor << std::endl;
 			std::cout << "\t\t\t AlphaS Marker Style "<< j << ": " << tmp.alphasMarkerStyle << std::endl;
+
+                        std::cout <<" " << std::endl;
 			std::cout << "\t\t\t Corrections Fill Style "  << j << ": " << tmp.correctionsFillStyle << std::endl;
 			std::cout << "\t\t\t Corrections Fill Color "  << j << ": " << tmp.correctionsFillColor << std::endl;
 			std::cout << "\t\t\t Corrections Marker Style "<< j << ": " << tmp.correctionsMarkerStyle << std::endl;
@@ -688,6 +719,75 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 				SPXStringUtilities::VectorToCommaSeparatedList(configurations["pdf_steering_files"]) << std::endl;
 		}
 
+
+       	        if(debug) std::cout << cn << mn << "Start parsing grid_fill_style " << std::endl;
+		//Get the grid_fill_style
+		tmp = reader->Get(plotSection, "grid_fill_style", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+			std::cout << cn << mn << "INFO: No plot option for grid_fill_style found: Defaulting to pre-defined settings (" << DEFAULT_GRID_FILL_STYLE << ")" << std::endl;
+		} else {
+			//Parse into vector
+      		        set_grid_styles=true;
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				std::cout << cn << mn << "grid_fill_style configuration string: " << tmp << " parsed into:" << std::endl;
+				for(int j = 0; j < tmpVector.size(); j++) {
+					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+				}
+			}
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("grid_fill_style", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[grid_fill_style] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["grid_fill_style"]) << std::endl;
+		}
+
+       	        if(debug) std::cout << cn << mn << "Start parsing grid_marker_style " << std::endl;
+		//Get the grid_marker_style
+		tmp = reader->Get(plotSection, "grid_marker_style", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+			std::cout << cn << mn << "INFO: No plot option for grid_marker_style found: Defaulting to pre-defined settings (" << DEFAULT_GRID_MARKER_STYLE << ")" << std::endl;
+		} else {
+			//Parse into vector
+      		        set_grid_styles=true;
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				std::cout << cn << mn << "grid_marker_style configuration string: " << tmp << " parsed into:" << std::endl;
+				for(int j = 0; j < tmpVector.size(); j++) {
+					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+				}
+			}
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("grid_marker_style", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[grid_marker_style] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["grid_marker_style"]) << std::endl;
+		}
+
+       	        if(debug) std::cout << cn << mn << "Start parsing grid_marker_color " << std::endl;
+		//Get the grid_marker_color
+		tmp = reader->Get(plotSection, "grid_marker_color", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+			std::cout << cn << mn << "INFO: No plot option for grid_marker_color found: Defaulting to pre-defined settings (" << DEFAULT_GRID_MARKER_STYLE << ")" << std::endl;
+		} else {
+			//Parse into vector
+      		        set_grid_styles=true;
+			tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+			if(debug) {
+				std::cout << cn << mn << "grid_marker_color configuration string: " << tmp << " parsed into:" << std::endl;
+				for(int j = 0; j < tmpVector.size(); j++) {
+					std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+				}
+			}
+
+			//Add to configurations map
+			configurations.insert(std::pair<std::string, std::vector<std::string> >("grid_marker_color", tmpVector));
+			if(debug) std::cout << cn << mn << "configurations[grid_marker_color] = " << \
+				SPXStringUtilities::VectorToCommaSeparatedList(configurations["grid_marker_color"]) << std::endl;
+		}
+
+                // Read in cuts on xmin and xmax in data  
+		// 
 
        	        if(debug) std::cout << cn << mn << "Start parsing data_marker_style " << std::endl;
 		//Get the data_marker_style
@@ -1765,6 +1865,8 @@ void SPXSteeringFile::Parse(void) {
 	 }
         }
 
+	addonLegendNLOProgramName = reader->GetBoolean("GRAPH", "add_onlegend_nlo_program_name", addonLegendNLOProgramName);
+
 	plotErrorTicks = reader->GetBoolean("GRAPH", "plot_error_ticks", plotErrorTicks);
 	plotMarker     = reader->GetBoolean("GRAPH", "plot_marker", plotMarker);
 	plotStaggered  = reader->GetBoolean("GRAPH", "plot_staggered", plotStaggered);
@@ -1850,6 +1952,26 @@ void SPXSteeringFile::ParseDataSteeringFiles(void) {
 				if(debug) std::cout << cn << mn << "Resulting data filepath: \"" << dataSteeringFile.GetDataFile() << "\"" << std::endl;
 
 				//Use default marker style or marker color if currently empty
+				if(pci.gridMarkerStyle == PC_EMPTY_STYLE) {
+					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
+						    " Grid Marker Style was empty: Defaulting to " << DEFAULT_GRID_MARKER_STYLE << std::endl;
+					pci.gridMarkerStyle = DEFAULT_GRID_MARKER_STYLE;	
+				}
+
+				if(pci.gridMarkerColor == PC_EMPTY_STYLE) {
+				  if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << " Grid Marker Color was empty: Defaulting to " << DEFAULT_GRID_MARKER_COLOR << std::endl;
+					pci.gridMarkerColor = DEFAULT_GRID_MARKER_COLOR;	
+				}
+
+				//Use default fill style 
+				if(pci.gridFillStyle == PC_EMPTY_STYLE) {
+					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
+						    " Grid Marker Style was empty: Defaulting to" <<DEFAULT_GRID_FILL_STYLE << std::endl;
+					pci.gridFillStyle = DEFAULT_GRID_FILL_STYLE;	
+				}
+
+
+				//Use default marker style or marker color if currently empty
 				if(pci.dataMarkerStyle == PC_EMPTY_STYLE) {
 					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
 						" Data Marker Style was empty: Defaulting to Circle (20)" << std::endl;
@@ -1864,6 +1986,11 @@ void SPXSteeringFile::ParseDataSteeringFiles(void) {
 
 			//Update PCI with new data
 			SPXPlotConfigurationInstance &pcim = plotConfigurations.at(i).GetPlotConfigurationInstance(dataSteeringFile.GetFilename());
+
+			pcim.gridMarkerStyle = pci.gridMarkerStyle;
+			pcim.gridMarkerColor = pci.gridMarkerColor;
+			pcim.gridFillStyle = pci.gridFillStyle;
+
 			pcim.dataMarkerStyle = pci.dataMarkerStyle;
 			pcim.dataMarkerColor = pci.dataMarkerColor;
 

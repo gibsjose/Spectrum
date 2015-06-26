@@ -61,6 +61,10 @@ struct SPXPlotConfigurationInstance {
 	int dataMarkerStyle;
 	int dataMarkerColor;
 
+	int gridMarkerStyle;
+	int gridFillStyle;
+	int gridMarkerColor;
+
 	int totalFillColor;
 	int totalFillStyle;
 	int totalEdgeColor;
@@ -107,6 +111,11 @@ struct SPXPlotConfigurationInstance {
 		pdfDirectory = ".";
 		dataMarkerStyle = PC_EMPTY_STYLE;
 		dataMarkerColor = PC_EMPTY_COLOR;
+
+		gridMarkerStyle = PC_EMPTY_STYLE;
+		gridFillStyle = 1001;
+		gridMarkerColor = PC_EMPTY_COLOR;
+
 		totalFillStyle = PC_EMPTY_STYLE;
 		totalFillColor = PC_EMPTY_COLOR;
 		totalMarkerStyle = PC_EMPTY_STYLE;
@@ -160,13 +169,29 @@ struct SPXPlotConfigurationInstance {
 		  return false;
                 }
 
+		if (gridFillStyle != PC_EMPTY_STYLE) {
+			//std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Grid fill style = " << dataFillStyle << std::endl;
+			return false;
+		}
+
+		if (gridMarkerStyle != PC_EMPTY_STYLE) {
+			//std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Grid Marker style = " << gridMarkerStyle << std::endl;
+			return false;
+		}
+
+		if (gridMarkerColor != PC_EMPTY_STYLE) {
+			//std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Grid Marker color = " << dataMarkerColor << std::endl;
+			return false;
+		}
+
+
 		if (dataMarkerStyle != PC_EMPTY_STYLE) {
-			//std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Marker style = " << dataMarkerStyle << std::endl;
+			//std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Data Marker style = " << dataMarkerStyle << std::endl;
 			return false;
 		}
 
 		if (dataMarkerColor != PC_EMPTY_STYLE) {
-			//std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Marker color = " << dataMarkerColor << std::endl;
+			//std::cout << "SPXPlotConfigurationInstance::IsEmpty: " << "Not empty: Data Marker color = " << dataMarkerColor << std::endl;
 			return false;
 		}
 
@@ -212,6 +237,11 @@ struct SPXPlotConfigurationInstance {
 
 		tmp << "\t Data Marker Style: " << dataMarkerStyle << std::endl;
 		tmp << "\t Data Marker Color: " << dataMarkerColor << std::endl;
+
+		tmp << "\t Grid Marker Style: " << gridMarkerStyle << std::endl;
+		tmp << "\t Grid Fill Style: "   << gridFillStyle << std::endl;
+		tmp << "\t Grid Marker Color: " << gridMarkerColor << std::endl;
+
 		tmp << "\t Total Fill Style: "   << totalFillStyle << std::endl;
 		tmp << "\t Total Fill Color: "   << totalFillColor << std::endl;
 		tmp << "\t Total Marker Style: " << totalMarkerStyle << std::endl;

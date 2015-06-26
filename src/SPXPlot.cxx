@@ -1454,13 +1454,21 @@ void SPXPlot::DrawLegend(void) {
 
  if (os.ContainsConvolute()) {
   if (debug) std::cout<<cn<<mn<<"Contains convolute "<< std::endl;
-  std::vector<TString> vpdf;
+  std::vector<TString> vlabel;
 
   int npdf=0; int iold=-1;
   for (int icross = 0; icross < crossSections.size(); icross++) {
    // Now analyze PDF-object
    // Get PDF object
    SPXPDF * pdf=crossSections[icross].GetPDF();
+ 
+   string nloprogamename;
+   if (steeringFile->GetAddonLegendNLOProgramName() ) {
+    SPXGrid *grid=crossSections[icross].GetGrid();
+    nloprogamename=grid->GetNLOProgramNameName();
+    if (debug) std::cout<<cn<<mn<<"Add NLO Program name= "<<nloprogamename.c_str()<<std::endl;      
+   }       
+
    int nbands=pdf->GetNBands();
    TString pdftype = pdf->GetPDFtype();
    if (nbands<1) throw SPXGeneralException(cn+mn+"No band found, but PDF object exist !"); 
@@ -1522,11 +1530,11 @@ void SPXPlot::DrawLegend(void) {
     }
    } else {
     if (nlouncertainty) {
-    TString label="NLO QCD Uncertainties";
-    if (label.Sizeof()>namesize) namesize=label.Sizeof();
-    if (debug) std::cout << cn << mn <<"Add data label to legend: "<<label.Data()<< " namesize= "<<namesize<<std::endl;
+     TString label="NLO QCD Uncertainties";
+     if (label.Sizeof()>namesize) namesize=label.Sizeof();
+     if (debug) std::cout << cn << mn <<"Add data label to legend: "<<label.Data()<< " namesize= "<<namesize<<std::endl;
  
-    leg->AddEntry((TObject*)0,label, "");
+     leg->AddEntry((TObject*)0,label, "");
     }
     if (gridcorrectionfound&&!nlouncertainty)
      leg->AddEntry((TObject*)0,"Uncertainties", "");
@@ -1612,9 +1620,19 @@ void SPXPlot::DrawLegend(void) {
       pdffound=true; npdf++;
       if (nlolabel) {
       
-       int pdfcount=std::count (vpdf.begin(), vpdf.end(), pdftype);
-       if (debug) std::cout<<cn<<mn<<"icross= "<<icross<<" pdf= "<<pdftype<<" pdfcount= "<<pdfcount<<std::endl;
+       TString labelname=pdftype;
+       //int pdfcount=std::count (vpdf.begin(), vpdf.end(), pdftype);
 
+       if (steeringFile->GetAddonLegendNLOProgramName() ) {
+  	if (debug) std::cout<<cn<<mn<<"Add NLO Program name to Legend "<<std::endl;      
+        labelname+=" ";
+        labelname+=nloprogamename;
+       }       
+
+       int labelcount=std::count (vlabel.begin(), vlabel.end(), labelname);
+       if (debug) std::cout<<cn<<mn<<"icross= "<<icross<<" label= "<<labelname.Data()<<" labelcount= "<<labelcount<<std::endl;
+
+      /*
        if (steeringFile->GetPlotMarker()) {
         if (pdfcount<1) {
          if (debug) std::cout<<cn<<mn<<"in PDF Plot marker add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<std::endl;
@@ -1623,6 +1641,7 @@ void SPXPlot::DrawLegend(void) {
          TString opt="PE";
          if (ratioStyle.IsDataOverConvolute()) opt=""; // for Data over convolute do not plot marker
 	 if (debug) std::cout<<cn<<mn<<"Add legend pdftype= "<<pdftype.Data()<<" gband= "<<gband->GetName()<<" opt= "<<opt.Data()<<std::endl;        
+
          leg->AddEntry(gband, pdftype,opt);
          vpdf.push_back(pdftype);
         }
@@ -1637,14 +1656,32 @@ void SPXPlot::DrawLegend(void) {
         }
        } else
         std::cout << cn << mn <<"WARNING: do not know what to do not plotMarker, not plotBand"<< std::endl;
+     */
+       // only plot label once 
+       if (labelcount<1) {
+
+        TString opt="";
+        if (steeringFile->GetPlotMarker()) {
+         opt="PE";
+         if (ratioStyle.IsDataOverConvolute()) opt=""; // for Data over convolute do not plot marker
+        } else if (steeringFile->GetPlotBand()) {
+         opt="LF";
+        } else std::cout << cn << mn <<"WARNING: do not know what to do not plotMarker, not plotBand"<< std::endl;
+
+	if (debug) std::cout<<cn<<mn<<"Add in legend iband= "<<iband
+			     <<" gband= "<<gband->GetName()<<" labelcount= "<<labelcount<<" opt= "<<opt.Data()<<std::endl;
+
+  	if (debug) std::cout<<cn<<mn<<"Add legend label= "<<labelname.Data()<<std::endl;      
+        if (labelname.Sizeof()>namesize) namesize=labelname.Sizeof();
+        leg->AddEntry(gband, labelname, opt);
+        vlabel.push_back(labelname);
+       }
       }
-      if (pdftype.Sizeof()>namesize) namesize=pdftype.Sizeof();
-      //std::cout<<cn<<mn<<pdftype.Data()<<" namesize= "<<namesize<<std::endl;
      }
 
      if (nbands==1) { // band has same properties because there is only one uncertainty
        if (debug) std::cout<<cn<<mn<<"icross= "<<icross<<" nbands==1"<<std::endl;
-       if (vpdf.size()!=1) {
+       if (vlabel.size()!=1) {
 	if (debug) std::cout<<cn<<mn<<" Add legend gband= "<<gband->GetName()<<" gtype= "<<gtype.c_str()<<std::endl;
         leg->AddEntry(gband, TString(gtype), "LF");
        }
@@ -2133,6 +2170,7 @@ void SPXPlot::InitializeCrossSections(void) {
 
               convoluteFilePDFMap.insert(StringPairPDFPair_T(convolutePair, pdf));
 
+              int markerstyle=-99, fillcolor=-99,fillstyle=-99, edgecolor=-99, edgestyle;
               for (int iband=0; iband<nbands; iband++) {
 
 		TGraphAsymmErrors * gband   =pdf->GetBand(iband);
@@ -2146,9 +2184,7 @@ void SPXPlot::InitializeCrossSections(void) {
 		//Update the Convolute File Map
 		//string theoryname=pci.pdfSteeringFile.GetFilename()+gband->GetName();
 		std::string theoryname=gband->GetName();
-
                 // 
-                int markerstyle=-99, fillcolor=-99,fillstyle=-99, edgecolor=-99, edgestyle;
 
                 if (gtype.compare(std::string("pdf"))==0){
 		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
@@ -2205,16 +2241,44 @@ void SPXPlot::InitializeCrossSections(void) {
 		 std::cout << cn << mn <<" "<<std::endl;
                 }
 
-		//gband->SetMarkerSize(1.2);
 		gband->SetMarkerStyle(markerstyle);
 		gband->SetFillStyle  (fillstyle);
-		//gband->SetMarkerColor(fillcolor);
-		//gband->SetLineColor  (fillcolor);
-		//gband->SetFillColor  (fillcolor);
                 SPXGraphUtilities::SetColors(gband,fillcolor);
 
                 if (debug) gband->Print();               
 	       }
+
+	       // If bands have same properties use the properties from the grid_marker_color etc
+
+	       if (!pdf->BandsHaveDifferentProperties()){
+                if (debug) std::cout<<cn<<mn<<"Bands have same properties use the grid_marker_color etc from steering "<<std::endl;
+                if (steeringFile->GetSetGridStyleFlag()){
+                 fillcolor  =pci.gridMarkerColor;
+                 markerstyle=pci.gridMarkerStyle;
+                 fillstyle  =pci.gridFillStyle;
+
+                 if (debug) {
+		  std::cout<<cn<<mn<<"fillcolor= "<<fillcolor<<" markerstyle= "<<markerstyle<<" fillstyle= "<<fillstyle<<std::endl;
+                 }
+
+                 for (int iband=0; iband<nbands; iband++) {
+
+		  TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+		  std::string         gtype   =pdf->GetBandType(iband);
+
+                  if (debug) {
+		    std::cout<<cn<<mn<<"Set Band Properties "<<gband->GetName()<<" type= "<<gtype.c_str()
+                             <<"\n to fillcolor= "<<fillcolor<<" markerstyle= "<<markerstyle<<" fillstyle= "<<fillstyle<<std::endl;
+                  }
+
+		  edgecolor=fillcolor;
+		  gband->SetMarkerStyle(markerstyle);
+		  gband->SetFillStyle  (fillstyle);
+                  SPXGraphUtilities::SetColors(gband,fillcolor);
+                 }
+                }
+   	       }
+
 	       //StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
 	       //Update the Reference File Map
     	       if(debug) std::cout << cn << mn << i<<" Get reference Graph" <<std::endl;
@@ -2323,7 +2387,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 			double xScale2 = 1.0;
 			double yScale2 = pci->gridSteeringFile.GetYScale();
 			if (debug) std::cout << cn << mn << "Scaling Bands from Grid steering factor xScale= "
-                                             <<xScale<<" yScale= "<<yScale<< std::endl;  
+                                             <<xScale<<" yScale= "<<yScale<<" yscale2= "<<yScale2<< std::endl;  
 
                         double myscaley=yScale*yScale2;
                         double myscalex=xScale*xScale2;
@@ -2756,6 +2820,7 @@ void SPXPlot::DrawBand(SPXPDF *pdf, std::string option, SPXPlotConfigurationInst
    std::cout << cn << mn <<iband<<" gname= "<<gname.Data() << std::endl;
    if (gname.Contains("_total_")) {
     std::cout << cn << mn <<"INFORMATION only plot total band " << std::endl;
+
     gband->Draw(option.c_str());
 
     if (debug) {

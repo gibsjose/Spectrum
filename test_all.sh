@@ -59,8 +59,11 @@ read -p " finished detailedtheoryband_atlas_incljet2011_2p76TeV  hit return to c
 ./Spectrum Steering/detailedtheoryband_atlas_incljet2011.txt
 read -p " finished detailedtheoryband_atlas_incljet2011  hit return to continue "
 #
-#./Spectrum Steering/detailedtheoryband_atlas_incljet2015.txt
+./Spectrum Steering/detailedtheoryband_atlas_incljet2015.txt
 #
 ./Spectrum Steering/hadronisation_uncertainty_detailedtheoryband_atlas_incljet2011_2p76TeV.txt
 read -p " finished hadronisation_uncertainty_detailedtheoryband_atlas_incljet2011_2p76TeV  hit return to continue "
+#
+./Spectrum Steering/atlas_top_dilepton_comparisonmcfmsherpa.txt
+read -p " finished atlas_top_dilepton_comparisonmcfmsherpa.txt  hit return to continue "
 #

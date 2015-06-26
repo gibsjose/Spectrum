@@ -6,6 +6,8 @@
 
 ## Change Log
 
+ -SPXPlotConfiguration and  SPXSteering: added options: grid_marker_color, grid_marker_style, grid_fill_Style
+
  -SPXGraphUtilities::GetYUnitsScale: 
    corrected problem with order of pb and fb
    when transforming pb -> fb was applying 10^-3 instead of 10^3

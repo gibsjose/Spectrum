@@ -64,6 +64,10 @@ public:
 	 return pci->gridSteeringFile.GetName();
 	}
 
+	const std::string & GetNLOProgramNameName(void) const {
+	 return pci->gridSteeringFile.GetNLOProgramName();
+	}
+
 	//Creates the Grid and return the reference histogram
 	TH1D * CreateGrid(void);
 

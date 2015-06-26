@@ -48,15 +48,19 @@ take_sign_intoaccount_for_total_error = true    ;[Optional] When calculating tot
 apply_grid_corr = true				;[Optional] Apply the grid corrections (e.g. hadronisation) 
 ;                                                           (as specified in SPXGrid steering) for all grids if true
 
+
+
 show_individual_systemtics = 0                  ;[Optional] Show individual systematic on data above x%
 
 order_systematic_colorbyalphabeth = false       ;[Optional] if set systematics colors are order by alphabethical order of name
 
+add_onlegend_nlo_program_name = true            ;[Optional] Add NLO program name on Legend [default=false]
 label_sqrt_s = true				;[Optional] Specify to show the Sqrt(s) on the legend - [default = false]
 ;label_lumi                                     ;[Optional] Add luminosity label 
 ;label_journalreference                         ;[Optional] Add journal reference label
 label_journalyear = true                        ;[Optional] Add journal year
-label_informationlegend = ""                     ;[Optional] additional label on information legend
+label_informationlegend = ""                    ;[Optional] additional label on information legend
+
 x_legend = 0.9				        ;[Optional] X(Right)-Position of main Legend, based on top right side
 y_legend = 0.9					;[Optional] Y(Top)-Position of main legend, based on top right side
 x_info_legend = 0.9				;[Optional] X(Right)-Position of information Legend, based on top right side
@@ -67,7 +71,7 @@ y_info_legend = 0.9			        ;[Optional] Y(Top)-Position of information legend,
 ; x_overlay_max = 				;[Optional] Force X-Axis maximum for overlay section
 ; y_ratio_min =					;[Optional] Force Y-Axis minimum for ratio section
 ; y_ratio_max = 			        ;[Optional] Force Y-Axis maximum for ratio section
-x_databox = 0.9                                ;[Optional] X-Axis of data uncertainty box label
+x_databox = 0.9                                 ;[Optional] X-Axis of data uncertainty box label
 y_databox = 0.3                                 ;[Optional] Y-Axis of data uncertainty box label
 
 band_with_pdf= true                             ;[Optional] Include PDF uncertainty in band
@@ -151,6 +155,12 @@ data_marker_color = 1					  ;[REQUIRED] List of data marker colors
 ;
 data_cut_xmax = 0.                                        ;[Optional] remove points below/above xmin/xmax 
 data_cut_xmin = 0.                                        ;            from data map and systematics
+
+grid_marker_color= 2,4                                    ;[Optional] set color,style of Band
+grid_marker_style= 20,28                                  ; only of bands have same properties, i.e.
+grid_fill_style  = 1001,1002                              ;        type_fill_style, type_fill_color, type_edge_color etc
+                                                          ; where  type=pdf,scale,alphas,corrections,total 
+                                                          ; are all the same
                                                           ; by default nothing is removed
 
 display_systematic_group = JES, JER                       ;[Optional] List of groups of systematics to be displayed

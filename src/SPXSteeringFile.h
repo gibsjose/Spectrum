@@ -62,6 +62,7 @@ private:
 	bool debug;						//Flag to indicate debug mode
 
 	//[GRAPH]
+        bool addonLegendNLOProgramName; // Flag to indicate that NLO program name should be added in Legend
 	bool plotBand;		//Flag to indicate that error bands should be plotted
 	bool plotErrorTicks;	//Flag to indicate that tick marks should be used at the end of error bars
 	bool plotMarker;	//Flag to indicate that data point markers should be plotted
@@ -70,6 +71,7 @@ private:
         bool TakeSignforTotalError; // Flag to calculate total data uncertainty
                                     // when true all positive/negative uncertainty are added to total negative/positive total error
                                     //      false uncertainties are taken as such
+      	bool set_grid_styles;       // Flag to indicate, if grid properties are set 
 
 	std::vector <bool> RemoveXbins;           // if ON points below/above DataCutXmin/DataCutXmax are removed
 	std::vector <double> DataCutXmin;         // Value below which data points are removed if  RemoveXbins=true
@@ -168,6 +170,9 @@ public:
 		return this->plotBand;
 	}
 
+	bool GetAddonLegendNLOProgramName(void) const {
+		return this->addonLegendNLOProgramName;
+	}
 
 	bool GetPlotErrorTicks(void) const {
 		return this->plotErrorTicks;
@@ -328,6 +333,10 @@ public:
         std::vector<int> GetSystematicClassesColor(){         
          // groups to display systematics colors
          return systematicsclassescolor; 
+        }
+
+        bool GetSetGridStyleFlag(){
+      	 return set_grid_styles;      
         }
 
         //bool HasData(int iplot) {

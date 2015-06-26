@@ -1,0 +1,48 @@
+;==============================================================
+;
+; Description:		
+;	Example Grid Steering File
+;
+;--------------------------------------------------------------
+
+;==============================================================
+; General Options
+;==============================================================
+[GEN]
+debug = true									
+
+;==============================================================
+; Description
+;==============================================================
+[DESC]
+name = cms_2012_incljet_antiktr07_incljetpt_eta5
+author = Z Hubacek                       
+lumi_config_file = NONE                        
+scale = P_{t,jet}_^{max}
+reference_journal_name = NONE                  
+reference_link_to_arxiv = https://cds.cern.ch/record/1564932/files/FSQ-12-031-pas.pdf
+nlo_program_name = nlojet++                    
+grid_program_name=jetmod                       
+observable_definition_link_to_code = unknown   
+;
+;==============================================================
+; Graphing Options
+;==============================================================
+[GRAPH]
+x_units = GeV													
+y_units = pb													
+grid_divided_by_bin_width = true	
+grid_divided_by_doublediff_bin_width = false
+;reference_divided_by_bin_width = true
+reference_divided_by_doublediff_bin_width = false
+;==============================================================
+; Grid Options
+;==============================================================
+[GRID]								
+;
+grid_file = incljets_rapidity_20_25_R07_P2.root
+;
+;correction_files = 
+;correction_files_label = k_{NP},k_{ew}
+;
+lowest_order = 2								

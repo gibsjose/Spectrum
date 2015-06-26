@@ -1286,7 +1286,10 @@ void SPXPDF::CalcAlphaSErrors()
   // now interpolate for alpha_s uncertainty wanted
   // 0 is default variations
   double dxup=alphaS_variations.at(2)-alphaS_variations.at(0);
-  std::cout<<cn<<mn<<"dxup= "<<dxup<<" var2= "<<alphaS_variations.at(2)<<" var0= "<<alphaS_variations.at(0)<<std::endl;
+
+  if (debug)
+   std::cout<<cn<<mn<<"dxup= "<<dxup<<" var2= "<<alphaS_variations.at(2)<<" var0= "<<alphaS_variations.at(0)<<std::endl;
+
   if (dxup<1.e-12) {
    ifirstup++;
    if (ifirstup==1) {

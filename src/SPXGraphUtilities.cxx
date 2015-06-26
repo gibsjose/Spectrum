@@ -267,7 +267,7 @@ TH1D* SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TH1D *hslave, b
 void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmErrors *slave, bool dividedByBinWidth) {
     std::string mn = "MatchBinning: ";
 
-    bool debug=false;
+    bool debug=true;
 
     //Make sure graphs are valid
     if(!master) {
@@ -360,11 +360,14 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
             //if (debug) std::cout<<cn<<mn<<"          Slave bin number " << j <<" x= "<<s_x<<" xmin= "<<s_exl<<" xmax= "<< s_exh<< std::endl;
 
             //Exception if point lies within master bin AND slave bin width is greater than master bin width
+            //double eps=std::numeric_limits<double>::epsilon();
+            double eps=1.e-5;
             if(((s_x >= m_exl) && (s_x <= m_exh)) && (s_bw > m_bw)) {
-                if(debug) std::cout << std::endl;
-                if(debug) std::cout << cn << mn << "Slave bin width greater than master bin width: Printing debug info: " << std::endl;
-                if(debug) {
-                 std::cout<< cn << mn << "Slave point (index, x, y, exl, exh, eyl, eyh) = (" << j << ", "; 
+            //if(((s_x >= m_exl) && (s_x <= m_exh)) && fabs(s_bw - m_bw)>eps) {
+                if (debug) std::cout << std::endl;
+                if (debug) std::cout << cn << mn << "Slave bin width greater than master bin width: Printing debug info: " << std::endl;
+                if (debug) {
+                 std::cout<< cn << mn << "Slave  point (index, x, y, exl, exh, eyl, eyh) = (" << j << ", "; 
 		 std::cout.width(10);
 		 std::cout<< s_x<< ", " << s_y << ", " << s_exl << ", " << s_exh << ", " << s_eyl << ", " \
                     << s_eyh << ")" << std::endl;
@@ -379,12 +382,43 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
                     "\n\tSlave  Point: (s index, x, exl, exh) = (" << j << ", " << s_x << ", " << s_exl << ", " << s_exh << ")" <<
                     "\n\tMaster Point: (m index, x, exl, exh) = (" << i << ", " << m_x << ", " << m_exl << ", " << m_exh << ")" << std::endl;
 
+		std::cout<<cn<<mn<<"master_bw= "<< m_bw << " slave_bw= "<<s_bw <<std::endl;
+		std::cout<<cn<<mn<<"Ratio slave/master= "<< s_bw/m_bw << " "<<(s_bw > m_bw ? " TRUE" : "FALSE")<<std::endl;
+
+                printf("\n s_bw=%e  m_bw=%e ratio= %e \n",s_bw,m_bw, fabs((s_bw-m_bw)/m_bw));
+
+                //double eps=std::numeric_limits<double>::epsilon();
+                //if ( fabs((s_bw-m_bw))<eps)
+		// std::cout<<cn<<mn<<"diff < eps "<< fabs(s_bw-m_bw) << " eps= "<<eps<<std::endl;
+                //else
+		// std::cout<<cn<<mn<<"diff > eps "<< fabs(s_bw-m_bw) << " eps= "<<eps<<std::endl;
+
+                cerr<<oss.str().c_str()<<endl;
+
                 throw SPXGraphException(oss.str());
             }
 
             //Exception if there is a phase shift (slave xlow is below master xlow AND slave xhigh is
             //	above, or vice versa for the master xhigh)
             if(((s_exl < m_exl) && (s_exh > m_exl)) || ((s_exh > m_exh) && (s_exl < m_exh))) {
+            //double xlow=s_exl - m_exl, xhigh=(s_exh - m_exh);
+            //if(((xlow<eps && xlow!=0) &&  (s_exh > m_exl)) || ((xhigh>eps&&xhigh!=0) && (s_exl < m_exh))) {
+
+
+              printf("\n s_exl= %.15f ",s_exl);
+              printf("\n m_exl= %.15f ",m_exl);
+              printf("\n s_exh= %.15f ",s_exh);
+              printf("\n m_exh= %.15f ",m_exh);
+
+              if((s_exl - m_exl)<eps && (s_exh > m_exl)) {
+               printf("\n s_exl-m_exl= %.15f   ",s_exl - m_exl);
+               printf("\n s_exh-m_exh= %.15f \n",s_exh - m_exh);
+	      }
+	      if ((s_exh - m_exh)>eps && (s_exl < m_exh)) {
+               printf("\n s_exh-m_exh= %.15f   ",s_exh - m_exh);
+               printf("\n s_exl-m_exl= %.15f \n",s_exl - m_exl);
+              }
+              cout<<endl;
 
 	      std::cout<<cn<<mn<<" Master: "<<master->GetName()<<std::endl;
               master->Print("all");
