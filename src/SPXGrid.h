@@ -37,9 +37,7 @@ public:
 
 	//@TODO Delete here: Could be a source of errors
 	~SPXGrid(void) {
-		if(grid) {
-			//delete grid;
-		}
+          if (debug) std::cout<<" SPXGrid() constructor "<<std::endl;
 	}
 
 	static bool GetDebug(void) {
@@ -52,7 +50,7 @@ public:
 
 	const std::string & GetGridName(void) const {
 	 return gridname;
-	  //	return pci->gridSteeringFile.GetGridFilepath();
+	 //return pci->gridSteeringFile.GetGridFilepath();
 	}
 
         void SetGridName(std::string newname) {
@@ -71,7 +69,16 @@ public:
 	//Creates the Grid and return the reference histogram
 	TH1D * CreateGrid(void);
 
-        appl::grid *GetGrid(){ return grid;};
+        appl::grid *GetGrid(int i){ 
+	 if (i>vgrid.size()) {
+	  std::cout<<"GetGrid:: something is wrong i= "<<i<<" but vector size "<<vgrid.size()<<std::endl;
+	 }
+         return vgrid.at(i);
+        };
+
+        int GetNumberofGrids() {
+	 return vgrid.size();
+        }
 
 	//Returns the Grid Reference histogram
 	TH1D * GetReference(void) {
@@ -86,10 +93,14 @@ public:
 private:
 	static bool debug;		     // Flag indicating debug mode
 	SPXPlotConfigurationInstance *pci;   // Plot configuration instance
-	appl::grid *grid;		     // APPLGrid Grid
+
+	//appl::grid *grid;		     // APPLGrid Grid
+        vector <appl::grid *> vgrid;           // vector of APPLGrid Grid
+
 	bool referenceHistogramCorrupted;    // Flag indicating that the reference histogram has been corrupted
-	TH1D * referenceHistogram;	     //Reference histogram
-	std::string gridname;                     // will give name to root object (graphs, histograms)
+	TH1D * referenceHistogram;	     // Reference histogram
+	std::string gridname;                // will give name to root object (graphs, histograms)
+
 };
 
 #endif

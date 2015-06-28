@@ -80,6 +80,9 @@ void SPXGridSteeringFile::SetDefaults(void) {
 	gridFilepath.clear();
 	if(debug) std::cout << cn << mn << "gridFilepath set to default: \" \"" << std::endl;
 
+	vgridFilepath.clear();
+	if(debug) std::cout << cn << mn << "vgridFilepath set to default: \" \"" << std::endl;
+
 	lowestOrder = 1;
 	if(debug) std::cout << cn << mn << "lowestOrder set to default: \"NLO\" (1)" << std::endl;
 }
@@ -110,6 +113,11 @@ void SPXGridSteeringFile::Print(void) {
 	std::cout << "\t\t Reference Divided by  double differential  Bin Width variable? " << (referenceDividedByDoubleDiffBinWidth? "YES" : "NO") << std::endl << std::endl;
 	std::cout << "\t Grid Options [GRID]" << std::endl;
 	std::cout << "\t\t Grid File: " << gridFilepath << std::endl;
+
+	std::cout << "\t\t Number of Grid Files: " << vgridFilepath.size() << std::endl;
+        for (int i=0; i< vgridFilepath.size(); i++) {
+	std::cout << "\t\t Name: " << vgridFilepath.at(i) << std::endl;
+        }
 	std::cout << "\t\t Correction Files: " << std::endl;
 	for(int i = 0; i < correctionFiles.size(); i++) {
 		std::cout << "\t\t\t " << correctionFiles.at(i) << std::endl;
@@ -144,12 +152,16 @@ void SPXGridSteeringFile::Parse(void) {
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 	
         this->SetDefaults();
+        
+        if (debug) std::cout<<cn<<mn<<"Checking filename=  "<<filename.c_str()<<std::endl;
 
 	if(filename.empty()) {
 	 //throw SPXFileIOException(filename, "Empty file string \"\" was given");
 	 std::cout<<cn<<mn<<"WARNING no steering file given, do not know what to do, return "<<std::endl;
          return;
 	}
+
+        if (debug) std::cout<<cn<<mn<<"Start reader "<<std::endl;
 
 	//Initialize reader
 	reader = new INIReader(filename);
@@ -266,8 +278,8 @@ void SPXGridSteeringFile::Parse(void) {
 	}
 
 	yScale = reader->GetReal("GRAPH", "y_scale", yScale);
-	//if(debug) 
-        std::cout << cn << mn << "yscale= " << yScale << std::endl;        
+	if(debug) 
+         std::cout << cn << mn << "yscale= " << yScale << std::endl;        
 
 	gridDividedByBinWidth = reader->GetBoolean("GRAPH", "grid_divided_by_bin_width", gridDividedByBinWidth);
 	if(debug) std::cout << cn << mn << "Grid Divided By Bin Width set to: " << (gridDividedByBinWidth ? "ON" : "OFF") << std::endl;
@@ -282,13 +294,31 @@ void SPXGridSteeringFile::Parse(void) {
 	if(debug) std::cout << cn << mn << "Reference Divided By Bin Width set to: " << (referenceDividedByDoubleDiffBinWidth ? "ON" : "OFF") << std::endl;
 
 	//Grid Options [GRID]
-	gridFilepath = reader->Get("GRID", "grid_file", "EMPTY");
-	if(!gridFilepath.compare("EMPTY")) {
-		throw SPXINIParseException("GRAPH", "grid_file", "You MUST specify the grid_file");
+	//gridFilepath = reader->Get("GRID", "grid_file", "EMPTY");
+	//if(!gridFilepath.compare("EMPTY")) {
+	//	throw SPXINIParseException("GRAPH", "grid_file", "You MUST specify the grid_file");
+	//} else {
+	//	if(debug) std::cout << cn << mn << "Successfully read Grid Filepath: " << gridFilepath << std::endl;
+	//}
+	//>>>>
+	tmp = reader->Get("GRID", "grid_file", "EMPTY");
+	if (!tmp.compare("EMPTY")) {
+	 if(debug) std::cout << cn << mn << "No correction files were specified" << std::endl;
+	 vgridFilepath.clear();
 	} else {
-		if(debug) std::cout << cn << mn << "Successfully read Grid Filepath: " << gridFilepath << std::endl;
-	}
+	 //Parse into vector
+	 vgridFilepath = SPXStringUtilities::CommaSeparatedListToVector(tmp);
 
+	 if (debug) {
+	  std::cout << cn << mn << "grid_files string \"" << tmp << "\" parsed into:" << std::endl;
+	  for (int i = 0; i < vgridFilepath.size(); i++) {
+	   std::cout << "\t " << vgridFilepath.at(i)<<std::endl;
+	  }
+	  std::cout << " " <<std::endl;
+	 }
+	}
+        //
+	//
 	tmp = reader->Get("GRID", "correction_files", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
 		if(debug) std::cout << cn << mn << "No correction files were specified" << std::endl;

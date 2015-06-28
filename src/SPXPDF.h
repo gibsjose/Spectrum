@@ -238,6 +238,7 @@ class SPXPDF {
 	std::string AlphaSPDFSetNameUp;
 
         appl::grid *my_grid;
+        int ngrid;
 
         SPXGrid *spxgrid;
 
@@ -257,6 +258,9 @@ class SPXPDF {
         bool do_Total;
 
         //METHODS
+
+        TH1D *GetHisto(double renscale=1, double facscale=1); // Get histogram from Grid
+
         void SetVariablesDefault();
         void SetUpParameters(SPXPDFSteeringFile *psf);
         //void SetSteeringFileNameAndDir(const string _path);

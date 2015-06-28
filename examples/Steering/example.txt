@@ -54,6 +54,7 @@ show_individual_systemtics = 0                  ;[Optional] Show individual syst
 
 order_systematic_colorbyalphabeth = false       ;[Optional] if set systematics colors are order by alphabethical order of name
 
+print_total_sigma = true                        ;[Optional] Print total integrated cross section at the end of the
 add_onlegend_nlo_program_name = true            ;[Optional] Add NLO program name on Legend [default=false]
 label_sqrt_s = true				;[Optional] Specify to show the Sqrt(s) on the legend - [default = false]
 ;label_lumi                                     ;[Optional] Add luminosity label 

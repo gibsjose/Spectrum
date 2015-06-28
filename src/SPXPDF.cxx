@@ -259,7 +259,93 @@ private:
 };
 #endif
 
+TH1D *  SPXPDF::GetHisto(double renscale, double facscale){
+ std::string mn = "GetHisto: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
+ bool varyscale=false;
+ if (renscale!=1. || facscale!=1) varyscale=true;
+ if (varyscale) {
+   if (debug) std::cout<<cn<<mn<<"Scale variation renscale= "<<renscale<<" facscale= "<<facscale<<std::endl;
+ }
+
+ if (debug) std::cout<<cn<<mn<<"Number of grids= "<<ngrid<<std::endl;
+ TH1D* htmpsum=0;
+ TString name="xsec_pdf_"+default_pdf_set_name;
+
+ if (ngrid==1) {
+  //htmpsum= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+  my_grid=spxgrid->GetGrid(0);
+  gridName=spxgrid->GetGridName();
+  if (!my_grid) {
+   std::cout<<cn<<mn<<"No applgrid found ! "<<std::endl;
+   applgridok=false;
+   if (debug) std::cout<<cn<<mn<<"No applgrid found gridname= "<<TString(gridName).Data()<<std::endl;
+   applgridok=false;
+  } else {
+   applgridok=true;
+  }
+
+  if (varyscale) {
+   htmpsum= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renscale, facscale);
+  } else {
+   htmpsum= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+  }
+
+  if (debug) std::cout<<cn<<mn<<"Set temp_hist name to "<<name.Data()<<std::endl;
+  htmpsum->SetName(name);
+
+ } else {
+  applgridok=false;
+  TH1D *htmp=0;
+  for (int igrid=0; igrid<ngrid; igrid++) {
+   my_grid=spxgrid->GetGrid(igrid);
+   if (!my_grid) { 
+    if (debug) std::cout<<cn<<mn<<"igrid= "<<igrid<<"No applgrid found gridname= "<<TString(gridName).Data()<<std::endl;
+    throw SPXParseException(cn+mn+"Grid not found !");
+   }
+   //gridName=spxgrid->GetGridName();
+   gridName=spxgrid->GetName();
+   if (varyscale) {
+    htmp= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renscale, facscale);
+   } else {
+    htmp= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+   }
+   if (debug) std::cout<<cn<<mn<<" igrid= "<<igrid<<" adding "<<TString(gridName).Data()<<std::endl;
+   htmp->SetName(TString(gridName));
+
+   if (debug) {
+    std::cout<<cn<<mn<<"Print "<<htmp->GetName()<<std::endl;
+    htmp->Print("all");
+   }
+
+   if (igrid==0) htmpsum=htmp;
+   else {
+    SPXGraphUtilities::Add(htmpsum,htmp);
+   }
+   if (debug) {
+    std::cout<<cn<<mn<<"igrid= "<<igrid<<" Print "<<htmpsum->GetName()<<std::endl;
+    htmpsum->Print("all");
+   }
+  }
+ }
+  
+ if (!htmpsum) {
+  throw SPXParseException(cn+mn+"Histgram not found !");
+  applgridok=true; 
+ } else {
+  applgridok=true; 
+ }
+
+ if (debug) {
+  if (applgridok) std::cout<<cn<<mn<<"applgridok flag is ON "<<std::endl;
+  else            std::cout<<cn<<mn<<"applgridok flag is OFF "<<std::endl;
+  std::cout<<cn<<mn<<"Returning "<<htmpsum->GetName()<<std::endl;
+  htmpsum->Print("all");
+ }
+ return htmpsum;
+};                 
+  //
 // perform any additional work after constructors but before the object is available for use
 void SPXPDF::Initialize()
 {
@@ -316,12 +402,17 @@ void SPXPDF::Initialize()
   std::cout<<cn<<mn<<"TIMER set GetGrid running... "<< std::endl;  
   quick_timer t;
 #endif
-   my_grid=spxgrid->GetGrid();
+  // my_grid=spxgrid->GetGrid();
+  ngrid=spxgrid->GetNumberofGrids();
+  std::cout<<cn<<mn<<"Number of Grids= " << ngrid << std::endl;  
+  my_grid=spxgrid->GetGrid(0);
+
 #ifdef TIMER
    std::cout<<cn<<mn<<"TIMER done GetGrid " << t.time() << " [ms]" << std::endl;  
 #endif
 
  } else {
+
   std::cout<<"INFO No SPX grid found open via name "<<std::endl;
   if (gridName.size()==0) {
    std::cout<<cn<<mn<<"WARNING: no gridname given "<<std::endl;
@@ -332,6 +423,7 @@ void SPXPDF::Initialize()
    quick_timer t;
 #endif
    my_grid = new appl::grid(gridName.c_str());
+
 #ifdef TIMER
    std::cout<<cn<<mn<<"TIMER done grid " << t.time() << " [ms]" << std::endl;
 #endif
@@ -343,11 +435,12 @@ void SPXPDF::Initialize()
   applgridok=false;
   if (debug) std::cout<<cn<<"No applgrid found gridname= "<<TString(gridName).Data()<<std::endl;
   applgridok=false;
- } else {
-  if (debug) std::cout<<cn<<"applgrid ok gridname= "<<TString(gridName).Data()<<std::endl;
-  applgridok=true;
- }
+  } else {
+   if (debug) std::cout<<cn<<"applgrid ok gridname= "<<TString(gridName).Data()<<std::endl;
+   applgridok=true;
+  }
 
+//
 //#ifdef TIMER
 //   std::cout<<cn<<mn<<"TIMER trimming running.... "<< std::endl;  
 //   quick_timer t1;
@@ -386,21 +479,20 @@ void SPXPDF::Initialize()
  cfg.set_entry("Verbosity",0);
 
  if (debug) {
-  std::cout<<cn<<mn<<"  "<<std::endl;
+  std::cout<<"  "<<std::endl;
   std::cout<<cn<<mn<<"Running on LHAPDF6: "<<std::endl;
-  std::cout<<cn<<mn<<"  "<<std::endl;
+  std::cout<<"  "<<std::endl;
  
   std::cout<<cn<<mn<<"Read PDF= "<<default_pdf_set_name.c_str()<<std::endl;
 
   cfg.set_entry("Verbosity",1);
 
   if (info.has_key("PdfDesc")) std::cout << "PdfDesc: " << info.get_entry("PdfDesc") << std::endl;
-  std::cout << "PdfType: " << info.get_entry("PdfType") << std::endl;
-  std::cout << "Verbosity from PDF: " << info.get_entry("Verbosity") << std::endl;
+  std::cout <<cn<<mn<< "PdfType: " << info.get_entry("PdfType") << std::endl;
+  std::cout <<cn<<mn<< "Verbosity from PDF: " << info.get_entry("Verbosity") << std::endl;
   //vector<int> pids = info.get_entry_as< vector<int> >("Flavors");
  }
 
- 
  mypdf=LHAPDF::mkPDF(default_pdf_set_name.c_str(),defaultpdfid);
  // std::cout<<mypdf.description()<<std::endl;
  // double x=0.1, Q=10.;
@@ -438,8 +530,9 @@ void SPXPDF::Initialize()
  std::cout<<cn<<mn<<"init PDF set called: "<<default_pdf_set_name.c_str()<<std::endl;
  LHAPDF::initPDFSet(default_pdf_set_name.c_str(), defaultpdfid);
 #endif
- if (debug) 
+ if (debug) {
   std::cout<<cn<<mn<<"...finished PDF set up: name= "<<default_pdf_set_name<<std::endl;
+ }
 
  if (applgridok) {
 #ifdef TIMER
@@ -447,11 +540,10 @@ void SPXPDF::Initialize()
   quick_timer t2;
 #endif
 
-  temp_hist= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-  TString name="xsec_pdf_"+default_pdf_set_name;
-  if (spxgrid) name+="_"+gridName;
-  if (debug) std::cout<<cn<<mn<<"Set temp_hist name to "<<name.Data()<<std::endl;
-  temp_hist->SetName(name);
+  temp_hist=this->GetHisto();
+  if (temp_hist) {
+   std::cout<<cn<<mn<<"temp_hist not found ! "<<std::endl;
+  }
 
 #ifdef TIMER
  std::cout<<cn<<mn<<"TIMER done convolution " << t2.time() << " [ms]" << std::endl;
@@ -467,7 +559,7 @@ void SPXPDF::Initialize()
  if (!temp_hist) std::cout<<cn<<mn<<"ERROR could not do the convolution; temp_hist not found ! "<<std::endl;
 
  if (debug) {
-  std::cout<<cn<<mn<<"Default Cross section after convolution: "<<std::endl;
+  std::cout<<cn<<mn<<"\nDefault Cross section after convolution: "<<std::endl;
   temp_hist->Print("all");
  }
 
@@ -509,7 +601,8 @@ void SPXPDF::Initialize()
      std::cout<<cn<<mn<<" Something is wrong #RenScales != #FacScales "
               <<" #RenScales= "<< RenScales.size() <<" #FacScale= "<<FacScales.size() << std::endl;
     for (int iscale=0; iscale<RenScales.size(); iscale++){
-     TH1D* h_scale_temp= my_grid->convolute( getPDF, alphasPDF, nLoops,RenScales[iscale],FacScales[iscale]);
+     //TH1D* h_scale_temp= my_grid->convolute( getPDF, alphasPDF, nLoops,RenScales[iscale],FacScales[iscale]);
+     TH1D* h_scale_temp=this->GetHisto(RenScales[iscale],FacScales[iscale]);
      char rs[100];
      sprintf(rs,"%s #xi_{R}=%3.1f   #xi_{F}=%3.1f",PDFname.c_str(),RenScales[iscale],FacScales[iscale]);
      if (debug) std::cout<<cn<<mn<<iscale<<" "<<rs<<std::endl;
@@ -641,7 +734,8 @@ void SPXPDF::Initialize()
   if (debug) std::cout<<cn<<mn<<"alphas down PDFname= "<<AlphaSPDFSetNameDown<<" member= "<<AlphaSmemberNumDown<<" value= "<<value_alphaS_down<<std::endl;
 
   if (applgridok) {
-   temp_hist= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+   //temp_hist= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+   temp_hist= this->GetHisto();
    temp_hist->SetName((TString) ("xsec_alphas_pdfset"+AlphaSPDFSetHistNameDown));
   } else {
    if (debug) std::cout<<cn<<mn<<"applgrid not found; histogram from PDF not applgrid ! "<<std::endl;
@@ -681,8 +775,9 @@ void SPXPDF::Initialize()
   TString nameup; nameup.Form("%3.3f",value_alphaS_up);
   AlphaSPDFSetHistNameUp+=nameup;
 
+  temp_hist= this->GetHisto();
   if (applgridok) {
-   temp_hist= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+   //temp_hist= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
    temp_hist->SetName((TString) ("xsec_alphas_pdfset_"+AlphaSPDFSetHistNameUp));
   } else {
    if (debug) std::cout<<cn<<mn<<"Histogram from PDF not applgrid ! "<<std::endl;
@@ -868,8 +963,8 @@ void SPXPDF::Initialize()
     quick_timer t0;
 #endif
 
-    temp_hist = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-
+    //temp_hist = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+    temp_hist = this->GetHisto();
 #ifdef TIMER     
     std::cout<<cn<<mn<<"TIMER convolute done t0= "<< t0.time()<<" [ms]"<<std::endl;
 #endif
@@ -2164,13 +2259,13 @@ bool SPXPDF::BandsHaveDifferentProperties(){
 
 
   if (debug) {
-    std::cout <<cn<<mn<< " old_fill_style= "   <<old_fill_style  <<" gband= "<<gband->GetFillStyle()  << std::endl;
-    std::cout <<cn<<mn<< " old_fill_color= "   <<old_fill_color  <<" gband= "<<gband->GetFillColor()  << std::endl;
-    std::cout <<cn<<mn<< " old_marker_style= " <<old_marker_style<<" gband= "<<gband->GetMarkerStyle()<< std::endl;
-    std::cout <<cn<<mn<< " old_marker_color= " <<old_marker_color<<" gband= "<<gband->GetMarkerColor()<< std::endl;
+    std::cout <<cn<<mn<< "old_fill_style= "   <<old_fill_style  <<" gband= "<<gband->GetFillStyle()  << std::endl;
+    std::cout <<cn<<mn<< "old_fill_color= "   <<old_fill_color  <<" gband= "<<gband->GetFillColor()  << std::endl;
+    std::cout <<cn<<mn<< "old_marker_style= " <<old_marker_style<<" gband= "<<gband->GetMarkerStyle()<< std::endl;
+    std::cout <<cn<<mn<< "old_marker_color= " <<old_marker_color<<" gband= "<<gband->GetMarkerColor()<< std::endl;
 
-    if (bandsdifferent) std::cout <<cn<<mn<<iband<< " TRUE" << std::endl;
-    else                std::cout <<cn<<mn<<iband<< " FALSE" << std::endl;
+    if (bandsdifferent) std::cout <<cn<<mn<<iband<< "TRUE" << std::endl;
+    else                std::cout <<cn<<mn<<iband<< "FALSE" << std::endl;
 
   }
  }

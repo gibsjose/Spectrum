@@ -172,6 +172,8 @@ TGraphAsymmErrors* SPXGraphUtilities::TH1TOTGraphAsymm(TH1 *h1)
         return g1;
 }
 
+
+
 TH1D* SPXGraphUtilities::MatchandMultiply(TH1D *hfact, TH1D* hist, bool dividedByBinWidth) {
  std::string mn = "MatchandMultiply: ";
  bool debug=false;
@@ -1158,6 +1160,30 @@ void SPXGraphUtilities::DivideByBinWidth(TGraphAsymmErrors *g) {
     return;
 }
 
+void  SPXGraphUtilities::Add(TH1D *h1, TH1D *h2){
+ //
+ // Add histogram h2 to h1
+ //
+ std::string mn = "Add: ";
+ bool debug=false;
+
+  if (!h1) {
+   throw SPXParseException(cn+mn+"Histogram h1 not found !");   
+  }
+
+  if (!h2) {
+   throw SPXParseException(cn+mn+"Histogram h2 not found !");   
+  }
+ 
+  TString hname=h1->GetName();
+  hname+="_+_";
+  hname+=h2->GetName(); 
+  //h1->Clone(hname)
+  h1->Add(h2);
+  h1->SetName(hname);
+
+  return;
+};
 
 void SPXGraphUtilities::Multiply(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, int noerr) {
  //

@@ -37,7 +37,7 @@ void SPXSteeringFile::SetDefaults(void) {
 	if(debug) std::cout << cn << mn << "plotBand set to default: \"false\"" << std::endl;
 
         addonLegendNLOProgramName= false;
-	if(debug) std::cout << cn << mn << " addonLegendNLOProgramName set to default: \"false\"" << std::endl;
+	if(debug) std::cout << cn << mn << "addonLegendNLOProgramName set to default: \"false\"" << std::endl;
 
 	plotErrorTicks = true;
 	if(debug) std::cout << cn << mn << "plotErrorTicks set to default: \"true\"" << std::endl;
@@ -85,7 +85,7 @@ void SPXSteeringFile::SetDefaults(void) {
 	if(debug) std::cout << cn << mn << "set_grid_styles set to default: \"false\"" << std::endl;
 
         printTotalSigma=false;
-	if(debug) std::cout << cn << mn << " printTotalSigma set to default: \"false\"" << std::endl;
+	if(debug) std::cout << cn << mn << "printTotalSigma set to default: \"false\"" << std::endl;
 
 	gridCorr = false;
 	if(debug) std::cout << cn << mn << "gridCorr set to default: \"false\"" << std::endl;
@@ -2037,6 +2037,9 @@ void SPXSteeringFile::ParseGridSteeringFiles(void) {
 				gridSteeringFile.Parse();
 
 				gridSteeringFile.PrependGridFilepath(pci.gridDirectory);
+
+				gridSteeringFile.PrependGridFilepathVector(pci.gridDirectory);
+
 				if(debug) std::cout << cn << mn << "Successfully prepended directory \"" << pci.gridDirectory << "\" onto grid file" << std::endl;
 				if(debug) std::cout << cn << mn << "Resulting grid filepath: \"" << gridSteeringFile.GetGridFilepath() << "\"" << std::endl;
 			} catch(const SPXException &e) {
@@ -2164,7 +2167,7 @@ void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 					pci.correctionsFillColor = pdfSteeringFile.GetFillColor();
 				}
 
-				if(debug) std::cout << cn << mn << " MarkerStyle=  " << pci.correctionsMarkerStyle<< " Default= "<<PC_EMPTY_STYLE << std::endl;
+				if(debug) std::cout << cn << mn << "MarkerStyle=  " << pci.correctionsMarkerStyle<< " Default= "<<PC_EMPTY_STYLE << std::endl;
 
 				if(pci.correctionsMarkerStyle == PC_EMPTY_STYLE) {
 					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \

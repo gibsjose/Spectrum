@@ -6,6 +6,9 @@
 
 ## Change Log
 
+ -SPXGRid and SPXDPF:
+  added possibility to input list of grids (in grid steering) that are added together
+
  -added possibility to print total cross sections
 
  -SPXPlotConfiguration and  SPXSteering: added options: grid_marker_color, grid_marker_style, grid_fill_Style

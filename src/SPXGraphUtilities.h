@@ -100,6 +100,8 @@ public:
 
         static TGraphAsymmErrors* TH1TOTGraphAsymm(TH1 *h1);
 
+        static void Add(TH1D *h1, TH1D *h2);
+
         static void Multiply(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, int noerr=0);
         static void AddtoBand(TGraphErrors* g1, TGraphAsymmErrors* g2, bool addinquadrature=true);
         static void AddinQuadrature(TGraphAsymmErrors* g1, TGraphAsymmErrors* g2, bool takesign=false);

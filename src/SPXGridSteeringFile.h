@@ -62,7 +62,9 @@ private:
 	double yScale;
 
 	//[GRID]
+	std::vector <std::string> vgridFilepath;
 	std::string gridFilepath;
+
 	std::vector<std::string> correctionFiles;
 	std::vector<std::string> correctionFilesLabel;
 	std::vector<std::string> correctionFilesAuthor;
@@ -165,16 +167,41 @@ public:
 		return this->yScale;
 	}
 
+
 	const std::string & GetGridFilepath(void) const {
 		return this->gridFilepath;
 	}
 
-	void SetGridFilepath(std::string &filepath) {
-		this->gridFilepath = filepath;
+	std::vector <std::string > GetGridFilepathVector(void) const {
+		return this->vgridFilepath;
 	}
+ 
+        int GetNumberofGrids() {
+	 return vgridFilepath.size();
+        }
+
+	//void SetGridFilepath(std::string &filepath) {
+	//	this->gridFilepath = filepath;
+	//}
 
 	void PrependGridFilepath(std::string &path) {
 		this->gridFilepath = path + "/" + this->gridFilepath;
+	}
+
+	void PrependGridFilepathVector(std::string &path) {
+	  //std::cout<<" number of grids= "<<vgridFilepath.size()<<std::endl;
+	  std::vector <std::string> tmp;
+          tmp=vgridFilepath;
+          vgridFilepath.clear();
+	  for (int igrid=0; igrid<tmp.size(); igrid++) { 
+	   std::string str=tmp.at(igrid);
+	   std::string newname = path + "/" + str;
+
+ 	   //std::cout<<" oldname= "<<str.c_str()<<" newname= "<<newname.c_str()<<std::endl;
+
+           vgridFilepath.push_back(newname);
+ 	   //std::cout<<" replaced name= "<<vgridFilepath.at(igrid).c_str()<<std::endl;
+          }
 	}
 
 	unsigned int GetNumberOfCorrectionFiles(void) const {

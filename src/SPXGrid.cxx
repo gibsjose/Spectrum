@@ -21,42 +21,66 @@ const std::string cn = "SPXGrid::";
 bool SPXGrid::debug;
 
 TH1D * SPXGrid::CreateGrid(void) {
+ debug=true;
  std::string mn = "CreateGrid: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
- std::string gridFile = pci->gridSteeringFile.GetGridFilepath();
+ //std::string gridFile = pci->gridSteeringFile.GetGridFilepath();
 
- if(!SPXFileUtilities::FileExists(gridFile)) {
-  throw SPXFileIOException(gridFile, "Unable to open grid file");
+ TH1D *referenceHistogramsum;
+
+ vector <std::string> vgridfiles=pci->gridSteeringFile.GetGridFilepathVector();
+
+ std::cout<<cn<<mn<<" Number of grids= "<< vgridfiles.size()<<std::endl;
+
+ for (int igrid=0; igrid<vgridfiles.size(); igrid++) {
+  std::string gridFile= vgridfiles.at(igrid);
+  
+  if (debug) {
+    std::cout <<cn<<mn<<" igrid= "<<igrid<<" gridFile "<<gridFile.c_str() << std::endl;
+  }
+
+  if(!SPXFileUtilities::FileExists(gridFile)) {
+   throw SPXFileIOException(gridFile, cn+mn+"Unable to open grid file");
+  }
+
+  //Create a new grid object from the grid file
+  appl::grid * grid = new appl::grid(gridFile);
+  if (!grid) {
+   throw SPXGeneralException(cn+mn+"APPLGrid: appl::grid(" + gridFile + ") did not return a valid object pointer");
+  }
+  vgrid.push_back(grid);
+
+ //Create a reference histogram from the grid
+  TH1D *referenceHistogram = (TH1D *)grid->getReference();
+
+  if (!referenceHistogram) {
+   throw SPXGeneralException("Reference histogram from appl::grid::getReference() for grid file " + gridFile + " was unsuccessful");
+   referenceHistogramCorrupted = true;
+  }
+
+  int nTot = grid->run();
+  referenceHistogram->Scale(1.0 / nTot);
+
+  if (nTot < 0) {
+   referenceHistogramCorrupted = true;
+  }
+
+  this->referenceHistogram = referenceHistogram;
+
+  if (debug) {
+   std::cout <<cn<<mn<<"Printing reference histogram: " << std::endl;
+   this->referenceHistogram->Print("all");
+  }
+
+  if (igrid==0) {
+   referenceHistogramsum=referenceHistogram;
+  } else {
+   SPXGraphUtilities::Add( referenceHistogramsum, referenceHistogram);
+  }
+
  }
-
- //Create a new grid object from the grid file
-  grid = new appl::grid(gridFile);
-
-  if(!grid) {
-   throw SPXGeneralException("APPLGrid: appl::grid(" + gridFile + ") did not return a valid object pointer");
-   }
-
-   //Create a reference histogram from the grid
-   TH1D *referenceHistogram = (TH1D *)grid->getReference();
-
-   if(!referenceHistogram) {
-    throw SPXGeneralException("Reference histogram from appl::grid::getReference() for grid file " + gridFile + " was unsuccessful");
-    referenceHistogramCorrupted = true;
-   }
-
-   int nTot = grid->run();
-   referenceHistogram->Scale(1.0 / nTot);
-
-   if(nTot < 0) {
-    referenceHistogramCorrupted = true;
-   }
-
-   this->referenceHistogram = referenceHistogram;
-
-   if (debug) {
-    std::cout <<cn<<mn<<"Printing reference histogram: " << std::endl;
-    this->referenceHistogram->Print("all");
-   }
-   return referenceHistogram;
+ 
+ referenceHistogram=referenceHistogramsum;
+ return referenceHistogram;
 }
