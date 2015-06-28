@@ -77,6 +77,8 @@ private:
 	std::vector <double> DataCutXmin;         // Value below which data points are removed if  RemoveXbins=true
 	std::vector <double> DataCutXmax;         // Value above which data points are removed if  RemoveXbins=true
         
+        bool printTotalSigma;   // Flag to indicate that, if total integrated cross section should be printed
+
 	bool gridCorr;		//Flag to indicate that, if specified in the steering, the grid corrections should be applied
 	bool labelSqrtS;	//Flag to indicate that the Sqrt(s) value should be shown in the legend
 
@@ -195,11 +197,14 @@ public:
 	}
 
 
-
+	bool PrintTotalCrossSection(void) const {
+		return this->printTotalSigma;
+	}
 
 	bool ApplyGridCorr(void) const {
 		return this->gridCorr;
 	}
+
 
 	bool GetLabelSqrtS(void) const {
 		return this->labelSqrtS;

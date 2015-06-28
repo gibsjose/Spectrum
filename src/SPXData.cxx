@@ -989,6 +989,22 @@ void SPXData::Print(void) {
 	}
 }
 
+void SPXData::PrintTotalCrossSection(void){
+ std::string mn = "PrintTotalCrossSection: ";
+ if (debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ double sigmatot=0.;
+ for (int i = 0; i < numberOfBins; i++) {
+  double binw=data["xhigh"][i]-data["xlow"][i];
+  sigmatot+=data["sigma"][i]*binw;
+ }
+
+ std::cout<<cn<<mn<<"Data: "<<pci.dataSteeringFile.GetDataFile()<<std::endl;
+ std::cout<<cn<<mn<<"Total Cross section: "<<sigmatot<<std::endl;
+ 
+ return;
+};
+
 void SPXData::PrintSpectrum(void) {
 	std::string mn = "PrintSpectrum: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);

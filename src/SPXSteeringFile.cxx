@@ -84,6 +84,9 @@ void SPXSteeringFile::SetDefaults(void) {
         set_grid_styles=false;    
 	if(debug) std::cout << cn << mn << "set_grid_styles set to default: \"false\"" << std::endl;
 
+        printTotalSigma=false;
+	if(debug) std::cout << cn << mn << " printTotalSigma set to default: \"false\"" << std::endl;
+
 	gridCorr = false;
 	if(debug) std::cout << cn << mn << "gridCorr set to default: \"false\"" << std::endl;
 
@@ -302,6 +305,8 @@ void SPXSteeringFile::Print(void) {
         if (CalculateChi2==1) std::cout << "\t\t Calculate Simple Chi2" << std::endl;
 
         if (DumpTables==0) std::cout << "\t\t Dump Latex tables ON" << std::endl;
+
+	if (printTotalSigma) std::cout << "\t\t Print total cross section "  << std::endl;
 
 	std::cout << "\t\t Grid Corrections are: " << (gridCorr ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Take sign when adding total error: " << (TakeSignforTotalError? "ON" : "OFF") << std::endl;
@@ -1872,6 +1877,8 @@ void SPXSteeringFile::Parse(void) {
 	plotStaggered  = reader->GetBoolean("GRAPH", "plot_staggered", plotStaggered);
 	matchBinning   = reader->GetBoolean("GRAPH", "match_binning", matchBinning);
 	TakeSignforTotalError = reader->GetBoolean("GRAPH", "take_sign_intoaccount_for_total_error", TakeSignforTotalError);
+
+	printTotalSigma = reader->GetBoolean("GRAPH", "print_total_sigma", printTotalSigma);
 
 	gridCorr       = reader->GetBoolean("GRAPH", "apply_grid_corr", gridCorr);
 	labelSqrtS     = reader->GetBoolean("GRAPH", "label_sqrt_s", labelSqrtS);

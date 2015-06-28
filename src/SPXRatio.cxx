@@ -405,29 +405,34 @@ void SPXRatio::Divide(void) {
    if (numeratorGraph.size()==0)
     throw SPXGraphException(cn + mn + "No numeratorGraph found !");
 
-   if (debug) {
-    std::cout<<cn<<mn<<"Match binning for denominatorGraph= "<<denominatorGraph->GetName()<<std::endl;
-    //denominatorGraph->Print();
-   }
+   //plotConfiguration.GetPlotConfigurationInstance(index).SteeringFile;
 
-   for (int i=0; i<numeratorGraph.size(); i++){
-    try {
+   if (MatchBinning) {
+    if (debug) {
+     std::cout<<cn<<mn<<"Match binning for denominatorGraph= "<<denominatorGraph->GetName()<<std::endl;
+     //denominatorGraph->Print();
+    }
+
+    for (int i=0; i<numeratorGraph.size(); i++){
+     try {
       if (debug) std::cout<<cn<<mn<<"Match binning for numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName()
-                          <<" denominatorGraph= "<<denominatorGraph->GetName()<<std::endl;
+                                  <<" denominatorGraph= "<<denominatorGraph->GetName()<<std::endl; 
 
       SPXGraphUtilities::MatchBinning(denominatorGraph, numeratorGraph[i], true);
+
       if (debug) {
        std::cout<<cn<<mn<<"After Match binning for numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName()
-                          <<" denominatorGraph= "<<denominatorGraph->GetName()<<std::endl;
+                       <<" denominatorGraph= "<<denominatorGraph->GetName()<<std::endl;
        numeratorGraph[i]->Print();
       }
-    } catch(const SPXException &e) {
-     std::cerr << e.what() << std::endl;
-     std::ostringstream oss;
-     oss << cn <<mn<<"Unable to match numerator "<<numeratorGraph[i]->GetName()
-         <<" with nbins= "<<numeratorGraph[i]->GetN()
-         <<" with denominator= "<<denominatorGraph->GetName()<<" nbins= "<<denominatorGraph->GetN();
-     throw SPXGraphException(oss.str());
+     } catch(const SPXException &e) {
+      std::cerr << e.what() << std::endl;
+      std::ostringstream oss;
+      oss << cn <<mn<<"Unable to match numerator "<<numeratorGraph[i]->GetName()
+          <<" with nbins= "<<numeratorGraph[i]->GetN()
+          <<" with denominator= "<<denominatorGraph->GetName()<<" nbins= "<<denominatorGraph->GetN();
+      throw SPXGraphException(oss.str());
+     }
     }
    }
   }
@@ -443,25 +448,26 @@ void SPXRatio::Divide(void) {
    throw SPXGraphException(cn + mn + "No numeratorGraph found !");
 
   //Match the convolute binning to the data binning
-  try {
-   for (int i=0; i<numeratorGraph.size(); i++){
-    SPXGraphUtilities::MatchBinning(numeratorGraph[i], denominatorGraph, true);
+  if (MatchBinning) {
+   try {
+    for (int i=0; i<numeratorGraph.size(); i++){
+     SPXGraphUtilities::MatchBinning(numeratorGraph[i], denominatorGraph, true);
+    }
+   } catch(const SPXException &e) {
+    std::cerr << e.what() << std::endl;
+    throw SPXGraphException(cn + mn + "Unable to match convolute binning to data binning");
    }
-  } catch(const SPXException &e) {
-   std::cerr << e.what() << std::endl;
-   throw SPXGraphException(cn + mn + "Unable to match convolute binning to data binning");
-  }
 
-  //Match the convolute binning to the data binning
-  try {
-   for (int i=0; i<numeratorGraphstatonly.size(); i++){
-    SPXGraphUtilities::MatchBinning(numeratorGraphstatonly[i], denominatorGraph, true);
+   //Match the convolute binning to the data binning
+   try {
+    for (int i=0; i<numeratorGraphstatonly.size(); i++){
+     SPXGraphUtilities::MatchBinning(numeratorGraphstatonly[i], denominatorGraph, true);
+    }
+   } catch(const SPXException &e) {
+    std::cerr << e.what() << std::endl;
+    throw SPXGraphException(cn + mn + "Unable to match convolute binning to data binning");
    }
-  } catch(const SPXException &e) {
-   std::cerr << e.what() << std::endl;
-   throw SPXGraphException(cn + mn + "Unable to match convolute binning to data binning");
   }
-
  }
 //@TODO What if it's Data/Data???
  else if(ratioStyle.IsDataOverData()) {
@@ -472,20 +478,20 @@ void SPXRatio::Divide(void) {
    denominatorGraph->Print();
   }
 
-  try {
-   
-   for (int i=0; i<numeratorGraph.size(); i++){
-    //if (debug) {
-    //std::cout<<cn<<mn<<"numeratorGraph["<<i<<"]: " << numeratorGraph[i]->GetName()<<std::endl;
-    //numeratorGraph[i]->Print();
-    //}
-    SPXGraphUtilities::MatchBinning(numeratorGraph[i], denominatorGraph, true);
+  if (MatchBinning) {
+   try { 
+    for (int i=0; i<numeratorGraph.size(); i++){
+     //if (debug) {
+     //std::cout<<cn<<mn<<"numeratorGraph["<<i<<"]: " << numeratorGraph[i]->GetName()<<std::endl;
+     //numeratorGraph[i]->Print();
+     //}
+     SPXGraphUtilities::MatchBinning(numeratorGraph[i], denominatorGraph, true);
+    }
+   } catch(const SPXException &e) {
+    std::cerr << e.what() << std::endl;
+    throw SPXGraphException(cn + mn + "Unable to match convolute binning to data binning");
    }
-  } catch(const SPXException &e) {
-   std::cerr << e.what() << std::endl;
-   throw SPXGraphException(cn + mn + "Unable to match convolute binning to data binning");
   }
-
  } else if (ratioStyle.IsConvoluteOverNominal()) {
   if (debug) std::cout<<cn<<mn<<" ratioStyle.IsConvoluteOverNominal "<<std::endl;
 
@@ -537,15 +543,23 @@ void SPXRatio::Divide(void) {
    }
 
    if ( numeratorGraph[i]->GetN()!=denominatorGraph->GetN()) {
-    if (debug) {
-     std::cout<<cn<<mn<<"Bins are differents "<<std::endl;
-     std::cout<<cn<<mn<<"Match binning for numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName()
+    if (MatchBinning) {
+     if (debug) {
+      std::cout<<cn<<mn<<"Bins are different "<<std::endl;
+      std::cout<<cn<<mn<<"Match binning for numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName()
                        <<" denominatorGraph= "<<denominatorGraph->GetName()<<std::endl;
-    }
-    if (numeratorGraph[i]->GetN()>denominatorGraph->GetN() ) {
-     SPXGraphUtilities::MatchBinning(denominatorGraph, numeratorGraph[i], true);
+     }
+     if (numeratorGraph[i]->GetN()>denominatorGraph->GetN() ) {
+      SPXGraphUtilities::MatchBinning(denominatorGraph, numeratorGraph[i], true);
+     } else {
+      SPXGraphUtilities::MatchBinning(numeratorGraph[i], denominatorGraph, true);
+     }
     } else {
-     SPXGraphUtilities::MatchBinning(numeratorGraph[i], denominatorGraph, true);
+      std::cout<<cn<<mn<<"Bins are different numerator nbins= "<<numeratorGraph[i]->GetN() 
+	       <<" denominatorGraph nbins= "<<denominatorGraph->GetN()<<std::endl;
+      std::cout<<cn<<mn<<"..but MatchBinning is OFF "<<std::endl;
+      std::cout<<cn<<mn<<"...do not know what to do !"<<std::endl;
+
     }
    }
 

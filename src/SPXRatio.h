@@ -42,6 +42,7 @@ public:
     SPXRatio(SPXPlotConfiguration &pc, SPXRatioStyle &rs) {
         plotConfiguration = pc;
     	ratioStyle = rs;
+        MatchBinning=true;
     }
 
     void Parse(std::string &s);
@@ -52,6 +53,7 @@ public:
     void AddConvoluteFilePDFMap(StringPairPDFMap_T &);
     void GetGraphs(void);
     void Print(void);
+    void SetMatchBinning(bool matchbin) { MatchBinning=matchbin; return; }
 
     std::string CheckForAlias(std::string &, const std::string);
 
@@ -197,6 +199,8 @@ private:
     std::vector<TGraphAsymmErrors *> numeratorGraphstatonly;
     std::vector<TGraphAsymmErrors *> ratioGraph;
     std::vector<TGraphAsymmErrors *> ratioGraphstatonly;
+
+    bool MatchBinning;  //Flag to indocate if matchbinning should be called
 
     TGraphAsymmErrors *denominatorGraph;            //TGraph of the denominator
 

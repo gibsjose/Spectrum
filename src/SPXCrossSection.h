@@ -98,6 +98,8 @@ public:
         void MatchBinning(StringGraphMap_T dataFileGraphMap);
         void UpdateBand(void);
 
+        void PrintTotalCrossSection(void);
+
 
 private:
 	static bool debug;		       // Flag indicating debug mode

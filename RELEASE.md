@@ -6,6 +6,8 @@
 
 ## Change Log
 
+ -added possibility to print total cross sections
+
  -SPXPlotConfiguration and  SPXSteering: added options: grid_marker_color, grid_marker_style, grid_fill_Style
 
  -SPXGraphUtilities::GetYUnitsScale: 

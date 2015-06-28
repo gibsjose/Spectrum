@@ -43,6 +43,8 @@ public:
 
 	void CreateGraphs(void);
 
+        void PrintTotalCrossSection(void);
+
 	void ReadCorrelation();
 
 	static bool GetDebug(void) {

@@ -115,6 +115,19 @@ void SPXPlot::Plot(void) {
 	 SPXLatexTable *ltable= new SPXLatexTable(data,crossSections, steeringFile);
         }
 
+        if (steeringFile->PrintTotalCrossSection()!=0) {
+	 std::cout<<cn<<mn<<"Print total cross sections "<<std::endl;
+	 //std::cout<<cn<<mn<<"Data: "<<std::endl;
+         for (int i=0; i<data.size(); i++)
+	   data.at(i)->PrintTotalCrossSection();
+
+	 //std::cout<<cn<<mn<<"Theory: "<<std::endl;
+         for (int i=0; i< crossSections.size(); i++)
+	  crossSections.at(i).PrintTotalCrossSection();
+ 
+        }
+
+
 	UpdateCanvas();
 
 	//Create a PNG of the canvas
@@ -2049,12 +2062,20 @@ void SPXPlot::InitializeRatios(void) {
 
   try {
    SPXRatio ratioInstance = SPXRatio(pc, ratioStyle);
+   
    ratioInstance.AddDataFileGraphMap(dataFileGraphMap);
    ratioInstance.AddReferenceFileGraphMap(referenceFileGraphMap);
    ratioInstance.AddNominalFileGraphMap(nominalFileGraphMap);
    ratioInstance.AddConvoluteFileGraphMap(convoluteFileGraphMap);
    ratioInstance.AddConvoluteFilePDFMap(convoluteFilePDFMap);
    ratioInstance.Parse(ratioString);
+
+   bool matchbin=steeringFile->GetMatchBinning();
+   if (matchbin)
+    std::cout<<cn<<mn<<"Set Matchbinning to ON "<<std::endl;
+   else
+    std::cout<<cn<<mn<<"Set Matchbinning to OFF "<<std::endl;
+   ratioInstance.SetMatchBinning(matchbin);
 
    if (debug) std::cout<<cn<<mn<<"i= "<<i<<" call GetGraphs "<<std::endl; 
    ratioInstance.GetGraphs();

@@ -158,6 +158,42 @@ void SPXCrossSection::ParseCorrections(void) {
 	}
 }
 
+void SPXCrossSection::PrintTotalCrossSection() {
+ std::string mn = "PrintTotalCrossSection: ";
+ SPXUtilities::PrintMethodHeader(cn, mn);
+
+ int nbands=pdf->GetNBands();
+ if (debug) std::cout << cn << mn <<"Number of bands= " <<nbands<< std::endl;
+
+ for (int iband=0; iband<nbands; iband++) {
+  TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+  TString gname=gband->GetName();
+  if (!gband) {
+   std::ostringstream oss;
+   oss << cn <<mn<<"get bands "<<"Band "<<iband<<" not found at index "<<iband;
+   throw SPXGeneralException(oss.str());
+  }
+  if (gname.Contains("_total_")) {
+   double sigtot=0.;
+   for (int i=0; i<gband->GetN(); i++) {
+    double xlow  = gband->GetErrorXlow(i);
+    double xhigh = gband->GetErrorXhigh(i);
+    double binw=xlow+xhigh;
+    double x_val, y_val;
+    gband->GetPoint(i, x_val, y_val);
+    sigtot+=y_val*binw;
+   }
+   std::cout<<cn<<mn<<"Theory cross section "<<gridname.c_str()<<std::endl;
+   std::cout<<cn<<mn<<"Band name= "<<gname.Data()<<std::endl;
+   std::cout<<cn<<mn<<"Total integrated cross section= "<<sigtot<<std::endl;
+
+  }
+ }
+
+
+ return;
+}
+
 void SPXCrossSection::UpdateBand() {
  std::string mn = "UpdateBandandHisto: ";
  //
