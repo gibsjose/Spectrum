@@ -32,11 +32,10 @@ private:
 	//INI Reader
 	INIReader *reader;
 
-	//Metadata
-	std::string filename;
-
 	//[GEN]
 	bool debug;
+
+	std::string filename;                   // name of steering file
 
 	//[DESC]
 	std::string name;			// Name of Steering Data
@@ -212,8 +211,8 @@ public:
 		return dataFormat;
 	}
 
-	const std::string & GetDataFile(void) const {
-		return dataFilepath;
+       	const std::string & GetDataFile(void) const {
+	 return dataFilepath;
 	}
 
 	void SetDataFile(std::string & filepath) {
@@ -221,7 +220,7 @@ public:
 	}
 
 	void PrependDataFile(std::string & path) {
-		dataFilepath = path + "/" + dataFilepath;
+	 dataFilepath = path + "/" + dataFilepath;
 	}
 
 	const std::string & GetTotalCorrellationFileName(void) const {

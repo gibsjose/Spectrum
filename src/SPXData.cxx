@@ -82,6 +82,7 @@ void SPXData::Parse(void) {
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(debug) std::cout << cn << mn << "Parsing data file: " << pci.dataSteeringFile.GetDataFile() << std::endl;
+	if(debug) std::cout << cn << mn << "Parsing filename: " << pci.dataSteeringFile.GetFilename() << std::endl;
 
 	try {
 		OpenDataFile();
@@ -429,6 +430,10 @@ void SPXData::ParseSpectrum(void) {
 	if (pci.dataSteeringFile.AddLuminosityUncertainyToSystematics()) {
 	 if(debug) std::cout<<cn<<mn<<"Add luminosity as systematic components"<<std::endl;
          double elumi=pci.dataSteeringFile.GetDatasetLumiUncertainty();
+	 //
+         // in case lumi needs to be symmetrized
+         //elumi/=2.;
+	 //
 	 std::vector<double> tmp_systp(masterSize, elumi);
 	 std::vector<double> tmp_systn(masterSize,-elumi);
 	 std::string name="syst_lumi";

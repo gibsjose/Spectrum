@@ -668,7 +668,7 @@ void SPXPlot::DrawRatioPadFrame(void) {
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
 	if(!ratioPad) {
-		throw SPXROOTException(cn + mn + "You MUST call SPXPlot::ConfigurePads before drawing the pad frame");
+	 throw SPXROOTException(cn + mn + "You MUST call SPXPlot::ConfigurePads before drawing the pad frame");
 	}
 
 	//Get the plot configuration and display style from steering file
@@ -722,8 +722,11 @@ void SPXPlot::DrawRatioPadFrame(void) {
 	 ratioFrameHisto = ratioPad->DrawFrame(xMinRatio, yMinRatio, xMaxRatio, yMaxRatio);
 	 xAxisRatio = ratioFrameHisto->GetXaxis();
 	 yAxisRatio = ratioFrameHisto->GetYaxis();
-     
-         //xAxisRatio->SetNdivisions(m_nDivY);
+
+  	 if(pc.IsXLog()) {     
+	   //xAxisOverlay->SetNdivisions(5);
+	  xAxisRatio->SetMoreLogLabels(true);
+         } 
 
 	 if(debug) {
 	  std::cout << cn << mn << "Ratio Pad frame drawn with dimensions: " << std::endl;

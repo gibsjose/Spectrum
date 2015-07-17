@@ -157,6 +157,9 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t\t Dataset Year: " << datasetYear << std::endl;
 	std::cout << "\t\t Dataset Luminosity label: " << datasetLumilabel << std::endl;
 	std::cout << "\t\t Dataset Luminosity: " << lumiValue <<" +- "<<lumiError<<"[%]"<< std::endl;
+
+	std::cout << "\t\t Add luminosity as systematic uncertainty " << ( addLumiSystematic ? "ON" : "OFF") << std::endl;
+
 	std::cout << "\t\t Reference Journal Name: " << referenceJournalName << std::endl;
 	std::cout << "\t\t Reference Journal Year: " << referenceJournalYear << std::endl;
 	std::cout << "\t\t Reference arXiv Number: " << referenceArXivNumber << std::endl;
@@ -430,7 +433,8 @@ void SPXDataSteeringFile::Parse(void) {
 		throw SPXINIParseException("DATA", "data_file", "You MUST specify the data_file");
 	} else {
 		dataFilepath = tmp;
-		if(debug) std::cout << cn << mn << "Successfully read Data File: " << dataFilepath << std::endl;
+		if(debug) 
+                std::cout << cn << mn << "Successfully read Data File: " << dataFilepath << std::endl;
 	}
 
 	tmp = reader->Get("DATA", "corr_total_file_name", "EMPTY");
@@ -481,7 +485,7 @@ void SPXDataSteeringFile::Parse(void) {
         if (DataCutXmax!=defDataCutXmax) RemoveXbins=true;
 
 	addLumiSystematic = reader->GetBoolean("DATA", "add_lumi_uncertainty_to_systematics", false);
-	if(debug) std::cout << cn << mn << "Add luminosity systematic as additional systematic componenent: " << (addLumiSystematic ? "ON" : "OFF") << std::endl;
+	if(debug) std::cout << cn << mn << "Add luminosity systematic as additional systematic component: " << (addLumiSystematic ? "ON" : "OFF") << std::endl;
 
 	tmp = reader->Get("DATA", "systematics_uncorrellated_between_bins", "EMPTY");
 	if(!tmp.compare("EMPTY")) {
