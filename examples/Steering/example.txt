@@ -50,7 +50,7 @@ apply_grid_corr = true				;[Optional] Apply the grid corrections (e.g. hadronisa
 
 
 
-show_individual_systemtics = 0                  ;[Optional] Show individual systematic on data above x%
+show_individual_systematics = 0                  ;[Optional] Show individual systematic on data above x%
 
 order_systematic_colorbyalphabeth = false       ;[Optional] if set systematics colors are order by alphabethical order of name
 
@@ -84,9 +84,10 @@ band_with_gridcorrection = true                 ;[Optional] include grid correct
 ;ren_scales = 0.5, 0.5, 1.0, 1.0, 2.0, 2.0      ;[Optional] renormalisation scales to be used for band
 ;fac_scales = 0.5, 1.0, 0.5, 2.0, 1.0, 2.0      ;[Optional] factorization scales to be used for band
 
-
+;
 calculate_chi2 0 ;[Optional] calculate chi2 0=off [default]
 ;                                           1 simple chi2 CalculateSimpleChi2                             
+;
 dump_latex_tables 0 ;[Optional] calculate chi2 0=off [default]
 ;                                              1 dump latex tables  
 ;

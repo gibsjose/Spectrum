@@ -2578,10 +2578,10 @@ void SPXPlot::InitializeData(void) {
 
                 dataInstance->CreateGraphs();
 
-   		if(debug) std::cout << cn << mn << "Chi2 calculations" << steeringFile->GetCalculateChi2() << std::endl;
+   		if(debug) std::cout << cn << mn << "Chi2 calculation method= " << steeringFile->GetCalculateChi2() << std::endl;
 
                 if (steeringFile->GetCalculateChi2()>0) {
-   		 if(debug) std::cout << cn << mn << "Read-in Chi2 calculations" << std::endl;
+   		 if(debug) std::cout << cn << mn << "Read-in information on correlations among bins " << std::endl;
                  dataInstance->ReadCorrelation();
                 }
 

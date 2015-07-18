@@ -269,7 +269,7 @@ TH1D* SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TH1D *hslave, b
 void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmErrors *slave, bool dividedByBinWidth) {
     std::string mn = "MatchBinning: ";
 
-    bool debug=true;
+    bool debug=false;
 
     //Make sure graphs are valid
     if(!master) {

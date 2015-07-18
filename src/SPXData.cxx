@@ -705,7 +705,7 @@ void SPXData::ParseSpectrum(void) {
         }
 
         if (debug) {
-	  std::cout<<cn<<mn<<"Print correlation type map filled: "<<std::endl;
+	  std::cout<<cn<<mn<<"Print correlation type for each systematic in map individualSystematicsIsCorrelated: "<<std::endl;
 	 for(std::map<std::string, bool>::iterator it =  individualSystematicsIsCorrelated.begin(); it != individualSystematicsIsCorrelated.end(); ++it) {
 	   std::cout<<cn<<mn<<"name= "<<it->first.c_str()<<(it->second ? " CORRELATED" : " UNCORRELATED") <<std::endl;
          }
@@ -1249,9 +1249,15 @@ void SPXData::ReadCorrelation()
 
  std::string corrtotalfilename=pci.dataSteeringFile.GetTotalCorrellationFileName();
  if (debug) std::cout <<cn<<mn<<"Read total correlations corrfilename= "<<corrtotalfilename<< std::endl;
+ if (corrtotalfilename.empty()) {
+  std::cout <<cn<<mn<<"INFO: Statistical correlation file is empty "<<std::endl;
+ }
 
  std::string corrstatfilename=pci.dataSteeringFile.GetStatCorrellationFileName();
  if (debug) std::cout <<cn<<mn<<"Read statistical correlations corrfilename= "<<corrstatfilename<< std::endl;
+ if (corrstatfilename.empty()) {
+  std::cout <<cn<<mn<<"INFO: Statistical correlation file is empty "<<std::endl;
+ }
 
  if (!totalErrorGraph) {
   throw SPXParseException(cn+mn+"Total data graph totalErrorGraph not found !");
@@ -1340,7 +1346,7 @@ void SPXData::ReadCorrelation()
     for (int jbin=0; jbin<nbin; jbin++){
      double val=0.;
      if (ibin==jbin) val=eystat;
-     (*cov_matrixstat)(ibin,jbin)=val;
+     (*cov_matrixstat)(ibin,jbin)=val*val;
     }
    }
 
@@ -1694,7 +1700,6 @@ void SPXData::CalculateSystematicCovarianceMatrix() {
  StringDoubleVectorMap_T symsystmap=SPXData::SymmetrizeSystemicUncertaintiesMatrix(individualSystematics);
 
 
-
  for(StringDoubleVectorMap_T::iterator it = symsystmap.begin(); it != symsystmap.end(); ++it) {
 
   const std::string   &name = it->first;
@@ -1717,7 +1722,7 @@ void SPXData::CalculateSystematicCovarianceMatrix() {
   bool systtype=this->GetSystematicCorrelationType(name);
   if (debug) std::cout<<cn<<mn<<"name= "<<name.c_str() << " type= "<<(systtype ? " CORRELATED" : " UNCORRELATED") << std::endl;
 
-  if (debug) std::cout<<cn<<mn<<"Loop over Nbin: "<<syst.size()  << std::endl;
+  //if (debug) std::cout<<cn<<mn<<"Loop over Nbin: "<<syst.size()  << std::endl;
   for ( int ibin=0; ibin<Nbin; ibin++ ){
    for ( int jbin=0; jbin<Nbin; jbin++ ){
     // if (debug) std::cout<<cn<<mn<<ibin<<" "<<jbin<<" systematic name= "<<name
@@ -1885,6 +1890,7 @@ std::vector <TGraphAsymmErrors *>  SPXData::GetSystematicsErrorGraphs(void){
 
  if ( individualsystematicErrorGraph.size()==0) {
   if (debug) {
+   std::cout<<cn<<mn<<std::endl;  
    std::cout<<cn<<mn<<"Fill individualsystematicErrorGraph vector from map"<<std::endl;  
    //std::cout<<cn<<mn<<"Copy values from graph= "<<systematicErrorGraph->GetName()<<std::endl;
    //systematicErrorGraph->Print();

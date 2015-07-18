@@ -1127,7 +1127,7 @@ void SPXPDF::CalcPDFBandErrors()
  }
 
  for (int bi = 1; bi <= h_errors_PDF.at(0)->GetNbinsX(); bi++) { // loop over bins
-  if (debug) std::cout<<cn<<mn<<" bin= "<<bi<<std::endl;
+  if (debug) std::cout<<cn<<mn<<"bin= "<<bi<<std::endl;
 
   double this_err_up         = 0.;
   double this_err_down       = 0.;
@@ -1279,7 +1279,7 @@ void SPXPDF::CalcPDFBandErrors()
   if (debug) std::cout<<cn<<mn<<"this_err_down= "<<this_err_down<<std::endl;
 
   if (f_PDFErrorSize90Percent){
-   if (debug) std::cout<<cn<<mn<<" PDF has 90Percent error -> change to 68% "<<std::endl;
+   if (debug) std::cout<<cn<<mn<<"PDF has 90Percent error -> change to 68% "<<std::endl;
    this_err_up  /= 1.645;
    this_err_down/= 1.645;
   }
@@ -1304,7 +1304,7 @@ void SPXPDF::CalcPDFBandErrors()
    double y_val;
    h_PDF_results->GetPoint(bi-1, x_val, y_val);
    if (y_val!=0) {
-    std::cout<<cn<<mn<<" bin= "<<bi<<" (y_val+this_err_up)/y_val= "  <<(y_val+this_err_up)/y_val
+    std::cout<<cn<<mn<<"bin= "<<bi<<" (y_val+this_err_up)/y_val= "  <<(y_val+this_err_up)/y_val
 	     <<" (y_val-this_err_down)/y_val= "<<(y_val-this_err_down)/y_val<<std::endl;
    }
   }
@@ -2264,8 +2264,8 @@ bool SPXPDF::BandsHaveDifferentProperties(){
     std::cout <<cn<<mn<< "old_marker_style= " <<old_marker_style<<" gband= "<<gband->GetMarkerStyle()<< std::endl;
     std::cout <<cn<<mn<< "old_marker_color= " <<old_marker_color<<" gband= "<<gband->GetMarkerColor()<< std::endl;
 
-    if (bandsdifferent) std::cout <<cn<<mn<<iband<< "TRUE" << std::endl;
-    else                std::cout <<cn<<mn<<iband<< "FALSE" << std::endl;
+    if (bandsdifferent) std::cout <<cn<<mn<<" iband= "<<iband<< " TRUE" << std::endl;
+    else                std::cout <<cn<<mn<<" iband= "<<iband<< " FALSE" << std::endl;
 
   }
  }

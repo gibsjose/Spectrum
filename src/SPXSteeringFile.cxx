@@ -297,7 +297,7 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Set grid properties " << (set_grid_styles ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Staggered is: " << (plotStaggered ? "ON" : "OFF") << std::endl;
 
-	std::cout << "set_grid_styles set to default: \"false\"" << std::endl;
+	std::cout << "\t\t set_grid_styles set to default: \"false\"" << std::endl;
 
 	std::cout << "\t\t Match Binning is: " << (matchBinning ? "ON" : "OFF") << std::endl;
 
