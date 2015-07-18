@@ -29,7 +29,7 @@ TH1D * SPXGrid::CreateGrid(void) {
 
  TH1D *referenceHistogramsum;
 
- vector <std::string> vgridfiles=pci->gridSteeringFile.GetGridFilepathVector();
+ std::vector <std::string> vgridfiles=pci->gridSteeringFile.GetGridFilepathVector();
 
  std::cout<<cn<<mn<<" Number of grids= "<< vgridfiles.size()<<std::endl;
 

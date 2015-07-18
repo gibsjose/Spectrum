@@ -1478,7 +1478,7 @@ void SPXPlot::DrawLegend(void) {
    // Get PDF object
    SPXPDF * pdf=crossSections[icross].GetPDF();
  
-   string nloprogamename;
+   std::string nloprogamename;
    if (steeringFile->GetAddonLegendNLOProgramName() ) {
     SPXGrid *grid=crossSections[icross].GetGrid();
     nloprogamename=grid->GetNLOProgramNameName();

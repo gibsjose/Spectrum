@@ -95,7 +95,7 @@ private:
 	SPXPlotConfigurationInstance *pci;   // Plot configuration instance
 
 	//appl::grid *grid;		     // APPLGrid Grid
-        vector <appl::grid *> vgrid;           // vector of APPLGrid Grid
+	std::vector <appl::grid *> vgrid;           // vector of APPLGrid Grid
 
 	bool referenceHistogramCorrupted;    // Flag indicating that the reference histogram has been corrupted
 	TH1D * referenceHistogram;	     // Reference histogram

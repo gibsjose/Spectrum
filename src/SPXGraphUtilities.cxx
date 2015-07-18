@@ -395,7 +395,7 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
                 //else
 		// std::cout<<cn<<mn<<"diff > eps "<< fabs(s_bw-m_bw) << " eps= "<<eps<<std::endl;
 
-                cerr<<oss.str().c_str()<<endl;
+		std::cerr<<oss.str().c_str()<<std::endl;
 
                 throw SPXGraphException(oss.str());
             }
