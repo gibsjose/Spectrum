@@ -420,7 +420,7 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
                printf("\n s_exh-m_exh= %.15f   ",s_exh - m_exh);
                printf("\n s_exl-m_exl= %.15f \n",s_exl - m_exl);
               }
-              cout<<endl;
+	      std::cout<<std::endl;
 
 	      std::cout<<cn<<mn<<" Master: "<<master->GetName()<<std::endl;
               master->Print("all");
