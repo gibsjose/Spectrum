@@ -146,11 +146,12 @@ void SPXCrossSection::ParseCorrections(void) {
 	//Check if grid contains corrections
 	if(pci->gridSteeringFile.GetNumberOfCorrectionFiles() != 0) {
 	 try {
-	  corrections = new SPXGridCorrections(*pci);
-	  corrections->Parse();
+	  gridcorrection = new SPXGridCorrections(*pci);
+	  gridcorrection->Parse();
+
   	  if (debug) {
            std::cout<<cn<<mn<<"Sucessfully read in corrections: "<<std::endl;
-	   corrections->Print();
+	   gridcorrection->Print();
           }
 	 } catch(const SPXException &e) {
 	  throw;
@@ -240,8 +241,9 @@ void SPXCrossSection::ApplyCorrections() {
   std::cout<<cn<<mn<<"Available corrections from Grid ncorr= "<<ncorr<<" requested to include bncorr= "<<bncorr<<std::endl;
  }
 
- if (corrections==0)
-  std::cout<<cn<<mn<<"WARNING: No correction found but ncorr= "<<ncorr<<std::endl;
+
+ if (gridcorrection==0)
+  std::cout<<cn<<mn<<"WARNING: gridcorrection not defined ncorr= "<<ncorr<<std::endl;
 
  for (int i=0; i<ncorr; i++) {
   std::string filename = pci->gridSteeringFile.GetCorrectionFile(i);
@@ -251,7 +253,7 @@ void SPXCrossSection::ApplyCorrections() {
   filename=griddir+"/"+filename;
   std::cout<<cn<<mn<<"Apply corrections from filename= "<<filename<<" label= "<<corrLabel.c_str()<<std::endl;
 
-  TGraphAsymmErrors *gcorr=corrections->GetCorrectionGraph(filename);
+  TGraphAsymmErrors *gcorr=gridcorrection->GetCorrectionGraph(filename);
   if (!gcorr) {
    throw SPXGraphException(cn+mn+"Correction graph not found for filename= "+filename);
   }

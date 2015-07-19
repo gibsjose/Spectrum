@@ -112,7 +112,7 @@ public:
     }
 
 private:
-    static bool debug;								//Flag indicating debug mode
+    static bool debug;							//Flag indicating debug mode
     std::ifstream *correctionFile;					//Must declare as pointer... ifstream's copy constructor is private
     SPXPlotConfigurationInstance pci;				//Plot configuration instance which contains the grid steering file
 

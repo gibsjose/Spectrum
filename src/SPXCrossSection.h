@@ -95,6 +95,18 @@ public:
 
         std::vector<std::string> GetCorrectionLabels();
 
+	SPXGridCorrections *GetGridCorrections() { return gridcorrection;}; 
+
+	//SPXGridCorrections *  GetCorrections(int icorr) { 
+	//
+	//SPXGridCorrections *  empty;
+	//if (icorr>vgridcorrections.size()) { 
+        // std::cout<<cn<<mn<<"WARNING ask grid correction icorr= "<<icorr<<"> grod correction size "<<vgridcorrections.size()<<std::endl;
+        //return empty;
+	//}
+        //return vgridcorrections.at(icorr);
+	//}; 
+
         void MatchBinning(StringGraphMap_T dataFileGraphMap);
         void UpdateBand(void);
 
@@ -111,13 +123,15 @@ private:
 	SPXGrid *grid;			       // Grid
 	std::string gridname;                  // name of the grid
 	SPXPDF *pdf;			       // PDF
-	SPXGridCorrections *corrections;       // Grid corrections
+	SPXGridCorrections *gridcorrection;    // Grid corrections
 	bool dividedByBinWidth;		       // Flag indicating that the grid was already divided by the bin width
 
 	TGraphAsymmErrors *gridReference;      // Reference Graph from Grid
 	TGraphAsymmErrors *nominal;	       // Nominal (default) graph from PDF
 
         std::vector<std::string> correctionlabels; // labels of corrections from Grid Steering file
+       	                                           // corrections can be Hadcorr, e.w.
+        //std::vector<SPXGridCorrections *> vgridcorrections; // corrections from Grid Steering file
        	                                           // corrections can be Hadcorr, e.w.
 
 
