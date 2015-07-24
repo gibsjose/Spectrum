@@ -54,6 +54,9 @@ void SPXSteeringFile::SetDefaults(void) {
 	BandwithScales = true;
 	if(debug) std::cout << cn << mn << "BandwithScales set to default: \"false\"" << std::endl;
 
+	BeamUncertainty = 1.;
+	if(debug) std::cout << cn << mn << "BeamUncertainty set to default: \"1\"" << std::endl;
+
 	BandTotal      = true;
 	if(debug) std::cout << cn << mn << "BandwithTotal set to default: \"true\"" << std::endl;
 
@@ -285,11 +288,17 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "Steering File: " << filename << std::endl;
 	std::cout << "\t General configurations [GEN]" << std::endl;
 	std::cout << "\t\t Debug is " << (debug ? "ON" : "OFF") << std::endl;
+        std::cout << "\t\t OutputGraphicFormat= "<<OutputGraphicFormat<< std::endl;
+	std::cout << "\t\t OutputRootfile is " << (OutputRootfile ? "ON" : "OFF") << std::endl;
+
 	std::cout << "\t Graphing configurations [GRAPH]" << std::endl;
 	std::cout << "\t\t Plot Band is: " << (plotBand ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot cross section Uncertainties with PDF uncertainties: " << (BandwithPDF ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot cross section Uncertainty with AlphaS uncertainties: " << (BandwithAlphaS ? "ON" : "OFF") << std::endl;
-	std::cout << "\t\t Plot cross section Uncertainty with ren&fac scale uncertainties: " << (BandwithScales ? "ON" : "OFF") << std::endl;    std::cout << "\t\t Plot Cross section Uncertainties with total uncertainties: " << (BandTotal ? "ON" : "OFF") << std::endl;
+	std::cout << "\t\t Plot cross section Uncertainty with ren&fac scale uncertainties: " << (BandwithScales ? "ON" : "OFF") << std::endl;    
+        std::cout << "\t\t Plot Cross section Uncertainties with total uncertainties: " << (BandTotal ? "ON" : "OFF") << std::endl;
+
+        std::cout << "\t\t Add beam uncertainty to Band: " << BeamUncertainty << std::endl;
 
 	std::cout << "\t\t Add NLO program name on Legend: " << ( addonLegendNLOProgramName? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot Error Ticks is: " << (plotErrorTicks ? "ON" : "OFF") << std::endl;
@@ -442,10 +451,15 @@ void SPXSteeringFile::Print(void) {
 			std::cout << "\t\t\t AlphaS Fill Color "  << j << ": " << tmp.alphasFillColor << std::endl;
 			std::cout << "\t\t\t AlphaS Marker Style "<< j << ": " << tmp.alphasMarkerStyle << std::endl;
 
-                        std::cout <<" " << std::endl;
+			std::cout << "\t\t\t Beam uncertainty Fill Style "  << j << ": " << tmp.beamuncertaintyFillStyle << std::endl;
+			std::cout << "\t\t\t Beam uncertainty Fill Color "  << j << ": " << tmp.beamuncertaintyFillColor << std::endl;
+			std::cout << "\t\t\t Beam uncertaintyMarker Style "<< j << ": " << tmp.beamuncertaintyMarkerStyle << std::endl;
+
 			std::cout << "\t\t\t Corrections Fill Style "  << j << ": " << tmp.correctionsFillStyle << std::endl;
 			std::cout << "\t\t\t Corrections Fill Color "  << j << ": " << tmp.correctionsFillColor << std::endl;
 			std::cout << "\t\t\t Corrections Marker Style "<< j << ": " << tmp.correctionsMarkerStyle << std::endl;
+                        std::cout <<" " << std::endl;
+
 			std::cout << "\t\t\t X Scale " << j << ": " << tmp.xScale << std::endl;
 			std::cout << "\t\t\t Y Scale " << j << ": " << tmp.yScale << std::endl << std::endl;
 		}
@@ -1229,7 +1243,6 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		 configurations.insert(std::pair<std::string, std::vector<std::string> >("scale_edge_style", tmpVector));
 		 if(debug) std::cout << cn << mn << "configurations[scale_edge_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["scale_edge_style"]) << std::endl;
                 }
-		//-------
 
 		//Get the scale_fill_color
        	        if(debug) std::cout << cn << mn << "Start parsing scale_fill_color " << std::endl;
@@ -1342,8 +1355,6 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		 configurations.insert(std::pair<std::string, std::vector<std::string> >("alphas_fill_style", tmpVector));
 		if(debug) std::cout << cn << mn << "configurations[alphas_fill_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["alphas_fill_style"]) << std::endl;
 
-		//------
-
 		//Get the alphas_edge_color
        	        if(debug) std::cout << cn << mn << "Start parsing alphas_edge_color " << std::endl;
 		tmpVector.clear();
@@ -1426,6 +1437,119 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
   		 configurations.insert(std::pair<std::string, std::vector<std::string> >("alphas_marker_style", tmpVector));
 		if(debug) std::cout << cn << mn << "configurations[alphas_marker_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["alphas_marker_style"]) << std::endl;
 
+
+		// ------------------------------ beam
+		//Get the beamuncertainty_fill_style
+       	        if(debug) std::cout << cn << mn << "Start parsing beamuncertainty_fill_style " << std::endl;
+		tmpVector.clear();
+		tmp = reader->Get(plotSection, "beamuncertainty_fill_style", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout << cn << mn << "INFO: No plot option for beamuncertainty_fill_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_style" << std::endl;
+
+		if (configurations.count("pdf_fill_style")!=0)
+		 tmpVector = configurations["pdf_fill_style"];
+
+		} else {
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		}
+
+		if(debug) {
+		 std::cout << cn << mn << "beamuncertainty_fill_style configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+ 
+		//Add to configurations map
+		if (tmpVector.size()!=0)
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("beamuncertainty_fill_style", tmpVector));
+		if(debug) std::cout << cn << mn << "configurations[beamuncertainty_fill_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["beamuncertainty_fill_style"]) << std::endl;
+
+       
+
+		//Get the beamuncertainty_edge_color
+       	        if(debug) std::cout << cn << mn << "Start parsing beamuncertainty_edge_color " << std::endl;
+		tmpVector.clear();
+		tmp = reader->Get(plotSection, "beamuncertainty_edge_color", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout << cn << mn << "INFO: No plot option for beamuncertainty_edge_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_edge_color" << std::endl;
+
+		if (configurations.count("pdf_edge_color")!=0)
+		 tmpVector = configurations["pdf_edge_color"];
+		} else {
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		}
+
+		if(debug) {
+		 std::cout << cn << mn << "beamuncertainty_edge_color configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+
+		//Add to configurations map
+		if (tmpVector.size()!=0)
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("alphas_edge_color", tmpVector));
+		if(debug) std::cout << cn << mn << "configurations[beamuncertainty_edge_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["beamuncertainty_edge_color"]) << std::endl;
+
+
+
+		//Get the beamuncertainty_fill_color
+       	        if(debug) std::cout << cn << mn << "Start parsing beamuncertainty_fill_color " << std::endl;
+		tmpVector.clear();
+		tmp = reader->Get(plotSection, "beamuncertainty_fill_color", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout << cn << mn << "INFO: No plot option for beamuncertaintyfill_color found, but plot_band = true: Defaulting to pdf steering file settings pdf_fill_color" << std::endl;
+
+		if (configurations.count("pdf_fill_color")!=0)
+		 tmpVector = configurations["pdf_fill_color"];
+		} else {
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		}
+
+		if(debug) {
+		 std::cout << cn << mn << "beamuncertainty_fill_color configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+
+		//Add to configurations map
+		if (tmpVector.size()!=0)
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("beamuncertainty_fill_color", tmpVector));
+		if(debug) std::cout << cn << mn << "configurations[beamuncertainty_fill_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["beamuncertainty_fill_color"]) << std::endl;
+
+		//Get the alphas_marker_style
+       	        if(debug) std::cout << cn << mn << "Start parsing beamuncertainty_marker_style " << std::endl;
+		tmpVector.clear();
+		tmp = reader->Get(plotSection, "beamuncertainty_marker_style", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout << cn << mn << "INFO: No plot option for beamuncertainty_marker_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_marker_style" << std::endl;
+
+		if (configurations.count("pdf_marker_style")!=0)
+		 tmpVector = configurations["pdf_marker_style"];
+
+		} else {
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		}
+
+		if(debug) {
+		 std::cout << cn << mn << "beamuncertainty_marker_style configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+
+		//Add to configurations map
+		if (tmpVector.size()!=0)
+  		 configurations.insert(std::pair<std::string, std::vector<std::string> >("alphasbeamuncertainty_marker_style", tmpVector));
+		if(debug) std::cout << cn << mn << "configurations[beamuncertainty_marker_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["beamuncertainty_marker_style"]) << std::endl;
+
+		//--------------------------------beam
 
 		//Get the corrections_fill_style
        	        if(debug) std::cout << cn << mn << "Start parsing corrections_fill_style " << std::endl;
@@ -1773,6 +1897,19 @@ void SPXSteeringFile::Parse(void) {
 	//General configurations [GEN]
 	debug = reader->GetBoolean("GEN", "debug", debug);
 
+        OutputRootfile=false;
+	if(debug) std::cout << cn << mn << "OutputRootfile set to default: \"false\"" << std::endl;
+
+        OutputGraphicFormat="eps";
+	if(debug) std::cout << cn << mn << "OutputGraphicFormat set to default: "<< OutputGraphicFormat << std::endl;
+
+	OutputRootfile= reader->GetBoolean("GEN", "output_rootfile", OutputRootfile);
+        if (debug) std::cout << cn << mn << "OutputRootfile is ON" << std::endl;
+        std::cout << cn << mn << "OutputRootfile= "<< OutputRootfile << std::endl;
+
+	OutputGraphicFormat = reader->Get("GEN", "output_graphicformat", OutputGraphicFormat);
+        if (debug) std::cout << cn << mn << "OutputGraphicFormat= "<< OutputGraphicFormat << std::endl;
+
 	//Set Defaults
 	this->SetDefaults();
 
@@ -1801,6 +1938,10 @@ void SPXSteeringFile::Parse(void) {
 	BandwithScales = reader->GetBoolean("GRAPH", "band_with_scale", BandwithScales);
 	if (debug&& BandwithScales) std::cout << cn << mn << "BandwithScales is ON" << std::endl;
 
+	BeamUncertainty = reader->GetReal("GRAPH", "band_with_beamuncertainty", BeamUncertainty);
+	if (debug) std::cout << cn << mn << " BeamUncertainty= "<< BeamUncertainty << std::endl;
+        if (BeamUncertainty!=1.) 
+         std::cout << cn << mn << "Introduced BeamUncertainty= "<< BeamUncertainty << std::endl;
 
 	BandTotal      = reader->GetBoolean("GRAPH", "band_total", BandTotal);
 	if (debug&& BandTotal) std::cout << cn << mn << "BandTotal is ON" << std::endl;
@@ -2155,6 +2296,26 @@ void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 					pci.alphasMarkerStyle = pdfSteeringFile.GetMarkerStyle();
 				}
 
+				//----
+				if(pci.beamuncertaintyFillStyle == PC_EMPTY_STYLE) {
+					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
+						" Beam uncertainty Fill Style was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetFillStyle() << std::endl;
+					pci.beamuncertaintyFillStyle = pdfSteeringFile.GetFillStyle();
+				}
+
+				if(pci.beamuncertaintyFillColor == PC_EMPTY_COLOR) {
+					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
+						" Beam uncertainty Fill Color was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetFillColor() << std::endl;
+					pci.beamuncertaintyFillColor = pdfSteeringFile.GetFillColor();
+				}
+
+				if(pci.beamuncertaintyMarkerStyle == PC_EMPTY_STYLE) {
+					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
+						" BbeamuncertaintyMarker Style was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetMarkerStyle() << std::endl;
+					pci.beamuncertaintyMarkerStyle = pdfSteeringFile.GetMarkerStyle();
+				}
+				//----
+
 				if(pci.correctionsFillStyle == PC_EMPTY_STYLE) {
 					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
 						" Corrections Fill Style was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetFillStyle() << std::endl;
@@ -2191,9 +2352,14 @@ void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 				pcim.scaleFillColor = pci.scaleFillColor;
 				pcim.scaleMarkerStyle=pci.scaleMarkerStyle;
 
+
 				pcim.alphasFillStyle = pci.alphasFillStyle;
 				pcim.alphasFillColor = pci.alphasFillColor;
 				pcim.alphasMarkerStyle=pci.alphasMarkerStyle;
+
+				pcim.beamuncertaintyFillStyle = pci.beamuncertaintyFillStyle;
+				pcim.beamuncertaintyFillColor = pci.beamuncertaintyFillColor;
+				pcim.beamuncertaintyMarkerStyle=pci.beamuncertaintyMarkerStyle;
 
 				pcim.correctionsFillStyle = pci.correctionsFillStyle;
 				pcim.correctionsFillColor = pci.correctionsFillColor;

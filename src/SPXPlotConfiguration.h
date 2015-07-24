@@ -89,6 +89,12 @@ struct SPXPlotConfigurationInstance {
 	int alphasEdgeStyle;
 	int alphasMarkerStyle;
 
+	int beamuncertaintyFillColor;
+	int beamuncertaintyFillStyle;
+	int beamuncertaintyEdgeColor;
+	int beamuncertaintyEdgeStyle;
+	int beamuncertaintyMarkerStyle;
+
 	int correctionsFillColor;
 	int correctionsFillStyle;
 	int correctionsEdgeColor;
@@ -128,6 +134,11 @@ struct SPXPlotConfigurationInstance {
 		alphasFillStyle = PC_EMPTY_STYLE;
 		alphasFillColor = PC_EMPTY_COLOR;
 		alphasMarkerStyle = PC_EMPTY_STYLE;
+
+		beamuncertaintyFillStyle = PC_EMPTY_STYLE;
+		beamuncertaintyFillColor = PC_EMPTY_COLOR;
+		beamuncertaintyMarkerStyle = PC_EMPTY_STYLE;
+
 		correctionsFillStyle = PC_EMPTY_STYLE;
 		correctionsFillColor = PC_EMPTY_COLOR;
 		correctionsMarkerStyle = PC_EMPTY_STYLE;
@@ -251,9 +262,15 @@ struct SPXPlotConfigurationInstance {
 		tmp << "\t Scale Fill Style: "   << scaleFillStyle << std::endl;
 		tmp << "\t Scale Fill Color: "   << scaleFillColor << std::endl;
 		tmp << "\t Scale Marker Style: " << scaleMarkerStyle << std::endl;
+
 		tmp << "\t AlphaS Fill Style: "   << alphasFillStyle << std::endl;
 		tmp << "\t AlphaS Fill Color: "   << alphasFillColor << std::endl;
 		tmp << "\t AlphaS Marker Style: " << alphasMarkerStyle << std::endl;
+
+		tmp << "\t beamuncertainty Fill Style: "   << beamuncertaintyFillStyle << std::endl;
+		tmp << "\t beamuncertainty Fill Color: "   << beamuncertaintyFillColor << std::endl;
+		tmp << "\t beamuncertainty Marker Style: " << beamuncertaintyMarkerStyle << std::endl;
+
 		tmp << "\t Corrections Fill Style: "  << correctionsFillStyle << std::endl;
 		tmp << "\t Corrections Fill Color: "  << correctionsFillColor << std::endl;
 		tmp << "\t Corrections Marker Style: "<< correctionsMarkerStyle << std::endl;

@@ -72,6 +72,8 @@ private:
 	std::vector<std::string> correctionFilesReference;
 	unsigned int lowestOrder;
 
+	double changesqrts;
+
 	void SetDefaults(void);
 
 public:
@@ -232,6 +234,10 @@ public:
 
 	unsigned int GetLowestOrder(void) const {
 		return this->lowestOrder;
+	}
+
+	double GetChangeSqrtS(void) const {
+		return changesqrts;
 	}
 };
 

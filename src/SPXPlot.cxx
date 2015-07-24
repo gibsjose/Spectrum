@@ -1151,7 +1151,7 @@ void SPXPlot::DrawLegend(void) {
     sqrtsval = data.at(idata)->GetSqrtS();
     if (sqrtsval!=sqrtsvalold) {
      if (sqrtsvalold!=-1) {
-      if (debug) std::cout<<cn<<mn<<"idata= "<<idata<<" sqrt changed: sqrtsval= "<<sqrtsval<<" sqrtsvalold= "<<sqrtsvalold<<std::endl;
+      if (debug) std::cout<<cn<<mn<<"idata= "<<idata<<" beam uncertainty sqrt changed: sqrtsval= "<<sqrtsval<<" sqrtsvalold= "<<sqrtsvalold<<std::endl;
       differentsqrts=true;
      }
      sqrtsvalold=sqrtsval;
@@ -1253,6 +1253,7 @@ void SPXPlot::DrawLegend(void) {
   bool bscale  =pdf->HasBandofType("_scale_");
   bool bpdf    =pdf->HasBandofType("_pdf_");
   bool balphas =pdf->HasBandofType("_alphas_");
+  bool bbeam   =pdf->HasBandofType("_BeamUncertainty_");
   bool bhadcorr=pdf->HasBandofType("_corrections_");
 
   if (bhadcorr && !(bscale&&bpdf&&balphas)) hadcorronly=true;
@@ -1262,10 +1263,11 @@ void SPXPlot::DrawLegend(void) {
    if (bandsdifferent) std::cout<<cn<<mn<<"icross= "<<icross<<" Bands have different properties !"<< std::endl;
    else                std::cout<<cn<<mn<<"icross= "<<icross<<" Bands have same properties ! "<< std::endl;
 
-   if (bscale)  std::cout<<cn<<mn<<"Bands contains scale uncertainty"<< std::endl;
-   if (bpdf)    std::cout<<cn<<mn<<"Bands contains PDF uncertainty"<< std::endl;
-   if (balphas) std::cout<<cn<<mn<<"Bands contains AlphaS uncertainty"<< std::endl;
-   if (bhadcorr)std::cout<<cn<<mn<<"Bands contains corrections uncertainty"<< std::endl;
+   if (bscale)     std::cout<<cn<<mn<<"Bands contains scale uncertainty"<< std::endl;
+   if (bpdf)       std::cout<<cn<<mn<<"Bands contains PDF uncertainty"<< std::endl;
+   if (balphas)    std::cout<<cn<<mn<<"Bands contains AlphaS uncertainty"<< std::endl;
+   if (bbeam)      std::cout<<cn<<mn<<"Bands contains Beam uncertainty"<< std::endl;
+   if (bhadcorr)   std::cout<<cn<<mn<<"Bands contains corrections uncertainty"<< std::endl;
    if (hadcorronly)std::cout<<cn<<mn<<"Bands contains ONLY corrections uncertainty"<< std::endl;
   }
  }
@@ -1372,7 +1374,7 @@ void SPXPlot::DrawLegend(void) {
     }
 
     if (differentlumi){
-     datalabel+=" ";
+     datalabel+=" L= ";
      datalabel+= data.at(idata)-> GetDatasetLumi();
     }
 
@@ -1546,6 +1548,7 @@ void SPXPlot::DrawLegend(void) {
     }
    } else {
     if (nlouncertainty) {
+
      TString label="NLO QCD Uncertainties";
      if (label.Sizeof()>namesize) namesize=label.Sizeof();
      if (debug) std::cout << cn << mn <<"Add data label to legend: "<<label.Data()<< " namesize= "<<namesize<<std::endl;
@@ -1567,6 +1570,7 @@ void SPXPlot::DrawLegend(void) {
      TString bandtype=TString(gtype);
      bandtype.ToUpper();
      if (bandtype.Contains("ALPHAS")) bandtype="#alpha_{s}";
+     if (bandtype.Contains("BeamUncertainty")) bandtype="E_{beam}";
      if (bandtype.Contains("SCALE"))  bandtype="Scale";
      if (bandtype.Contains("TOTAL"))  bandtype="Total";
      if (gtype.compare(std::string("pdf"))==0)
@@ -1591,6 +1595,7 @@ void SPXPlot::DrawLegend(void) {
       if(gname.Contains("_alphas_")) edgecolor=pci.alphasEdgeColor;
       if(gname.Contains("_scale_"))  edgecolor=pci.scaleEdgeColor;
       if(gname.Contains("_pdf_"))    edgecolor=pci.pdfEdgeColor;
+      if(gname.Contains("_beamuncertainty_")) edgecolor=pci.beamuncertaintyEdgeColor;
       if(gname.Contains("_total_"))  edgecolor=pci.totalEdgeColor;
       if(gname.Contains("_corrections_")) edgecolor=pci.correctionsEdgeColor;
 
@@ -1635,9 +1640,19 @@ void SPXPlot::DrawLegend(void) {
       if (debug) std::cout<<cn<<mn<<"Band is of type PDF"<< std::endl;
       pdffound=true; npdf++;
       if (nlolabel) {
-      
+   
+       double Escale = pdf->GetChangeSqrtS();
+       // check if CMS energy in grid was changed "<<endl;
+       std::cout<<cn<<mn<<" Escale= "<<Escale<<std::endl;
+
        TString labelname=pdftype;
        //int pdfcount=std::count (vpdf.begin(), vpdf.end(), pdftype);
+
+       if (Escale!=1) {
+         //double sqrtsval = data.at(0)->GetSqrtS();
+         double sqrtsval=1.0;
+	 labelname+=Form(" f*#sqrt{s} with f= %3.2f",sqrtsval*Escale);
+       }
 
        if (steeringFile->GetAddonLegendNLOProgramName() ) {
   	if (debug) std::cout<<cn<<mn<<"Add NLO Program name to Legend "<<std::endl;      
@@ -1914,11 +1929,15 @@ void SPXPlot::DrawLegend(void) {
      leginfo->AddEntry((TObject*)0, TString(lumi),"");
     }
    } else {
-    if (lumi!=lumiold) {
-     lumiold=lumi; 
-     if (debug) std::cout<<cn<<mn<<"Add to info legend dataset lumi= "<<lumi.c_str()<<std::endl;
-     if (TString(lumi).Sizeof()>leginfomax) leginfomax=TString(lumi).Sizeof();
-     leginfo->AddEntry((TObject*)0, TString(lumi),"");
+    if (!differentlumi) { // data-set with different lumi go the leg not leginfo
+     if (lumi!=lumiold) {
+      lumiold=lumi; 
+      if (debug) std::cout<<cn<<mn<<"Add to info legend dataset lumi= "<<lumi.c_str()<<std::endl;
+      if (TString(lumi).Sizeof()>leginfomax) leginfomax=TString(lumi).Sizeof();
+      TString label="L= ";
+      label+=TString(lumi);
+      leginfo->AddEntry((TObject*)0, label,"");
+     }
     }
    }
   }
@@ -2010,26 +2029,44 @@ void SPXPlot::CanvasToPNG(void) {
 	//Get the plot configuration
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 
+
+	std::string filename = GetPNGFilename(pc.GetDescription());
+
 	//Create/get the PNG filename
-	std::string filename;
-	filename = GetPNGFilename(pc.GetDescription());
+        if (!steeringFile->GetOutputGraphicFormat().empty()) {
+	 TString epsfilename=filename;
+         //if (debug) std::cout<<cn<<mn<<" output format= "<< steeringFile->GetOutputGraphicFormat()<<std::endl;
+         
+         epsfilename.ReplaceAll("png",TString(steeringFile->GetOutputGraphicFormat()));
+         if (debug) {
+          std::cout<<cn<<mn<<"Print epsfilename= "<< epsfilename.Data()<<std::endl;
+         }
+         canvas->Print(epsfilename.Data());
+        }
+
+        if (steeringFile->GetOutputRootfile()) {
+	 TString rootfilename=filename;
+         rootfilename.ReplaceAll("png","root");
+	 this->WriteRootFile(rootfilename);
+        }
 
 	//Draw PNG File
+
 	canvas->Print(filename.c_str());
 
         //Draw PDF file
-        TString epsname=filename;
-        epsname.ReplaceAll("_plot_0","");
-        epsname.ReplaceAll("_plot_1","");
-        epsname.ReplaceAll("png","eps");
-	canvas->Print(epsname);
+        //TString epsname=filename;
+        //epsname.ReplaceAll("_plot_0","");
+        //epsname.ReplaceAll("_plot_1","");
+        //epsname.ReplaceAll("png","eps");
+	//canvas->Print(epsname);
 
         //Save *.C
-        TString cname=filename;
-        cname.ReplaceAll("_plot_0","");
-        cname.ReplaceAll("_plot_1","");
-        cname.ReplaceAll("png","pdf");
-	canvas->Print(cname);
+        //TString cname=filename;
+        //cname.ReplaceAll("_plot_0","");
+        //cname.ReplaceAll("_plot_1","");
+        //cname.ReplaceAll("png","pdf");
+	//canvas->Print(cname);
 
 }
 
@@ -2162,6 +2199,7 @@ void SPXPlot::InitializeCrossSections(void) {
 		}
 	}
 
+
 	if (debug) std::cout<<cn<<mn<<"Loop over cross section size=" << crossSections.size() <<std::endl;
 
 	for (int i = 0; i < crossSections.size(); i++) {
@@ -2194,10 +2232,16 @@ void SPXPlot::InitializeCrossSections(void) {
 
               convoluteFilePDFMap.insert(StringPairPDFPair_T(convolutePair, pdf));
 
+              //if (steeringFile->GetOutputRootfile()) {
+              // std::cout<<cn<<mn<<"switch directory to file "<<std::endl;       
+              // rootfile->cd();
+              //}
+
               int markerstyle=-99, fillcolor=-99,fillstyle=-99, edgecolor=-99, edgestyle;
               for (int iband=0; iband<nbands; iband++) {
 
 		TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+
 		std::string         gtype   =pdf->GetBandType(iband);
 		if (!gband) {
                  std::ostringstream oss;
@@ -2205,6 +2249,11 @@ void SPXPlot::InitializeCrossSections(void) {
                  throw SPXParseException(oss.str());
                 }
                 if (debug) std::cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<std::endl;
+
+                //if (steeringFile->GetOutputRootfile()) {
+  	        // gband->Write();
+                //}
+
 		//Update the Convolute File Map
 		//string theoryname=pci.pdfSteeringFile.GetFilename()+gband->GetName();
 		std::string theoryname=gband->GetName();
@@ -2233,6 +2282,14 @@ void SPXPlot::InitializeCrossSections(void) {
                  fillstyle  =pci.alphasFillStyle;
                  edgecolor  =pci.alphasEdgeColor;
                  edgestyle  =pci.alphasEdgeStyle;
+                }
+                if (gtype.compare(std::string("beamuncertainty"))==0){
+		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
+                 markerstyle=pci.beamuncertaintyMarkerStyle;
+                 fillcolor  =pci.beamuncertaintyFillColor;
+                 fillstyle  =pci.beamuncertaintyFillStyle;
+                 edgecolor  =pci.beamuncertaintyEdgeColor;
+                 edgestyle  =pci.beamuncertaintyEdgeStyle;
                 }
 
                 int ncorr=pci.gridSteeringFile.GetNumberOfCorrectionFiles();
@@ -2310,6 +2367,7 @@ void SPXPlot::InitializeCrossSections(void) {
                if (!refGraph) std::cout<<cn<<mn<<i<<" reference Graph not found !" <<std::endl;
 	       referenceFileGraphMap.insert(StringPairGraphPair_T(convolutePair, refGraph));
 
+
 	       //Update the Nominal File Map
     	       if(debug) std::cout << cn << mn << i<<" Get nomGraph" <<std::endl;
 	       TGraphAsymmErrors *nomGraph = crossSections[i].GetNominal();
@@ -2318,6 +2376,9 @@ void SPXPlot::InitializeCrossSections(void) {
 
 
                if (refGraph) {
+		 //if (steeringFile->GetOutputRootfile()) {
+   	         //refGraph->Write();
+		 //}
      	        if(debug) std::cout << cn << mn << i<<" Set refGraph" <<std::endl;
 	        //refGraph->SetMarkerSize(1.2);
 	        refGraph->SetMarkerStyle(pci.pdfMarkerStyle);
@@ -2329,6 +2390,9 @@ void SPXPlot::InitializeCrossSections(void) {
                }
 
                if (nomGraph) {
+		 //if (steeringFile->GetOutputRootfile()) {
+  	         //nomGraph->Write();
+		 //}
     	        if(debug) std::cout << cn << mn << i<<" Set nomGraph" <<std::endl;
 	        //nomGraph->SetMarkerSize(1.2);
 	        nomGraph->SetMarkerStyle(pci.pdfMarkerStyle);
@@ -2670,7 +2734,8 @@ void SPXPlot::InitializeData(void) {
 		    icountsyst++;
 
                     Color_t icol=SPXUtilities::ICol(icountsyst);
-                    vsyst.at(isyst)->SetFillStyle(3002);
+                    //vsyst.at(isyst)->SetFillStyle(3001);
+                    vsyst.at(isyst)->SetFillStyle(1001);
                     SPXGraphUtilities::SetColors(vsyst.at(isyst),icol);
 
  		    dataFileGraphMap.insert(StringGraphPair_T(systname, vsyst.at(isyst)));
@@ -2914,6 +2979,14 @@ void SPXPlot::DrawBand(SPXPDF *pdf, std::string option, SPXPlotConfigurationInst
    markerstyle=pci.alphasMarkerStyle;
   }
 
+  if (gname.Contains("_beamuncertainty_")) { 
+   fillcolor  =pci.beamuncertaintyFillColor;
+   edgecolor  =pci.beamuncertaintyEdgeColor;
+   edgestyle  =pci.beamuncertaintyEdgeStyle;
+   fillstyle  =pci.beamuncertaintyFillStyle;
+   markerstyle=pci.beamuncertaintyMarkerStyle;
+  }
+
   if (gname.Contains("_pdf_")) { 
    fillcolor  =pci.pdfFillColor;
    edgecolor  =pci.pdfEdgeColor;
@@ -3045,3 +3118,220 @@ void SPXPlot::OrderSystVectorColorsByAlphabeth(std::vector<TGraphAsymmErrors *> 
 
 };
 
+
+void SPXPlot::WriteRootFile(TString rootfilename){
+ std::string mn = "WriteRootFile: ";
+ if (debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ rootfile=0;
+ 
+ if (debug) std::cout<<cn<<mn<<"Output rootfile "<<rootfilename<<endl;
+
+ rootfile= new TFile(rootfilename,"recreate");
+ if (!rootfile) {
+
+  std::cout<<cn<<mn<<"Problem to open rootfile= "<<rootfilename.Data()<<endl;
+  std::cerr<<cn<<mn<<"Problem to open rootfile= "<<rootfilename.Data()<<endl;
+  throw SPXROOTException(cn+mn+"Pointer to rootfile not found ! Can not output root objects.");
+
+ } else if (debug){
+  std::cout<<cn<<mn<<"Opened rootfile= "<<rootfilename<<endl;
+ }
+
+ for(int icross = 0; icross < crossSections.size(); icross++) {
+
+  SPXPDF * pdf=crossSections[icross].GetPDF();
+  if (!pdf) {std::cout<<cn<<mn<<" PDF object not found "<<std::endl; return;}
+
+  if (debug) {
+   std::cout<<cn<<mn<<"Pdf "<< pdf->GetPDFtype() << std::endl;
+  }
+
+  int nbands=pdf->GetNBands();
+  if (debug) {
+   std::cout<<cn<<mn<<"Number of uncertainty bands: "<< nbands << std::endl;
+  }
+
+  bool gridcorrectionfound=false;
+  for (int iband=0; iband<nbands; iband++) {
+   TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+   if (!gband) {std::cout<<cn<<mn<<" gband not found ! iband= "<<iband<<std::endl; continue;}
+   if (debug) std::cout<<cn<<mn<<"Write out "<<pdf->GetBandType(iband)<<std::endl;
+   gband->Write();
+
+   std::string         gtype   =pdf->GetBandType(iband);
+   //if (debug) {
+   // std::cout<<cn<<mn<<"Type "<<gtype.c_str()<<" name= "<<gband->GetName() << std::endl;
+   //gband->Print();
+   //}
+
+   //if(debug) std::cout<<cn<<mn<<"Grid correction are applied " << std::endl;
+   //std::vector<std::string> corrlabel=crossSections[icross].GetCorrectionLabels();
+   //for(int ic = 0; ic < corrlabel.size(); ic++) {
+   // if (gtype.compare(corrlabel[ic])==0) gridcorrectionfound=true;	   
+   // if (debug) std::cout << cn << mn <<"Grid correction: "<<corrlabel[ic].c_str() << std::endl;
+   //}
+  
+   //if (debug) {
+   // if (gridcorrectionfound) std::cout << cn << mn <<"Grid corrections found !"<< std::endl;
+   // else                     std::cout << cn << mn <<"No Grid corrections found !"<< std::endl;
+   //}
+  }
+
+  if(debug) {
+   std::cout<<cn<<mn<< "  " << std::endl;
+   std::cout<<cn<<mn<<"Access individual PDF components "<< std::endl;
+  }
+
+  int npdfcomponents=pdf->GetNumberOfIndividualPDFComponents();
+
+  if(debug) {
+    std::cout<<cn<<mn<<"Number of individual PDF "<<pdf->GetPDFName()<<" components =  "<< npdfcomponents << std::endl;
+  }
+
+  for (int ipdf=0; ipdf<npdfcomponents; ipdf++) {
+   TH1D *hcomp= pdf->GetIndividualPDFComponent(ipdf);
+   if (!hcomp) {std::cout<<cn<<mn<<"Histogram for component ipdf= "<<ipdf<<" not found "<<std::endl; continue;}
+   std::cout<<cn<<mn<<"Write PDF component "<<hcomp->GetName()<<std::endl;
+   hcomp->Write();
+   //hcomp->Print("all");
+  }
+
+  if(debug) {
+   std::cout<<cn<<mn<< "  " << std::endl;
+   std::cout<<cn<<mn<<"Access individual scale components "<< std::endl;
+  }
+
+  int nscalecomponents=pdf->GetNumberOfIndividualScaleVariations();
+
+  if(debug) {
+   std::cout<<cn<<mn<<"Number of individual scale variations  " << std::endl;
+  }
+
+  for (int iscale=0; iscale<nscalecomponents; iscale++) {
+   TH1D *hcomp= pdf->GetIndividualScaleVariation(iscale);
+   if (!hcomp) {std::cout<<cn<<mn<<"Histogram for component iscale= "<<iscale<<" not found ! "<<std::endl; continue;}
+   std::cout<<"Write scale component "<<hcomp->GetName()<<std::endl;
+   hcomp->Write();
+  }
+
+
+  int nalphascomponents=pdf->GetNumberOfIndividualAlphaSVariations();
+
+  if(debug) {
+   std::cout<<cn<<mn<<"Number of individual alphas variations  " << std::endl;
+  }
+
+  for (int ialphas=0; ialphas<nalphascomponents; ialphas++) {
+   TH1D *hcomp= pdf->GetIndividualAlphaSVariation(ialphas);
+   if (!hcomp) {std::cout<<cn<<mn<<"Histogram for component ialphas= "<<ialphas<<" not found ! "<<std::endl; continue;}
+   std::cout<<"Write AlphaS component "<<hcomp->GetName()<<std::endl;
+   hcomp->Write();
+  }
+ }
+
+ if(debug) {
+  std::cout<<cn<<mn<<"Number Data sets  " << data.size()<< std::endl;
+ }
+ 
+ for(int idata = 0; idata < data.size(); idata++) {                   
+
+  TString datalabel=data.at(idata)->GetLegendLabel();
+
+  if (debug) {
+   std::cout<<cn<<mn<< "  " << std::endl;
+   std::cout<<cn<<mn<<"Access stat, total syst and total uncertainties Data name= "<< datalabel.Data() << std::endl;
+  }
+
+  TGraphAsymmErrors *statGraph = data[idata]->GetStatisticalErrorGraph();
+  if (!statGraph) throw SPXGeneralException(cn+mn+"Can not open statistical uncertainty for"+datalabel.Data());
+  else {
+   TString filename=statGraph->GetName();
+   filename+=datalabel.Data();
+   if (debug) std::cout<<cn<<mn<<"Write " << filename.Data() <<std::endl;
+   statGraph->Write(filename);
+  }
+
+  TGraphAsymmErrors *systGraph = data[idata]->GetSystematicErrorGraph();
+  if (!systGraph) throw SPXGeneralException(cn+mn+"Can not open systematic uncertainty for"+datalabel.Data());
+  else {
+   TString filename=systGraph->GetName();
+   filename+=datalabel.Data();
+   if (debug) std::cout<<cn<<mn<<"Write " << filename.Data() <<std::endl;
+   systGraph->Write(filename);  
+  }
+
+  TGraphAsymmErrors *totGraph  = data[idata]->GetTotalErrorGraph();
+  if (!totGraph) throw SPXGeneralException(cn+mn+"Can not open statistical total for"+datalabel.Data());
+  else {
+   TString filename=totGraph->GetName();
+   filename+=datalabel.Data();
+   if (debug) std::cout<<cn<<mn<<"Write " << filename.Data() <<std::endl;
+   totGraph->Write(filename);  
+  }
+
+  if (debug) {
+   std::cout<<cn<<mn<<"Print "<<systGraph->GetName() << std::endl;
+   //systGraph->Print();
+  }
+
+  if (steeringFile->ShowIndividualSystematics()!=0) {
+
+   std::vector <TGraphAsymmErrors *> vsyst;
+   vsyst=data[idata]->GetSystematicsErrorGraphs();
+
+   if(debug) {
+    std::cout<<cn<<mn<<"Total number of systematics uncertainty components found= " << vsyst.size() <<std::endl;
+    std::cout<<cn<<mn<<"Only show systematics above: "<<steeringFile->ShowIndividualSystematics()<<"%"<<std::endl;
+   }
+
+   std::vector<TGraphAsymmErrors * > vsystord=SPXUtilities::OrderLargestRelativeErrorGraphVector(vsyst);
+
+   for (int isyst=0; isyst<vsystord.size(); isyst++) {
+    std::string systname=vsystord.at(isyst)->GetName();
+
+    if (!vsyst.at(isyst)) {
+     std::cout<<cn<<mn<<"WARNING: systematic component not found isyst= "<<isyst<<std::endl;
+     continue;
+    } 
+
+    if (debug) std::cout<<cn<<mn<<"Write systmatic components " << isyst <<std::endl;
+    vsyst.at(isyst)->Write();
+   }
+  } else if (debug) std::cout<<cn<<mn<<"No systematic components asked !"  <<std::endl;
+ }
+
+ //for(int idata = 0; idata < data.size(); idata++) {                    
+ // TString datalabel=data.at(idata)->GetLegendLabel();
+ // if(debug) std::cout<<cn<<mn<<"Data name= "<<datalabel.Data() << std::endl;
+ 
+ // if(debug) std::cout<<cn<<mn<<"Access total covariance matrix: "<< std::endl;
+ // TMatrixT<double> *totcovmatrix=data.at(idata)->GetDataTotalCovarianceMatrix();
+ // if (!totcovmatrix) {
+ //  std::cout<<cn<<mn<<"Total covariance matrix not found ! for data "<<datalabel.Data() << std::endl; 
+ // return;
+ // } else {
+ //  if (debug) totcovmatrix->Print();
+ // }
+
+ //if(debug) std::cout<<cn<<mn<<"Access statistical covariance matrix: "<< std::endl;
+ // TMatrixT<double> *statcovmatrix=data.at(idata)->GetDataStatCovarianceMatrix();
+ // if (!statcovmatrix) {
+ //  std::cout<<cn<<mn<<"Statistical covariance matrix not found ! for data "<<datalabel.Data() << std::endl; 
+   // return;
+ // } else {
+ //  if (debug) statcovmatrix->Print();
+ // }
+ //}
+
+ if (debug) {
+  std::cout<<cn<<mn<<"Writing out routfile: "<<std::endl;
+  rootfile->Print();
+ }
+
+
+ std::cout<<cn<<mn<<"Write file "<<rootfilename.Data()<<std::endl;
+ rootfile->Write();
+
+ return;
+}

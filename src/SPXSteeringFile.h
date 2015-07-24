@@ -61,6 +61,9 @@ private:
 	//[GEN]
 	bool debug;						//Flag to indicate debug mode
 
+        bool  OutputRootfile; // Flag to write out rootfile with all objects
+	std::string OutputGraphicFormat; // string specifying graphic format of figures
+
 	//[GRAPH]
         bool addonLegendNLOProgramName; // Flag to indicate that NLO program name should be added in Legend
 	bool plotBand;		//Flag to indicate that error bands should be plotted
@@ -87,6 +90,8 @@ private:
 
         double XDataBoxLabel;    // X-coordinate of data box label
         double YDataBoxLabel;    // Y-coordinate of data box label
+
+        double 	BeamUncertainty; // Introduce beam uncertainty to band with value 	BeamUncertainty
 
         bool BandwithPDF;        // show the Uncertainty band with the PDF uncertainties
 	bool BandwithAlphaS;     // show the Uncertainty band with alphas  uncertainties
@@ -166,6 +171,14 @@ public:
 
 	bool GetDebug(void) const {
 		return this->debug;
+	}
+
+	bool GetOutputRootfile(void) const {
+		return this->OutputRootfile;
+	}
+
+	std::string GetOutputGraphicFormat(void) const {
+		return this->OutputGraphicFormat;
 	}
 
 	bool GetPlotBand(void) const {
@@ -297,6 +310,10 @@ public:
 
 	void SetDumpTables(int newdump) {
 		DumpTables= newdump;
+	}
+
+	double GetBeamUncertainty(void) const {
+		return BeamUncertainty;
 	}
 
 	bool GetBandwithPDF(void) const {

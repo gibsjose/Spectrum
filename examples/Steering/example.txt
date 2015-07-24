@@ -34,6 +34,9 @@
 [GEN]
 debug = true					;[Optional] Turn on/off debug statements - [default = false]
 
+output_rootfile = true
+output_graphicformat = eps
+
 ;==============================================================
 ; Graphing Options
 ;==============================================================

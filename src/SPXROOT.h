@@ -13,6 +13,10 @@
 #ifndef SPXROOT_H
 #define SPXROOT_H
 
+#include "TROOT.h"
+#include "TDirectory.h"
+#include "TKey.h"
+
 #include "TStyle.h"
 #include "TApplication.h"
 #include "TObject.h"
@@ -53,9 +57,9 @@
 #include "TMatrixT.h"
 #include "TMinuit.h"
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
+//#include <iostream>
+//#include <fstream>
+//#include <string>
+//#include <vector>
 
 #endif

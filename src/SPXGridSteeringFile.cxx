@@ -85,6 +85,9 @@ void SPXGridSteeringFile::SetDefaults(void) {
 
 	lowestOrder = 1;
 	if(debug) std::cout << cn << mn << "lowestOrder set to default: \"NLO\" (1)" << std::endl;
+
+	changesqrts = 1.;
+	if(debug) std::cout << cn << mn << "changesqrts set to default: 1. " << std::endl;
 }
 
 //Print the Grid Steering File Data in a nice format
@@ -144,7 +147,8 @@ void SPXGridSteeringFile::Print(void) {
 	}
 
 
-	std::cout << "\t\t Lowest Order: " << lowestOrder << std::endl << std::endl;
+	std::cout << "\t\t Lowest Order: " << lowestOrder << std::endl;
+	std::cout << "\t\t Change cross section by: " << changesqrts<<"%" << std::endl;
 }
 
 void SPXGridSteeringFile::Parse(void) {
@@ -443,6 +447,16 @@ void SPXGridSteeringFile::Parse(void) {
 		lowestOrder = 1;
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Lowest Order: " << lowestOrder << std::endl;
+	}
+
+
+	changesqrts = reader->GetReal("GRID", "change_sqrts", changesqrts);
+	if(changesqrts!=0.) {
+	 std::cout << "INFO: Calculate cross section for cms energy changed by  " << changesqrts  << std::endl;
+	}
+
+	if(changesqrts<0.) {
+	 std::cerr << "Changed cms energy needs to be positive Escale is relative energy scale (old/new), i.e. one corresponds to the nominal CMS energy " << std::endl;
 	}
 
 	delete reader;

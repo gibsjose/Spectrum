@@ -90,6 +90,10 @@ public:
 	}
 
 
+        double GetChangeSqrtS(void) const {
+	 return pci->gridSteeringFile.GetChangeSqrtS();
+	}
+
 private:
 	static bool debug;		     // Flag indicating debug mode
 	SPXPlotConfigurationInstance *pci;   // Plot configuration instance
@@ -100,6 +104,7 @@ private:
 	bool referenceHistogramCorrupted;    // Flag indicating that the reference histogram has been corrupted
 	TH1D * referenceHistogram;	     // Reference histogram
 	std::string gridname;                // will give name to root object (graphs, histograms)
+
 
 };
 

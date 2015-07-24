@@ -35,3 +35,6 @@ export file=Grids/Zincl/atlas/sherpa/
 echo $dir/$file/*.root $file/
 cp $dir/$file/*.root $file/.
 
+export file=Grids/jet/atlas/dijets2011
+echo $dir/$file/*.root $file/
+cp $dir/$file/*.root $file/.

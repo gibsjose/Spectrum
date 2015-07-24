@@ -71,6 +71,12 @@ bool SPXPlotConfigurationInstance::debug=false;
 //	options["alphas_edge_style"] --> Vector of alphas edge style (optional)
 //	options["alphas_edge_color"] --> Vector of alphas edge colors (optional)
 //	options["alphas_marker_style"] --> Vector of alphas marker styles (optional)
+
+//	options["beamuncertainty_fill_style"] --> Vector of beamuncertainty fill style (optional)
+//	options["beamuncertainty_fill_color"] --> Vector of beamuncertainty fill colors (optional)
+//	options["beamuncertainty_edge_style"] --> Vector of beamuncertainty edge style (optional)
+//	options["beamuncertainty_edge_color"] --> Vector of beamuncertainty edge colors (optional)
+//	options["beamuncertainty_marker_style"] --> Vector of beamuncertainty marker styles (optional)
 //
 //	options["x_scale"] --> Vector of X Scales (optional)
 //	options["y_scale"] --> Vector of Y Scales (optional)
@@ -145,6 +151,12 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	std::vector<std::string> aes;	//AlphaS edge style
 	std::vector<std::string> aec;	//AlphaS edge color
 	std::vector<std::string> ams;	//AlphaS marker style
+
+	std::vector<std::string> bfs;	//beamuncertainty fill style
+	std::vector<std::string> bfc;	//beamuncertainty fill color
+	std::vector<std::string> bes;	//beamuncertainty edge style
+	std::vector<std::string> bec;	//beamuncertainty edge color
+	std::vector<std::string> bms;	//beamuncertainty marker style
 
 	std::vector<std::string> cfs;	//corrections fill style
 	std::vector<std::string> cfc;	//corrections fill color
@@ -338,7 +350,6 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(debug) std::cout << cn << mn << "No total_edge_style option specified" << std::endl;
 		}
 
-
 		if(options.count("total_marker_style")) {
 			tmpVector = options["total_marker_style"];
 			std::cout <<cn << mn << "\ttotal_marker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
@@ -415,6 +426,43 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		} else {
 			if(debug) std::cout << cn << mn << "No alphas_marker_style option specified" << std::endl;
 		}
+
+		//--------
+		if(options.count("beamuncertainty_fill_style")) {
+			tmpVector = options["beamuncertainty_fill_style"];
+			std::cout << cn << mn << "\t beamuncertainty_fill_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No beamuncertainty_fill_style option specified" << std::endl;
+		}
+
+		if(options.count("beamuncertainty_fill_color")) {
+			tmpVector = options["beamuncertainty_fill_color"];
+			std::cout << cn << mn << "\tbeamuncertainty_fill_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No beamuncertainty_fill_color option specified" << std::endl;
+		}
+
+		if(options.count("beamuncertainty_edge_style")) {
+			tmpVector = options["beamuncertainty_edge_style"];
+			std::cout << cn << mn << "\t beamuncertainty_edge_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No beamuncertainty_edge_style option specified" << std::endl;
+		}
+
+		if(options.count("beamuncertainty_edge_color")) {
+			tmpVector = options["beamuncertainty_edge_color"];
+			std::cout << cn << mn << "\t beamuncertainty_edge_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No beamuncertainty_edge_color option specified" << std::endl;
+		}
+
+		if(options.count("beamuncertainty_marker_style")) {
+			tmpVector = options["beamuncertainty_marker_style"];
+			std::cout << cn << mn <<"\t beamuncertainty_marker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No beamuncertainty_marker_style option specified" << std::endl;
+		}
+		//--------
 
 		if(options.count("scale_fill_style")) {
 			tmpVector = options["scale_fill_style"];
@@ -516,6 +564,13 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	unsigned int aecSize = 0;   
 	unsigned int amsSize = 0;   
 
+
+	unsigned int bfsSize = 0;   
+	unsigned int bfcSize = 0;   
+	unsigned int besSize = 0;   
+	unsigned int becSize = 0;   
+	unsigned int bmsSize = 0;   
+
 	unsigned int cfsSize = 0;   
 	unsigned int cfcSize = 0;   
 	unsigned int cesSize = 0;   
@@ -606,6 +661,24 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	if(options.count("alphas_marker_style")) {
 		amsSize = options["alphas_marker_style"].size();
 	}
+
+	//---
+	if(options.count("beamuncertainty_fill_style")) {
+		bfsSize = options["beamuncertainty_fill_style"].size();
+	}
+	if(options.count("beamuncertainty_fill_color")) {
+		bfcSize = options["beamuncertainty_fill_color"].size();
+	}
+	if(options.count("beamuncertainty_edge_style")) {
+		besSize = options["beamuncertainty_edge_style"].size();
+	}
+	if(options.count("beamuncertainty_edge_color")) {
+		becSize = options["beamuncertainty_edge_color"].size();
+	}
+	if(options.count("beamuncertainty_marker_style")) {
+		bmsSize = options["beamuncertainty_marker_style"].size();
+	}
+        //--
 
 	if(options.count("corrections_fill_style")) {
 		cfsSize = options["corrections_fill_style"].size();
@@ -803,6 +876,38 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		throw SPXParseException(oss.str());
 	}
 
+	//---
+	if((bfsSize != 0) && (bfsSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of beamuncertainty_fill_style vector (" << bfsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+
+	if((bfcSize != 0) && (bfcSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of beamuncertainty_fill_color vector (" << bfcSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+
+	if((besSize != 0) && (besSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of beamuncertainty_edge_style vector (" << besSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+
+	if((becSize != 0) && (becSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of beamuncertainty_edge_color vector (" << becSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+
+	if((bmsSize != 0) && (bmsSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of beamuncertainty_marker_style vector (" << bmsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+	//---
+
 	if((cfsSize != 0) && (cfsSize != psfSize)) {
 		std::ostringstream oss;
 		oss << "Size of corrections_fill_style vector (" << cfsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
@@ -931,6 +1036,12 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		  if(aecSize) aec.push_back(options["alphas_edge_color"].at(0));		
 		  if(amsSize) ams.push_back(options["alphas_marker_style"].at(0));		
 
+		  if(bfsSize) bfs.push_back(options["beamuncertainty_fill_style"].at(0));		
+		  if(bfcSize) bfc.push_back(options["beamuncertainty_fill_color"].at(0));		
+		  if(besSize) bes.push_back(options["beamuncertainty_edge_style"].at(0));		
+		  if(becSize) bec.push_back(options["beamuncertainty_edge_color"].at(0));		
+		  if(bmsSize) bms.push_back(options["beamuncertainty_marker_style"].at(0));		
+
 		  if(cfsSize) cfs.push_back(options["corrections_fill_style"].at(0));		
 		  if(cfcSize) cfc.push_back(options["corrections_fill_color"].at(0));		
 		  if(cesSize) ces.push_back(options["corrections_edge_style"].at(0));		
@@ -1008,6 +1119,15 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		  if(aecSize) aec.push_back(options["alphas_edge_color"].at(0));	        //Just one instance of alphas edge style
 		  if(amsSize) ams.push_back(options["alphas_marker_style"].at(0));	   
 
+		  //---
+
+		  if(bfsSize) bfs.push_back(options["beamuncertainty_fill_style"].at(0));	   
+		  if(bfcSize) bfc.push_back(options["beamuncertainty_fill_color"].at(0));//Just one instance of beamuncertainty fill style
+		  if(besSize) bes.push_back(options["beamuncertainty_edge_style"].at(0));	   
+		  if(becSize) bec.push_back(options["beamuncertainty_edge_color"].at(0)); //Just one instance of beamuncertainty edge style
+		  if(bmsSize) bms.push_back(options["beamuncertainty_marker_style"].at(0));	   
+
+		  //---
 		  if(cfsSize) cfs.push_back(options["corrections_fill_style"].at(0));	   
 		  if(cfcSize) cfc.push_back(options["corrections_fill_color"].at(0));        //Just one instance of correction fill style
 		  if(cesSize) ces.push_back(options["corrections_edge_style"].at(0));	   
@@ -1076,6 +1196,12 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		  if(aecSize) aec.push_back(options["alphas_edge_color"].at(i));
 		  if(amsSize) ams.push_back(options["alphas_marker_style"].at(i));
 
+		  if(bfsSize) bfs.push_back(options["beamuncertainty_fill_style"].at(i));
+		  if(bfcSize) bfc.push_back(options["beamuncertainty_fill_color"].at(i));
+		  if(besSize) bes.push_back(options["beamuncertainty_edge_style"].at(i));
+		  if(becSize) bec.push_back(options["beamuncertainty_edge_color"].at(i));
+		  if(bmsSize) bms.push_back(options["beamuncertainty_marker_style"].at(i));
+
 		  if(cfsSize) cfs.push_back(options["corrections_fill_style"].at(i));
 		  if(cfcSize) cfc.push_back(options["corrections_fill_color"].at(i));
 		  if(cesSize) ces.push_back(options["corrections_edge_style"].at(i));
@@ -1141,6 +1267,12 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		  if(aesSize) aes.push_back(options["alphas_edge_style"].at(0));
 		  if(aecSize) aec.push_back(options["alphas_edge_color"].at(0));
 		  if(amsSize) ams.push_back(options["alphas_marker_style"].at(0));
+
+		  if(bfsSize) bfs.push_back(options["beamuncertainty_fill_style"].at(0));
+		  if(bfcSize) bfc.push_back(options["beamuncertainty_fill_color"].at(0));
+		  if(besSize) bes.push_back(options["beamuncertainty_edge_style"].at(0));
+		  if(becSize) bec.push_back(options["beamuncertainty_edge_color"].at(0));
+		  if(bmsSize) bms.push_back(options["beamuncertainty_marker_style"].at(0));
 
 		  if(cfsSize) cfs.push_back(options["corrections_fill_style"].at(0));
 		  if(cfcSize) cfc.push_back(options["corrections_fill_color"].at(0));
@@ -1358,6 +1490,24 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		if(amsSize) pci.alphasMarkerStyle = atoi(ams.at(i).c_str());
 		else		pci.alphasMarkerStyle = PC_EMPTY_STYLE;
+		//--
+
+		if(bfsSize) pci.beamuncertaintyFillStyle = atoi(bfs.at(i).c_str());
+		else 		pci.beamuncertaintyFillStyle = PC_EMPTY_STYLE;
+
+		if(bfcSize) pci.beamuncertaintyFillColor = atoi(bfc.at(i).c_str());
+		else 		pci.beamuncertaintyFillColor = PC_EMPTY_COLOR;
+
+		if(besSize) pci.beamuncertaintyEdgeStyle = atoi(bes.at(i).c_str());
+		else 		pci.beamuncertaintyEdgeStyle = PC_EMPTY_EDGE;
+
+		if(becSize) pci.beamuncertaintyEdgeColor = atoi(bec.at(i).c_str());
+		else 		pci.beamuncertaintyEdgeColor = PC_EMPTY_EDGE;
+
+		if(bmsSize) pci.beamuncertaintyMarkerStyle = atoi(bms.at(i).c_str());
+		else		pci.beamuncertaintyMarkerStyle = PC_EMPTY_STYLE;
+                //--
+
 
 		if(cfsSize) pci.correctionsFillStyle = atoi(cfs.at(i).c_str());
 		else 		pci.correctionsFillStyle = PC_EMPTY_STYLE;

@@ -55,8 +55,8 @@ data_steering_files = atlas_2011_jet_antiktr04_incljetpt_eta1.txt
 grid_steering_files = atlas_2011_jet_antiktr04_incljetpt_eta1.txt
 pdf_steering_files = CT10.txt
 ;
-data_cut_xmax = 1000. 
-data_cut_xmin = 400. 
+;data_cut_xmax = 1000. 
+;data_cut_xmin = 400. 
 ;
 
 x_scale = 1.0

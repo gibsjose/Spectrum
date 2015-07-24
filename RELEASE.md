@@ -6,6 +6,10 @@
 
 ## Change Log
 
+ - steering to output rootfile and graphic format for figure
+  
+ - added beam uncertainty
+
  -SPXGRid and SPXDPF:
   added possibility to input list of grids (in grid steering) that are added together
 

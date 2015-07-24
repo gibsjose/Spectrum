@@ -263,18 +263,20 @@ TH1D *  SPXPDF::GetHisto(double renscale, double facscale){
  std::string mn = "GetHisto: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
- bool varyscale=false;
- if (renscale!=1. || facscale!=1) varyscale=true;
- if (varyscale) {
-   if (debug) std::cout<<cn<<mn<<"Scale variation renscale= "<<renscale<<" facscale= "<<facscale<<std::endl;
- }
+ //bool varyscale=false;
+ //if (renscale!=1. || facscale!=1) varyscale=true;
+ //if (varyscale) {
+ //  if (debug) std::cout<<cn<<mn<<"Scale variation renscale= "<<renscale<<" facscale= "<<facscale<<std::endl;
+ //}
 
  if (debug) std::cout<<cn<<mn<<"Number of grids= "<<ngrid<<std::endl;
  TH1D* htmpsum=0;
  TString name="xsec_pdf_"+default_pdf_set_name;
 
+ if (debug) std::cout<<cn<<mn<<"Change cms energy Escale= "<<Escale<<std::endl;    
+
  if (ngrid==1) {
-  //htmpsum= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+ 
   my_grid=spxgrid->GetGrid(0);
   gridName=spxgrid->GetGridName();
   if (!my_grid) {
@@ -286,11 +288,13 @@ TH1D *  SPXPDF::GetHisto(double renscale, double facscale){
    applgridok=true;
   }
 
-  if (varyscale) {
-   htmpsum= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renscale, facscale);
-  } else {
-   htmpsum= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-  }
+  htmpsum= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renscale, facscale, Escale);
+
+  //if (varyscale) {
+  // htmpsum= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renscale, facscale);
+  //} else {
+  //htmpsum= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+  //}
 
   if (debug) std::cout<<cn<<mn<<"Set temp_hist name to "<<name.Data()<<std::endl;
   htmpsum->SetName(name);
@@ -306,11 +310,15 @@ TH1D *  SPXPDF::GetHisto(double renscale, double facscale){
    }
    //gridName=spxgrid->GetGridName();
    gridName=spxgrid->GetName();
-   if (varyscale) {
-    htmp= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renscale, facscale);
-   } else {
-    htmp= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-   }
+ 
+   htmp= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renscale, facscale, Escale);
+
+   //if (varyscale) {
+   // htmp= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renscale, facscale);
+   //} else {
+   // htmp= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+   //}
+
    if (debug) std::cout<<cn<<mn<<" igrid= "<<igrid<<" adding "<<TString(gridName).Data()<<std::endl;
    htmp->SetName(TString(gridName));
 
@@ -365,6 +373,8 @@ void SPXPDF::Initialize()
   else            std::cout<<cn<<mn<<"do_AlphaS OFF" <<std::endl;
   if (do_Scale)   std::cout<<cn<<mn<<"do_Scale  ON " <<std::endl;
   else            std::cout<<cn<<mn<<"do_Scale  OFF" <<std::endl;
+  if (do_Escale)  std::cout<<cn<<mn<<"do_Escale  ON " <<std::endl;
+  else            std::cout<<cn<<mn<<"do_Escale  OFF" <<std::endl;
   if (do_Total)   std::cout<<cn<<mn<<"do_Total  ON" <<std::endl;
   else            std::cout<<cn<<mn<<"do_Total  OFF"<<std::endl;
  }
@@ -395,6 +405,26 @@ void SPXPDF::Initialize()
  }
 
  if (debug) std::cout<<cn<<mn<<"Initialize: gridName= "<<gridName.c_str()<<std::endl;
+
+ do_Escale=false;
+ // If Escale!=1 calculate beam enery uncertainty
+ if (debug)  std::cout<<cn<<mn<<"Change beam energy ? Escale= "<<Escale<<std::endl;
+ if (Escale!=1.) {
+  do_Escale=true;
+  if (debug)  std::cout<<cn<<mn<<"Calculate beam energy uncertainy using Escale= "<<Escale<<std::endl;
+ }
+
+ // If beam energy comes from Grid steering change everything
+ double GridEscale=spxgrid->GetChangeSqrtS();
+
+ if (GridEscale!=1.) {
+  Escale=GridEscale;
+  if (!do_Escale) if (debug) std::cout<<cn<<mn<<"Calculate all predictions with different beam energy Escale= "<<Escale<<std::endl;   
+  else {
+   std::cout<<cn<<mn<<"GridEscale= "<<GridEscale<<std::endl;
+   throw SPXParseException(cn+mn+"Can not change beam energy for all predictions and calculate beam uncertainty band");
+  } 
+ }
 
  if (spxgrid) {
 
@@ -455,6 +485,8 @@ void SPXPDF::Initialize()
  h_errors_PDF.clear();
  h_errors_AlphaS.clear();
  h_errors_Scale.clear();
+ h_errors_Scale.clear();
+ h_errors_BeamUncertainty.clear();
 
  TH1D* temp_hist=0;
 
@@ -607,7 +639,7 @@ void SPXPDF::Initialize()
      sprintf(rs,"%s #xi_{R}=%3.1f   #xi_{F}=%3.1f",PDFname.c_str(),RenScales[iscale],FacScales[iscale]);
      if (debug) std::cout<<cn<<mn<<iscale<<" "<<rs<<std::endl;
      char rname[100];
-     sprintf(rname,"%s muR%3.1f_muF%3.1f",PDFname.c_str(),RenScales[iscale],FacScales[iscale]);
+     sprintf(rname,"%s_muR%3.1f_muF%3.1f",PDFname.c_str(),RenScales[iscale],FacScales[iscale]);
      h_scale_temp->SetTitle(rs);
      h_scale_temp->SetName(rname);
      //if (debug) {
@@ -1037,22 +1069,33 @@ void SPXPDF::Initialize()
  if (debug) std::cout<<cn<<mn<<"Now fill map  Mapallbands "<<std::endl;
 
  if (do_PDFBand) if(h_PDF_results) {
-  if (debug) std::cout<<cn<<mn<<" Fill in map "<<h_PDF_results->GetName()<<std::endl;
+  if (debug) std::cout<<cn<<mn<<"Fill in map "<<h_PDF_results->GetName()<<std::endl;
   if (Mapallbands.count("pdf")>0) std::cout<<cn<<mn<<"WARNING: Mapallbands[pdf] already filled ! "<<std::endl;
   Mapallbands["pdf"]=h_PDF_results;
  }
 
  if (do_Scale) if(h_Scale_results){
-  if (debug) std::cout<<cn<<mn<<" Fill in map "<<h_Scale_results->GetName()<<std::endl;
+  if (debug) std::cout<<cn<<mn<<"Fill in map "<<h_Scale_results->GetName()<<std::endl;
   if (Mapallbands.count("scale")>0) std::cout<<cn<<mn<<"WARNING: Mapallbands[scale] already filled ! "<<std::endl;
   Mapallbands["scale"]=h_Scale_results;
  }
 
  if (do_AlphaS) if (h_AlphaS_results) {
-  if (debug) std::cout<<cn<<mn<<" Fill in map "<<h_AlphaS_results->GetName()<<std::endl;
+  if (debug) std::cout<<cn<<mn<<"Fill in map "<<h_AlphaS_results->GetName()<<std::endl;
   if (Mapallbands.count("alphas")>0) std::cout<<cn<<mn<<"WARNING: Mapallbands[alphas] already filled ! "<<std::endl;
   Mapallbands["alphas"]=h_AlphaS_results;
  }
+
+ if (do_Escale) std::cout<<cn<<mn<<"Beam uncertaint do_EScale in ON"<<std::endl;
+
+ std::cout<<cn<<mn<<"h_BeamUncertainty_results)= "<<h_BeamUncertainty_results<<std::endl;
+
+ if (do_Escale) if (h_BeamUncertainty_results) {
+  if (debug) std::cout<<cn<<mn<<"Fill in map "<<h_BeamUncertainty_results->GetName()<<std::endl;
+  if (Mapallbands.count("BeamUncertainty")>0) std::cout<<cn<<mn<<"WARNING: Mapallbands[BeamUncertainty] already filled ! "<<std::endl;
+  Mapallbands["BeamUncertainty"]=h_BeamUncertainty_results;
+ }
+
 
  if (debug) {
   std::cout<<cn<<mn<<" Print Mapallbands "<<std::endl;
@@ -1089,13 +1132,85 @@ void SPXPDF::CalcSystErrors()
   if (do_Scale)  std::cout<<cn<<mn<<"Calculate Scale uncertainty band "<<std::endl;
   if (do_PDFBand)std::cout<<cn<<mn<<"Calculate PDF uncertainty band "<<std::endl;
   if (do_AlphaS) std::cout<<cn<<mn<<"Calculate AlphaS uncertainty band "<<std::endl;
+  //if (do_Escale) std::cout<<cn<<mn<<"Calculate beam energy uncertainty band "<<std::endl;
  }
 
  if (do_PDFBand) CalcPDFBandErrors();
  if (do_AlphaS ) CalcAlphaSErrors();
  if (do_Scale)   CalcScaleErrors();
+ if (do_Escale)  CalcBeamEnergyErrors();
 
  if (debug) std::cout<<cn<<mn<<"End systematic error calculation for: "<<PDFtype<<std::endl;
+}
+
+
+void SPXPDF::CalcBeamEnergyErrors()
+{
+ // 
+ // calculate beam energy uncertainty bands
+ //
+ std::string mn = "CalcBeamEnergyErrors: ";
+ if (debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ // mean is default
+ h_BeamUncertainty_results=SPXGraphUtilities::TH1TOTGraphAsymm(hpdfdefault);
+   
+ double renscale=1.; double facscale=1.;
+ TH1D *htmp= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renscale, facscale,  Escale);
+ TString hname=htmp->GetName();
+ hname+=Form("_ebeam_%3.2f",Escale);
+ htmp->SetName(hname);
+ h_errors_BeamUncertainty.push_back(htmp);
+
+ if (debug) {
+  std::cout<<cn<<mn<<" After varying beam energy up: "<<std::endl;
+  TH1D * hratio=(TH1D*) htmp->Clone(hname);
+  hratio->Divide(hpdfdefault);
+  hratio->Print("all");
+ }
+
+ htmp= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renscale, facscale, 1./Escale);
+ hname=htmp->GetName();
+ hname+=Form("_ebeam_%3.2f",Escale);
+ htmp->SetName(hname);
+ h_errors_BeamUncertainty.push_back(htmp);
+
+ if (debug) {
+  std::cout<<cn<<mn<<" After varying beam energy down: "<<std::endl;
+ hname+=Form("_ebeam_%3.2f",1./Escale);
+  TH1D * hratio=(TH1D*) htmp->Clone(hname);
+  hratio->Divide(hpdfdefault);
+  hratio->Print("all");
+ }
+
+ for (int ibin=1;ibin<hpdfdefault->GetNbinsX()+1;++ibin){
+  double central=hpdfdefault->GetBinContent(ibin);
+
+  double max=central;
+  double min=central;
+  // 
+  for (int i=1; i< h_errors_BeamUncertainty.size();++i){
+   double content=h_errors_BeamUncertainty[i]->GetBinContent(ibin);
+   if (content>max) max=content;
+   if (content<min) min=content;
+  }
+
+  double init_x_val;
+  double init_y_val;
+  h_BeamUncertainty_results->GetPoint(ibin-1, init_x_val, init_y_val);
+
+  h_BeamUncertainty_results->SetPoint(ibin-1, init_x_val, init_y_val);
+  h_BeamUncertainty_results->SetPointEYhigh(ibin-1, max-init_y_val);
+  h_BeamUncertainty_results->SetPointEYlow(ibin-1, init_y_val-min);
+ } /// ibin
+
+ //h_Scale_results->SetName(h_errors_Scale[0]->GetName());
+
+ h_BeamUncertainty_results->SetFillStyle  (fillStyleCode);
+ SPXGraphUtilities::SetColors( h_BeamUncertainty_results,fillColorCode);
+
+ return;
+
 }
 
 void SPXPDF::CalcPDFBandErrors()
@@ -1760,6 +1875,7 @@ void SPXPDF::SetVariablesDefault()
  do_PDFBand=true;
  do_AlphaS=false;
  do_Scale =true;
+ do_Escale = false;
  do_Total =true;
 
  AlphaSmemberNumDown=DEFAULT;
@@ -1772,6 +1888,8 @@ void SPXPDF::SetVariablesDefault()
  alphaS_value_worldAverage=0.1184;
  //alphaS_absUnc_worldAverage=0.0020;
  alphaS_scale_worldAverage=91.1876;
+
+ Escale=1.;
 
  if (debug) std::cout<<cn<<"setVariablesDefault: End default values are set."<<std::endl;
 }
@@ -2228,7 +2346,6 @@ bool SPXPDF::BandsHaveDifferentProperties(){
  int old_fill_style=-999, old_fill_color=-999;
  int old_marker_style=-999, old_marker_color=-999;
  bool bandsdifferent=false;
-
 
  //debug=true;
 

@@ -62,10 +62,11 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
   std::cout<<cn<<mn<<"Created the PDF-class "<<std::endl;
   std::cout<<cn<<mn<<"dividedByBinWidth= " <<dividedByBinWidth<<std::endl;
 
-  std::cout<<cn<<mn<<"GetBandwithPDF= "   <<mainsteeringFile->GetBandwithPDF()<<std::endl;
-  std::cout<<cn<<mn<<"GetBandwithAlphas= "<<mainsteeringFile->GetBandwithAlphaS()<<std::endl;
-  std::cout<<cn<<mn<<"GetBandwithScales= "<<mainsteeringFile->GetBandwithScales()<<std::endl;
-  std::cout<<cn<<mn<<"GetBandTotal= "     <<mainsteeringFile->GetBandTotal()<<std::endl;
+  std::cout<<cn<<mn<<"GetBandwithPDF= "    <<mainsteeringFile->GetBandwithPDF()<<std::endl;
+  std::cout<<cn<<mn<<"GetBandwithAlphas= " <<mainsteeringFile->GetBandwithAlphaS()<<std::endl;
+  std::cout<<cn<<mn<<"GetBandwithScales= " <<mainsteeringFile->GetBandwithScales()<<std::endl;
+  std::cout<<cn<<mn<<"GetBeamUncertainty= "<<mainsteeringFile->GetBeamUncertainty()<<std::endl;
+  std::cout<<cn<<mn<<"GetBandTotal= "      <<mainsteeringFile->GetBandTotal()<<std::endl;
   for (int i=0; i<bncorr; i++) {
    if (mainsteeringFile->GetGridCorrectionToBand(i))
     std::cout<<cn<<mn<<"Grid correction i= "<<i<<" is ON -> include to Map "<<std::endl;
@@ -74,11 +75,13 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
   }
  }
 
+
  int ncorr=pci->gridSteeringFile.GetNumberOfCorrectionFiles(); 
  if (debug){                                                      // start counting at 0
   std::cout<<cn<<mn<<"Number of corrections from main steering "<<bncorr+1<<std::endl;
   std::cout<<cn<<mn<<"Number of corrections from grid steering "<< ncorr+1<<std::endl;
  }
+
 
  if (bncorr>ncorr) {
   std::cout<<cn<<mn<<"Number of grid correction in Grid file "<<ncorr
@@ -88,12 +91,17 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
   // The logic below only works, if we invert the defaults set in
   // SPXSteering
   //
+
   if (mainsteeringFile->GetBandwithPDF()==false) 
    pdf->SetDoPDFBand (mainsteeringFile->GetBandwithPDF()); 
   if (mainsteeringFile->GetBandwithAlphaS()==true) 
    pdf->SetDoAlphaS  (mainsteeringFile->GetBandwithAlphaS());
   if (mainsteeringFile->GetBandwithScales()==false) 
    pdf->SetDoScale   (mainsteeringFile->GetBandwithScales());
+
+
+  if (mainsteeringFile->GetBeamUncertainty()!=1.) 
+   pdf->SetChangeSqrtS (mainsteeringFile->GetBeamUncertainty());
 
   if (mainsteeringFile->GetBandTotal()==false) 
    pdf->SetDoTotError(mainsteeringFile->GetBandTotal());

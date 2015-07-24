@@ -79,6 +79,7 @@ class SPXPDF {
         void CalcAlphaSErrors();
         void CalcScaleErrors();
         void CalcTotalErrors();
+        void CalcBeamEnergyErrors();
 
 	// void GetRatioToTH1(TH1D* href);
         TH1D* GetPDFRatio(int iset1, int iset2=0);
@@ -110,6 +111,7 @@ class SPXPDF {
         bool GetDoAlphaS()  const{return do_AlphaS;};
         bool GetDoScale()   const{return do_Scale;};
         bool GetDoTotal()   const{return do_Total;};
+        bool GetDoBeamEnergyUncertainty() const{return do_Escale;};
 
         int GetNBands(){return Mapallbands.size();};
         TGraphAsymmErrors *GetBand(int i);
@@ -136,6 +138,8 @@ class SPXPDF {
 	int GetNumberOfIndividualAlphaSVariations() {return h_errors_AlphaS.size();}
 	TH1D* GetIndividualAlphaSVariation(int ialphas);
 	void  SetIndividualAlphaSVariation(int iscale, TH1D *h); 
+
+	int GetNumberOfBeamUncertaintyVariationsVariations() {return h_errors_BeamUncertainty.size();}
 
         //mutator methods
         void SetDebug(bool _debug);
@@ -177,6 +181,15 @@ class SPXPDF {
         bool HasDetailedBands();
         bool HasBandofType(std::string bandtype);
 
+        double GetChangeSqrtS() { return Escale; };
+        void SetChangeSqrtS(double fEbeam) { 
+          // fEbeam is uncertainty on proton beam energy
+          // Escale is scale of on CMS energy
+          Escale=fEbeam*fEbeam; 
+	  std::cout<<"SPXPDF::SetChangeSqrtS change beam energy to fEbeam= "<<fEbeam<<" Escale= "<<Escale<<std::endl;
+          return; 
+        };
+
     private:
         //VARIABLES
         static bool debug;
@@ -191,6 +204,7 @@ class SPXPDF {
         TGraphAsymmErrors *h_PDF_results; // PDF uncertainty
         TGraphAsymmErrors *h_AlphaS_results;  // alphas uncertainty
         TGraphAsymmErrors *h_Scale_results;   // scale uncertainty
+        TGraphAsymmErrors *h_BeamUncertainty_results;   // scale uncertainty
         TGraphAsymmErrors *h_Total_results;   // total uncertainty
 
         //string calc_desc;
@@ -245,6 +259,7 @@ class SPXPDF {
         std::vector<TH1D*> h_errors_AlphaS;
         std::vector<TH1D*> h_errors_PDF;
         std::vector<TH1D*> h_errors_Scale;
+        std::vector<TH1D*> h_errors_BeamUncertainty;
 
         TH1D *hpdfdefault;
         std::vector<double> alphaS_variations;  // the values of alphaS variations corresponding to the histograms stored in h_errors_AlphaS
@@ -255,6 +270,7 @@ class SPXPDF {
         bool do_PDFBand;
         bool do_AlphaS;
         bool do_Scale;
+        bool do_Escale;
         bool do_Total;
 
         //METHODS
@@ -278,6 +294,8 @@ class SPXPDF {
         double alphaS_absUnc_worldAverage;
         double alphaS_relUnc_worldAverage;
         double alphaS_scale_worldAverage;
+
+        double Escale; // Changed cms energy needs to be positive Escale is relative energy scale (old/new),
 
 };
 
