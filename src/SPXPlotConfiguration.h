@@ -124,23 +124,38 @@ struct SPXPlotConfigurationInstance {
 
 		totalFillStyle = PC_EMPTY_STYLE;
 		totalFillColor = PC_EMPTY_COLOR;
+		totalEdgeStyle = PC_EMPTY_STYLE;
+		totalEdgeColor = PC_EMPTY_COLOR;
 		totalMarkerStyle = PC_EMPTY_STYLE;
+
 		pdfFillStyle = PC_EMPTY_STYLE;
 		pdfFillColor = PC_EMPTY_COLOR;
+		pdfEdgeStyle = PC_EMPTY_STYLE;
+		pdfEdgeColor = PC_EMPTY_COLOR;
 		pdfMarkerStyle = PC_EMPTY_STYLE;
+
 		scaleFillStyle = PC_EMPTY_STYLE;
 		scaleFillColor = PC_EMPTY_COLOR;
+		scaleEdgeStyle = PC_EMPTY_STYLE;
+		scaleEdgeColor = PC_EMPTY_COLOR;
 		scaleMarkerStyle = PC_EMPTY_STYLE;
+
 		alphasFillStyle = PC_EMPTY_STYLE;
 		alphasFillColor = PC_EMPTY_COLOR;
+		alphasEdgeStyle = PC_EMPTY_STYLE;
+		alphasEdgeColor = PC_EMPTY_COLOR;
 		alphasMarkerStyle = PC_EMPTY_STYLE;
 
 		beamuncertaintyFillStyle = PC_EMPTY_STYLE;
 		beamuncertaintyFillColor = PC_EMPTY_COLOR;
+		beamuncertaintyEdgeStyle = PC_EMPTY_STYLE;
+		beamuncertaintyEdgeColor = PC_EMPTY_COLOR;
 		beamuncertaintyMarkerStyle = PC_EMPTY_STYLE;
 
 		correctionsFillStyle = PC_EMPTY_STYLE;
 		correctionsFillColor = PC_EMPTY_COLOR;
+		correctionsEdgeStyle = PC_EMPTY_STYLE;
+		correctionsEdgeColor = PC_EMPTY_COLOR;
 		correctionsMarkerStyle = PC_EMPTY_STYLE;
 		xScale = 1.0;
 		yScale = 1.0;
@@ -255,25 +270,40 @@ struct SPXPlotConfigurationInstance {
 
 		tmp << "\t Total Fill Style: "   << totalFillStyle << std::endl;
 		tmp << "\t Total Fill Color: "   << totalFillColor << std::endl;
+		tmp << "\t Total Edge Style: "   << totalEdgeStyle << std::endl;
+		tmp << "\t Total Edge Color: "   << totalEdgeColor << std::endl;
 		tmp << "\t Total Marker Style: " << totalMarkerStyle << std::endl;
+
 		tmp << "\t PDF Fill Style: "   << pdfFillStyle << std::endl;
 		tmp << "\t PDF Fill Color: "   << pdfFillColor << std::endl;
+		tmp << "\t PDF Edge Style: "   << pdfEdgeStyle << std::endl;
+		tmp << "\t PDF Edge Color: "   << pdfEdgeColor << std::endl;
 		tmp << "\t PDF Marker Style: " << pdfMarkerStyle << std::endl;
+
 		tmp << "\t Scale Fill Style: "   << scaleFillStyle << std::endl;
 		tmp << "\t Scale Fill Color: "   << scaleFillColor << std::endl;
+		tmp << "\t Scale Edge Style: "   << scaleEdgeStyle << std::endl;
+		tmp << "\t Scale Edge Color: "   << scaleEdgeColor << std::endl;
 		tmp << "\t Scale Marker Style: " << scaleMarkerStyle << std::endl;
 
 		tmp << "\t AlphaS Fill Style: "   << alphasFillStyle << std::endl;
 		tmp << "\t AlphaS Fill Color: "   << alphasFillColor << std::endl;
+		tmp << "\t AlphaS Edge Style: "   << alphasEdgeStyle << std::endl;
+		tmp << "\t AlphaS Edge Color: "   << alphasEdgeColor << std::endl;
 		tmp << "\t AlphaS Marker Style: " << alphasMarkerStyle << std::endl;
 
-		tmp << "\t beamuncertainty Fill Style: "   << beamuncertaintyFillStyle << std::endl;
-		tmp << "\t beamuncertainty Fill Color: "   << beamuncertaintyFillColor << std::endl;
-		tmp << "\t beamuncertainty Marker Style: " << beamuncertaintyMarkerStyle << std::endl;
+		tmp << "\t BeamUncertainty Fill Style: "   << beamuncertaintyFillStyle << std::endl;
+		tmp << "\t BeamUncertainty Fill Color: "   << beamuncertaintyFillColor << std::endl;
+		tmp << "\t BeamUncertainty Edge Style: "   << beamuncertaintyEdgeStyle << std::endl;
+		tmp << "\t BeamUncertainty Edge Color: "   << beamuncertaintyEdgeColor << std::endl;
+		tmp << "\t BeamUncertainty Marker Style: " << beamuncertaintyMarkerStyle << std::endl;
 
 		tmp << "\t Corrections Fill Style: "  << correctionsFillStyle << std::endl;
 		tmp << "\t Corrections Fill Color: "  << correctionsFillColor << std::endl;
+		tmp << "\t Corrections Edge Style: "  << correctionsEdgeStyle << std::endl;
+		tmp << "\t Corrections Edge Color: "  << correctionsEdgeColor << std::endl;
 		tmp << "\t Corrections Marker Style: "<< correctionsMarkerStyle << std::endl;
+
 		tmp << "\t X Scale: " << xScale << std::endl;
 		tmp << "\t Y Scale: " << yScale << std::endl;
 		return tmp.str();

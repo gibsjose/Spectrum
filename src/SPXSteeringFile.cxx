@@ -441,22 +441,32 @@ void SPXSteeringFile::Print(void) {
                         std::cout <<" " << std::endl;
 			std::cout << "\t\t\t PDF Fill Style "     << j << ": " << tmp.pdfFillStyle << std::endl;
 			std::cout << "\t\t\t PDF Fill Color "     << j << ": " << tmp.pdfFillColor << std::endl;
+			std::cout << "\t\t\t PDF Edge Style "     << j << ": " << tmp.pdfEdgeStyle << std::endl;
+			std::cout << "\t\t\t PDF Edge Color "     << j << ": " << tmp.pdfEdgeColor << std::endl;
 			std::cout << "\t\t\t PDF Marker Style "   << j << ": " << tmp.pdfMarkerStyle << std::endl;
 
 			std::cout << "\t\t\t Scale Fill Style "   << j << ": " << tmp.scaleFillStyle << std::endl;
 			std::cout << "\t\t\t Scale Fill Color "   << j << ": " << tmp.scaleFillColor << std::endl;
+			std::cout << "\t\t\t Scale Edge Style "   << j << ": " << tmp.scaleEdgeStyle << std::endl;
+			std::cout << "\t\t\t Scale Edge Color "   << j << ": " << tmp.scaleEdgeColor << std::endl;
 			std::cout << "\t\t\t Scale Marker Style " << j << ": " << tmp.scaleMarkerStyle << std::endl;
 
 			std::cout << "\t\t\t AlphaS Fill Style "  << j << ": " << tmp.alphasFillStyle << std::endl;
 			std::cout << "\t\t\t AlphaS Fill Color "  << j << ": " << tmp.alphasFillColor << std::endl;
+			std::cout << "\t\t\t AlphaS Edge Style "  << j << ": " << tmp.alphasEdgeStyle << std::endl;
+			std::cout << "\t\t\t AlphaS Edge Color "  << j << ": " << tmp.alphasEdgeColor << std::endl;
 			std::cout << "\t\t\t AlphaS Marker Style "<< j << ": " << tmp.alphasMarkerStyle << std::endl;
 
 			std::cout << "\t\t\t Beam uncertainty Fill Style "  << j << ": " << tmp.beamuncertaintyFillStyle << std::endl;
 			std::cout << "\t\t\t Beam uncertainty Fill Color "  << j << ": " << tmp.beamuncertaintyFillColor << std::endl;
-			std::cout << "\t\t\t Beam uncertaintyMarker Style "<< j << ": " << tmp.beamuncertaintyMarkerStyle << std::endl;
+			std::cout << "\t\t\t Beam uncertainty Edge Color "  << j << ": " << tmp.beamuncertaintyEdgeColor << std::endl;
+			std::cout << "\t\t\t Beam uncertainty Edge Style "  << j << ": " << tmp.beamuncertaintyEdgeStyle << std::endl;
+			std::cout << "\t\t\t Beam uncertainty Marker Style "<< j << ": " << tmp.beamuncertaintyMarkerStyle << std::endl;
 
 			std::cout << "\t\t\t Corrections Fill Style "  << j << ": " << tmp.correctionsFillStyle << std::endl;
 			std::cout << "\t\t\t Corrections Fill Color "  << j << ": " << tmp.correctionsFillColor << std::endl;
+			std::cout << "\t\t\t Corrections Edge Style "  << j << ": " << tmp.correctionsEdgeStyle << std::endl;
+			std::cout << "\t\t\t Corrections Edge Color "  << j << ": " << tmp.correctionsEdgeColor << std::endl;
 			std::cout << "\t\t\t Corrections Marker Style "<< j << ": " << tmp.correctionsMarkerStyle << std::endl;
                         std::cout <<" " << std::endl;
 
@@ -739,7 +749,10 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		}
 
 
-       	        if(debug) std::cout << cn << mn << "Start parsing grid_fill_style " << std::endl;
+       	        if(debug) {
+                 std::cout << " " << std::endl;
+                 std::cout << cn << mn << "Start parsing grid_fill_style " << std::endl;
+                }
 		//Get the grid_fill_style
 		tmp = reader->Get(plotSection, "grid_fill_style", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
@@ -1437,7 +1450,6 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
   		 configurations.insert(std::pair<std::string, std::vector<std::string> >("alphas_marker_style", tmpVector));
 		if(debug) std::cout << cn << mn << "configurations[alphas_marker_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["alphas_marker_style"]) << std::endl;
 
-
 		// ------------------------------ beam
 		//Get the beamuncertainty_fill_style
        	        if(debug) std::cout << cn << mn << "Start parsing beamuncertainty_fill_style " << std::endl;
@@ -1466,7 +1478,32 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		 configurations.insert(std::pair<std::string, std::vector<std::string> >("beamuncertainty_fill_style", tmpVector));
 		if(debug) std::cout << cn << mn << "configurations[beamuncertainty_fill_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["beamuncertainty_fill_style"]) << std::endl;
 
-       
+		//Get the beamuncertainty_edge_style
+       	        if(debug) std::cout << cn << mn << "Start parsing beamuncertainty_edge_style " << std::endl;
+		tmpVector.clear();
+		tmp = reader->Get(plotSection, "beamuncertainty_edge_style", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout << cn << mn << "INFO: No plot option for beamuncertainty_edge_style found, but plot_band = true: Defaulting to pdf steering file settings pdf_edge_style" << std::endl;
+
+		if (configurations.count("pdf_edge_style")!=0)
+		 tmpVector = configurations["pdf_edge_style"];
+
+		} else {
+		   //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		}
+
+		if(debug) {
+		 std::cout << cn << mn << "beamuncertainty_edge_style configuration string: " << tmp << " parsed into:" << std::endl;
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		   std::cout << cn << mn << "\t" << tmpVector[j] << std::endl;
+		 }
+		}
+ 
+		//Add to configurations map
+		if (tmpVector.size()!=0)
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("beamuncertainty_edge_style", tmpVector));
+		if(debug) std::cout << cn << mn << "configurations[beamuncertainty_edge_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["beamuncertainty_edge_style"]) << std::endl;
 
 		//Get the beamuncertainty_edge_color
        	        if(debug) std::cout << cn << mn << "Start parsing beamuncertainty_edge_color " << std::endl;
@@ -1491,10 +1528,8 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 
 		//Add to configurations map
 		if (tmpVector.size()!=0)
-		 configurations.insert(std::pair<std::string, std::vector<std::string> >("alphas_edge_color", tmpVector));
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("beamuncertainty_edge_color", tmpVector));
 		if(debug) std::cout << cn << mn << "configurations[beamuncertainty_edge_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["beamuncertainty_edge_color"]) << std::endl;
-
-
 
 		//Get the beamuncertainty_fill_color
        	        if(debug) std::cout << cn << mn << "Start parsing beamuncertainty_fill_color " << std::endl;
@@ -1520,9 +1555,10 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		//Add to configurations map
 		if (tmpVector.size()!=0)
 		 configurations.insert(std::pair<std::string, std::vector<std::string> >("beamuncertainty_fill_color", tmpVector));
-		if(debug) std::cout << cn << mn << "configurations[beamuncertainty_fill_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["beamuncertainty_fill_color"]) << std::endl;
+		if(debug) std::cout << cn << mn << "configurations[beamuncertainty_fill_color] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["beamuncertainty_edge_color"]) << std::endl;
 
-		//Get the alphas_marker_style
+
+		//Get the beamuncertainty_marker_style
        	        if(debug) std::cout << cn << mn << "Start parsing beamuncertainty_marker_style " << std::endl;
 		tmpVector.clear();
 		tmp = reader->Get(plotSection, "beamuncertainty_marker_style", "EMPTY");
@@ -1546,7 +1582,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 
 		//Add to configurations map
 		if (tmpVector.size()!=0)
-  		 configurations.insert(std::pair<std::string, std::vector<std::string> >("alphasbeamuncertainty_marker_style", tmpVector));
+  		 configurations.insert(std::pair<std::string, std::vector<std::string> >("beamuncertainty_marker_style", tmpVector));
 		if(debug) std::cout << cn << mn << "configurations[beamuncertainty_marker_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["beamuncertainty_marker_style"]) << std::endl;
 
 		//--------------------------------beam
@@ -1577,7 +1613,6 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		if (tmpVector.size()!=0)
 		 configurations.insert(std::pair<std::string, std::vector<std::string> >("corrections_fill_style", tmpVector));
 		if(debug) std::cout << cn << mn << "configurations[corrections_fill_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["corrections_fill_style"]) << std::endl;
-
 
 		//------
 		//Get the corrections_edge_color
@@ -1939,7 +1974,7 @@ void SPXSteeringFile::Parse(void) {
 	if (debug&& BandwithScales) std::cout << cn << mn << "BandwithScales is ON" << std::endl;
 
 	BeamUncertainty = reader->GetReal("GRAPH", "band_with_beamuncertainty", BeamUncertainty);
-	if (debug) std::cout << cn << mn << " BeamUncertainty= "<< BeamUncertainty << std::endl;
+	//if (debug) std::cout << cn << mn << "BeamUncertainty= "<< BeamUncertainty << std::endl;
         if (BeamUncertainty!=1.) 
          std::cout << cn << mn << "Introduced BeamUncertainty= "<< BeamUncertainty << std::endl;
 
@@ -2137,7 +2172,7 @@ void SPXSteeringFile::ParseDataSteeringFiles(void) {
 
 			pcim.gridMarkerStyle = pci.gridMarkerStyle;
 			pcim.gridMarkerColor = pci.gridMarkerColor;
-			pcim.gridFillStyle = pci.gridFillStyle;
+			pcim.gridFillStyle   = pci.gridFillStyle;
 
 			pcim.dataMarkerStyle = pci.dataMarkerStyle;
 			pcim.dataMarkerColor = pci.dataMarkerColor;
@@ -2231,6 +2266,7 @@ void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 					pci.totalFillColor = pdfSteeringFile.GetFillColor();
 				}
 
+
 				if(pci.totalMarkerStyle == PC_EMPTY_STYLE) {
 					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
 						" Total Marker Style was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetMarkerStyle() << std::endl;
@@ -2311,7 +2347,7 @@ void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 
 				if(pci.beamuncertaintyMarkerStyle == PC_EMPTY_STYLE) {
 					if(debug) std::cout << cn << mn << "Plot Configuration Instance " << j << \
-						" BbeamuncertaintyMarker Style was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetMarkerStyle() << std::endl;
+						" Beam uncertainty Marker Style was empty: Defaulting to PDF Steering file: " << pdfSteeringFile.GetMarkerStyle() << std::endl;
 					pci.beamuncertaintyMarkerStyle = pdfSteeringFile.GetMarkerStyle();
 				}
 				//----
@@ -2342,27 +2378,39 @@ void SPXSteeringFile::ParsePDFSteeringFiles(void) {
 
 				pcim.totalFillStyle = pci.totalFillStyle;
 				pcim.totalFillColor = pci.totalFillColor;
+				pcim.totalEdgeStyle = pci.totalEdgeStyle;
+				pcim.totalEdgeColor = pci.totalEdgeColor;
 				pcim.totalMarkerStyle=pci.totalMarkerStyle;
 
 				pcim.pdfFillStyle = pci.pdfFillStyle;
 				pcim.pdfFillColor = pci.pdfFillColor;
+				pcim.pdfEdgeStyle = pci.pdfEdgeStyle;
+				pcim.pdfEdgeColor = pci.pdfEdgeColor;
 				pcim.pdfMarkerStyle=pci.pdfMarkerStyle;
 
 				pcim.scaleFillStyle = pci.scaleFillStyle;
 				pcim.scaleFillColor = pci.scaleFillColor;
+				pcim.scaleEdgeStyle = pci.scaleEdgeStyle;
+				pcim.scaleEdgeColor = pci.scaleEdgeColor;
 				pcim.scaleMarkerStyle=pci.scaleMarkerStyle;
 
 
 				pcim.alphasFillStyle = pci.alphasFillStyle;
 				pcim.alphasFillColor = pci.alphasFillColor;
+				pcim.alphasEdgeStyle = pci.alphasEdgeStyle;
+				pcim.alphasEdgeColor = pci.alphasEdgeColor;
 				pcim.alphasMarkerStyle=pci.alphasMarkerStyle;
 
 				pcim.beamuncertaintyFillStyle = pci.beamuncertaintyFillStyle;
 				pcim.beamuncertaintyFillColor = pci.beamuncertaintyFillColor;
+				pcim.beamuncertaintyEdgeStyle = pci.beamuncertaintyEdgeStyle;
+				pcim.beamuncertaintyEdgeColor = pci.beamuncertaintyEdgeColor;
 				pcim.beamuncertaintyMarkerStyle=pci.beamuncertaintyMarkerStyle;
 
 				pcim.correctionsFillStyle = pci.correctionsFillStyle;
 				pcim.correctionsFillColor = pci.correctionsFillColor;
+				pcim.correctionsEdgeStyle = pci.correctionsEdgeStyle;
+				pcim.correctionsEdgeColor = pci.correctionsEdgeColor;
 				pcim.correctionsMarkerStyle=pci.correctionsMarkerStyle;
 
 			} catch(const SPXException &e) {

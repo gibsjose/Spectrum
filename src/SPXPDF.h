@@ -183,11 +183,12 @@ class SPXPDF {
 
         double GetChangeSqrtS() { return Escale; };
         void SetChangeSqrtS(double fEbeam) { 
-          // fEbeam is uncertainty on proton beam energy
-          // Escale is scale of on CMS energy
-          Escale=fEbeam*fEbeam; 
-	  std::cout<<"SPXPDF::SetChangeSqrtS change beam energy to fEbeam= "<<fEbeam<<" Escale= "<<Escale<<std::endl;
-          return; 
+         // fEbeam is uncertainty on proton beam energy
+         // Escale is scale of on CMS energy = sqrt(s)
+         //
+         Escale=fEbeam; 
+	 if (debug) std::cout<<"SPXPDF::SetChangeSqrtS: Change beam energy to fEbeam= "<<fEbeam<<" Escale= "<<Escale<<std::endl;
+         return; 
         };
 
     private:

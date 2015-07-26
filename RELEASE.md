@@ -6,12 +6,14 @@
 
 ## Change Log
 
+ - SPXPDF: after calculation of PDF error, LHAPDF reset to default PDF
+
  - steering to output rootfile and graphic format for figure
   
  - added beam uncertainty
 
- -SPXGRid and SPXDPF:
-  added possibility to input list of grids (in grid steering) that are added together
+ - SPXGRid and SPXDPF:
+   added possibility to input list of grids (in grid steering) that are added together
 
  -added possibility to print total cross sections
 

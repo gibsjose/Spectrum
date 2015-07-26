@@ -427,10 +427,9 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			if(debug) std::cout << cn << mn << "No alphas_marker_style option specified" << std::endl;
 		}
 
-		//--------
 		if(options.count("beamuncertainty_fill_style")) {
 			tmpVector = options["beamuncertainty_fill_style"];
-			std::cout << cn << mn << "\t beamuncertainty_fill_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+			std::cout << cn << mn << "\tbeamuncertainty_fill_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
 			if(debug) std::cout << cn << mn << "No beamuncertainty_fill_style option specified" << std::endl;
 		}
@@ -444,25 +443,24 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		if(options.count("beamuncertainty_edge_style")) {
 			tmpVector = options["beamuncertainty_edge_style"];
-			std::cout << cn << mn << "\t beamuncertainty_edge_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+			std::cout << cn << mn << "\tbeamuncertainty_edge_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
 			if(debug) std::cout << cn << mn << "No beamuncertainty_edge_style option specified" << std::endl;
 		}
 
 		if(options.count("beamuncertainty_edge_color")) {
 			tmpVector = options["beamuncertainty_edge_color"];
-			std::cout << cn << mn << "\t beamuncertainty_edge_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+			std::cout << cn << mn << "\tbeamuncertainty_edge_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
 			if(debug) std::cout << cn << mn << "No beamuncertainty_edge_color option specified" << std::endl;
 		}
 
 		if(options.count("beamuncertainty_marker_style")) {
 			tmpVector = options["beamuncertainty_marker_style"];
-			std::cout << cn << mn <<"\t beamuncertainty_marker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+			std::cout << cn << mn <<"\tbeamuncertainty_marker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
 			if(debug) std::cout << cn << mn << "No beamuncertainty_marker_style option specified" << std::endl;
 		}
-		//--------
 
 		if(options.count("scale_fill_style")) {
 			tmpVector = options["scale_fill_style"];

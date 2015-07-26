@@ -1568,15 +1568,21 @@ void SPXPlot::DrawLegend(void) {
 
      TString label="";
      TString bandtype=TString(gtype);
+
+     //if (debug) 
+     std::cout<<cn<<mn<<"bandtype= "<<bandtype.Data()<<std::endl;
+
      bandtype.ToUpper();
      if (bandtype.Contains("ALPHAS")) bandtype="#alpha_{s}";
-     if (bandtype.Contains("BeamUncertainty")) bandtype="E_{beam}";
+     if (bandtype.Contains("BEAMUNCERTAINTY")) bandtype="E_{beam}";
      if (bandtype.Contains("SCALE"))  bandtype="Scale";
      if (bandtype.Contains("TOTAL"))  bandtype="Total";
      if (gtype.compare(std::string("pdf"))==0)
       label=pdftype+" "+bandtype;
      else
       label=bandtype;
+
+     if (debug) std::cout<<cn<<mn<<"label= "<<label.Data()<<std::endl;
 
      if (steeringFile->GetPlotMarker()) { 
       //std::cout<<cn<<mn<<" Plot marker "<<std::endl;
@@ -1595,12 +1601,12 @@ void SPXPlot::DrawLegend(void) {
       if(gname.Contains("_alphas_")) edgecolor=pci.alphasEdgeColor;
       if(gname.Contains("_scale_"))  edgecolor=pci.scaleEdgeColor;
       if(gname.Contains("_pdf_"))    edgecolor=pci.pdfEdgeColor;
-      if(gname.Contains("_beamuncertainty_")) edgecolor=pci.beamuncertaintyEdgeColor;
+      if(gname.Contains("BeamUncertainty")) edgecolor=pci.beamuncertaintyEdgeColor;
       if(gname.Contains("_total_"))  edgecolor=pci.totalEdgeColor;
       if(gname.Contains("_corrections_")) edgecolor=pci.correctionsEdgeColor;
 
       //int edgestyle  =pci.correctionsEdgeStyle;
-      std::cout<<cn<<mn<<" edgecolor= "<<edgecolor<<std::endl;      
+      std::cout<<cn<<mn<<gname.Data()<<" edgecolor= "<<edgecolor<<std::endl;      
       if (edgecolor<0) {
        opt="L";
        TString hname="h";
@@ -1713,7 +1719,7 @@ void SPXPlot::DrawLegend(void) {
      if (nbands==1) { // band has same properties because there is only one uncertainty
        if (debug) std::cout<<cn<<mn<<"icross= "<<icross<<" nbands==1"<<std::endl;
        if (vlabel.size()!=1) {
-	if (debug) std::cout<<cn<<mn<<" Add legend gband= "<<gband->GetName()<<" gtype= "<<gtype.c_str()<<std::endl;
+	if (debug) std::cout<<cn<<mn<<"Add legend gband= "<<gband->GetName()<<" gtype= "<<gtype.c_str()<<std::endl;
         leg->AddEntry(gband, TString(gtype), "LF");
        }
      } else {
@@ -2226,22 +2232,16 @@ void SPXPlot::InitializeCrossSections(void) {
 	       if (debug) std::cout<<cn<<mn<<"Already in map key= " <<keyname.c_str()<< std::endl;
                std::stringstream newname;
                newname << keyname<<"_"<< i;
-	       std::cout<<cn<<mn<<"enter this grid with name= "<<newname.str()<<std::endl;
+	       std::cout<<cn<<mn<<"Enter this grid with name= "<<newname.str()<<std::endl;
 	       convolutePair = StringPair_T(newname.str(), pci.pdfSteeringFile.GetFilename());
               } 
 
               convoluteFilePDFMap.insert(StringPairPDFPair_T(convolutePair, pdf));
 
-              //if (steeringFile->GetOutputRootfile()) {
-              // std::cout<<cn<<mn<<"switch directory to file "<<std::endl;       
-              // rootfile->cd();
-              //}
-
-              int markerstyle=-99, fillcolor=-99,fillstyle=-99, edgecolor=-99, edgestyle;
+              int markerstyle=-99, fillcolor=-99,fillstyle=-99, edgecolor=-99, edgestyle=-99;
               for (int iband=0; iband<nbands; iband++) {
 
 		TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-
 		std::string         gtype   =pdf->GetBandType(iband);
 		if (!gband) {
                  std::ostringstream oss;
@@ -2249,10 +2249,6 @@ void SPXPlot::InitializeCrossSections(void) {
                  throw SPXParseException(oss.str());
                 }
                 if (debug) std::cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<std::endl;
-
-                //if (steeringFile->GetOutputRootfile()) {
-  	        // gband->Write();
-                //}
 
 		//Update the Convolute File Map
 		//string theoryname=pci.pdfSteeringFile.GetFilename()+gband->GetName();
@@ -2283,7 +2279,7 @@ void SPXPlot::InitializeCrossSections(void) {
                  edgecolor  =pci.alphasEdgeColor;
                  edgestyle  =pci.alphasEdgeStyle;
                 }
-                if (gtype.compare(std::string("beamuncertainty"))==0){
+                if (gtype.compare(std::string("BeamUncertainty"))==0){
 		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.beamuncertaintyMarkerStyle;
                  fillcolor  =pci.beamuncertaintyFillColor;

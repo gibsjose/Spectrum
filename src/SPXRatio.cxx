@@ -1339,6 +1339,7 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
    if (gname.Contains("_scale_")) detailedband=true;
    if (gname.Contains("_pdf_"))   detailedband=true;
    if (gname.Contains("_alphas_"))detailedband=true;
+   if (gname.Contains("_beamuncertainty_"))detailedband=true;
   }
 
   if (debug) if(!detailedband) std::cout<<cn<<mn<<"This is a simple band detailedband=FALSE "<<std::endl;
@@ -1416,6 +1417,13 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
     edgestyle  =pci.pdfEdgeStyle;
     markerstyle=pci.pdfMarkerStyle;
    }
+   if (gname.Contains("_BeamUncertainty_")) { 
+    fillcolor  =pci.beamuncertaintyFillColor;
+    edgecolor  =pci.beamuncertaintyEdgeColor;
+    fillstyle  =pci.beamuncertaintyFillStyle;
+    edgestyle  =pci.beamuncertaintyEdgeStyle;
+    markerstyle=pci.beamuncertaintyMarkerStyle;
+   }
    if (gname.Contains("_corrections_")) { 
     fillcolor  =pci.correctionsFillColor;
     edgecolor  =pci.correctionsEdgeColor;
@@ -1446,33 +1454,28 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
      hedgelow ->SetLineWidth(4);
      hedgehigh->SetLineWidth(4);
     }
+    if (debug) std::cout<<cn<<mn<<"Call hedgelow->Draw() "<<hedgelow->GetName()<<"with option "<< option.c_str()  <<std::endl;
     hedgelow ->Draw("][,same");
     hedgehigh->Draw("][,same");
    }
 
    if (edgecolor>=0) {
+    if (debug) std::cout<<cn<<mn<<"Call graph->Draw "<<graph->GetName()<<"with option "<< option.c_str()  <<std::endl;
     graph->Draw(option.c_str());
    }
 
    if (debug) {
-    std::cout<<cn<<mn<<" fillcolor= "  << fillcolor   <<std::endl;
-    std::cout<<cn<<mn<<" edgecolor= "  << edgecolor   <<std::endl;
-    std::cout<<cn<<mn<<" edgestyle= "  << edgestyle   <<std::endl;
-    std::cout<<cn<<mn<<" markerstyle= "<< markerstyle <<std::endl;
-   }
+    std::cout<<cn<<mn<<"fillcolor= "  << fillcolor   <<std::endl;
+    std::cout<<cn<<mn<<"fillstyle= "  << fillstyle   <<std::endl;
+    std::cout<<cn<<mn<<"edgecolor= "  << edgecolor   <<std::endl;
+    std::cout<<cn<<mn<<"edgestyle= "  << edgestyle   <<std::endl;
+    std::cout<<cn<<mn<<"markerstyle= "<< markerstyle <<std::endl;
 
- /*
-   if(debug) {
-
-    std::cout << cn << mn << "Successfully drew ratios with options: " << option.c_str() << std::endl;
     std::cout << cn << mn << "Printing ratio name= "<<graph->GetName() << std::endl;
-    std::cout << cn << mn << "fillcolor "<<graph->GetFillColor() << std::endl;
-    std::cout << cn << mn << "fillstyle "<<graph->GetFillStyle() << std::endl;
 
     graph->Print();
     std::cout << std::endl;
    }
- */
 
   }
  }
