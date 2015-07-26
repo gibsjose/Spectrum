@@ -1226,6 +1226,8 @@ void SPXPlot::DrawLegend(void) {
  }
 
  float linesize=0.07; 
+ //if (steeringFile->GetScaleFunctionalFormLabel() )  linesize+=0.02;
+
  TLegend *leg = 0;
 
  leg = new TLegend();
@@ -1479,13 +1481,23 @@ void SPXPlot::DrawLegend(void) {
    // Now analyze PDF-object
    // Get PDF object
    SPXPDF * pdf=crossSections[icross].GetPDF();
- 
-   std::string nloprogamename;
-   if (steeringFile->GetAddonLegendNLOProgramName() ) {
-    SPXGrid *grid=crossSections[icross].GetGrid();
-    nloprogamename=grid->GetNLOProgramNameName();
-    if (debug) std::cout<<cn<<mn<<"Add NLO Program name= "<<nloprogamename.c_str()<<std::endl;      
-   }       
+   if (!pdf) {std::cout<<cn<<mn<<"PDF not found ! "<<std::endl; continue;}
+
+   // Get Grid object
+   //SPXGrid *grid=crossSections[icross].GetGrid();
+   //if (!grid) {std::cout<<cn<<mn<<"grid not found ! "<<std::endl; continue;}
+   //
+   //std::string nloprogramname;
+   //if (steeringFile->GetAddonLegendNLOProgramName() ) {
+   // nloprogramname=grid->GetNLOProgramNameName();
+   // if (debug) std::cout<<cn<<mn<<"Add NLO Program name= "<<nloprogramname.c_str()<<std::endl;      
+   //}       
+
+   //std::string scaleform;
+   //if (steeringFile->GetScaleFunctionalFormLabel() ) {
+   // scaleform=grid->GetScaleFunctionalForm();
+   // if (debug) std::cout<<cn<<mn<<"Add functional form for scale= "<<scaleform.c_str()<<std::endl;      
+   //}       
 
    int nbands=pdf->GetNBands();
    TString pdftype = pdf->GetPDFtype();
@@ -1575,7 +1587,10 @@ void SPXPlot::DrawLegend(void) {
      bandtype.ToUpper();
      if (bandtype.Contains("ALPHAS")) bandtype="#alpha_{s}";
      if (bandtype.Contains("BEAMUNCERTAINTY")) bandtype="E_{beam}";
-     if (bandtype.Contains("SCALE"))  bandtype="Scale";
+     if (bandtype.Contains("SCALE"))  {
+      bandtype="Scale";
+     }
+     
      if (bandtype.Contains("TOTAL"))  bandtype="Total";
      if (gtype.compare(std::string("pdf"))==0)
       label=pdftype+" "+bandtype;
@@ -1614,13 +1629,13 @@ void SPXPlot::DrawLegend(void) {
        hname+="LowEdge";
        TH1D *hedge=(TH1D*)gDirectory->Get(hname);
        if (hedge) {
-	if (debug) std::cout<<cn<<mn<<" hedge line= "<<hedge->GetLineWidth()<<std::endl;      
+	if (debug) std::cout<<cn<<mn<<"hedge line= "<<hedge->GetLineWidth()<<std::endl;      
         if (label.Sizeof()>namesize) namesize=label.Sizeof();
         if (debug) std::cout<<cn<<mn<<"Add label to legend: "<<label.Data()<< " namesize= "<<namesize<<std::endl;
         leg->AddEntry(hedge, label, TString(opt));
        } else {
         if (label.Sizeof()>namesize) namesize=label.Sizeof();
-	if (debug) std::cout<<cn<<mn<<" hedge= "<<hname<<" not found. Fill band "<<std::endl;      
+	if (debug) std::cout<<cn<<mn<<"hedge= "<<hname<<" not found. Fill band "<<std::endl;      
         if (debug) std::cout<<cn<<mn<<"Add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<" namesize= "<<namesize<<std::endl;
         leg->AddEntry(gband, label, TString(opt));
        }
@@ -1659,12 +1674,6 @@ void SPXPlot::DrawLegend(void) {
          double sqrtsval=1.0;
 	 labelname+=Form(" f*#sqrt{s} with f= %3.2f",sqrtsval*Escale);
        }
-
-       if (steeringFile->GetAddonLegendNLOProgramName() ) {
-  	if (debug) std::cout<<cn<<mn<<"Add NLO Program name to Legend "<<std::endl;      
-        labelname+=" ";
-        labelname+=nloprogamename;
-       }       
 
        int labelcount=std::count (vlabel.begin(), vlabel.end(), labelname);
        if (debug) std::cout<<cn<<mn<<"icross= "<<icross<<" label= "<<labelname.Data()<<" labelcount= "<<labelcount<<std::endl;
@@ -1926,6 +1935,7 @@ void SPXPlot::DrawLegend(void) {
    }
   }
 
+
   if (steeringFile->GetAddLumiLabel()) {
    std::string lumi = data.at(idata)-> GetDatasetLumi();
    //std::cout<<"data set lumi= "<<lumi.c_str()<<std::endl;
@@ -1947,7 +1957,7 @@ void SPXPlot::DrawLegend(void) {
     }
    }
   }
-   
+
   if (onlysyst) {
    if (steeringFile->GetSystematicClasses().size()==0) {
     double xcut=steeringFile->ShowIndividualSystematics();
@@ -1973,6 +1983,29 @@ void SPXPlot::DrawLegend(void) {
     leginfo->AddEntry((TObject*)0, TString(label),"");
    }
   }
+ }
+
+ for (int icross = 0; icross < crossSections.size(); icross++) {
+  if (icross>0) {
+   std::cout<<"WARNING Labels only implemented for one cross sections"<<std::endl;
+   continue;
+  }
+  SPXGrid *grid=crossSections[icross].GetGrid();
+  if (!grid) {std::cout<<cn<<mn<<"grid not found ! "<<std::endl; continue;}
+
+  if (steeringFile->GetAddonLegendNLOProgramName() ) {
+   if (debug) std::cout<<cn<<mn<<"Add NLO Program name to Legend "<<std::endl;      
+   TString label=grid->GetNLOProgramNameName();
+   if (TString(label).Sizeof()>leginfomax) leginfomax=TString(label).Sizeof();
+   leginfo->AddEntry((TObject*)0, label,"");
+  }       
+
+  if (steeringFile->GetScaleFunctionalFormLabel() ) {
+   TString label="#mu_{R} = #mu_{F}=";
+   label+=grid->GetScaleFunctionalForm();
+   if (TString(label).Sizeof()>leginfomax) leginfomax=TString(label).Sizeof();
+   leginfo->AddEntry((TObject*)0, label,"");
+  }       
  }
 
  nraw=leginfo->GetNRows();

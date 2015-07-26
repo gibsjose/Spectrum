@@ -38,8 +38,8 @@ void SPXGridSteeringFile::SetDefaults(void) {
 	lumiConfigFile.clear();
 	if(debug) std::cout << cn << mn << "lumiConfigFile set to default: \" \"" << std::endl;
 
-	scale.clear();
-	if(debug) std::cout << cn << mn << "scale set to default: \" \"" << std::endl;
+	scaleform.clear();
+	if(debug) std::cout << cn << mn << "scaleform set to default: \" \"" << std::endl;
 
 	referenceJournalName.clear();
 	if(debug) std::cout << cn << mn << "referenceJournalName set to default: \" \"" << std::endl;
@@ -100,7 +100,7 @@ void SPXGridSteeringFile::Print(void) {
 	std::cout << "\t\t Comments: " << comments << std::endl;
 	std::cout << "\t\t Author: " << author << std::endl;
 	std::cout << "\t\t Lumi Config File: " << lumiConfigFile << std::endl;
-	std::cout << "\t\t Scale: " << scale << std::endl;
+	std::cout << "\t\t Scale function form: " << scaleform << std::endl;
 	std::cout << "\t\t Reference Journal Name: " << referenceJournalName << std::endl;
 	std::cout << "\t\t Reference Link to arXiv: " << referenceLinkToArXiv << std::endl;
 	std::cout << "\t\t NLO Program Name: " << nloProgramName << std::endl;
@@ -218,12 +218,12 @@ void SPXGridSteeringFile::Parse(void) {
 		if(debug) std::cout << cn << mn << "Successfully read Lumi Config File: " << lumiConfigFile << std::endl;
 	}
 
-	scale = reader->Get("DESC", "scale", "EMPTY");
-	if(!scale.compare("EMPTY")) {
-		if(debug) std::cout << cn << mn << "Scale was not specified" << std::endl;
-		scale.clear();
+	scaleform = reader->Get("DESC", "scaleform", "EMPTY");
+	if(!scaleform.compare("EMPTY")) {
+	        if(debug) std::cout << cn << mn << "Scale form was not specified" << std::endl;
+		scaleform.clear();
 	} else {
-		if(debug) std::cout << cn << mn << "Successfully read Scale: " << scale << std::endl;
+		if(debug) std::cout << cn << mn << "Successfully read Scale: " << scaleform << std::endl;
 	}
 
 	referenceJournalName = reader->Get("DESC", "reference_journal_name", "EMPTY");

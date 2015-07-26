@@ -66,6 +66,11 @@ public:
 	 return pci->gridSteeringFile.GetNLOProgramName();
 	}
 
+	const std::string & GetScaleFunctionalForm(void) const {
+	 return pci->gridSteeringFile.GetScaleFunctionalForm();
+	}
+
+
 	//Creates the Grid and return the reference histogram
 	TH1D * CreateGrid(void);
 
@@ -99,7 +104,7 @@ private:
 	SPXPlotConfigurationInstance *pci;   // Plot configuration instance
 
 	//appl::grid *grid;		     // APPLGrid Grid
-	std::vector <appl::grid *> vgrid;           // vector of APPLGrid Grid
+	std::vector <appl::grid *> vgrid;    // vector of APPLGrid Grid
 
 	bool referenceHistogramCorrupted;    // Flag indicating that the reference histogram has been corrupted
 	TH1D * referenceHistogram;	     // Reference histogram

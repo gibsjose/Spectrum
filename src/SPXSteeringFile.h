@@ -122,6 +122,7 @@ private:
         int CalculateChi2;      // Calculate Chi2
         int DumpTables;      // Dump Latex tables
 
+        bool AddScaleFunctionalForm; // add functional form of scale in info legend
         bool AddLumi;             // add luminosity label in info legend
         bool AddJournal;          // add journal label in legend
         bool AddJournalYear;      // add journal year  in legend
@@ -287,6 +288,10 @@ public:
 	bool GetAddLumiLabel(void) const {
 		return this->AddLumi;
 	}
+
+	bool GetScaleFunctionalFormLabel(void) const {
+                return AddScaleFunctionalForm; 
+        }
 
 	bool GetAddJournalLabel(void) const {
 		return this->AddJournal;

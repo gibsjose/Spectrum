@@ -41,7 +41,7 @@ debug = true													;[Optional] Turn on/off debug statements - [default = f
 name = ATLAS_epj_atlas_mtt										;[Optional] Grid Name
 author = John Smith                                             ;[Optional] Grid Author
 lumi_config_file = some_file.config                             ;[Optional] Sub-process configuration file for the grid program (APPLgrid)
-scale = Pt^2                                                    ;[Optional] Choice of renormalization scale (Q^2)
+scaleform = Pt^2                                                ;[Optional] Choice of functional form of ren and fac scale
 reference_journal_name = Some Physics Journal                   ;[Optional] Name of reference journal for the corresponding dataset
 reference_link_to_arxiv = www.heresthelink.com                  ;[Optional] Link to reference on arXiv for the corresponding dataset
 nlo_program_name = Sherpa                                       ;[Optional] NLO Program used to generate the grids

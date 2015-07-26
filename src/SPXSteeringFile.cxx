@@ -144,6 +144,9 @@ void SPXSteeringFile::SetDefaults(void) {
         AddLumi=false;
 	if(debug) std::cout << cn << mn << "Addlumi set to default: OFF" << std::endl;
 
+        AddScaleFunctionalForm=false;
+	if(debug) std::cout << cn << mn << "AddScaleFunctionalForm set to default: OFF" << std::endl;
+
         AddJournal=false;
 	if(debug) std::cout << cn << mn << "AddJournal set to default: OFF" << std::endl;
 
@@ -271,7 +274,7 @@ void SPXSteeringFile::PrintGridMetadata(void) {
 			file << "Grid: " << gsf.GetName() << std::endl;
 			file << "File: " << gsf.GetFilename() << std::endl;
 			file << "Author: " << gsf.GetAuthor() << std::endl;
-			file << "Renomalization Scale: " << gsf.GetScale() << std::endl;
+			file << "Renomalization Scale: " << gsf.GetScaleFunctionalForm() << std::endl;
 			file << "NLO Program Name: " << gsf.GetNLOProgramName() << std::endl;
 			file << "Grid Program Name: " << gsf.GetGridProgramName() << std::endl;
 			file << "Comments: " << gsf.GetComments() << std::endl;
@@ -324,6 +327,8 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Add luminosity label on Legend: " << (AddLumi ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Add journal label on Legend: " << (AddJournal ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Add journal year on Legend: " << (AddJournalYear ? "YES" : "NO") << std::endl;
+	std::cout << "\t\t Add functional form of scale on Legend: " << (AddScaleFunctionalForm ? "YES" : "NO") << std::endl;
+
         if (showIndividualSystematics==0)
 	 std::cout << "\t\t Show NO individual systematics: " << std::endl;
         if (showIndividualSystematics>0)
@@ -2046,7 +2051,7 @@ void SPXSteeringFile::Parse(void) {
 	 }
         }
 
-	addonLegendNLOProgramName = reader->GetBoolean("GRAPH", "add_onlegend_nlo_program_name", addonLegendNLOProgramName);
+	addonLegendNLOProgramName = reader->GetBoolean("GRAPH", "label_nlo_program_name", addonLegendNLOProgramName);
 
 	plotErrorTicks = reader->GetBoolean("GRAPH", "plot_error_ticks", plotErrorTicks);
 	plotMarker     = reader->GetBoolean("GRAPH", "plot_marker", plotMarker);
@@ -2086,6 +2091,7 @@ void SPXSteeringFile::Parse(void) {
 
 	DumpTables = reader->GetInteger("GRAPH", "dump_latex_tables", DumpTables);
 
+        AddScaleFunctionalForm= reader->GetBoolean("GRAPH", "label_scaleform", AddScaleFunctionalForm);
 	AddLumi       = reader->GetBoolean("GRAPH", "label_lumi", AddLumi);
 	AddJournal    = reader->GetBoolean("GRAPH", "label_journalreference", AddJournal);
 	AddJournalYear= reader->GetBoolean("GRAPH", "label_journalyear", AddJournalYear);

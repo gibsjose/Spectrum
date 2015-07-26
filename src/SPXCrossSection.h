@@ -112,7 +112,6 @@ public:
 
         void PrintTotalCrossSection(void);
 
-
 private:
 	static bool debug;		       // Flag indicating debug mode
 

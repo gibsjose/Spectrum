@@ -6,6 +6,8 @@
 
 ## Change Log
 
+ - Added possibility to have functional form of scale in information legend
+
  - SPXPDF: after calculation of PDF error, LHAPDF reset to default PDF
 
  - steering to output rootfile and graphic format for figure
