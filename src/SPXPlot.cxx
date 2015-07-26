@@ -1104,6 +1104,49 @@ void SPXPlot::DrawLegend(void) {
 
  if (debug&&ratioonly) std::cout << cn << mn <<"Is ratio only "<< std::endl;
 
+ // Look first, if properties of bands are different
+ int old_fill_style=-999, old_fill_color=-999;
+ int old_marker_style=-999, old_marker_color=-999;
+ bool bandsdifferent=false;
+ bool hadcorronly=false;
+ 
+ for(int icross = 0; icross < crossSections.size(); icross++) {
+  SPXPDF * pdf=crossSections[icross].GetPDF();
+
+  if (debug) {
+   std::cout<<cn<<mn<<" "<< std::endl;
+   std::cout<<cn<<mn<<"icross= "<<icross<<" Test band properties "<< std::endl;
+  }
+
+  bool bscale  =pdf->HasBandofType("_scale_");
+  bool bpdf    =pdf->HasBandofType("_pdf_");
+  bool balphas =pdf->HasBandofType("_alphas_");
+  bool bbeam   =pdf->HasBandofType("_BeamUncertainty_");
+  bool bhadcorr=pdf->HasBandofType("_corrections_");
+
+  if (bhadcorr && !(bscale&&bpdf&&balphas)) hadcorronly=true;
+
+  bandsdifferent=pdf->BandsHaveDifferentProperties();
+  if (debug) {
+   if (bandsdifferent) std::cout<<cn<<mn<<"icross= "<<icross<<" Bands have different properties !"<< std::endl;
+   else                std::cout<<cn<<mn<<"icross= "<<icross<<" Bands have same properties ! "<< std::endl;
+
+   if (bscale)     std::cout<<cn<<mn<<"Bands contains scale uncertainty"<< std::endl;
+   if (bpdf)       std::cout<<cn<<mn<<"Bands contains PDF uncertainty"<< std::endl;
+   if (balphas)    std::cout<<cn<<mn<<"Bands contains AlphaS uncertainty"<< std::endl;
+   if (bbeam)      std::cout<<cn<<mn<<"Bands contains Beam uncertainty"<< std::endl;
+   if (bhadcorr)   std::cout<<cn<<mn<<"Bands contains corrections uncertainty"<< std::endl;
+   if (hadcorronly)std::cout<<cn<<mn<<"Bands contains ONLY corrections uncertainty"<< std::endl;
+  }
+ }
+
+ if (debug) {
+  if (bandsdifferent) std::cout<<cn<<mn<<"One Cross section with Bands with have different properties !"<< std::endl;
+  else                std::cout<<cn<<mn<<"All cross section have bands with have same properties ! "<< std::endl;
+ }
+
+ if (debug) std::cout<<cn<<mn<<" "<< std::endl;
+
  // Analyse what data are there...
  //
  // eta-scan is when all data have same name, but ymin and y max are all different
@@ -1237,51 +1280,7 @@ void SPXPlot::DrawLegend(void) {
  leg->SetFillStyle(0);
  leg->SetMargin(0.2);
 
-
- // Look first, if properties of bands are different
- int old_fill_style=-999, old_fill_color=-999;
- int old_marker_style=-999, old_marker_color=-999;
- bool bandsdifferent=false;
- bool hadcorronly=false;
- 
- for(int icross = 0; icross < crossSections.size(); icross++) {
-  SPXPDF * pdf=crossSections[icross].GetPDF();
-
-  if (debug) {
-   std::cout<<cn<<mn<<" "<< std::endl;
-   std::cout<<cn<<mn<<"icross= "<<icross<<" Test band properties "<< std::endl;
-  }
-
-  bool bscale  =pdf->HasBandofType("_scale_");
-  bool bpdf    =pdf->HasBandofType("_pdf_");
-  bool balphas =pdf->HasBandofType("_alphas_");
-  bool bbeam   =pdf->HasBandofType("_BeamUncertainty_");
-  bool bhadcorr=pdf->HasBandofType("_corrections_");
-
-  if (bhadcorr && !(bscale&&bpdf&&balphas)) hadcorronly=true;
-
-  bandsdifferent=pdf->BandsHaveDifferentProperties();
-  if (debug) {
-   if (bandsdifferent) std::cout<<cn<<mn<<"icross= "<<icross<<" Bands have different properties !"<< std::endl;
-   else                std::cout<<cn<<mn<<"icross= "<<icross<<" Bands have same properties ! "<< std::endl;
-
-   if (bscale)     std::cout<<cn<<mn<<"Bands contains scale uncertainty"<< std::endl;
-   if (bpdf)       std::cout<<cn<<mn<<"Bands contains PDF uncertainty"<< std::endl;
-   if (balphas)    std::cout<<cn<<mn<<"Bands contains AlphaS uncertainty"<< std::endl;
-   if (bbeam)      std::cout<<cn<<mn<<"Bands contains Beam uncertainty"<< std::endl;
-   if (bhadcorr)   std::cout<<cn<<mn<<"Bands contains corrections uncertainty"<< std::endl;
-   if (hadcorronly)std::cout<<cn<<mn<<"Bands contains ONLY corrections uncertainty"<< std::endl;
-  }
- }
-
- if (debug) {
-  if (bandsdifferent) std::cout<<cn<<mn<<"One Cross section with Bands with have different properties !"<< std::endl;
-  else                std::cout<<cn<<mn<<"All cross section have bands with have same properties ! "<< std::endl;
- }
-
- if (debug) std::cout<<cn<<mn<<" "<< std::endl;
-
-  // Now analyse ratio
+ // Now analyse ratio
 
  if (ratioonly && os.ContainsData() && !os.ContainsConvolute()) { 
   if (debug) std::cout<<cn<<mn<<"Now loop over ratio to see if systematics is plotted"<<std::endl;
@@ -1394,7 +1393,7 @@ void SPXPlot::DrawLegend(void) {
     }
 
     //if (!ratioonly && data.size()>0) { // ratioonly figures have data in the ratio, no separate label
-    if (data.size()>0) { 
+    if (data.size()>0&&!bandsdifferent) { // do not plot data label when the is one band with different properties
      if (!onlysyst) {
       if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
       if (debug) std::cout<<cn<<mn<<"Add to legend Data Label: "<<datalabel.Data()<<" namesize= "<<namesize<<std::endl;
