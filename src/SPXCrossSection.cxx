@@ -21,7 +21,7 @@ const std::string cn = "SPXCrossSection::";
 
 //Must define the static debug variable in the implementation
 bool SPXCrossSection::debug=false;
-
+ 
 //Create the CrossSection
 void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
  std::string mn = "Create: ";

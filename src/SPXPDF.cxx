@@ -270,10 +270,9 @@ TH1D *  SPXPDF::GetHisto(double renscale, double facscale){
  //  if (debug) std::cout<<cn<<mn<<"Scale variation renscale= "<<renscale<<" facscale= "<<facscale<<std::endl;
  //}
 
+ TString name="xsec_pdf_"+default_pdf_set_name;
  if (debug) std::cout<<cn<<mn<<"Number of grids= "<<ngrid<<std::endl;
  TH1D* htmpsum=0;
- TString name="xsec_pdf_"+default_pdf_set_name;
-
  // if beam uncertainty should be calculated, here we need the default cross section
  double xEscale=1.;
  if (!do_Escale) xEscale=Escale; 
@@ -344,8 +343,16 @@ TH1D *  SPXPDF::GetHisto(double renscale, double facscale){
  if (debug) {
   if (applgridok) std::cout<<cn<<mn<<"applgridok flag is ON "<<std::endl;
   else            std::cout<<cn<<mn<<"applgridok flag is OFF "<<std::endl;
-  std::cout<<cn<<mn<<"Returning "<<htmpsum->GetName()<<std::endl;
+  std::cout<<cn<<mn<<"Returning absolute"<<htmpsum->GetName()<<std::endl;
   htmpsum->Print("all");
+  //
+  //TString hname=TString("hratio_")+htmpsum->GetName()+TString("_divided_by_");
+  //hname+=htmpsum->GetName();
+  //TH1D * hratio=(TH1D*) hvar->Clone(hname);
+  //hratio->Divide(hpdfdefault);
+  //std::cout<<cn<<mn<<"Returning relative"<<hratio->GetName()<<std::endl;
+  //hratio->Print("all");
+
  }
  return htmpsum;
 };                 
@@ -499,65 +506,71 @@ void SPXPDF::Initialize()
  std::cout<<cn<<mn<<"PDFset looking up: "<<default_pdf_set_name<<" default-id= "<<defaultpdfid<<std::endl;
 
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
-
- const LHAPDF::PDFInfo info(default_pdf_set_name.c_str(), 2);
-
- LHAPDF::Info& cfg = LHAPDF::getConfig();
-
- cfg.set_entry("Verbosity",0);
-
- if (debug) {
-  std::cout<<"  "<<std::endl;
-  std::cout<<cn<<mn<<"Running on LHAPDF6: "<<std::endl;
-  std::cout<<"  "<<std::endl;
+ //
+ bool verbosity=false;
  
-  std::cout<<cn<<mn<<"Read PDF= "<<default_pdf_set_name.c_str()<<std::endl;
-
+ if (!verbosity) {
+  const LHAPDF::PDFInfo info(default_pdf_set_name.c_str(), 2);
+ //
+  LHAPDF::Info& cfg = LHAPDF::getConfig();
+ //
+  cfg.set_entry("Verbosity",0);
+ //
+  if (debug) {
+   std::cout<<"  "<<std::endl;
+   std::cout<<cn<<mn<<"Running on LHAPDF6: "<<std::endl;
+   std::cout<<"  "<<std::endl;
+  //
+  //std::cout<<cn<<mn<<"Read PDF= "<<default_pdf_set_name.c_str()<<std::endl;
+  //
   cfg.set_entry("Verbosity",1);
-
+  //
   if (info.has_key("PdfDesc")) std::cout << "PdfDesc: " << info.get_entry("PdfDesc") << std::endl;
-  std::cout <<cn<<mn<< "PdfType: " << info.get_entry("PdfType") << std::endl;
-  std::cout <<cn<<mn<< "Verbosity from PDF: " << info.get_entry("Verbosity") << std::endl;
-  //vector<int> pids = info.get_entry_as< vector<int> >("Flavors");
+   std::cout <<cn<<mn<< "PdfType: " << info.get_entry("PdfType") << std::endl;
+   std::cout <<cn<<mn<< "Verbosity from PDF: " << info.get_entry("Verbosity") << std::endl;
+   //vector<int> pids = info.get_entry_as< vector<int> >("Flavors");
+  }
  }
+ //mypdf=LHAPDF::mkPDF(default_pdf_set_name.c_str(),defaultpdfid);
 
- mypdf=LHAPDF::mkPDF(default_pdf_set_name.c_str(),defaultpdfid);
  // std::cout<<mypdf.description()<<std::endl;
  // double x=0.1, Q=10.;
  // std::cout << "xf_g = " << mypdf->xfxQ(21, x, Q) << std::endl;
 
- const LHAPDF::PDFSet set(default_pdf_set_name.c_str());
- int npdfmemberfromset = set.size();
+ //const LHAPDF::PDFSet set(default_pdf_set_name.c_str());
+ //int npdfmemberfromset = set.size();
 
- if (debug) {
-  std::cout<<cn<<mn<<"Number of PDF members from steering=  "<<n_PDFMembers<<" from PDF set= "<<npdfmemberfromset <<std::endl;
- }
+ //if (debug) {
+ // std::cout<<cn<<mn<<"Number of PDF members from steering=  "<<n_PDFMembers<<" from PDF set= "<<npdfmemberfromset <<std::endl;
+ //}
 
- if (npdfmemberfromset!=n_PDFMembers  && !(ErrorPropagationType==StyleHeraPDF)) {
+ //if (npdfmemberfromset!=n_PDFMembers  && !(ErrorPropagationType==StyleHeraPDF)) {
 
-  std::cerr<<cn<<mn<<"ERROR: Number of PDF members from steering=  "<<n_PDFMembers<<" from PDF set= "<<npdfmemberfromset <<std::endl;
-  std::cout<<cn<<mn<<"ERROR: Number of PDF members from steering=  "<<n_PDFMembers<<" from PDF set= "<<npdfmemberfromset <<std::endl;
-  std::cout<<cn<<mn<<"ERROR: Correct the steering file !" <<std::endl;
- }
+ // std::cerr<<cn<<mn<<"ERROR: Number of PDF members from steering=  "<<n_PDFMembers<<" from PDF set= "<<npdfmemberfromset <<std::endl;
+ // std::cout<<cn<<mn<<"ERROR: Number of PDF members from steering=  "<<n_PDFMembers<<" from PDF set= "<<npdfmemberfromset <<std::endl;
+ // std::cout<<cn<<mn<<"ERROR: Correct the steering file !" <<std::endl;
+ //}
  
- const std::vector<LHAPDF::PDF*> pdfs = set.mkPDFs();
- mypdf=pdfs[defaultpdfid];
+ //const std::vector<LHAPDF::PDF*> pdfs = set.mkPDFs();
+ //mypdf=pdfs[defaultpdfid];
  //vector<double> xgAll, xuAll;
  //for (size_t imem = 0; imem <= nmem; imem++) {
  // xgAll.push_back(pdfs[imem]->xfxQ(21,x,Q)); // gluon distribution
  // xuAll.push_back(pdfs[imem]->xfxQ(2,x,Q)); // up-quark distribution
  //}
+ //#else
+ //if (debug) {
+ // std::cout<<cn<<mn<<"  "<<std::endl;
+ // std::cout<<cn<<mn<<"Running on LHAPDF5: "<<std::endl;
+ // std::cout<<cn<<mn<<"  "<<std::endl;
+ //}
 
-#else
- if (debug) {
-  std::cout<<cn<<mn<<"  "<<std::endl;
-  std::cout<<cn<<mn<<"Running on LHAPDF5: "<<std::endl;
-  std::cout<<cn<<mn<<"  "<<std::endl;
- }
-
- std::cout<<cn<<mn<<"init PDF set called: "<<default_pdf_set_name.c_str()<<std::endl;
- LHAPDF::initPDFSet(default_pdf_set_name.c_str(), defaultpdfid);
+ //std::cout<<cn<<mn<<"init PDF set called: "<<default_pdf_set_name.c_str()<<std::endl;
+ //LHAPDF::initPDFSet(default_pdf_set_name.c_str(), defaultpdfid);
 #endif
+
+ this->SetLHAPDFPDFset(default_pdf_set_name,defaultpdfid);
+
  if (debug) {
   std::cout<<cn<<mn<<"...finished PDF set up: name= "<<default_pdf_set_name<<std::endl;
  }
@@ -568,7 +581,9 @@ void SPXPDF::Initialize()
   quick_timer t2;
 #endif
 
-  temp_hist=this->GetHisto();
+  TString name="xsec_pdf_"+default_pdf_set_name;
+
+  temp_hist=this->GetHisto(); // default renscale=1 facscale=1
   if (!temp_hist) {
    std::cout<<cn<<mn<<"WARNING temp_hist not found ! "<<std::endl;
   }
@@ -701,16 +716,16 @@ void SPXPDF::Initialize()
   else           std::cout<<cn<<mn<<"do_AlphaS is OFF "<<std::endl;
  }
 
+
  if (AlphaSPDFSetNameUp.compare("")==0   || AlphaSPDFSetNameUp.compare("none")==0 ||
      AlphaSPDFSetNameDown.compare("")==0 || AlphaSPDFSetNameDown.compare("none")==0 ) {
 
-  std::cout<<cn<<mn<<"WARNING: can not calculated AlphaS uncertainty, no PDF member found "<<std::endl; 
+  std::cout<<cn<<mn<<"WARNING: can not calculated AlphaS uncertainty, no PDF member found. Switch of Alphas calculation "<<std::endl; 
   do_AlphaS=false;
 
  }
 
  if (do_AlphaS) {
-
   //check for necessary names before continuing
   if(AlphaSmemberNumDown==DEFAULT) {
    std::ostringstream oss;
@@ -738,6 +753,12 @@ void SPXPDF::Initialize()
 
 // alphaS central
   std::cout<<cn<<mn<<"PDFset getting alphaS uncertainty for "<<default_pdf_set_name<<" PDF with Scale= "<<alphaS_scale_worldAverage<<std::endl;
+  this->SetLHAPDFPDFset(default_pdf_set_name, defaultpdfid);
+  if (debug&&applgridok) {
+   temp_hist= this->GetHisto();
+   std::cout<<cn<<mn<<"Print default from convolution:= "<<default_pdf_set_name<<std::endl;
+   temp_hist->Print("all");
+  }
 
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
   double value_alphaS=mypdf->alphasQ(alphaS_scale_worldAverage);
@@ -749,20 +770,35 @@ void SPXPDF::Initialize()
   if (debug) std::cout <<cn<<mn<< "Added central histogram with alphaS value: " << value_alphaS << std::endl ;
 
 // alphaS down
-  if (debug) std::cout<<cn<<mn<<"Setting up alphas down PDF-name= "<<AlphaSPDFSetNameDown<<" member= "<<AlphaSmemberNumDown<<std::endl;
-#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
-  mypdf=LHAPDF::mkPDF(AlphaSPDFSetNameDown.c_str(),AlphaSmemberNumDown);
-  if (!mypdf) std::cout<<"PDF not found name= "<<AlphaSPDFSetNameDown.c_str()<<" member= "<<AlphaSmemberNumDown<<std::endl;
+  this->SetLHAPDFPDFset(AlphaSPDFSetNameDown, AlphaSmemberNumDown);
+
+//  if (debug) std::cout<<cn<<mn<<"Setting up alphas down PDF-name= "<<AlphaSPDFSetNameDown<<" member= "<<AlphaSmemberNumDown<<std::endl;
+//#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+//  mypdf=LHAPDF::mkPDF(AlphaSPDFSetNameDown.c_str(),AlphaSmemberNumDown);
+//  if (!mypdf) std::cout<<"PDF not found name= "<<AlphaSPDFSetNameDown.c_str()<<" member= "<<AlphaSmemberNumDown<<std::endl;
   //else if (debug) mypdf->print();
-#else
-  LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+AlphaSPDFSetNameDown+".LHgrid")).c_str(), AlphaSmemberNumDown);
-#endif
+//#else
+// LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+AlphaSPDFSetNameDown+".LHgrid")).c_str(), AlphaSmemberNumDown);
+//#endif
+
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
   double value_alphaS_down=mypdf->alphasQ(alphaS_scale_worldAverage);
   if (debug) mypdf->print();
 #else
   double value_alphaS_down=LHAPDF::alphasPDF(alphaS_scale_worldAverage);
 #endif
+
+  // For NNPDF there is a problem reading out the alphas values (acknowledged by J Rojo), need to fix this by hand
+  if (TString(AlphaSPDFSetNameDown).Contains("NNPDF30_nlo_as_0117_hera") 
+   || TString(AlphaSPDFSetNameDown).Contains("NNPDF30_nlo_as_0117_nojet") 
+   || TString(AlphaSPDFSetNameDown).Contains("NNPDF30_nlo_as_0117_nolhc") ) {
+   value_alphaS_down=0.117;
+   std::ostringstream oss;
+   oss << cn << mn << "INFO: Set "<<AlphaSPDFSetNameDown<<" alphas value value by hand to "<<value_alphaS_down<<std::endl;
+   std::cerr<<cn<<mn<<oss.str()<<std::endl;
+   std::cout<<cn<<mn<<oss.str()<<std::endl;
+  }
+
   TString AlphaSPDFSetHistNameDown=AlphaSPDFSetNameDown+"_value_alphas= ";
   TString namedown; namedown.Form("%3.3f",value_alphaS_down);
   AlphaSPDFSetHistNameDown+=namedown;
@@ -793,20 +829,34 @@ void SPXPDF::Initialize()
 // alphaS up
 
   if (debug) std::cout<<cn<<mn<<"Setting up alphas up   PDF-name= "<<AlphaSPDFSetNameUp<<" member= "<<AlphaSmemberNumUp<<std::endl;
-#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
- mypdf=LHAPDF::mkPDF(AlphaSPDFSetNameUp.c_str(),AlphaSmemberNumUp);
-#else
-  LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+AlphaSPDFSetNameUp+".LHgrid")).c_str(), AlphaSmemberNumUp);
+
+  this->SetLHAPDFPDFset(AlphaSPDFSetNameUp, AlphaSmemberNumUp);
+ //#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+ //mypdf=LHAPDF::mkPDF(AlphaSPDFSetNameUp.c_str(),AlphaSmemberNumUp);
+ //#else
+ // LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+AlphaSPDFSetNameUp+".LHgrid")).c_str(), AlphaSmemberNumUp);
   // Peter's comment: for LHAPDF v 6.1, this line has to be used
-  // LHAPDF::initPDFSet(((std::string) (AlphaSPDFSetNameUp+".LHgrid")).c_str(), AlphaSmemberNumUp);
+  //LHAPDF::initPDFSet(((std::string) (AlphaSPDFSetNameUp+".LHgrid")).c_str(), AlphaSmemberNumUp);
   //}
-#endif
+ //#endif
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
   double value_alphaS_up=mypdf->alphasQ(alphaS_scale_worldAverage);
   if (debug) mypdf->print();
 #else
   double value_alphaS_up=LHAPDF::alphasPDF(alphaS_scale_worldAverage);
 #endif
+
+  // For NNPDF there is a problem reading out the alphas values (acknowledged by J Rojo), need to fix this by hand
+  if (TString(AlphaSPDFSetNameUp).Contains("NNPDF30_nlo_as_0119_hera") 
+   || TString(AlphaSPDFSetNameUp).Contains("NNPDF30_nlo_as_0119_nojet") 
+   || TString(AlphaSPDFSetNameUp).Contains("NNPDF30_nlo_as_0119_nolhc") ) {
+   value_alphaS_up=0.119;
+   std::ostringstream oss;
+   oss << cn << mn << "INFO: Set "<<AlphaSPDFSetNameUp<<" alphas value value by hand to "<<value_alphaS_up<<std::endl;
+   std::cerr<<cn<<mn<<oss.str()<<std::endl;
+   std::cout<<cn<<mn<<oss.str()<<std::endl;
+  }
+
   TString AlphaSPDFSetHistNameUp=AlphaSPDFSetNameUp+"_value_alphas= ";
   TString nameup; nameup.Form("%3.3f",value_alphaS_up);
   AlphaSPDFSetHistNameUp+=nameup;
@@ -852,6 +902,10 @@ void SPXPDF::Initialize()
   }
  }
 
+// reset to default
+ if (debug) std::cout<<cn<<mn<<"Reset to PDF default "<<std::endl;
+ this->SetLHAPDFPDFset(default_pdf_set_name,defaultpdfid);
+//
  if (debug)
   if (do_PDFBand) std::cout<<cn<<mn<<"do_PDFBand ON"<<std::endl;
   else            std::cout<<cn<<mn<<"do_PDFBand OFF"<<std::endl;
@@ -903,14 +957,14 @@ void SPXPDF::Initialize()
      std::cout<<cn<<mn<<"TIMER call initPDF/mkPDF pdferri <= lasteig PDF= "<<PDFname.c_str()<<" pdferri= "<<pdferri<<" running..." << std::endl; 
      quick_timer t0;
 #endif
-
-#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
-      if (debug) std::cout<<cn<<mn<<"...mkPDF "<<PDFname.c_str()<<" pdferri= "<<pdferri<<std::endl;
-      mypdf=LHAPDF::mkPDF(PDFname.c_str(), pdferri);
-#else
-      if (debug) std::cout<<cn<<mn<<"...initPDFSet "<<PDFname.c_str()<<" pdferri= "<<pdferri<<std::endl;
-      LHAPDF::initPDF(pdferri);
-#endif
+     this->SetLHAPDFPDFset(PDFname, pdferri);
+     //#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+     // if (debug) std::cout<<cn<<mn<<"...mkPDF "<<PDFname.c_str()<<" pdferri= "<<pdferri<<std::endl;
+     // mypdf=LHAPDF::mkPDF(PDFname.c_str(), pdferri);
+     //#else
+     // if (debug) std::cout<<cn<<mn<<"...initPDFSet "<<PDFname.c_str()<<" pdferri= "<<pdferri<<std::endl;
+     // LHAPDF::initPDF(pdferri);
+     //#endif
 
 #ifdef TIMER
       std::cout<<cn<<mn<<"TIMER done call initPDF/mkPDF t0= " << t0.time()<<" [ms]"<<std::endl;
@@ -930,13 +984,14 @@ void SPXPDF::Initialize()
      quick_timer t0;
 #endif
 
-#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
-      if (debug) std::cout<<cn<<mn<<"Initialize: mkPDF name= "<<PDFnamevar.c_str()<<" set= "<<defaultpdfidvar<<std::endl;
-      mypdf=LHAPDF::mkPDF(PDFnamevar.c_str(), defaultpdfidvar);
-#else
-      TString pdfname=TString(pdfSetPath)+"/"+PDFnamevar+".LHgrid";
-      LHAPDF::initPDFSet(pdfname.Data(), defaultpdfidvar);
-#endif
+     this->SetLHAPDFPDFset(PDFnamevar, defaultpdfidvar);
+     //#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+     // if (debug) std::cout<<cn<<mn<<"Initialize: mkPDF name= "<<PDFnamevar.c_str()<<" set= "<<defaultpdfidvar<<std::endl;
+     // mypdf=LHAPDF::mkPDF(PDFnamevar.c_str(), defaultpdfidvar);
+     //#else
+     // TString pdfname=TString(pdfSetPath)+"/"+PDFnamevar+".LHgrid";
+     // LHAPDF::initPDFSet(pdfname.Data(), defaultpdfidvar);
+     //#endif
 
 #ifdef TIMER
       std::cout<<cn<<mn<<"TIMER done call initPDF/mkPDF t0= " << t0.time()<<" [ms]"<<std::endl;
@@ -956,11 +1011,12 @@ void SPXPDF::Initialize()
 #endif
 
      if (debug) std::cout<<cn<<mn<<"Initialize: pdferri> lasteig+1 initPDF name= "<<PDFnamevar.c_str()<<" set= "<<pdfset<<std::endl;
-#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
-      mypdf=LHAPDF::mkPDF(PDFnamevar.c_str(), pdfset);
-#else
-     LHAPDF::initPDF(pdfset);
-#endif
+     this->SetLHAPDFPDFset(PDFnamevar, pdfset);
+     //#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+     // mypdf=LHAPDF::mkPDF(PDFnamevar.c_str(), pdfset);
+     //#else
+     //LHAPDF::initPDF(pdfset);
+     //#endif
 
 #ifdef TIMER     
      std::cout<<cn<<mn<<"TIMER done initPDF/mkPDF t0= "<<  t0.time()<<" [ms]"<< std::endl;
@@ -975,15 +1031,16 @@ void SPXPDF::Initialize()
      quick_timer t0;
 #endif
 
-#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
-    if (debug) {
-     std::cout<<cn<<mn<<" "<<std::endl;
-     std::cout<<cn<<mn<<"Running LHAPDF6 mkPDF for "<<default_pdf_set_name.c_str()<<std::endl;
-    }
-    mypdf=LHAPDF::mkPDF(default_pdf_set_name.c_str(), pdferri);
-#else
-    LHAPDF::initPDF(pdferri);
-#endif
+     this->SetLHAPDFPDFset(default_pdf_set_name, pdferri);
+     //#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+     //if (debug) {
+     //std::cout<<cn<<mn<<" "<<std::endl;
+     //std::cout<<cn<<mn<<"Running LHAPDF6 mkPDF for "<<default_pdf_set_name.c_str()<<std::endl;
+     //}
+     //mypdf=LHAPDF::mkPDF(default_pdf_set_name.c_str(), pdferri);
+     //#else
+     //LHAPDF::initPDF(pdferri);
+     //#endif
 
 #ifdef TIMER     
     std::cout<<cn<<mn<<"TIMER call initPDF/mkPDF done "<<t0.time()<<" [ms]"<< std::endl;
@@ -1047,16 +1104,17 @@ void SPXPDF::Initialize()
   if (debug) std::cout<<cn<<mn<<"End of PDF errors loop"<<std::endl;
  }  /// do_PDFBAND
 
-// Set back to default PDF 
-#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
-    if (debug) {
-     std::cout<<cn<<mn<<" "<<std::endl;
-     std::cout<<cn<<mn<<"Running LHAPDF6 mkPDF for "<<default_pdf_set_name.c_str()<<std::endl;
-    }
-    mypdf=LHAPDF::mkPDF(default_pdf_set_name.c_str(), defaultpdfid);
-#else
-    LHAPDF::initPDF(defaultpdfid);
-#endif
+// Set back to default PDF
+     this->SetLHAPDFPDFset(default_pdf_set_name, defaultpdfid); 
+     //#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+     //if (debug) {
+     //std::cout<<cn<<mn<<" "<<std::endl;
+     //std::cout<<cn<<mn<<"Running LHAPDF6 mkPDF for "<<default_pdf_set_name.c_str()<<std::endl;
+     //}
+     //mypdf=LHAPDF::mkPDF(default_pdf_set_name.c_str(), defaultpdfid);
+     //#else
+     //LHAPDF::initPDF(defaultpdfid);
+     //#endif
 
 #ifdef TIMER     
     std::cout<<cn<<mn<<"TIMER call CalcSystErrors  running... " << std::endl;
@@ -1096,9 +1154,8 @@ void SPXPDF::Initialize()
   Mapallbands["BeamUncertainty"]=h_BeamUncertainty_results;
  }
 
-
  if (debug) {
-  std::cout<<cn<<mn<<" Print Mapallbands "<<std::endl;
+  std::cout<<cn<<mn<<"Print Mapallbands "<<std::endl;
   PrintMap(Mapallbands);
  }
 
@@ -1310,6 +1367,8 @@ void SPXPDF::CalcPDFBandErrors()
     average += h_errors_PDF.at(pdferri)->GetBinContent(bi);
    }
    average /= h_errors_PDF.size()-1;
+   //
+   // update default histogram
    hpdfdefault->SetBinContent(bi,average);
 
    for (int pdferri = 1; pdferri < (int) h_errors_PDF.size(); pdferri++)  {
@@ -1451,16 +1510,87 @@ void SPXPDF::CalcPDFBandErrors()
 
   if (ErrorPropagationType==StyleNNPDF) {
    double x_val, y_val;
+   //
+   // replace central value by average
+   //
    h_PDF_results->GetPoint(bi-1, x_val, y_val);
    h_PDF_results->SetPoint(bi-1, x_val,average);
-   //h_PDF_results->SetPoint(bi-1, x_val,y_val);
-   // Update also other defaults
-   if(h_Scale_results)  h_Scale_results ->SetPoint(bi-1, x_val,average);
-   if(h_AlphaS_results) h_AlphaS_results->SetPoint(bi-1, x_val,average);
+
+   if (h_errors_PDF.size()==0) {
+     std::cerr<<cn<<mn<<"WARNING: h_PDF_errors not found. Can not be updated !"<<std::endl;
+    } else {
+     if (h_errors_PDF.at(0)==0) {    
+      std::cerr<<cn<<mn<<"WARNING: h_PDF_errors not found. Can not be updated !"<<std::endl;
+     } else {
+      if (debug) std::cout<<cn<<mn<<"Update h_errors_PDF[0] "<<h_errors_PDF.at(0)->GetName()<<" with x= "<<x_val<<" average= "<<average<<std::endl;
+      h_errors_PDF.at(0)->SetBinContent(bi,x_val,average); 
+     }
+    } 
    
+   //
+   // Update also other defaults
+   //
+   if (do_Scale) {
+    if (h_Scale_results)  {
+    if (debug) std::cout<<cn<<mn<<"Update h_Scale_results with x= "<<x_val<<" average= "<<average<<std::endl;
+    h_Scale_results ->SetPoint(bi-1, x_val,average);
+    } else {
+     std::cerr<<cn<<mn<<"WARNING: h_Scale_results not found. Can not be updated !"<<std::endl;
+    }
 
+    if (h_errors_Scale.size()==0) {
+     std::cerr<<cn<<mn<<"WARNING: h_Scale_errors not found. Can not be updated !"<<std::endl;
+    } else {
+     if (h_errors_Scale.at(0)==0) {    
+      std::cerr<<cn<<mn<<"WARNING: h_Scale_errors not found. Can not be updated !"<<std::endl;
+     } else {
+      if (debug) std::cout<<cn<<mn<<"Update h_errors_Scale[0] "<<h_errors_AlphaS.at(0)->GetName()<<" with x= "<<x_val<<" average= "<<average<<std::endl;
+      h_errors_Scale.at(0)->SetBinContent(bi,x_val,average); 
+     }
+    } 
+   }
+
+   if (do_AlphaS) {
+    if (h_AlphaS_results) {
+     if (debug) std::cout<<cn<<mn<<"Update h_AlphaS_results with x= "<<x_val<<" average= "<<average<<std::endl;
+     h_AlphaS_results->SetPoint(bi-1, x_val,average);
+    } else {
+     std::cerr<<cn<<mn<<"WARNING: h_Alphas_results not found. Can not be updated !"<<std::endl;
+    }
+
+    if (h_errors_AlphaS.size()==0) {
+     std::cerr<<cn<<mn<<"WARNING: h_Alphas_errors not found. Can not be updated !"<<std::endl;
+    } else {
+     if (h_errors_AlphaS.at(0)==0) {    
+      std::cerr<<cn<<mn<<"WARNING: h_Alphas_errors not found. Can not be updated !"<<std::endl;
+     } else {
+      if (debug) std::cout<<cn<<mn<<"Update h_errors_AlphaS[0] "<<h_errors_AlphaS.at(0)->GetName()<<" with x= "<<x_val<<" average= "<<average<<std::endl;
+      h_errors_AlphaS.at(0)->SetBinContent(bi,x_val,average); 
+     }
+    }
+   }
+
+   if (do_Escale) {
+    if (h_BeamUncertainty_results) {
+     if (debug) std::cout<<cn<<mn<<"Update h_BeamUncertainty_results with x= "<<x_val<<" average= "<<average<<std::endl;
+     h_BeamUncertainty_results->SetPoint(bi-1, x_val,average);
+    } else {
+     std::cerr<<cn<<mn<<"WARNING: h_BeamUncertainty_results not found. Can not be updated !"<<std::endl;
+    }
+
+    if (h_errors_BeamUncertainty.size()==0) {
+     std::cerr<<cn<<mn<<"WARNING: h_BeamUncertainty_errors not found. Can not be updated !"<<std::endl;
+    } else {
+     if (h_errors_BeamUncertainty.at(0)==0) {    
+      std::cerr<<cn<<mn<<"WARNING: h_BeamUncertainty_errors not found. Can not be updated !"<<std::endl;
+     } else {
+      if (debug) std::cout<<cn<<mn<<"Update h_errors_BeamUncertainty[0] "<<h_errors_BeamUncertainty.at(0)->GetName()<<" with x= "<<x_val<<" average= "<<average<<std::endl;
+      h_errors_BeamUncertainty.at(0)->SetBinContent(bi,x_val,average); 
+     }
+    } 
+
+   }
   }
-
   h_PDF_results->SetPointEYhigh(bi-1, this_err_up);
   h_PDF_results->SetPointEYlow (bi-1, this_err_down);
 
@@ -1587,10 +1717,6 @@ void SPXPDF::CalcAlphaSErrors()
  } /// bi
 
  h_AlphaS_results->SetFillStyle  (fillStyleCode);
- //h_AlphaS_results->SetMarkerColor(fillColorCode);
- //h_AlphaS_results->SetLineColor  (fillColorCode);
- //h_AlphaS_results->SetFillColor  (fillColorCode);
-
  SPXGraphUtilities::SetColors(h_AlphaS_results,fillColorCode);
 
  if (debug) std::cout<<cn<<mn<<"End AlphaS uncertainty calculation for: "<<PDFtype<<std::endl;
@@ -1604,7 +1730,7 @@ void SPXPDF::CalcScaleErrors()
  if (debug) std::cout<<cn<<mn<<" Starting calculation of ScaleErrors for: "<<PDFtype<<std::endl;
 
  if (h_errors_Scale.size()==0){
-  std::cout<<cn<<mn<<"Warning: h_errors_Scale not filled! Not computing scale uncertainty. "<<std::endl; 
+  std::cout<<cn<<mn<<"Warning: h_errors_Scale not filled ! Not computing scale uncertainty. "<<std::endl; 
   return;
  }
 
@@ -1705,6 +1831,7 @@ void SPXPDF::CalcTotalErrors()
   double xold=-99999, yold=-99999.;
   int icount=0, ioldx=-1, ioldy=-1;
   for (BandMap_T::const_iterator it = Mapallbands.begin(); it !=Mapallbands.end(); ++it) {
+   //
    // add now everything that is enabled in quadrature
  
    double x=0., y=0.;
@@ -1712,8 +1839,14 @@ void SPXPDF::CalcTotalErrors()
    icount++;
    if (icount==1) { xold=x, yold=y; ioldx=icount, ioldy=icount;}
    else {   
-     if (xold!=x) std::cout <<cn<<mn<<"WARNING: Something changed for "<<it->first<<" xold= "<<xold<<" x= "<<x<<" ratio= "<<xold/x<<" iold= "<<ioldx<<" icount= "<<icount<<std::endl;
-     if (yold!=y) std::cout <<cn<<mn<<"WARNING: Something changed for "<<it->first<<" yold= "<<yold<<" y= "<<y<<" ratio= "<<yold/y<<" iold= "<<ioldy<<" icount= "<<icount<<std::endl;
+    if (xold!=x) {
+     std::cout <<cn<<mn<<"WARNING: Something changed for "<<it->first<<" xold= "<<xold<<" x= "<<x<<" ratio= "<<xold/x<<" iold= "<<ioldx<<" icount= "<<icount<<std::endl;
+     std::cerr <<cn<<mn<<"WARNING: Something changed for "<<it->first<<" xold= "<<xold<<" x= "<<x<<" ratio= "<<xold/x<<" iold= "<<ioldx<<" icount= "<<icount<<std::endl;
+    }
+    if (yold!=y) {
+      std::cout <<cn<<mn<<"WARNING: Something changed for "<<it->first<<" yold= "<<yold<<" y= "<<y<<" ratio= "<<yold/y<<" iold= "<<ioldy<<" icount= "<<icount<<std::endl;
+      std::cerr <<cn<<mn<<"WARNING: Something changed for "<<it->first<<" yold= "<<yold<<" y= "<<y<<" ratio= "<<yold/y<<" iold= "<<ioldy<<" icount= "<<icount<<std::endl;
+    }
    }
    h_Total_results->SetPoint(ibin,x,y);
 
@@ -1979,7 +2112,6 @@ void SPXPDF::SetPDFErrorType(std::string _PDFErrorType) {
 }
 //void SPXPDF::SetPDFErrorSize(string _PDFErrorSize) {
 // PDFErrorSize=_PDFErrorSize;
-//}
 
 void SPXPDF::SetDoPDFBand(bool _doit) {
  do_PDFBand = _doit;
@@ -2030,6 +2162,12 @@ void SPXPDF::CleanUpSPXPDF() {
  if (h_errors_AlphaS.size()>0) {
   for (int i=0; i<h_errors_AlphaS.size(); ++i) {
    delete h_errors_AlphaS.at(i);
+  }
+ }
+
+ if (h_errors_Scale.size()>0) {
+  for (int i=0; i<h_errors_Scale.size(); ++i) {
+   delete h_errors_Scale.at(i);
   }
  }
 
@@ -2246,11 +2384,6 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
  //
  // update also PDF, scale and alphas histograms
  //
- //if (!gband2) {
- // std::ostringstream oss;
- // oss<<cn<<mn<<"ERROR Band not found May be turned off in steering ? --> can not recalculate Histograms ";
- // throw SPXParseException(oss.str());
- //}
 
  for (int ipdf=0; ipdf<h_errors_PDF.size(); ipdf++) {
   TString hname=h_errors_PDF.at(ipdf)->GetName();
@@ -2324,7 +2457,7 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
 
  // calculate uncertainty band with same y values as others
  // take relative uncertainties
-
+ //
  for (int ibin=0; ibin<nbin; ibin++) {
 
   double ycorr=0., xcorr=0.; 
@@ -2709,3 +2842,33 @@ void SPXPDF::SetIndividualAlphaSVariation(int ialphas, TH1D *h){
 
  return;
 }
+
+
+void SPXPDF::SetLHAPDFPDFset(std::string pdfname, int id){ 
+ std::string mn = "SetLHAPDFPDFset: ";
+ 
+#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
+  if (debug) {
+   std::cout<<cn<<mn<<"  "<<std::endl;
+   std::cout<<cn<<mn<<"Running on LHAPDF6: "<<std::endl;
+   std::cout<<cn<<mn<<"Calling mkPDF  "<<std::endl;
+   std::cout<<cn<<mn<<"Set PDF "<<pdfname.c_str()<<" id= "<<id<<std::endl;
+  }
+
+  mypdf=LHAPDF::mkPDF(pdfname.c_str(),id);
+  if (!mypdf) std::cout<<"PDF not found name= "<<pdfname.c_str()<<" member= "<<id<<std::endl;
+  //else if (debug) mypdf->print();
+  const LHAPDF::PDFSet set(pdfname.c_str());
+#else
+  if (debug) {
+   std::cout<<cn<<mn<<"  "<<std::endl;
+   std::cout<<cn<<mn<<"Running on LHAPDF5: "<<std::endl;
+   std::cout<<cn<<mn<<"Calling initPDFSet  "<<std::endl;
+  }
+  LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+pdfname+".LHgrid")).c_str(), id);
+#endif
+
+ return; 
+}
+
+

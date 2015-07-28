@@ -302,16 +302,16 @@ Color_t SPXUtilities::ICol(int i){
   if (i==18) return kMagenta-5;
   if (i==19) return kCyan-10;
   if (i==20) return kCyan-9;
-  if (i>20 && i<=30) return kPink  +i-20;
-  if (i>30 && i<=40) return kOrange+i-30;
-  if (i>40 && i<=50) return kViolet+i-40;
-  if (i>50 && i<=60) return kTeal  -i+50;
-  if (i>60 && i<=70) return kOrange-i+60;
-  if (i>70 && i<=80) return kViolet-i+70;
-  if (i>80 && i< 90) return kAzure -i+80;
-  if (i>90 && i<=100) return kPink +i-90;
+  if (i>=20 && i<=30) return kPink  +i-20;
+  if (i>=30 && i<40) return kOrange+i-30;
+  if (i>=40 && i<50) return kViolet+i-40;
+  if (i>=50 && i<60) return kTeal  -i+50;
+  if (i>=60 && i<70) return kOrange-i+60;
+  if (i>=70 && i<80) return kViolet-i+70;
+  if (i>=80 && i<90) return kAzure -i+80;
+  if (i>=90 && i<100) return kPink +i-90;
 
-  std::cout<<cn<<"IColBlue: WARNING: not optimized for i> "<<i<<std::endl;
+  std::cout<<cn<<"ICol: WARNING: not optimized for i> "<<i<<std::endl;
 
 }
 

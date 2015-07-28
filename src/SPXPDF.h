@@ -278,6 +278,8 @@ class SPXPDF {
 
         TH1D *GetHisto(double renscale=1, double facscale=1); // Get histogram from Grid
 
+	void SetLHAPDFPDFset(std::string pdfname, int id); // interface to set PDF for LHAPDF5 and LHAPDF6
+
         void SetVariablesDefault();
         void SetUpParameters(SPXPDFSteeringFile *psf);
         //void SetSteeringFileNameAndDir(const string _path);

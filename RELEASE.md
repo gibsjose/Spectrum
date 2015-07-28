@@ -6,6 +6,12 @@
 
 ## Change Log
 
+ - SPXPDF:CalcSystPDF: correctly now updating all default 
+          (set default to average for for NNPDF)
+          was causing problems with Alphas uncertainty
+
+ -SPXPDF: improved interface PHAPDF5/LHAPDF5 via SetLHAPDFPDFset
+
  - Added possibility to have functional form of scale in information legend
 
  - SPXPDF: after calculation of PDF error, LHAPDF reset to default PDF

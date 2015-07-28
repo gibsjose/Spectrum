@@ -2067,7 +2067,6 @@ void SPXPlot::CanvasToPNG(void) {
 	//Get the plot configuration
 	SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
 
-
 	std::string filename = GetPNGFilename(pc.GetDescription());
 
 	//Create/get the PNG filename
@@ -2076,6 +2075,9 @@ void SPXPlot::CanvasToPNG(void) {
          //if (debug) std::cout<<cn<<mn<<" output format= "<< steeringFile->GetOutputGraphicFormat()<<std::endl;
          
          epsfilename.ReplaceAll("png",TString(steeringFile->GetOutputGraphicFormat()));
+         epsfilename.ReplaceAll("_plot_0","");
+         epsfilename.ReplaceAll("_plot_1","");
+
          if (debug) {
           std::cout<<cn<<mn<<"Print epsfilename= "<< epsfilename.Data()<<std::endl;
          }
@@ -2088,24 +2090,11 @@ void SPXPlot::CanvasToPNG(void) {
 	 this->WriteRootFile(rootfilename);
         }
 
-	//Draw PNG File
+	//Print PNG File
 
 	canvas->Print(filename.c_str());
 
-        //Draw PDF file
-        //TString epsname=filename;
-        //epsname.ReplaceAll("_plot_0","");
-        //epsname.ReplaceAll("_plot_1","");
-        //epsname.ReplaceAll("png","eps");
-	//canvas->Print(epsname);
-
-        //Save *.C
-        //TString cname=filename;
-        //cname.ReplaceAll("_plot_0","");
-        //cname.ReplaceAll("_plot_1","");
-        //cname.ReplaceAll("png","pdf");
-	//canvas->Print(cname);
-
+        return;
 }
 
 std::string SPXPlot::GetPNGFilename(std::string desc) {
@@ -2902,7 +2891,7 @@ void SPXPlot::InitializeData(void) {
 
                 if (steeringFile->OrderColorSystematicNamesByAlphabeth()) {
  		 // order color surviving systematics by alphabeth
-                 // above SetColor is overwritten as all systematics are contain in vsyst
+                 // above SetColor is overwritten as all systematics are contained in vsyst
 		 if (debug) std::cout<<cn<<mn<<"Order systematics color by name alphabetical order"<<std::endl;
                  OrderSystVectorColorsByAlphabeth(vsyst);
                 }
