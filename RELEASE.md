@@ -6,6 +6,9 @@
 
 ## Change Log
 
+ -SPXSteering: Can now show systematics as line (linewidth via steering)
+   show_systematics_as_lines 
+
  - SPXPDF:CalcSystPDF: correctly now updating all default 
           (set default to average for for NNPDF)
           was causing problems with Alphas uncertainty

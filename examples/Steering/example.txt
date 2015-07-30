@@ -54,6 +54,7 @@ apply_grid_corr = true				;[Optional] Apply the grid corrections (e.g. hadronisa
 
 
 show_individual_systematics = 0                  ;[Optional] Show individual systematic on data above x%
+show_systematics_as_lines = 1                   ; [Optional] Show systematics as line, number is line thickness
 
 order_systematic_colorbyalphabeth = false       ;[Optional] if set systematics colors are order by alphabethical order of name
 

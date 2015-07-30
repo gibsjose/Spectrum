@@ -71,6 +71,9 @@ void SPXSteeringFile::SetDefaults(void) {
 	showIndividualSystematics = 0.;
 	if(debug) std::cout << cn << mn << "showIndividualSystematics set to default: \"0\"" << std::endl;
 
+	showIndividualSystematicsAsLine = 0.;
+	if(debug) std::cout << cn << mn << "showIndividualSystematicsAsLine set to default: \"0\"" << std::endl;
+
 	ordersystematiccolorbyalphabeth = false;
 	if(debug) std::cout << cn << mn << "ordersystematiccolorbyalphabeth set to default: \"False\"" << std::endl;
 
@@ -333,6 +336,11 @@ void SPXSteeringFile::Print(void) {
 	 std::cout << "\t\t Show NO individual systematics: " << std::endl;
         if (showIndividualSystematics>0)
 	 std::cout << "\t\t Show individual systematics with one bin above "<<showIndividualSystematics << std::endl;
+
+        if (showIndividualSystematicsAsLine)
+	 std::cout << "\t\t Show individual systematics as lines (not area) "<<showIndividualSystematicsAsLine << std::endl;
+
+
 
         if (ordersystematiccolorbyalphabeth)
 	  std::cout << "\t\t Order systematics color by alphabethetical order of names "
@@ -2065,6 +2073,8 @@ void SPXSteeringFile::Parse(void) {
 	labelSqrtS     = reader->GetBoolean("GRAPH", "label_sqrt_s", labelSqrtS);
 
         showIndividualSystematics = reader->GetReal("GRAPH", "show_individual_systematics", showIndividualSystematics);
+
+        showIndividualSystematicsAsLine = reader->GetReal("GRAPH", "show_systematics_as_lines", showIndividualSystematicsAsLine);
 
         ordersystematiccolorbyalphabeth = reader->GetBoolean("GRAPH", "order_systematic_colorbyalphabeth", ordersystematiccolorbyalphabeth);
 

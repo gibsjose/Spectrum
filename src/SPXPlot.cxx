@@ -1318,12 +1318,15 @@ void SPXPlot::DrawLegend(void) {
      if (TString(gname2).Sizeof()*scale>namesize) namesize=TString(gname2).Sizeof()*scale;
      if (debug) std::cout<<cn<<mn<<"scale= "<<scale<<" namesize= "<<namesize<<std::endl;
 
-     if (ratiographsordered.at(igraph)->GetLineColor()>0)
-      leg->AddEntry(ratiographsordered.at(igraph), gname, "F");
-     else {
+     TString opt="F";
+     if (ratiographsordered.at(igraph)->GetFillStyle()==0) {
+      opt="L";
+     } else if (ratiographsordered.at(igraph)->GetLineColor()>0)  {
+      opt="F";      
+     } else {
       SPXGraphUtilities::SetColors(ratiographsordered.at(igraph),-ratiographsordered.at(igraph)->GetLineColor());
-      leg->AddEntry(ratiographsordered.at(igraph), gname, "L");
      }
+     leg->AddEntry(ratiographsordered.at(igraph), gname,opt);
     }
    }
   }
@@ -1779,6 +1782,8 @@ void SPXPlot::DrawLegend(void) {
   if (nraw>8)  csize =charactersize*0.4; 
   //if (nraw>10) csize =charactersize*0.2; 
  }
+
+ //leg->SetEntrySeparation(0.1);
  leg->SetTextSize(csize); 
 
  if (onlysyst) {
@@ -2751,8 +2756,19 @@ void SPXPlot::InitializeData(void) {
 		    icountsyst++;
 
                     Color_t icol=SPXUtilities::ICol(icountsyst);
+
+                    double linewidth=steeringFile->ShowIndividualSystematicsAsLine();
+                    if ( linewidth>0) {   
+                     vsyst.at(isyst)->SetFillStyle(0);
+                     vsyst.at(isyst)->SetLineWidth(int(linewidth));
+
+		     if (debug) std::cout<<cn<<mn<<"Set linewidth= "<<vsyst.at(isyst)->GetLineWidth()<<std::endl;
+ 
+                    } else {
                     //vsyst.at(isyst)->SetFillStyle(3001);
-                    vsyst.at(isyst)->SetFillStyle(1001);
+                     vsyst.at(isyst)->SetFillStyle(1001);
+                    }
+
                     SPXGraphUtilities::SetColors(vsyst.at(isyst),icol);
 
  		    dataFileGraphMap.insert(StringGraphPair_T(systname, vsyst.at(isyst)));

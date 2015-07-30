@@ -469,7 +469,7 @@ void SPXRatio::Divide(void) {
    }
   }
  }
-//@TODO What if it's Data/Data???
+//
  else if(ratioStyle.IsDataOverData()) {
   if (debug) std::cout<<cn<<mn<<"ratioStyle.IsDataOverData() "<<std::endl;
 
@@ -565,7 +565,7 @@ void SPXRatio::Divide(void) {
 
    TGraphAsymmErrors *graph = SPXGraphUtilities::Divide(numeratorGraph[i], denominatorGraph,divideType); 
    if (!graph) throw SPXGraphException(cn + mn + "Graph not found !");
-
+  
    if (debug) {
     std::cout << cn + mn + "\nFill Options for graph "<<i<<" with name: " << graph->GetName() << std::endl;
     std::cout << "\t Fill Style = " << graph->GetFillStyle() << std::endl;
@@ -1243,15 +1243,12 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
   
   if (!debug) std::cout<<"DataOverData!"<<std::endl;
  
- //std::vector<TGraphAsymmErrors * > ratioGraphord=SPXUtilities::OrderGraphVector(ratioGraph);
- //std::vector<TGraphAsymmErrors * > ratioGraphord=SPXUtilities::OrderLargestRelativeErrorGraphVector(ratioGraph);
+ //
+ //
  std::vector<TGraphAsymmErrors * > ratioGraphord=SPXUtilities::OrderLargestBinNumberGraphVector(ratioGraph);
 
  //for (std::vector<TGraphAsymmErrors *>::reverse_iterator igraph = ratioGraphord.rbegin();  igraph != ratioGraphord.rend(); ++igraph ) { 
   for (std::vector<TGraphAsymmErrors *>::iterator igraph = ratioGraphord.begin();  igraph != ratioGraphord.end(); ++igraph ) { 
-   //for (int igraph=0; igraph < ratioGraphord.size(); igraph++) {
-   //TGraphAsymmErrors *graph = ratioGraphord.at(igraph);
-
    TGraphAsymmErrors *graph = *igraph;
    if (!graph) std::cout<<"Graph not found !"<<std::endl;
    TString gname=graph->GetName();
@@ -1271,8 +1268,12 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
       hedgehigh->SetLineColor(-icol);
       hedgelow ->SetLineColor(-icol);
      }
-     hedgehigh->SetLineWidth(3);
-     hedgelow ->SetLineWidth(3);
+
+     int linewidth=graph->GetLineWidth();
+     hedgehigh->SetLineWidth(linewidth);
+     hedgelow ->SetLineWidth(linewidth);
+
+     std::cout<<cn<<mn<<"Line width= "<<linewidth<<std::endl;
 
      hedgehigh->Draw("][,same");
      hedgelow ->Draw("][,same");
@@ -1283,7 +1284,8 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
     std::cout<<cn<<mn<<" emax= "<<emax<<" Draw now gname= "<<gname.Data()<<" option= "<<option.c_str()<<" color= "<< graph->GetLineColor()<<std::endl;
     //graph->Print();
    }
-   if (icol>0)
+   int ifill=graph->GetFillStyle();
+   if (icol>0 && ifill!=0)
     graph->Draw(option.c_str());
    else
     std::cout<<cn<<mn<<"Graph "<<graph->GetName()<<" not plotted since color= "<< graph->GetLineColor()<<std::endl;
