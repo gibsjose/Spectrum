@@ -6,6 +6,8 @@
 
 ## Change Log
 
+ -Included CT14
+
  -SPXSteering: Can now show systematics as line (linewidth via steering)
    show_systematics_as_lines 
 
@@ -14,7 +16,7 @@
           was causing problems with Alphas uncertainty
 
  -SPXPDF: improved interface PHAPDF5/LHAPDF5 via SetLHAPDFPDFset
-
+          
  - Added possibility to have functional form of scale in information legend
 
  - SPXPDF: after calculation of PDF error, LHAPDF reset to default PDF

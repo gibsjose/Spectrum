@@ -729,48 +729,61 @@ void SPXPDF::Initialize()
   //check for necessary names before continuing
   if(AlphaSmemberNumDown==DEFAULT) {
    std::ostringstream oss;
-   oss << cn << mn << "ERROR 'AlphaSmemberNumDown' not provided in steer file: "<<steeringFileName;
-   throw SPXParseException(oss.str());
+   oss << cn << mn << "WARNING 'AlphaSmemberNumDown' not provided in steer file: "<<steeringFileName<<" switching off alphas uncertainty calculation";
+   //throw SPXParseException(oss.str());
+   std::cerr<<oss.str()<<std::endl;
+   std::cout<<oss.str()<<std::endl;
+   do_AlphaS=false;
   }
 
   if (AlphaSmemberNumUp==DEFAULT) {
    std::ostringstream oss;
-   oss << cn << mn << "ERROR 'AlphaSmemberNumUp' not provided in steer file: "<<steeringFileName;
-   throw SPXParseException(oss.str());
+   oss << cn << mn << "WARNING 'AlphaSmemberNumUp' not provided in steer file: "<<steeringFileName<<" switching off alphas uncertainty calculation";
+   //throw SPXParseException(oss.str());
+   std::cerr<<oss.str()<<std::endl;
+   std::cout<<oss.str()<<std::endl;
+   do_AlphaS=false;
   }
 
   if (AlphaSPDFSetNameUp.compare("")==0) {
    std::ostringstream oss;
-   oss << cn << mn << "ERROR 'AlphaSPDFSetNameUp' not provided in steer file: "<<steeringFileName;
-   throw SPXParseException(oss.str());
+   oss << cn << mn << "WARNING 'AlphaSPDFSetNameUp' not provided in steer file: "<<steeringFileName<<" switching off alphas uncertainty calculation";
+   //throw SPXParseException(oss.str());
+   std::cerr<<oss.str()<<std::endl;
+   std::cout<<oss.str()<<std::endl;
+   do_AlphaS=false;
   }
 
   if (AlphaSPDFSetNameDown.compare("")==0) {
    std::ostringstream oss;
-   oss << cn << mn << "ERROR 'AlphaSPDFSetNameDown' not provided in steer file: "<<steeringFileName;
-   throw SPXParseException(oss.str());
+   oss << cn << mn << "WARNING 'AlphaSPDFSetNameDown' not provided in steer file: "<<steeringFileName<<" switching off alphas uncertainty calculation";
+   //throw SPXParseException(oss.str());
+   std::cerr<<oss.str()<<std::endl;
+   std::cout<<oss.str()<<std::endl;
+   do_AlphaS=false;
   }
 
-// alphaS central
-  std::cout<<cn<<mn<<"PDFset getting alphaS uncertainty for "<<default_pdf_set_name<<" PDF with Scale= "<<alphaS_scale_worldAverage<<std::endl;
-  this->SetLHAPDFPDFset(default_pdf_set_name, defaultpdfid);
-  if (debug&&applgridok) {
-   temp_hist= this->GetHisto();
-   std::cout<<cn<<mn<<"Print default from convolution:= "<<default_pdf_set_name<<std::endl;
-   temp_hist->Print("all");
-  }
+  if (do_AlphaS) {
+   // alphaS central
+   std::cout<<cn<<mn<<"PDFset getting alphaS uncertainty for "<<default_pdf_set_name<<" PDF with Scale= "<<alphaS_scale_worldAverage<<std::endl;
+   this->SetLHAPDFPDFset(default_pdf_set_name, defaultpdfid);
+   if (debug&&applgridok) {
+    temp_hist= this->GetHisto();
+    std::cout<<cn<<mn<<"Print default from convolution:= "<<default_pdf_set_name<<std::endl;
+    temp_hist->Print("all");
+   }
 
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
-  double value_alphaS=mypdf->alphasQ(alphaS_scale_worldAverage);
+   double value_alphaS=mypdf->alphasQ(alphaS_scale_worldAverage);
 #else
-  double value_alphaS=LHAPDF::alphasPDF(alphaS_scale_worldAverage);
+   double value_alphaS=LHAPDF::alphasPDF(alphaS_scale_worldAverage);
 #endif
-  if (debug) std::cout<<cn<<mn<<"alphas cent PDFname= "<<default_pdf_set_name<<" member= "<<defaultpdfid<<" value= "<<value_alphaS<<std::endl;
-  alphaS_variations.push_back(value_alphaS);
-  if (debug) std::cout <<cn<<mn<< "Added central histogram with alphaS value: " << value_alphaS << std::endl ;
+   if (debug) std::cout<<cn<<mn<<"alphas cent PDFname= "<<default_pdf_set_name<<" member= "<<defaultpdfid<<" value= "<<value_alphaS<<std::endl;
+   alphaS_variations.push_back(value_alphaS);
+   if (debug) std::cout <<cn<<mn<< "Added central histogram with alphaS value: " << value_alphaS << std::endl ;
 
 // alphaS down
-  this->SetLHAPDFPDFset(AlphaSPDFSetNameDown, AlphaSmemberNumDown);
+   this->SetLHAPDFPDFset(AlphaSPDFSetNameDown, AlphaSmemberNumDown);
 
 //  if (debug) std::cout<<cn<<mn<<"Setting up alphas down PDF-name= "<<AlphaSPDFSetNameDown<<" member= "<<AlphaSmemberNumDown<<std::endl;
 //#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
@@ -782,55 +795,55 @@ void SPXPDF::Initialize()
 //#endif
 
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
-  double value_alphaS_down=mypdf->alphasQ(alphaS_scale_worldAverage);
-  if (debug) mypdf->print();
+   double value_alphaS_down=mypdf->alphasQ(alphaS_scale_worldAverage);
+   if (debug) mypdf->print();
 #else
-  double value_alphaS_down=LHAPDF::alphasPDF(alphaS_scale_worldAverage);
+   double value_alphaS_down=LHAPDF::alphasPDF(alphaS_scale_worldAverage);
 #endif
 
   // For NNPDF there is a problem reading out the alphas values (acknowledged by J Rojo), need to fix this by hand
-  if (TString(AlphaSPDFSetNameDown).Contains("NNPDF30_nlo_as_0117_hera") 
-   || TString(AlphaSPDFSetNameDown).Contains("NNPDF30_nlo_as_0117_nojet") 
-   || TString(AlphaSPDFSetNameDown).Contains("NNPDF30_nlo_as_0117_nolhc") ) {
-   value_alphaS_down=0.117;
-   std::ostringstream oss;
-   oss << cn << mn << "INFO: Set "<<AlphaSPDFSetNameDown<<" alphas value value by hand to "<<value_alphaS_down<<std::endl;
-   std::cerr<<cn<<mn<<oss.str()<<std::endl;
-   std::cout<<cn<<mn<<oss.str()<<std::endl;
-  }
+   if (TString(AlphaSPDFSetNameDown).Contains("NNPDF30_nlo_as_0117_hera") 
+    || TString(AlphaSPDFSetNameDown).Contains("NNPDF30_nlo_as_0117_nojet") 
+    || TString(AlphaSPDFSetNameDown).Contains("NNPDF30_nlo_as_0117_nolhc") ) {
+    value_alphaS_down=0.117;
+    std::ostringstream oss;
+    oss << cn << mn << "INFO: Set "<<AlphaSPDFSetNameDown<<" alphas value value by hand to "<<value_alphaS_down<<std::endl;
+    std::cerr<<cn<<mn<<oss.str()<<std::endl;
+    std::cout<<cn<<mn<<oss.str()<<std::endl;
+   }
 
-  TString AlphaSPDFSetHistNameDown=AlphaSPDFSetNameDown+"_value_alphas= ";
-  TString namedown; namedown.Form("%3.3f",value_alphaS_down);
-  AlphaSPDFSetHistNameDown+=namedown;
+   TString AlphaSPDFSetHistNameDown=AlphaSPDFSetNameDown+"_value_alphas= ";
+   TString namedown; namedown.Form("%3.3f",value_alphaS_down);
+   AlphaSPDFSetHistNameDown+=namedown;
 
-  if (debug) std::cout<<cn<<mn<<"alphas down PDFname= "<<AlphaSPDFSetNameDown<<" member= "<<AlphaSmemberNumDown<<" value= "<<value_alphaS_down<<std::endl;
+   if (debug) std::cout<<cn<<mn<<"alphas down PDFname= "<<AlphaSPDFSetNameDown<<" member= "<<AlphaSmemberNumDown<<" value= "<<value_alphaS_down<<std::endl;
 
-  if (applgridok) {
-   //
-   temp_hist= this->GetHisto();
-   temp_hist->SetName((TString) ("xsec_alphas_pdfset"+AlphaSPDFSetHistNameDown));
-  } else {
-   if (debug) std::cout<<cn<<mn<<"applgrid not found; histogram from PDF not applgrid ! "<<std::endl;
-   temp_hist=this->FillPdfHisto();
-   temp_hist->SetName((TString) ("pdfonly_"+AlphaSPDFSetHistNameDown));
-  }
+   if (applgridok) {
+    //
+    temp_hist= this->GetHisto();
+    temp_hist->SetName((TString) ("xsec_alphas_pdfset"+AlphaSPDFSetHistNameDown));
+   } else {
+    if (debug) std::cout<<cn<<mn<<"applgrid not found; histogram from PDF not applgrid ! "<<std::endl;
+    temp_hist=this->FillPdfHisto();
+    temp_hist->SetName((TString) ("pdfonly_"+AlphaSPDFSetHistNameDown));
+   }
 
-  if (!temp_hist) std::cout<<cn<<mn<<"temp_hist not found ! "<<std::endl;
-  if (debug) {
+   if (!temp_hist) std::cout<<cn<<mn<<"temp_hist not found ! "<<std::endl;
+   if (debug) {
     std::cout<<cn<<mn<<"Print hist "<<temp_hist->GetName()<<std::endl;
     temp_hist->Print("all");
-  }
+   }
 
-  h_errors_AlphaS.push_back(temp_hist);
+   h_errors_AlphaS.push_back(temp_hist);
 
-  alphaS_variations.push_back(value_alphaS_down);
-  if (debug) std::cout << cn<<mn<<"Added down variation histogram with alphaS value: " << value_alphaS_down <<std::endl ;
+   alphaS_variations.push_back(value_alphaS_down);
+   if (debug) std::cout << cn<<mn<<"Added down variation histogram with alphaS value: " << value_alphaS_down <<std::endl ;
 
 // alphaS up
 
-  if (debug) std::cout<<cn<<mn<<"Setting up alphas up   PDF-name= "<<AlphaSPDFSetNameUp<<" member= "<<AlphaSmemberNumUp<<std::endl;
+   if (debug) std::cout<<cn<<mn<<"Setting up alphas up   PDF-name= "<<AlphaSPDFSetNameUp<<" member= "<<AlphaSmemberNumUp<<std::endl;
 
-  this->SetLHAPDFPDFset(AlphaSPDFSetNameUp, AlphaSmemberNumUp);
+   this->SetLHAPDFPDFset(AlphaSPDFSetNameUp, AlphaSmemberNumUp);
  //#if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
  //mypdf=LHAPDF::mkPDF(AlphaSPDFSetNameUp.c_str(),AlphaSmemberNumUp);
  //#else
@@ -840,64 +853,65 @@ void SPXPDF::Initialize()
   //}
  //#endif
 #if defined LHAPDF_MAJOR_VERSION && LHAPDF_MAJOR_VERSION == 6
-  double value_alphaS_up=mypdf->alphasQ(alphaS_scale_worldAverage);
-  if (debug) mypdf->print();
+   double value_alphaS_up=mypdf->alphasQ(alphaS_scale_worldAverage);
+   if (debug) mypdf->print();
 #else
-  double value_alphaS_up=LHAPDF::alphasPDF(alphaS_scale_worldAverage);
+   double value_alphaS_up=LHAPDF::alphasPDF(alphaS_scale_worldAverage);
 #endif
 
   // For NNPDF there is a problem reading out the alphas values (acknowledged by J Rojo), need to fix this by hand
-  if (TString(AlphaSPDFSetNameUp).Contains("NNPDF30_nlo_as_0119_hera") 
-   || TString(AlphaSPDFSetNameUp).Contains("NNPDF30_nlo_as_0119_nojet") 
-   || TString(AlphaSPDFSetNameUp).Contains("NNPDF30_nlo_as_0119_nolhc") ) {
-   value_alphaS_up=0.119;
-   std::ostringstream oss;
-   oss << cn << mn << "INFO: Set "<<AlphaSPDFSetNameUp<<" alphas value value by hand to "<<value_alphaS_up<<std::endl;
-   std::cerr<<cn<<mn<<oss.str()<<std::endl;
-   std::cout<<cn<<mn<<oss.str()<<std::endl;
-  }
+   if (TString(AlphaSPDFSetNameUp).Contains("NNPDF30_nlo_as_0119_hera") 
+    || TString(AlphaSPDFSetNameUp).Contains("NNPDF30_nlo_as_0119_nojet") 
+    || TString(AlphaSPDFSetNameUp).Contains("NNPDF30_nlo_as_0119_nolhc") ) {
+    value_alphaS_up=0.119;
+    std::ostringstream oss;
+    oss << cn << mn << "INFO: Set "<<AlphaSPDFSetNameUp<<" alphas value value by hand to "<<value_alphaS_up<<std::endl;
+    std::cerr<<cn<<mn<<oss.str()<<std::endl;
+    std::cout<<cn<<mn<<oss.str()<<std::endl;
+   }
 
-  TString AlphaSPDFSetHistNameUp=AlphaSPDFSetNameUp+"_value_alphas= ";
-  TString nameup; nameup.Form("%3.3f",value_alphaS_up);
-  AlphaSPDFSetHistNameUp+=nameup;
+   TString AlphaSPDFSetHistNameUp=AlphaSPDFSetNameUp+"_value_alphas= ";
+   TString nameup; nameup.Form("%3.3f",value_alphaS_up);
+   AlphaSPDFSetHistNameUp+=nameup;
 
-  temp_hist= this->GetHisto();
-  if (applgridok) {
-   //
-   temp_hist->SetName((TString) ("xsec_alphas_pdfset_"+AlphaSPDFSetHistNameUp));
-  } else {
-   if (debug) std::cout<<cn<<mn<<"Histogram from PDF not applgrid ! "<<std::endl;
-   temp_hist=this->FillPdfHisto();
-   temp_hist->SetName((TString) ("pdfonly_"+AlphaSPDFSetHistNameUp));
-  }
+   temp_hist= this->GetHisto();
+   if (applgridok) {
+    //
+    temp_hist->SetName((TString) ("xsec_alphas_pdfset_"+AlphaSPDFSetHistNameUp));
+   } else {
+    if (debug) std::cout<<cn<<mn<<"Histogram from PDF not applgrid ! "<<std::endl;
+    temp_hist=this->FillPdfHisto();
+    temp_hist->SetName((TString) ("pdfonly_"+AlphaSPDFSetHistNameUp));
+   }
 
-  if (debug) {
+   if (debug) {
     std::cout<<cn<<mn<<"Print hist "<<temp_hist->GetName()<<std::endl;
     temp_hist->Print("all");
-  }
-
-  h_errors_AlphaS.push_back(temp_hist);
-
-  if (debug) std::cout<<cn<<mn<<"alphas up   PDFname= "<<AlphaSPDFSetNameUp<<" member= "<<AlphaSmemberNumUp<<" value= "<<value_alphaS_up<<std::endl;
-  alphaS_variations.push_back(value_alphaS_up);
-  if (debug) std::cout <<cn<<mn<<"Added up variation histogram with alphaS value: " << value_alphaS_up << std::endl ;
-
-  if (debug) {
-   std::cout<<" alphaS_variations: "<<std::endl;
-   for (int i=0; i<alphaS_variations.size(); i++){
-     std::cout<<i<<" value= "<<alphaS_variations[i]<<std::endl;
    }
-  }
 
-  if (alphaS_variations.size()>2) {
-   if(alphaS_variations.at(0)==alphaS_variations.at(1) ||
-      alphaS_variations.at(1)==alphaS_variations.at(2) ||
-      alphaS_variations.at(0)==alphaS_variations.at(2) ) {
-    std::cout<<cn<<mn<<"WARNING: alphaS_variations should be different ! "<< h_errors_AlphaS.at(0)->GetName()<<std::endl;
-    for (int i=0; i<3; i++){
-      std::cout<<cn<<mn<<i<<" value= "<<alphaS_variations.at(i)<<std::endl;
+   h_errors_AlphaS.push_back(temp_hist);
+
+   if (debug) std::cout<<cn<<mn<<"alphas up   PDFname= "<<AlphaSPDFSetNameUp<<" member= "<<AlphaSmemberNumUp<<" value= "<<value_alphaS_up<<std::endl;
+   alphaS_variations.push_back(value_alphaS_up);
+   if (debug) std::cout <<cn<<mn<<"Added up variation histogram with alphaS value: " << value_alphaS_up << std::endl ;
+
+   if (debug) {
+    std::cout<<" alphaS_variations: "<<std::endl;
+    for (int i=0; i<alphaS_variations.size(); i++){
+      std::cout<<i<<" value= "<<alphaS_variations[i]<<std::endl;
     }
-    std::cerr<<cn<<mn<<"WARNING: alphaS_variations should be different ! "<<h_errors_AlphaS.at(0)->GetName()<<std::endl;
+   }
+
+   if (alphaS_variations.size()>2) {
+    if(alphaS_variations.at(0)==alphaS_variations.at(1) ||
+       alphaS_variations.at(1)==alphaS_variations.at(2) ||
+       alphaS_variations.at(0)==alphaS_variations.at(2) ) {
+     std::cout<<cn<<mn<<"WARNING: alphaS_variations should be different ! "<< h_errors_AlphaS.at(0)->GetName()<<std::endl;
+     for (int i=0; i<3; i++){
+       std::cout<<cn<<mn<<i<<" value= "<<alphaS_variations.at(i)<<std::endl;
+     }
+     std::cerr<<cn<<mn<<"WARNING: alphaS_variations should be different ! "<<h_errors_AlphaS.at(0)->GetName()<<std::endl;
+    }
    }
   }
  }
@@ -1681,6 +1695,11 @@ void SPXPDF::CalcAlphaSErrors()
    std::cout<<cn<<mn<<"dxup= "<<dxup<<" var2= "<<alphaS_variations.at(2)<<" var0= "<<alphaS_variations.at(0)<<std::endl;
 
   if (dxup<1.e-12) {
+   std::cout<<cn<<mn<<"WARNING dxup= "<<dxup<<" var2= "<<alphaS_variations.at(2)<<" var0= "<<alphaS_variations.at(0)<<std::endl;
+   std::cout<<cn<<mn<<"WARNING May be exchanged up and down variation ? "<<std::endl;
+  }
+
+  if (fabs(dxup)<1.e-12) {
    ifirstup++;
    if (ifirstup==1) {
     std::cout<<cn<<mn<<"WARNING: No variation in alphas up, can not calculate ALPHAS uncertainty "<<h_errors_AlphaS.at(2)->GetName()<<std::endl;
@@ -1692,8 +1711,16 @@ void SPXPDF::CalcAlphaSErrors()
   }
 
   double dxdn=alphaS_variations.at(0)-alphaS_variations.at(1);
-  std::cout<<cn<<mn<<"dxdn= "<<dxdn<<std::endl;
+
+  if (debug)
+   std::cout<<cn<<mn<<"dxdn= "<<dxdn<<" var1= "<<alphaS_variations.at(1)<<" var0= "<<alphaS_variations.at(0)<<std::endl;
+
   if (dxdn<1.e-12) {
+   std::cout<<cn<<mn<<"WARNING dxdn= "<<dxdn<<" var1= "<<alphaS_variations.at(1)<<" var0= "<<alphaS_variations.at(0)<<std::endl;
+   std::cout<<cn<<mn<<"WARNING May be exchanged up and down variation ? "<<std::endl;
+  }
+
+  if (fabs(dxdn)<1.e-12) {
    ifirstdn++;
    if (ifirstdn==1) {
     std::cout<<cn<<mn<<"WARNING: No variation in alphas down, can not calculate ALPHAS uncertainty "<< h_errors_AlphaS.at(1)->GetName()<<std::endl;

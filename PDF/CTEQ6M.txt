@@ -37,7 +37,7 @@ debug = false
 name = cteq61 ; name of LHGrid-file
 type = CTEQ61 ; general name used for printing etc
 order = 1   ; 1=NLO 2=NNLO
-num_members = 41 ; number of Eigenvectors
+num_members = 41 ; number of PDF members
 ; pdf_set_path =
 
 ;==============================================================

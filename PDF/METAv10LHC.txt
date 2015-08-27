@@ -1,29 +1,10 @@
 ;==============================================================
 ;
 ; Description:
-;	Example PDF Steering File
-;
-; Authors:
-
-;
-; Date:
-;
-; Other:
-;	Other information...
-;
+;	METAv10LHC
+; Authors: J. Gao, J. Huston, P. Nadolsky
+; Reference: arXiv:1401.0013
 ;==============================================================
-
-;--------------------------------------------------------------
-; NOTE:
-;
-; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
-;
-;	"  some_thing = "  <--- BAD
-;	"; some_thing = "  <--- OKAY
-;
-; If you forget to do this, some trailing comments could
-; be included in the option's value
-;--------------------------------------------------------------
 
 ;==============================================================
 ; General Options
@@ -34,18 +15,18 @@ debug = false
 ; Description
 ;==============================================================
 [DESC]
-name = CT10 ; name of LHGrid-file
-type = CT10 ; general name used for printing etc
+name = METAv10LHC ; name of LHGrid-file
+type = METAv10LHC ; general name used for printing etc
 order = 1   ; 1=NLO 2=NNLO
-num_members = 53 ; number of PDF members
-; pdf_set_path =
+num_members = 101 ; number of Eigenvectors
+; 
 
 ;==============================================================
 ; Style Options
 ;==============================================================
 [STYLE]
 fill_style = 3004
-fill_color = 633
+fill_color = 7
 marker_style = 20
 
 ;==============================================================
@@ -58,12 +39,16 @@ is90Percent = true
 band_type = use_error_band
 ;
 ErrorPropagationType = 1
-;error_type = alphas_band
+;
 error_type = pdf_band
 ;
 error_size = one_sigma
-; PDF set member number
-alpha_s_error_number_up = 7
-alpha_s_error_number_down = 3
-alpha_s_pdf_name_up = CT10as
-alpha_s_pdf_name_down = CT10as
+;
+; not yet implemented
+; error already in nominal, leave 0
+;
+alpha_s_error_number_up = 0
+alpha_s_error_number_down = 0
+alpha_s_pdf_name_up = 	METAv10LHCas0116
+alpha_s_pdf_name_down = METAv10LHCas0120
+;

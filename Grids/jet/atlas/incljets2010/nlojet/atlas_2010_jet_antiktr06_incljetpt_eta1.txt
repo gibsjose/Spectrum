@@ -39,7 +39,9 @@ debug = false
 name = atlas_2010_jet_antiktr06_incljetpt_eta1
 author = Pavel Staravoitov 
 lumi_config_file = NONE                        
-scale = Ptjet per eta bin                      
+;
+scaleform = P_{T,jet,bin}
+;
 reference_journal_name =  Phys.Rev. D86 (2012) 014022         
 reference_link_to_arxiv = http://arxiv.org/abs/1112.6297
 nlo_program_name = nlojet++                    

@@ -16,28 +16,24 @@
 ;--------------------------------------------------------------
 ; NOTE:
 ;
-; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
+; Authors: S. Dulat, T.-J. Hou, J. Gao, M. Guzzi, J. Huston, P. Nadolsky, J. Pumplin, C. Schmidt, D. Stump, C.-P.Yuan
+;Reference: arXiv:1506.07443
 ;
-;	"  some_thing = "  <--- BAD
-;	"; some_thing = "  <--- OKAY
-;
-; If you forget to do this, some trailing comments could
-; be included in the option's value
 ;--------------------------------------------------------------
 
 ;==============================================================
 ; General Options
 ;==============================================================
 [GEN]
-debug = false
+debug = true
 ;==============================================================
 ; Description
 ;==============================================================
 [DESC]
-name = CT10 ; name of LHGrid-file
-type = CT10 ; general name used for printing etc
+name = CT14nlo ; name of LHGrid-file
+type = CT14 ; general name used for printing etc
 order = 1   ; 1=NLO 2=NNLO
-num_members = 53 ; number of PDF members
+num_members = 57 ; number of PDF members
 ; pdf_set_path =
 
 ;==============================================================
@@ -45,7 +41,7 @@ num_members = 53 ; number of PDF members
 ;==============================================================
 [STYLE]
 fill_style = 3004
-fill_color = 633
+fill_color = 2
 marker_style = 20
 
 ;==============================================================
@@ -63,7 +59,8 @@ error_type = pdf_band
 ;
 error_size = one_sigma
 ; PDF set member number
-alpha_s_error_number_up = 7
-alpha_s_error_number_down = 3
-alpha_s_pdf_name_up = CT10as
-alpha_s_pdf_name_down = CT10as
+alpha_s_error_number_up = 0
+alpha_s_error_number_down = 0
+; 
+alpha_s_pdf_name_up = CT14nlo_as_0120
+alpha_s_pdf_name_down = CT14nlo_as_0116

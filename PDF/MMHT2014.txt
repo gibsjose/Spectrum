@@ -24,7 +24,7 @@ num_members = 51
 [STYLE]
 fill_style = 3001
 ;fill_color = 417
-fill_color = 417
+fill_color = 843
 marker_style = 21
 
 ;==============================================================

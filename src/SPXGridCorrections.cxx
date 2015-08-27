@@ -269,7 +269,7 @@ void SPXGridCorrections::Parse(void) {
                        << " tot_y= "<<tot_y[j]<<" tot_eyl= "<<tot_eyl[j] <<" tot_eyh= "<<tot_eyh[j]<< std::endl;
   }
 
-  if (debug) std::cout << cn << mn <<" i= "<<i<< " ---> Successfully added correction to correction map" << std::endl;
+  if (debug) std::cout << cn << mn <<" i= "<<i<< " ---> Successfully added total correction to correction map" << std::endl;
 
   //Close the file
   CloseCorrectionFile();
@@ -297,15 +297,15 @@ void SPXGridCorrections::Parse(void) {
  if (debug) {
   std::cout << cn << mn << "Successfully added all corrections to map" << std::endl;
 
-  std::cout<<cn<<mn<<"name= "<<name.c_str() << std::endl;
-  std::cout<<cn<<mn<<"comment= "<<comment.c_str() << std::endl;
-  std::cout<<cn<<mn<<"errortype= "<<errortype.c_str() << std::endl;
+  //std::cout<<cn<<mn<<"name= "<<name.c_str() << std::endl;
+  //std::cout<<cn<<mn<<"comment= "<<comment.c_str() << std::endl;
+  //std::cout<<cn<<mn<<"errortype= "<<errortype.c_str() << std::endl;
 
   //this->Print();
   //PrintMap(test,totalCorrections);
   //string test="testing map: ";
   //PrintMap(test,m);
-  std::cout<<cn<<mn<<"finished " << std::endl;
+  //std::cout<<cn<<mn<<"finished " << std::endl;
  }
     
 }

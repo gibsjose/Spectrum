@@ -60,7 +60,8 @@ grid_divided_by_bin_width = true
 ; Grid Options
 ;==============================================================
 [GRID]								
-grid_file = atlas-incljets-arxiv-1112.6297/r04/atlas-incljets-eta6.root
+;
+grid_file = incljets_rapidity_28_36_R04_P2.root
 correction_files = ../atlas_2010_jet_antiktr04_incljetpt_eta6_hadcorr.txt
 correction_files_label = k_{NP}
 correction_files_reference = arxiv-1112.6297

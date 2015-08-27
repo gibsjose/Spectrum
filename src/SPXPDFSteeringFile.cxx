@@ -401,29 +401,38 @@ void SPXPDFSteeringFile::Parse(void) {
 	//}
 
 	alphaSErrorNumberUp = reader->GetInteger("PDF", "alpha_s_error_number_up", ALPHA_S_ERROR_NUM_EMPTY);
-	if(alphaSErrorNumberUp == ALPHA_S_ERROR_NUM_EMPTY) {
-		throw SPXINIParseException("PDF", "alpha_s_error_number_up", "You MUST specify the alpha_s_error_number_up");
+	if (alphaSErrorNumberUp == ALPHA_S_ERROR_NUM_EMPTY) {
+	  //	throw SPXINIParseException("PDF", "alpha_s_error_number_up", "You MUST specify the alpha_s_error_number_up");
+	  std::cerr<<cn<<mn<<"Can not calculate alpha uncertainty ! alpha_s_error_number_up not specified"<<std::endl;
+	  std::cout<<cn<<mn<<"Can not calculate alpha uncertainty ! alpha_s_error_number_up not specified"<<std::endl;
+
 	} else {
-		if(debug) std::cout << cn << mn << "Successfully read Alpha S Error Number Up: " << alphaSErrorNumberUp << std::endl;
+	 if (debug) std::cout << cn << mn << "Successfully read Alpha S Error Number Up: " << alphaSErrorNumberUp << std::endl;
 	}
 
 	alphaSErrorNumberDown = reader->GetInteger("PDF", "alpha_s_error_number_down", ALPHA_S_ERROR_NUM_EMPTY);
 	if(alphaSErrorNumberDown == ALPHA_S_ERROR_NUM_EMPTY) {
-		throw SPXINIParseException("PDF", "alpha_s_error_number_down", "You MUST specify the alpha_s_error_number_down");
+	  //throw SPXINIParseException("PDF", "alpha_s_error_number_down", "You MUST specify the alpha_s_error_number_down");
+	  std::cerr<<cn<<mn<<"Can not calculate alpha uncertainty ! alpha_s_error_number_down not specified"<<std::endl;
+	  std::cout<<cn<<mn<<"Can not calculate alpha uncertainty ! alpha_s_error_number_down not specified"<<std::endl;
 	} else {
-		if(debug) std::cout << cn << mn << "Successfully read Alpha S Error Number Down: " << alphaSErrorNumberDown << std::endl;
+	 if (debug) std::cout << cn << mn << "Successfully read Alpha S Error Number Down: " << alphaSErrorNumberDown << std::endl;
 	}
 
 	alphaSPDFNameUp = reader->Get("PDF", "alpha_s_pdf_name_up", "EMPTY");
 	if(!alphaSPDFNameUp.compare("EMPTY")) {
-		throw SPXINIParseException("PDF", "alpha_s_pdf_name_up", "You MUST specify the alpha_s_pdf_name_up");
+	  //		throw SPXINIParseException("PDF", "alpha_s_pdf_name_up", "You MUST specify the alpha_s_pdf_name_up");
+	  std::cerr<<cn<<mn<<"Can not calculate alpha uncertainty ! alpha_s_pdf_name_up not specified"<<std::endl;
+	  std::cout<<cn<<mn<<"Can not calculate alpha uncertainty ! alpha_s_pdf_name_up not specified"<<std::endl;
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Alpha S PDF Name Up: " << alphaSPDFNameUp << std::endl;
 	}
 
 	alphaSPDFNameDown = reader->Get("PDF", "alpha_s_pdf_name_down", "EMPTY");
 	if(!alphaSPDFNameDown.compare("EMPTY")) {
-		throw SPXINIParseException("PDF", "alpha_s_pdf_name_down", "You MUST specify the alpha_s_pdf_name_down");
+	  //		throw SPXINIParseException("PDF", "alpha_s_pdf_name_down", "You MUST specify the alpha_s_pdf_name_down");
+	  std::cerr<<cn<<mn<<"Can not calculate alpha uncertainty ! alpha_s_pdf_name_down not specified"<<std::endl;
+	  std::cout<<cn<<mn<<"Can not calculate alpha uncertainty ! alpha_s_pdf_name_down not specified"<<std::endl;
 	} else {
 		if(debug) std::cout << cn << mn << "Successfully read Alpha S PDF Name Down: " << alphaSPDFNameDown << std::endl;
 	}
