@@ -1386,46 +1386,45 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
      hedgehigh->SetLineWidth(linewidth);
      hedgelow ->SetLineWidth(linewidth);
 
-     std::cout<<cn<<mn<<"Line width= "<<linewidth<<std::endl;
+     if (debug) std::cout<<cn<<mn<<"Line width= "<<linewidth<<std::endl;
 
      hedgehigh->Draw("][,same");
      hedgelow ->Draw("][,same");
    }
 
+   int ifill=graph->GetFillStyle();
    if (debug) {
     double emax=SPXGraphUtilities::GetLargestRelativeError(graph);   
-
-    std::cout<<cn<<mn<<" emax= "<<emax<<" Draw now gname= "<<gname.Data()<<" option= "<<option.c_str()<<" color= "<< graph->GetLineColor()<<std::endl;
+    std::cout<<cn<<mn<<"emax= "<<emax<<" Draw now gname= "<<gname.Data()<<" option= "<<option.c_str()<<" color= "<< graph->GetLineColor()<<" ifill= "<<ifill<<std::endl;
     //graph->Print();
    }
-   int ifill=graph->GetFillStyle();
+
    if (icol>0 && ifill!=0)
     graph->Draw(option.c_str());
    else
-     std::cout<<cn<<mn<<"Graph "<<graph->GetName()<<" not plotted ifill= "<<ifill<<" color= "<< graph->GetLineColor()<<std::endl;
+    std::cout<<cn<<mn<<"Graph "<<graph->GetName()<<" not plotted ifill= "<<ifill<<" color= "<< graph->GetLineColor()<<std::endl;
   }
 
   //
-    std::cout<<cn<<mn<<"Graph stat "<< ratioGraphstatonly.size()<<std::endl;    
+  if (debug) std::cout<<cn<<mn<<"Graph stat "<< ratioGraphstatonly.size()<<std::endl;    
 
-    for (int igraphstat=0; igraphstat < ratioGraphstatonly.size(); igraphstat++) {
-     TGraphAsymmErrors *graphstat = ratioGraphstatonly[igraphstat];
-     if (!graphstat) std::cout<<"Graphstat not found !"<<std::endl;
-     TString gname=graphstat->GetName();
+  for (int igraphstat=0; igraphstat < ratioGraphstatonly.size(); igraphstat++) {
+   TGraphAsymmErrors *graphstat = ratioGraphstatonly[igraphstat];
+   if (!graphstat) std::cout<<"Graphstat not found !"<<std::endl;
+   TString gname=graphstat->GetName();
 
-     std::cout<<cn<<mn<<"Graph "<<graphstat->GetName()<<std::endl;
+   std::cout<<cn<<mn<<"Graph "<<graphstat->GetName()<<std::endl;
 
-     // avoid plotting the vertical line for the x-error bars
-     for (int ibin=0; ibin<graphstat->GetN(); ibin++) {
-      graphstat->SetPointEXhigh(ibin,0.);
-      graphstat->SetPointEXlow (ibin,0.);
-     }
-     option="||";
-     if (debug) std::cout<<cn<<mn<<"Draw now gname= "<<gname.Data()<<" option= "<<option.c_str()<<std::endl;
-     if (debug) graphstat->Print();
-     graphstat->Draw(option.c_str());
-    }
-
+   // avoid plotting the vertical line for the x-error bars
+   for (int ibin=0; ibin<graphstat->GetN(); ibin++) {
+    graphstat->SetPointEXhigh(ibin,0.);
+    graphstat->SetPointEXlow (ibin,0.);
+   }
+   option="||";
+   if (debug) std::cout<<cn<<mn<<"Draw now gname= "<<gname.Data()<<" option= "<<option.c_str()<<std::endl;
+   if (debug) graphstat->Print();
+   graphstat->Draw(option.c_str());
+  }
   //
  } else {
   // Is a convolute 

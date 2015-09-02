@@ -1480,7 +1480,7 @@ void SPXPlot::DrawLegend(void) {
  //if (debug) std::cout<<cn<<mn<<"C namesize= "<<namesize<<std::endl;
 
  
- if (ratioonly&&dataonly) {
+ if (ratioonly&&dataonly&&!onlysyst) {
 
   //std::vector <TString> vratiolabel;
   //std::vector <TGraphAsymmErrors> vratiograph;
@@ -2023,12 +2023,14 @@ void SPXPlot::DrawLegend(void) {
     double xcut=steeringFile->ShowIndividualSystematics();
     TString mypercent="%";
     TString label="";
-    if (xcut!=0) {
+    if (xcut>0) {
      label="All syst>";
      int exp=0; double x=0.;
      SPXMathUtilities::frexp10(xcut, exp, x);
+     std::cout<<" xcut= "<<xcut<<" exp= "<<exp<<" x= "<<x<<std::endl;
      if (exp>2 || exp<-2) {
       label+=SPXDrawUtilities::FormatwithExp(xcut);
+      std::cout<<" xcut= "<<xcut<<" label= "<<label<<std::endl;
      } else {
       label+=Form("%2.1f",xcut);
      }
@@ -2833,19 +2835,20 @@ void SPXPlot::InitializeData(void) {
 
                     Color_t icol=SPXUtilities::ICol(icountsyst);
 
-                    double linewidth=steeringFile->ShowIndividualSystematicsAsLine();
-                    if ( linewidth>0) {   
-                     vsyst.at(isyst)->SetFillStyle(0);
-                     vsyst.at(isyst)->SetLineWidth(int(linewidth));
+                    //double linewidth=steeringFile->ShowIndividualSystematicsAsLine();
+                    //if ( linewidth>0) {   
+                    // vsyst.at(isyst)->SetFillStyle(0);
+                    // vsyst.at(isyst)->SetLineWidth(int(linewidth));
 
-		     if (debug) std::cout<<cn<<mn<<"Set linewidth= "<<vsyst.at(isyst)->GetLineWidth()<<std::endl;
+		    // if (debug) std::cout<<cn<<mn<<"Set linewidth= "<<vsyst.at(isyst)->GetLineWidth()<<std::endl;
  
-                    } else {
+                    //} else {
                     //vsyst.at(isyst)->SetFillStyle(3001);
-                     vsyst.at(isyst)->SetFillStyle(1001);
-                    }
+                    // vsyst.at(isyst)->SetFillStyle(1001);
+                    //}
+                    //SPXGraphUtilities::SetColors(vsyst.at(isyst),icol);
 
-                    SPXGraphUtilities::SetColors(vsyst.at(isyst),icol);
+                    SPXPlot::SetSystGraphProperties( vsyst.at(isyst),icol);
 
  		    dataFileGraphMap.insert(StringGraphPair_T(systname, vsyst.at(isyst)));
 		   } else {
@@ -2864,6 +2867,7 @@ void SPXPlot::InitializeData(void) {
                              <<systematicsgroups.size()<<" systematicsgroupscolor= "<<systematicsgroupscolor.size();
 		  throw SPXGraphException(oss.str());
                  }
+
                  if (debug) {
                   std::cout<<cn<<mn<<"Number of systematic groups= " <<systematicsgroups.size() <<std::endl;                  
                   for (int igroup=0; igroup<systematicsgroups.size(); igroup++) {
@@ -2900,7 +2904,8 @@ void SPXPlot::InitializeData(void) {
                      sname+=systematicsgroups.at(igroup);
                      vsystgroups.back()->SetName(sname);
 		     Color_t icol=systematicsgroupscolor.at(igroup);     
-                     SPXGraphUtilities::SetColors( vsystgroups.back(),icol);
+                     //SPXGraphUtilities::SetColors( vsystgroups.back(),icol);
+                     SPXPlot::SetSystGraphProperties( vsystgroups.back(),icol);
                      systmap[systematicsgroups.at(igroup)]=vsystgroups.size()-1;
 		     //if (debug) std::cout<<cn<<mn<<"Created vector "<<vsystgroups.back()->GetName()<<" with vector "<<vsyst.at(isyst)->GetName()<<std::endl;
                     } else {
@@ -2932,7 +2937,8 @@ void SPXPlot::InitializeData(void) {
                       sname+=systematicsgroups.at(igroup);
                       vsystgroups.back()->SetName(sname);
 		      Color_t icol=systematicsgroupscolor.at(igroup);                    
-                      SPXGraphUtilities::SetColors( vsystgroups.back(),icol);
+                      //SPXGraphUtilities::SetColors( vsystgroups.back(),icol);
+                      SPXPlot::SetSystGraphProperties( vsystgroups.back(),icol);
 		      //if (debug) std::cout<<cn<<mn<<"New group: "<<systematicsgroups.at(igroup).c_str()<< " with vector "<<vsyst.at(isyst)->GetName()
 		      //			  << " vsystgroups["<<vsystgroups.size()-1<<"]="<< vsystgroups.back()->GetName() <<std::endl;
                       systmap[systematicsgroups.at(igroup)]=vsystgroups.size()-1;
@@ -2949,7 +2955,8 @@ void SPXPlot::InitializeData(void) {
                     //sname.ReplaceAll("syst_","");
 		    vsystgroups.back()->SetName(systname);
 		    Color_t icol=SPXUtilities::IColBlue(++inotingroup);                    
-                    SPXGraphUtilities::SetColors(vsystgroups.back(),icol);
+                    //SPXGraphUtilities::SetColors(vsystgroups.back(),icol);
+                    SPXPlot::SetSystGraphProperties( vsystgroups.back(),icol);
                    }
                   }
                  }
@@ -2969,6 +2976,7 @@ void SPXPlot::InitializeData(void) {
                  for (int igroup=0; igroup<vsystgroups.size(); igroup++) {
 		  std::string systname=vsystgroups.at(igroup)->GetName();
                   if (debug) std::cout<<cn<<mn<<" Enter "<<systname.c_str()<<" to dataFileGraphMap "<<std::endl;
+
  		  dataFileGraphMap.insert(StringGraphPair_T(systname,vsystgroups.at(igroup) ));
                  }
                 }
@@ -3443,4 +3451,24 @@ void SPXPlot::WriteRootFile(TString rootfilename){
  rootfile->Write();
 
  return;
+}
+
+void SPXPlot::SetSystGraphProperties(TGraphAsymmErrors * gsyst, Color_t icol){
+ std::string mn = "SetSystGraphProperties: ";
+ if (debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ double linewidth=steeringFile->ShowIndividualSystematicsAsLine();
+ if ( linewidth>0) {   
+  gsyst->SetFillStyle(0);
+  gsyst->SetLineWidth(int(linewidth));
+
+  if (debug) std::cout<<cn<<mn<<"Set linewidth= "<<gsyst->GetLineWidth()<<std::endl;
+ 
+ } else {
+  gsyst->SetFillStyle(1001);
+ }
+
+ SPXGraphUtilities::SetColors(gsyst,icol);
+
+ return; 
 }
