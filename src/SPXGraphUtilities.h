@@ -36,15 +36,11 @@ typedef enum DivideErrorType_t {
 } DivideErrorType_t;
 
 //Typedefs for SPXPlot and SPXRatio Maps
-//typedef std::map<std::string, TGraphAsymmErrors *> StringGraphMap_T;
-//typedef std::map<std::pair<std::string, std::string>, TGraphAsymmErrors *> StringPairGraphMap_T;
-
-//typedef std::pair<std::string, TGraphAsymmErrors *> StringGraphPair_T;
-//typedef std::pair<std::string, std::string> StringPair_T;
-//typedef std::pair<StringPair_T, TGraphAsymmErrors *> StringPairGraphPair_T;
 
 typedef std::pair<std::string, std::string> StringPair_T;
 typedef std::map<std::string, TGraphAsymmErrors *> StringGraphMap_T;
+typedef std::map<std::string, std::string> StringLabelMap_T;
+
 typedef std::map<std::pair<std::string, std::string>, TGraphAsymmErrors *> StringPairGraphMap_T;
 typedef std::pair<std::string, TGraphAsymmErrors *> StringGraphPair_T;
 typedef std::pair<StringPair_T, TGraphAsymmErrors *> StringPairGraphPair_T;
@@ -65,6 +61,8 @@ public:
 	static void MatchBinning(TGraphAsymmErrors *master, TGraphAsymmErrors *slave, bool dividedByBinWidth);
 	static TH1D* MatchBinning(TGraphAsymmErrors *master, TH1D *slave, bool dividedByBinWidth);
         static TH1D* MatchandMultiply(TH1D *hcorr, TH1D* hist, bool dividedByBinWidth);
+
+        static TGraphAsymmErrors * FindCommonBins(TGraphAsymmErrors* master, TGraphAsymmErrors* slave);
 
 	static TGraphAsymmErrors * Divide(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, DivideErrorType_t dt);
 

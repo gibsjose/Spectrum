@@ -104,6 +104,7 @@ private:
         std::vector<std::string> systematicsclasses;      // groups to display systematics
         std::vector<int>         systematicsclassescolor; // groups to display systematics colors
 
+        std::vector<std::string> removesystematicsclasses;      // groups to remove systematics
 
         std::vector<double> RenScales; // vector for renormalisation scale variations
         std::vector<double> FacScales; // vector for factorisation scale variations
@@ -367,6 +368,10 @@ public:
          return systematicsclassescolor; 
         }
 
+        std::vector<std::string> GetSystematicClassesToRemove(){
+         // groups to display systematics
+         return removesystematicsclasses;      
+        }
         bool GetSetGridStyleFlag(){
       	 return set_grid_styles;      
         }

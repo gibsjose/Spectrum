@@ -1286,6 +1286,33 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 			else		ysc.push_back("1.0");
 		}
 	}
+	//data[] (grid and pdf does not matter is not read in) for data-only plots
+	else if(plotType.IsType5()) {
+		if(dsfSize <= 1) {
+		  std::ostringstream oss;
+		  oss<<cn<<mn<<"Size of data_steering_files ("<< dsfSize <<") vector MUST be > 1 for Plot Type 5 (data[])";
+		  throw SPXParseException(oss.str());
+		}
+
+		numberOfConfigurationInstances = dsfSize;
+
+		//Fill all other vectors as needed
+		for(int i = 0; i < numberOfConfigurationInstances; i++) {
+		  dsf.push_back(options["data_steering_files"].at(i));
+
+		  if(dmsSize) dms.push_back(options["data_marker_style"].at(i));
+		  if(dmcSize) dmc.push_back(options["data_marker_color"].at(i));
+
+		  if(xsSize > 1) 			xsc.push_back(options["x_scale"].at(i));
+		  else if(xsSize == 1)	xsc.push_back(options["x_scale"].at(0));
+			else					xsc.push_back("1.0");
+
+		  if(ysSize > 1) 			ysc.push_back(options["y_scale"].at(i));
+			else if(ysSize == 1)	ysc.push_back(options["y_scale"].at(0));
+			else					ysc.push_back("1.0");
+		}
+	}
+
 
 	//Process directories
 	if(ddrSize == 1) {

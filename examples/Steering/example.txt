@@ -177,6 +177,9 @@ display_systematic_group = JES, JER                       ;[Optional] List of gr
 display_systematic_group_band_color = 2,3                 ;[Optional] color of band for systematic groups
                                                           ;           for negative color: only plot edge histogram with color -idcolor
 
+remove_systematic_group = JES,JER                         ; [Optional] Remove systematics that contains name from systematic map 
+;
+
 ;total_fill_style=1001					  ;[Optional] List of Total marker style OVERRIDES
 ;total_fill_color=800                                     ;[Optional] root color code and style https://root.cern.ch/root/html/TAttFill.html
 ;total_edge_color=800                                     ;[Optional] Plots edges of band as think line                          

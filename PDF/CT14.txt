@@ -31,7 +31,7 @@ debug = true
 ;==============================================================
 [DESC]
 name = CT14nlo ; name of LHGrid-file
-type = CT14 ; general name used for printing etc
+type = CT14nlo ; general name used for printing etc
 order = 1   ; 1=NLO 2=NNLO
 num_members = 57 ; number of PDF members
 ; pdf_set_path =
@@ -41,7 +41,7 @@ num_members = 57 ; number of PDF members
 ;==============================================================
 [STYLE]
 fill_style = 3004
-fill_color = 2
+fill_color = 797
 marker_style = 20
 
 ;==============================================================

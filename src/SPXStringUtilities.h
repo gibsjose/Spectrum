@@ -43,11 +43,16 @@ private:
 		    return false;
 		}
 
+
+
 	private:
 		const char* chars;
 	};
 
 public:
+
+	//static std::string CompareTwoSTring(std::string firstValue, std::string secondValue);
+        //static std::string LCSubstr(std::string x, std::string y);
 
 	template<typename T>
 	static T StringToNumber(const std::string& numberAsString) {
@@ -297,5 +302,8 @@ public:
 	 	return csl;
 	}
 };
+
+
+ 
 
 #endif

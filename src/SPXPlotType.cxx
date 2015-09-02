@@ -3,33 +3,10 @@
 //	Plot Type Implementation
 //
 //	Implements the SPXPlotType class, which defines the four
-//	supported plot types:
+//	supported plot types: see documention in SPXPlotType.h
 //
-//		1)	data, grid, pdf
 //
-//			ONE data file
-//			ONE grid file
-//			ONE pdf file
-//
-//		2)	data[], grid[], pdf
-//
-//			MANY data files
-//			MANY grid files (1:1 w/ data files)
-//			ONE pdf file
-//
-//		3) 	data, grid, pdf[]
-//
-//			ONE data file
-//			ONE grid file
-//			MANY pdf files
-//
-//		4)	data, grid[], pdf
-//
-//			ONE data file
-//			MANY grid files
-//			ONE pdf file
-//
-//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN 
 //	@Date:		27.10.2014
 //	@Email:		gibsjose@mail.gvsu.edu
 //
@@ -87,9 +64,9 @@ void SPXPlotType::Parse(std::string s) {
   	 throw SPXParseException("Incorrect plot type: Configuration string is empty Must be \"data\" or grid, and \"pdf\"");
 	}       
 
-	std::string data;
-	std::string grid;
-	std::string pdf;
+	std::string data="";
+	std::string grid="";
+	std::string pdf="";
 
 	if(v.size() == 1) {
 	 data = v.at(0);
@@ -120,6 +97,8 @@ void SPXPlotType::Parse(std::string s) {
 		if(debug) std::cout << cn << mn << "Successfully matched \"data[]\"" << std::endl;
 		type |= PT_DATA;
 	}
+
+        if (debug) std::cout << cn << mn << " After data type= "<<type << std::endl;
 	//else {
 	//	throw SPXParseException("Incorrect plot type: Data configuration string: Unrecognized option: " + data + ": MUST be either \"data\" or \"data[]\"");
 	//}
@@ -133,6 +112,8 @@ void SPXPlotType::Parse(std::string s) {
 		if(debug) std::cout << cn << mn << "Successfully matched \"grid[]\"" << std::endl;
 		type |= PT_GRID;
 	}
+
+        if (debug) std::cout << cn << mn << " After grid type= "<<type << std::endl;
 	//else {
 	//	throw SPXParseException("Incorrect plot type: Grid configuration string: Unrecognized option: " + grid + ": MUST be either \"grid\" or \"grid[]\"");
 	//}
@@ -146,6 +127,9 @@ void SPXPlotType::Parse(std::string s) {
 		if(debug) std::cout << cn << mn << "Successfully matched \"pdf[]\"" << std::endl;
 		type |= PT_PDF;
 	}
+
+        if (debug) std::cout << cn << mn << " After pdf type= "<<type << std::endl;
+
 	//else {
 	//	throw SPXParseException("Incorrect plot type: PDF configuration string: Unrecognized option: " + pdf + ": MUST be either \"pdf\" or \"pdf[]\"");
 	//}
@@ -206,8 +190,9 @@ bool SPXPlotType::IsValid(void) {
 		return false;
 	}
 
-	if(!IsType1() && !IsType2() && !IsType3() && !IsType4()) {
-		if(debug) std::cout << cn << mn << "Plot type is invalid: Not a known combination: " << type << std::endl;
+	//if(!IsType1() && !IsType2() && !IsType3() && !IsType4()) {
+	if(!IsType1() && !IsType2() && !IsType3() && !IsType4() && !IsType5()) {
+		if(debug) std::cout << cn << mn << "Plot type is invalid: Not a known combination: " << type << std::endl; 
 		return false;
 	}
 

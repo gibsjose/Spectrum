@@ -1087,6 +1087,8 @@ void SPXPlot::DrawLegend(void) {
  bool overlay=ds.ContainsOverlay();  
  bool ratioonly=ds.ContainsRatio()&&!overlay;
 
+ bool dataonly=os.ContainsData() && !os.ContainsConvolute();
+
  if(!overlay&&!ratioonly){
   return;
  }
@@ -1103,6 +1105,7 @@ void SPXPlot::DrawLegend(void) {
  if (ratioonly) ratioPad->cd();
 
  if (debug&&ratioonly) std::cout << cn << mn <<"Is ratio only "<< std::endl;
+ if (debug&&dataonly)  std::cout << cn << mn <<"Is data only " << std::endl;
 
  // Look first, if properties of bands are different
  int old_fill_style=-999, old_fill_color=-999;
@@ -1282,7 +1285,8 @@ void SPXPlot::DrawLegend(void) {
 
  // Now analyse ratio
 
- if (ratioonly && os.ContainsData() && !os.ContainsConvolute()) { 
+ //if (ratioonly && os.ContainsData() && !os.ContainsConvolute()) { 
+ if (ratioonly && dataonly) { 
   if (debug) std::cout<<cn<<mn<<"Now loop over ratio to see if systematics is plotted"<<std::endl;
   for (int iratio=0; iratio<ratios.size(); iratio++) {
    std::vector<TGraphAsymmErrors *> ratiographs=ratios.at(iratio).GetRatioGraph();
@@ -1339,6 +1343,8 @@ void SPXPlot::DrawLegend(void) {
   std::cout<<cn<<mn<<"Only systematics to legend, data label in information legend "<< std::endl;
  }
 
+ std::vector <TString> vdatalabel;
+
  if (os.ContainsData()) {
   if (debug) { 
    std::cout<<cn<<mn<<" "<< std::endl;
@@ -1350,10 +1356,13 @@ void SPXPlot::DrawLegend(void) {
 
   if (debug) std::cout<<cn<<mn<<"Number of data objects= "<< data.size()<<std::endl;
 
+
   for (int idata = 0; idata < data.size(); idata++) {                 
 
    TString datalabel=data.at(idata)->GetLegendLabel();
    //datalabel.ReplaceAll("high-mu","");
+
+   vdatalabel.push_back(datalabel);
 
    if (!etascan) {
 
@@ -1396,7 +1405,7 @@ void SPXPlot::DrawLegend(void) {
     }
 
     //if (!ratioonly && data.size()>0) { // ratioonly figures have data in the ratio, no separate label
-    if (data.size()>0&&!bandsdifferent) { // do not plot data label when the is one band with different properties
+    if (data.size()>0&&!bandsdifferent && !(dataonly&&ratioonly)) { // do not plot data label when the is one band with different properties
      if (!onlysyst) {
       if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
       if (debug) std::cout<<cn<<mn<<"Add to legend Data Label: "<<datalabel.Data()<<" namesize= "<<namesize<<std::endl;
@@ -1469,6 +1478,53 @@ void SPXPlot::DrawLegend(void) {
  //if (debug) leg->Print();
 
  //if (debug) std::cout<<cn<<mn<<"C namesize= "<<namesize<<std::endl;
+
+ 
+ if (ratioonly&&dataonly) {
+
+  //std::vector <TString> vratiolabel;
+  //std::vector <TGraphAsymmErrors> vratiograph;
+  for (int i = 0; i < pc.GetNumberOfRatios(); i++) {
+   //
+   //SPXRatioStyle ratioStyle = pc.GetRatioStyle(i);
+   //SPXRatio ratioInstance = SPXRatio(pc, ratioStyle);
+   //
+   SPXRatio ratioInstance = ratios.at(i);
+   TString datadir=TString(ratioInstance.GetDataDirectory());
+   //
+   //TGraphAsymmErrors *dengraph=GetDenominatorGraph();  
+   
+   std::string num=ratioInstance.GetNumeratorDataLabel();
+   std::string den=ratioInstance.GetDenominatorDataLabel();
+
+   if (debug) {
+    std::cout<<cn<<mn<<i<<" num= "<<num<<std::endl;   
+    std::cout<<cn<<mn<<i<<" den= "<<den<<std::endl;   
+   }
+
+   TString ratiolabel = Form("%s / %s ",num.c_str(),den.c_str());
+
+   if (debug) {
+    std::cout<<cn<<mn<<i<<" num.BeginsWith= "<<TString(num).BeginsWith(datadir)<<std::endl;   
+    std::cout<<cn<<mn<<i<<" den.BeginsWith= "<<TString(den).BeginsWith(datadir)<<std::endl;   
+   }
+
+   if (TString(num).BeginsWith(datadir) && TString(den).BeginsWith(datadir)) 
+    ratiolabel.ReplaceAll(datadir,"");
+   //ratiolabel.ReplaceAll(".txt","");
+
+   //vratiolabel.push_back(ratiolabel);
+   //vratiograph.push_back(ratioInstance.GetNumeratorGraph());
+   if (debug) {
+    std::cout<<cn<<mn<<i<<" datadir= "<<datadir<<std::endl;
+    std::cout<<cn<<mn<<i<<" ratio= "<<ratiolabel<<std::endl;
+    std::cout<<cn<<mn<<"graphname= "<<ratioInstance.GetDenominatorGraph()->GetName()<<std::endl;
+   }
+
+   leg->AddEntry(ratioInstance.GetDenominatorGraph(),ratiolabel, "P");
+
+  }
+ }
 
  bool nlolabel=true;
  SPXRatioStyle ratioStyle = pc.GetRatioStyle(0);
@@ -2136,6 +2192,8 @@ void SPXPlot::InitializeRatios(void) {
    SPXRatio ratioInstance = SPXRatio(pc, ratioStyle);
    
    ratioInstance.AddDataFileGraphMap(dataFileGraphMap);
+   ratioInstance.AddDataFileLabelMap(dataFileLabelMap);
+
    ratioInstance.AddReferenceFileGraphMap(referenceFileGraphMap);
    ratioInstance.AddNominalFileGraphMap(nominalFileGraphMap);
    ratioInstance.AddConvoluteFileGraphMap(convoluteFileGraphMap);
@@ -2644,7 +2702,7 @@ void SPXPlot::InitializeData(void) {
 
                 if (steeringFile->GetTakeSignforTotalError()) {
                  dataInstance->SetTakeSignforTotalError(true);
-		}
+		} 
 
 		if(debug) std::cout<<cn<<mn<<"Call GetDataRemoveFlag for i= "<<i << std::endl;
  
@@ -2662,7 +2720,22 @@ void SPXPlot::InitializeData(void) {
 
                 dataInstance->Parse();
 
+                
+		std::vector<std::string> removesyst=steeringFile-> GetSystematicClassesToRemove();
+                if (removesyst.size()>0) {
+                 if (debug) std::cout<<cn<<mn<<"Number of systematic classes to be removed nsyst="<<removesyst.size()<<std::endl;
+
+                 for (int i=0; i<removesyst.size(); i++) {
+		  if (debug) std::cout<<cn<<mn<<"Remove systematics that contain name="<<removesyst.at(i)<<std::endl;
+		  dataInstance->RemoveSystematicthatContains(removesyst.at(i));
+                 }
+                }
+
                 dataInstance->CreateGraphs();
+
+                if (debug) {
+		 dataInstance->PrintGraphs();
+                }
 
    		if(debug) std::cout << cn << mn << "Chi2 calculation method= " << steeringFile->GetCalculateChi2() << std::endl;
 
@@ -2731,6 +2804,9 @@ void SPXPlot::InitializeData(void) {
 		//Add total error graph and stat error graph to dataFileGraphMap
 		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename(), totGraph));
 		dataFileGraphMap.insert(StringGraphPair_T(pci.dataSteeringFile.GetFilename() + "_stat", statGraph));
+		std::string label=data[i]->GetLegendLabel();
+		dataFileLabelMap[pci.dataSteeringFile.GetFilename()]= label;
+                //dataFileLabelMap.insert(pci.dataSteeringFile.GetFilename(),label);
 
 		std::vector <TGraphAsymmErrors *> vsyst=data[i]->GetSystematicsErrorGraphs();
 		if (debug) std::cout<<cn<<mn<<"Number of systematic found= " << vsyst.size() <<std::endl;

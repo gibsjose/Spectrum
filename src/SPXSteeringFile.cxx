@@ -946,6 +946,24 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		 }
 		}
 
+		// ->
+       	        if(debug) std::cout<<cn<<mn<<"Start parsing remove_systematic_group " << std::endl;
+
+		tmp = reader->Get(plotSection, "remove_systematic_group", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout<<cn<<mn<<"INFO: No plot option for remove_systematic_group found"<< std::endl;
+		} else {
+		 //Parse into vector
+		 removesystematicsclasses = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		 if(debug) {
+		  std::cout<<cn<<mn<<"remove_systematic_group configuration string: " << tmp << " parsed into:" << std::endl;
+		  for(int j = 0; j < removesystematicsclasses.size(); j++) {
+		   std::cout<<cn<<mn<< "\t" << removesystematicsclasses[j] << std::endl;
+		  }
+		 }
+		}
+
+                // <-
 
 		// 
 		//Get the data_marker_color

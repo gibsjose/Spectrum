@@ -6,7 +6,18 @@
 
 ## Change Log
 
- -Included CT14
+ -Feature to remove class of systematics uncertainties 
+
+ -SPXPlot/SPXRatio/SPXGraphUtilities
+   added possibility to compare directly data to data 
+   Labels are taken automatically from new dataFileLabelMap in SPXRatio
+   filled via SPXPlot
+
+ -SPXPlotType/SPXPlotConfiguration: introduced Type5 for data[] (pdf and grod does not matter) 
+
+ -Included CT14, METAPDF
+
+ -SPXPDF: can now run PDF without member to calculate alphas uncertainty
 
  -SPXSteering: Can now show systematics as line (linewidth via steering)
    show_systematics_as_lines 

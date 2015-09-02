@@ -30,7 +30,6 @@
 #include "SPXException.h"
 #include "SPXUtilities.h"
 
-
 class SPXData {
 
 public:
@@ -44,15 +43,16 @@ public:
 	void CreateGraphs(void);
 
         void PrintTotalCrossSection(void);
+        void PrintGraphs(void);
 
 	void ReadCorrelation();
 
 	static bool GetDebug(void) {
-		return debug;
+	 return debug;
 	}
 
 	static void SetDebug(bool b) {
-		debug = b;
+	 debug = b;
 	}
 
         double GetDataCutXmin(){
@@ -231,6 +231,8 @@ public:
 
         bool GetSystematicCorrelationType(std::string name);
 
+        void RemoveSystematicthatContains(std::string);
+	void UpdateSystematics(void);
 private:
 	static bool debug;		   //Flag indicating debug mode
 	std::ifstream *dataFile;	   //Must declare as pointer... ifstream's copy constructor is private

@@ -15,7 +15,7 @@
 const std::string cn = "SPXGraphUtilities::";
 
 double SPXGraphUtilities::GetXMin(std::vector<TGraphAsymmErrors *> graphs) {
-
+    std::string mn = "GetYMin: ";
     double min = 1e30;
     
     for(int i = 0; i < graphs.size(); i++) {
@@ -39,7 +39,7 @@ double SPXGraphUtilities::GetXMin(std::vector<TGraphAsymmErrors *> graphs) {
 
 
 double SPXGraphUtilities::GetXMax(std::vector<TGraphAsymmErrors *> graphs) {
-
+    std::string mn = "GetXMax: ";
     double max = -1e30;
 
 
@@ -63,7 +63,7 @@ double SPXGraphUtilities::GetXMax(std::vector<TGraphAsymmErrors *> graphs) {
 }
 
 double SPXGraphUtilities::GetYMin(std::vector<TGraphAsymmErrors *> graphs) {
-
+    std::string mn = "GetYMin: ";
     double min = 1e30;
 
 
@@ -87,7 +87,7 @@ double SPXGraphUtilities::GetYMin(std::vector<TGraphAsymmErrors *> graphs) {
 }
 
 double SPXGraphUtilities::GetYMax(std::vector<TGraphAsymmErrors *> graphs) {
-
+    std::string mn = "GetYMax: ";
     double max = -1e30;
 
 
@@ -114,6 +114,7 @@ double SPXGraphUtilities::GetYMax(std::vector<TGraphAsymmErrors *> graphs) {
 double SPXGraphUtilities::GetLargestRelativeError(TGraphAsymmErrors* graph) {
  // return systematics in the bin where it is largest
  // the low variation is negative, the high variation is positive 
+ std::string mn =" GetLargestRelativeError: ";
  double errormax = 0.;
     
  for (int j = 0; j < graph->GetN(); j++) {
@@ -272,11 +273,11 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
     bool debug=false;
 
     //Make sure graphs are valid
-    if(!master) {
-        throw SPXGraphException(cn + mn + "Master graph is invalid");
+    if (!master) {
+     throw SPXGraphException(cn + mn + "Master graph is invalid");
     }
 
-    if(!slave) {
+    if (!slave) {
         throw SPXGraphException(cn + mn + "Slave graph is invalid");
     }
 
@@ -601,8 +602,6 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
      throw SPXParseException(oss.str());
     }
     
-
-
     //Print Graphs
     if(debug) {
         std::cout << cn << mn << "Printing Master Graph" << std::endl;
@@ -1495,6 +1494,8 @@ void SPXGraphUtilities::AddinQuadrature(TGraphAsymmErrors* g1, TGraphAsymmErrors
   return;
  }
 
+ if (takesign) std::cout<<cn<<mn<<"WARNING takesign option not yet implemented "<<std::endl;
+
  Double_t* EYhigh1 = g1-> GetEYhigh();
  Double_t* EYlow1  = g1-> GetEYlow();
 
@@ -1559,4 +1560,135 @@ void SPXGraphUtilities::SetColors(TGraphAsymmErrors* g1, Color_t icol) {
  g1->SetMarkerColor(icol);
 
  return;
+}
+
+TGraphAsymmErrors* SPXGraphUtilities::FindCommonBins(TGraphAsymmErrors* gmaster, TGraphAsymmErrors* gslave) {
+ //
+ // Merge bins in gslave to bins given in gmaster
+ // gslave must have finer binning than gmaster
+ //
+ std::string mn = "FindCommonBins: ";
+ const bool debug=false; 
+ 
+ if (!gmaster){
+  std::cout<<mn<<"Graph gmaster does not exist ! "<< endl; 
+  throw SPXGraphException(cn + mn + "Master graph is invalid");
+  return (TGraphAsymmErrors*)0; 
+ }
+ if (!gslave) {
+  std::cout<<mn<<"Graph gslave does not exist ! "<< endl; 
+  throw SPXGraphException(cn + mn + "Slave graph is invalid");
+  return (TGraphAsymmErrors*)0; 
+ }
+
+ int nmaster=gmaster->GetN();
+ int nslave =gmaster->GetN();
+ 
+ //
+ //if (nmaster>nslave) {
+ //  std::cout<<cn<<mn<<"WARNING can not merge nmaster= "<<nmaster<<" nslave= "<<nslave<<std::endl; 
+ // return 0;
+ //}
+ //
+
+ TGraphAsymmErrors* g3= new TGraphAsymmErrors();
+ if (!g3) {std::cout<<cn<<mn<<"Problem to make new vector g3 ! " << std::endl; return 0;};
+ SPXGraphUtilities::SPXCopyGraphProperties((TGraphErrors*)gslave,(TGraphErrors*)g3);
+
+ //TGraphAsymmErrors* g4= new TGraphAsymmErrors();
+ //if (!g4) {std::cout<<cn<<mn<<"Problem to make new vector g4 ! " << std::endl; return 0;};
+ 
+ double* Xmaster = gmaster->GetX();
+ double* Ymaster = gmaster->GetY();
+ double* EXhighmaster = gmaster->GetEXhigh();
+ double* EXlowmaster =  gmaster->GetEXlow();
+
+ Double_t* Xslave = gslave->GetX();
+ Double_t* Yslave = gslave->GetY();
+ Double_t* EXhighslave=gslave->GetEXhigh();
+ Double_t* EXlowslave= gslave->GetEXlow();
+ Double_t* EYhighslave=gslave->GetEYhigh();
+ Double_t* EYlowslave= gslave->GetEYlow();
+
+ int inew=0;
+ for (int imaster=0; imaster<nmaster; imaster++) {  //loop over points of master
+  for (int islave=0; islave<nslave; islave++) {  //loop over points of slave
+
+   if (debug) {
+    std::cout<<cn<<mn<<" Xslave["<<islave<<"]= "<<Xslave[islave]<<" Xslave["<<islave+1<<"]= "<<Xslave[islave+1]<<std::endl;
+    std::cout<<cn<<mn<<" Xmaster["<<imaster<<"]= "<<Xmaster[imaster]<<" Xmaster["<<imaster+1<<"]= "<<Xmaster[imaster+1]<<std::endl;
+   }
+
+   double dxminslave = Xslave[islave]-EXlowslave[islave];
+   double dxmaxslave = Xslave[islave]+EXhighslave[islave];
+   double dxminmaster=Xmaster[imaster]-EXlowmaster[imaster];
+   double dxmaxmaster=Xmaster[imaster]+EXhighmaster[imaster];
+
+   if (dxminslave==dxminmaster && dxmaxslave==dxmaxmaster) {
+    if (debug) {
+     std::cout<<cn<<mn<<"Match "<<" Xslave["<<islave<<"]= "<<Xslave[islave]
+ 			        <<" Yslave["<<islave<<"]= "<<Yslave[islave]<<std::endl; 
+     std::cout<<cn<<mn<<"Match "<<" Xmaster["<<imaster<<"]= "<<Xmaster[imaster]
+			        <<" Ymaster["<<imaster<<"]= "<<Ymaster[imaster]<<std::endl; 
+    }
+
+    g3->SetPoint     (inew,  Xslave[islave]  ,Yslave[islave] ); 
+    g3->SetPointError(inew, EXlowslave[islave],EXhighslave[islave], EYlowslave[islave],EYhighslave[islave]);
+    inew++;
+   } 
+  }
+ }
+
+ /*
+ double x=0., dx=0.;
+ double gysum, gy, gx, dgx;
+ double xmin=0, xmax=0;
+ const int Nslice=10;
+
+ double BIG=1.e20;
+ double x1minp=BIG, x1maxp=-BIG, x1minm=BIG, x1maxm=-BIG;
+ 
+ for (int imaster=0; imaster<nmaster; imaster++) {  //loop over points of master
+
+  double xi=Xmaster[imaster]-EXlowmaster[imaster];
+  double xj=Xmaster[imaster]+EXhighmaster[imaster]; 
+
+  if (debug) std::cout<<cn<<mn<<imaster<<" Xi[imaster]= "<<xi<<" Xmaster[imaster+1]= "<< xj <<" Ymaster= "<<Ymaster[imaster]<<std::endl;
+
+  if   (xi>xj){xmin=xj; xmax=xi; }
+  else        {xmin=xi; xmax=xj; }
+  dgx=(xmax-xmin)/Nslice;
+  gysum=0.;
+  
+  int iflag=0;
+  for (int islave=0; islave<Nslice; islave++) {  //loop over points of slave
+   gx=xmin+dgx/2.+islave*dgx;
+   TSpline *spline=0;
+   gy=g4->Eval(gx,spline,"S");
+   // if vector does not cover full range of bin, set to zero
+   // no extrapolation
+   if (gx>0) {if (gx<=x1minp||gx>x1maxp) iflag=1;}
+   else      {if (gx<=x1minm||gx>x1maxm) iflag=1;}
+   if (iflag==1) {gy=0.; gysum=0.;}
+
+   gysum+=gy; 
+   if (debug) std::cout<<cn<<mn<<imaster<<" iflag= "<<iflag<<" gx= "<<gx<<" gysum= "<<gysum<<" gy= "<<gy<<std::endl;
+  }
+
+ gysum/=Nslice;
+  x= Xmaster[imaster]; double dxlow=(x-xmin); double dxhigh=(xmax-x);
+
+  if (debug) std::cout<<cn<<mn<<imaster<<" fill: x= "<<x<<" dx= "<<dx<<" gy="<<gysum<<" gy/dx= "<<gysum/dx<<endl;
+  g3->SetPoint     (imaster, x  , gysum);
+  g3->SetPointError(imaster,dxlow,dxhigh,0.,0.);
+ }
+
+ delete g4;
+ */
+ 
+ if (debug){
+  std::cout<<cn<<mn<<"Print new graph "<<g3->GetName()<<std::endl;
+  g3->Print();
+ }
+ return g3;
 }

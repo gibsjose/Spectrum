@@ -42,7 +42,7 @@ SPXData::SPXData(const SPXPlotConfigurationInstance &pci) {
  } else 
   if (debug) std::cout<<cn<<mn<<"All data are kept ...unless main steering over-rules "<<std::endl;
 
- TakeSignforTotalError=true;
+ TakeSignforTotalError=false;
   
  //set pointer to zero
  statisticalErrorGraph=0;
@@ -1049,8 +1049,9 @@ void SPXData::PrintSpectrum(void) {
 	std::cout << "This data has " << individualSystematics.size() / 2<< " Individual Systematic Errors:" << std::endl << std::endl;
 
         if (TakeSignforTotalError) 
-         std::cout << "Total systematics is calculated such that all negative/positive systematics all in negative/positive total uncertainty "<<std::endl;
-
+         std::cout << "Take sign into account when calculating total error, i.e. Total systematics is calculated such that all negative/positive systematics go in negative/positive total uncertainty "<<std::endl;
+        else
+         std::cout << "Take sign NOT into account when calculating total error, i.e. Total systematics is calculated directly from positive/negative components "<<std::endl;
         this->PrintSystematics(individualSystematics);
 
 	//Iterate over individual systematic errors
@@ -1130,6 +1131,31 @@ void SPXData::PrintHERAFitter(void) {
 	std::cout << "" << std::endl << std::endl;
 }
 */
+
+void SPXData::PrintGraphs(void) {
+ std::string mn = "PrintGraphs: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ if (totalErrorGraph) {
+  std::cout<<cn<<mn<<"totalErrorGraph "<<totalErrorGraph->GetName()<<std::endl;
+  totalErrorGraph->Print();
+ } else
+  std::cout<<cn<<mn<<"totalErrorGraph is missing "<<std::endl;
+
+ if (statisticalErrorGraph) {
+  std::cout<<cn<<mn<<"statisticalErrorGraph "<<statisticalErrorGraph->GetName()<<std::endl;
+  statisticalErrorGraph->Print();
+ } else
+  std::cout<<cn<<mn<<"statisticalErrorGraph is missing "<<std::endl;
+
+ if (systematicErrorGraph) {
+  std::cout<<cn<<mn<<"systematicErrorGraph "<<systematicErrorGraph->GetName()<<std::endl;
+  systematicErrorGraph->Print();
+ } else
+  std::cout<<cn<<mn<<"systematicErrorGraph is missing "<<std::endl;
+
+ return;
+}
 void SPXData::CreateGraphs(void) {
 	std::string mn = "CreateGraphs: ";
 	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
@@ -1360,15 +1386,15 @@ void SPXData::ReadCorrelation()
   }
 
   if (debug) {
-   std::cout <<cn<<mn<<"Statistical covariance matrix: "<< std::endl; 
+   std::cout<<cn<<mn<<"Statistical covariance matrix: "<< std::endl; 
    cov_matrixstat->Print();
   }
 
   if (debug) 
-   std::cout <<cn<<mn<<"INFO Calculate systematic covariance matrix from systematic components ! "<< std::endl; 
+   std::cout<<cn<<mn<<"INFO Calculate systematic covariance matrix from systematic components ! "<< std::endl; 
 
   if (individualSystematics.size()==0) {
-   std::cout <<cn<<mn<<"WANRING no systematics components found ! "<< std::endl; 
+   std::cout<<cn<<mn<<"WANRING no systematics components found ! "<< std::endl; 
   } else {
    this->CalculateSystematicCovarianceMatrix();
   }
@@ -1678,8 +1704,8 @@ void SPXData::CalculateSystematicCovarianceMatrix() {
  std::string mn = "CalculateSystematicCovarianceMatrix: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
- if (!systematicErrorGraph)
-  throw SPXParseException(cn+mn+"Systematics data graph tsystematicErrorGraph not found !");
+ //if (!systematicErrorGraph)
+ // throw SPXParseException(cn+mn+"Systematics data graph systematicErrorGraph not found !");
 
  int Nbin=this->GetNumberOfBins();
 
@@ -1832,7 +1858,7 @@ void SPXData::PrintSystematics(StringDoubleVectorMap_T syst) {
  std::string mn = "PrintSystematics: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
         
- std::cout<<cn<<mn<<" Number of systematics uncertainties= "<<syst.size()<<std::endl;
+ std::cout<<cn<<mn<<"Number of systematics uncertainties= "<<syst.size()<<std::endl;
 
  for(StringDoubleVectorMap_T::iterator it = syst.begin(); it != syst.end(); it++) {
   const std::string   &syst_name  = it->first;
@@ -1967,8 +1993,12 @@ std::vector <TGraphAsymmErrors *>  SPXData::GetSystematicsErrorGraphs(void){
     double eyh=csystp.at(ibin)/100*fabs(value);
     double eyl=csystn.at(ibin)/100*fabs(value);
   
-    if ((eyh<0 && eyl<0) || (eyh>0 && eyl>0) )
-     std::cout<<cn<<mn<<"WARNING: in ibin= "<<ibin<<" errors have same sign:  eyh= "<<eyh<<" eyl= "<<eyl<<std::endl;
+    if ((eyh<0 && eyl<0) || (eyh>0 && eyl>0) ) {
+     std::ostringstream oss;
+     oss << cn<<mn<<"WARNING: in "<<sname<<" ibin= "<<ibin<<" errors have same sign:  eyh= "<<eyh<<" eyl= "<<eyl;  
+     std::cout<<oss.str()<<endl;
+     std::cerr<<oss.str()<<endl;
+    }
 
     if (eyh<0 && eyl>0) {
      std::cout<<cn<<mn<<"INFO: in ibin= "<<ibin<<" eyh<0 and exl>0 errors have switched sign:  eyh= "<<eyh<<" eyl= "<<eyl<<std::endl;
@@ -2093,5 +2123,117 @@ bool SPXData::GetSystematicCorrelationType(std::string name) {
 
  return type;
 }
+
+void  SPXData::RemoveSystematicthatContains(std::string systclassname){
+ std::string mn ="RemoveSystematicthatContains: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ int nremoved=0;
+
+ StringDoubleVectorMap_T::iterator itr =  individualSystematics.begin();
+ while (itr != individualSystematics.end()) {
+  const std::string   &systname  = itr->first;
+  //std::cout<<" key= "<< systname <<std::endl;
+  TString mapname=TString(systname);
+
+  //if (debug) std::cout <<cn<<mn<<"Check if systematics= "<<mapname.Data()<< " contains= "<<systclassname<<std::endl;
+
+  if (mapname.Contains(systclassname,TString::kIgnoreCase)) {
+   if (debug) std::cout<<cn<<mn<<"Systematics name class "<<systclassname<<" -> remove in map with systname= "<<mapname.Data()<<std::endl;
+   individualSystematics.erase(itr++);
+   nremoved++;
+  } else {
+   ++itr;
+  }
+ }
+ 
+ if (nremoved>0) {
+  if (debug) std::cout<<cn<<mn<<"Number of removed systematics nremoved= "<<nremoved<<std::endl;
+ }
+
+ UpdateSystematics();
+ 
+ return;
+};
+
+
+void  SPXData::UpdateSystematics(void){
+ std::string mn ="UpdateSystematics: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+ //
+ // recalculate total systematic error from individual errors components
+ // update data map
+ //
+ const int nbin=data["xm"].size();
+ if (debug) std::cout<<cn<<mn<<"nbin= "<<nbin<<std::endl;
+
+ std::vector<double> vsysttotn(nbin,0.);
+ std::vector<double> vsysttotp(nbin,0.);
+
+ if ( individualSystematics.size()==0) {
+  if (debug) std::cout<<cn<<mn<<"No systematics components found !"<<std::endl;
+  data["syst_m"]=vsysttotp;
+  data["syst_n"]=vsysttotn;
+  return;
+ }
+
+ for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
+  const std::string   &syst_name  = it->first;
+  std::vector<double> &systematic = it->second;
+
+  //if (debug) std::cout<<cn<<mn<<"syst_name= "<<syst_name<<std::endl;
+  //if (debug) if (TakeSignforTotalError) std::cout<<cn<<mn<<"Take sign into account for adding in quadrature "<<std::endl;  
+
+  for (int ibin=0; ibin<nbin; ibin++) {
+   if(syst_name.find("+") != std::string::npos) {
+    if (TakeSignforTotalError) {
+     if (systematic.at(ibin)>0) vsysttotp.at(ibin)+=pow(systematic.at(ibin),2);
+     else                       vsysttotn.at(ibin)+=pow(systematic.at(ibin),2);
+    } else                      vsysttotp.at(ibin)+=pow(systematic.at(ibin),2);
+   } else {
+    if (TakeSignforTotalError) {
+     if (systematic.at(ibin)>0) vsysttotp.at(ibin)+=pow(systematic.at(ibin),2);
+     else                       vsysttotn.at(ibin)+=pow(systematic.at(ibin),2);
+    } else                      vsysttotn.at(ibin)+=pow(systematic.at(ibin),2);
+
+   }
+   //if (debug) {
+   // std::cout<<cn<<mn<<ibin<<" "<<syst_name<<" up "<<systematic.at(ibin)<<" sum "<<vsysttotp.at(ibin)<<" sqrt= "<<sqrt(vsysttotp.at(ibin))<<std::endl;
+   // std::cout<<cn<<mn<<ibin<<" "<<syst_name<<" dn "<<systematic.at(ibin)<<" sum "<<vsysttotn.at(ibin)<<" sqrt= "<<sqrt(vsysttotn.at(ibin))<<std::endl;
+   //}
+  }
+ }
+
+ for (int ibin=0; ibin<nbin; ibin++) {
+  vsysttotn.at(ibin)=sqrt(vsysttotn.at(ibin));
+ }
+
+ for (int ibin=0; ibin<nbin; ibin++) {
+  vsysttotp.at(ibin)=sqrt(vsysttotp.at(ibin));
+ }
+
+ if (debug) { 
+  for (int ibin=0; ibin<nbin; ibin++) {
+   if (data["syst_p"][ibin]!=vsysttotp.at(ibin)) {
+    std::cout<<cn<<mn<<ibin<<" up old data "<<data["syst_p"][ibin]<<" new systtotp "<<vsysttotp.at(ibin)<<std::endl;
+    std::cerr<<cn<<mn<<ibin<<" up old data "<<data["syst_p"][ibin]<<" new systtotp "<<vsysttotp.at(ibin)<<std::endl;
+   }
+  }
+
+  for (int ibin=0; ibin<nbin; ibin++) { 
+   if (data["syst_n"][ibin]!=vsysttotn.at(ibin)) {
+    std::cout<<cn<<mn<<ibin<<" down old data "<<data["syst_n"][ibin]<<" new systtotn "<<vsysttotn.at(ibin)<<std::endl;
+    std::cerr<<cn<<mn<<ibin<<" down old data "<<data["syst_n"][ibin]<<" new systtotn "<<vsysttotn.at(ibin)<<std::endl;
+   }
+  }
+ }
+
+ data["syst_p"]=vsysttotp;
+ data["syst_n"]=vsysttotn;
+
+ this->CalculateSystematicCovarianceMatrix();
+
+ return;
+};
 
 

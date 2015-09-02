@@ -28,8 +28,13 @@
 //			ONE data file
 //			MANY grid files
 //			ONE pdf file
-//
-//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
+//                      
+//              5)      contains data[] (data will be type1)
+//                      (grid and pdf does not matter)
+// 
+//                      for data only
+//                       
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN 
 //	@Date:		27.10.2014
 //	@Email:		gibsjose@mail.gvsu.edu
 //
@@ -44,7 +49,7 @@
 const int PT_INVALID =		-1;
 const int PT_DATA = 		(1 << 0);	//0b00000001
 const int PT_GRID = 		(1 << 1);	//0b00000010
-const int PT_PDF = 			(1 << 2);	//0b00000100
+const int PT_PDF = 		(1 << 2);	//0b00000100
 
 //A '0' represents a SINGLE instance
 //A '1' represents MULTIPLE instances
@@ -86,33 +91,61 @@ public:
 	//Type 1 = Single Data, Single Grid, Single PDF
 	bool IsType1(void) {
 		if(ContainsSingleData() && ContainsSingleGrid() && ContainsSinglePDF()) {
+	                if (debug) std::cout<<"SPXType IsType1 TRUE"<<std::endl;
 			return true;
 		}
 
+	        if (debug) std::cout<<"SPXType IsType1 FALSE"<<std::endl;
 		return false;
 	}
 
 	bool IsType2(void) {
 		if(ContainsMultipleData() && ContainsMultipleGrids() && ContainsSinglePDF()) {
+	                if (debug) std::cout<<"SPXType IsType2 TRUE"<<std::endl;
 			return true;
 		}
-
+	        if (debug) std::cout<<"SPXType IsType2 FALSE"<<std::endl;
 		return false;
 	}
 
 	bool IsType3(void) {
 		if(ContainsSingleData() && ContainsSingleGrid() && ContainsMultiplePDFs()) {
+	                if (debug) std::cout<<"SPXType IsType3 TRUE"<<std::endl;
 			return true;
 		}
 
+	        if (debug) std::cout<<"SPXType IsType3 FALSE"<<std::endl;
 		return false;
 	}
 
 	bool IsType4(void) {
 		if(ContainsSingleData() && ContainsMultipleGrids() && ContainsSinglePDF()) {
+	                if (debug) std::cout<<"SPXType IsType4 TRUE"<<std::endl;
 			return true;
 		}
+	        if (debug) std::cout<<"SPXType IsType4 FALSE"<<std::endl;
+		return false;
+	}
 
+	bool IsType5(void) {
+          if (debug) {
+	   if (ContainsSingleData()   ) std::cout<<"SPXType ContainsSingleData() TRUE"<<std::endl;
+	   if (ContainsMultipleData() ) std::cout<<"SPXType ContainsMultipleData() TRUE"<<std::endl;
+	   if (ContainsMultipleGrids()) std::cout<<"SPXType ContainsMultipleGrids() TRUE"<<std::endl;
+	   if (ContainsMultiplePDFs() ) std::cout<<"SPXType ContainsMultiplePDFs() TRUE"<<std::endl;
+	   if (ContainsSingleGrid()   ) std::cout<<"SPXType ContainsSingleGrid()  TRUE"<<std::endl;
+	   if (ContainsSinglePDF()    ) std::cout<<"SPXType ContainsSinglePDF() ) TRUE"<<std::endl;
+          }
+	  if(ContainsMultipleData() && ContainsSingleGrid() && ContainsSinglePDF()) {
+	    // if( (ContainsSingleData() || ContainsMultipleData() ) 
+	    // && !(ContainsMultipleGrids() || ContainsMultiplePDFs() ||  
+            // ContainsSingleGrid()    || ContainsSinglePDF() )
+            //) {
+	                if (debug) std::cout<<"SPXType IsType5 TRUE"<<std::endl;
+			return true;
+	      }
+
+	        if (debug) std::cout<<"SPXType IsType5 FALSE"<<std::endl;
 		return false;
 	}
 
