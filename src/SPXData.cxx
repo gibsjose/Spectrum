@@ -2156,6 +2156,44 @@ void  SPXData::RemoveSystematicthatContains(std::string systclassname){
  return;
 };
 
+void  SPXData::KeepSystematicthatContains(std::string systclassname){
+ std::string mn ="KeepSystematicthatContains: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ int nremoved=0;
+ int nkeep=0;
+
+ StringDoubleVectorMap_T::iterator itr =  individualSystematics.begin();
+ while (itr != individualSystematics.end()) {
+  const std::string   &systname  = itr->first;
+  TString mapname=TString(systname);
+
+  //if (debug) std::cout <<cn<<mn<<"Check if systematics= "<<mapname.Data()<< " contains= "<<systclassname<<std::endl;
+
+  if (!mapname.Contains(systclassname,TString::kIgnoreCase)) {
+   if (debug) std::cout<<cn<<mn<<"Systematics name class "<<systclassname<<" is in map with systname= "<<mapname.Data()<<std::endl;
+   individualSystematics.erase(itr++);
+   nremoved++;
+  } else {
+   nkeep++;
+   ++itr;
+  }
+ }
+ 
+ if (nremoved>0) {
+  if (debug) std::cout<<cn<<mn<<"Number of removed systematics nremoved= "<<nremoved<<std::endl;
+ }
+
+ if (nkeep>0) {
+  if (debug) std::cout<<cn<<mn<<"Number of kept systematics nkeep= "<<nkeep<<std::endl;
+ }
+
+
+ UpdateSystematics();
+ 
+ return;
+};
+
 
 void  SPXData::UpdateSystematics(void){
  std::string mn ="UpdateSystematics: ";

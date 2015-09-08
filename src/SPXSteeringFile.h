@@ -85,7 +85,10 @@ private:
 	bool gridCorr;		//Flag to indicate that, if specified in the steering, the grid corrections should be applied
 	bool labelSqrtS;	//Flag to indicate that the Sqrt(s) value should be shown in the legend
 
+	bool   showIndividualSystematicswithName; //Flag to show individual systematics data uncertainties that contain name
+                                          // given in steering
 	double showIndividualSystematics; //Flag to show individual systematics data uncertainties
+	double showTotalSystematics; //Flag to show total systematics data uncertainties
 	double showIndividualSystematicsAsLine; //Flag to show individual systematics data uncertainties
         bool ordersystematiccolorbyalphabeth; // Flag if color should be ordered according to systematic names
 
@@ -102,9 +105,13 @@ private:
         std::vector<bool> gridcorrections; // flags if grid correction go into band
 
         std::vector<std::string> systematicsclasses;      // groups to display systematics
-        std::vector<int>         systematicsclassescolor; // groups to display systematics colors
+        std::vector<int>         systematicsclassescolor; // groups to display systematics fill colors
+        std::vector<int>         systematicsclassesedgecolor; // groups to display systematics edge colors
+        std::vector<int>         systematicsclassesedgestyle; // groups to display systematics edge style
+        std::vector<int>         systematicsclassesedgewidth; // groups to display systematics edge line width
 
         std::vector<std::string> removesystematicsclasses;      // groups to remove systematics
+        std::vector<std::string> containsystematicsclasses;     // groups to contain systematics
 
         std::vector<double> RenScales; // vector for renormalisation scale variations
         std::vector<double> FacScales; // vector for factorisation scale variations
@@ -228,6 +235,10 @@ public:
 
         double ShowIndividualSystematics(){
 	 return showIndividualSystematics; 
+        }
+
+        int ShowTotalSystematics(){
+	 return showTotalSystematics; 
         }
 
         double ShowIndividualSystematicsAsLine(){
@@ -368,10 +379,28 @@ public:
          return systematicsclassescolor; 
         }
 
+        std::vector<int> GetSystematicClassesEdgeColor(){         
+         return systematicsclassesedgecolor; 
+        }
+
+        std::vector<int> GetSystematicClassesEdgeWidth(){         
+         return systematicsclassesedgewidth; 
+        }
+
+        std::vector<int> GetSystematicClassesEdgeStyle(){         
+         return systematicsclassesedgestyle; 
+        }
+
         std::vector<std::string> GetSystematicClassesToRemove(){
          // groups to display systematics
          return removesystematicsclasses;      
         }
+
+        std::vector<std::string> GetSystematicClassesToKeep(){
+         // groups to display systematics
+         return containsystematicsclasses;      
+        }
+
         bool GetSetGridStyleFlag(){
       	 return set_grid_styles;      
         }

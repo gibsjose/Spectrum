@@ -1309,7 +1309,7 @@ void SPXPlot::DrawLegend(void) {
      gname.ReplaceAll("syst_","");
      //double emax=SPXGraphUtilities::GetLargestRelativeError(ratiographs.at(igraph));
      //gname+=Form(" %3.2f",emax*100);
-     if (debug) std::cout<<cn<<mn<<"Add in legend gname= "<<gname.Data()<<" color= "<<ratiographsordered.at(igraph)->GetLineColor()<<" size= "<<TString(gname).Sizeof()<<std::endl;
+
 
      double scale=1.0;
      TString gname2=gname;
@@ -1327,9 +1327,23 @@ void SPXPlot::DrawLegend(void) {
       opt="L";
      } else if (ratiographsordered.at(igraph)->GetLineColor()>0)  {
       opt="F";      
-     } else {
+     } 
+
+     if (ratiographsordered.at(igraph)->GetLineColor()<0){
       SPXGraphUtilities::SetColors(ratiographsordered.at(igraph),-ratiographsordered.at(igraph)->GetLineColor());
-     }
+     } 
+
+     if (gname.Contains("total")) {
+      std::cout<<"Total uncertainty"<<std::endl;
+      //continue;
+     };
+
+     SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors*)ratiographsordered.at(igraph));      
+
+     if (debug) std::cout<<cn<<mn<<"Add in legend gname= "<<gname.Data()
+                         <<" linecolor= "<<ratiographsordered.at(igraph)->GetLineColor()
+                         <<" fillcolor= "<<ratiographsordered.at(igraph)->GetFillColor()
+                         <<" size= "<<TString(gname).Sizeof()<<" opt= "<<opt.Data()<<std::endl;
      leg->AddEntry(ratiographsordered.at(igraph), gname,opt);
     }
    }
@@ -1826,6 +1840,8 @@ void SPXPlot::DrawLegend(void) {
  double xlegend=steeringFile->GetXLegend();
  double ylegend=steeringFile->GetYLegend();
 
+ leg->Print();
+
  int nraw=leg->GetNRows();
  if (debug) { 
    std::cout << cn << mn <<"nraw= "<<nraw<<" namesize= "<< namesize
@@ -1863,16 +1879,20 @@ void SPXPlot::DrawLegend(void) {
  double bwidth=fac*namesize*charactersize; 
  x1 = xlegend-bwidth; x2=xfac*xlegend;
  double xmin=0.18;
- if (debug) {
-  std::cout<<cn<<mn<<"fac= "<<fac<<" xfac= "<<xfac<<std::endl;
-  std::cout<<cn<<mn<<"x1= "<<x1<<" y1= "<<y1<<std::endl;
-  std::cout<<cn<<mn<<"x2= "<<x2<<" y2= "<<y2<<std::endl;
- }
+ //if (debug) {
+ // std::cout<<cn<<mn<<"fac= "<<fac<<" xfac= "<<xfac<<std::endl;
+ // std::cout<<cn<<mn<<"x1= "<<x1<<" y1= "<<y1<<std::endl;
+ // std::cout<<cn<<mn<<"x2= "<<x2<<" y2= "<<y2<<std::endl;
+ //}
+
  if (x1<xmin) {x1=xmin; x2+=xmin;}
 
- int lsize=nraw;
+ double lsize=nraw;
 
- if (nraw>3)  lsize*=0.6;
+ if (debug) std::cout<<cn<<mn<<"lsize= "<<lsize<<" nraw= "<<nraw<<std::endl;
+
+ if (nraw>4)  lsize*=0.6;
+ if (debug) std::cout<<cn<<mn<<"2 lsize= "<<lsize<<" nraw= "<<nraw<<std::endl;
  if (onlysyst) {
    //if (nraw>8)  lsize*=0.4;
    //if (nraw>20) lsize*=0.25;
@@ -1880,8 +1900,10 @@ void SPXPlot::DrawLegend(void) {
    else if (leg->GetNRows()>6) {lsize*=0.2;}
    else if (leg->GetNRows()>4) {lsize*=0.3;}
    else if (leg->GetNRows()>3) {lsize*=0.4;}
-
  } 
+
+ if (debug) std::cout<<cn<<mn<<"lsize= "<<lsize<<" linesize= "<<linesize<<std::endl;
+
  y1 = ylegend-(lsize*linesize);  y2=ylegend;
   
  if (debug) { 
@@ -1894,6 +1916,8 @@ void SPXPlot::DrawLegend(void) {
  leg->SetX2NDC(x2);
  leg->SetY1NDC(y1);
  leg->SetY2NDC(y2);
+
+ leg->SetFillColor(5);
 
  //if (debug) leg->Print();
  leg->Draw();
@@ -2208,6 +2232,12 @@ void SPXPlot::InitializeRatios(void) {
    else
     std::cout<<cn<<mn<<"Set Matchbinning to OFF "<<std::endl;
    ratioInstance.SetMatchBinning(matchbin);
+
+   //if (steeringFile->ShowTotalSystematics()!=0) {
+   // int icol=steeringFile->ShowTotalSystematics();
+   // std::cout<<cn<<mn<<"Show total systematic uncertainty in ratio color= "<<icol<<std::endl;
+   // ratioInstance.SetAddTotalSystematics(icol);
+   //}
 
    if (debug) std::cout<<cn<<mn<<"i= "<<i<<" call GetGraphs "<<std::endl; 
    ratioInstance.GetGraphs();
@@ -2721,15 +2751,30 @@ void SPXPlot::InitializeData(void) {
 		}
 
                 dataInstance->Parse();
-
                 
 		std::vector<std::string> removesyst=steeringFile-> GetSystematicClassesToRemove();
+		std::vector<std::string> containsyst=steeringFile-> GetSystematicClassesToKeep();
+                if (removesyst.size()>0 && containsyst.size()>0) {
+                 std::ostringstream oss;
+                 oss <<cn<<mn<<"You can either use option remove_systematic_group or contain_systematic_group but not both";
+                 throw SPXParseException(oss.str());
+                }
+
                 if (removesyst.size()>0) {
                  if (debug) std::cout<<cn<<mn<<"Number of systematic classes to be removed nsyst="<<removesyst.size()<<std::endl;
 
                  for (int i=0; i<removesyst.size(); i++) {
 		  if (debug) std::cout<<cn<<mn<<"Remove systematics that contain name="<<removesyst.at(i)<<std::endl;
 		  dataInstance->RemoveSystematicthatContains(removesyst.at(i));
+                 }
+                }
+
+                if (containsyst.size()>0) {
+                 if (debug) std::cout<<cn<<mn<<"Number of systematic classes to keep nsyst="<<containsyst.size()<<std::endl;
+
+                 for (int i=0; i<containsyst.size(); i++) {
+		  if (debug) std::cout<<cn<<mn<<"Keep systematics that contain name="<<containsyst.at(i)<<std::endl;
+		  dataInstance->KeepSystematicthatContains(containsyst.at(i));
                  }
                 }
 
@@ -2824,7 +2869,7 @@ void SPXPlot::InitializeData(void) {
                    }
 
                    double emax=SPXGraphUtilities::GetLargestRelativeError(vsyst.at(isyst))*100; // in percent
-                   if (debug) std::cout<<cn<<mn<<systname.c_str()<<" emax= "<<emax<<"% above "<<std::endl;
+                   if (debug) std::cout<<cn<<mn<<systname.c_str()<<" emax= "<<emax<<std::endl;
 		   if (fabs(emax)>steeringFile->ShowIndividualSystematics()) {
 		    if (debug) {
 		     std::cout<<cn<<mn<<"Add systematic "<<systname.c_str()<<" to dataFileGraphMap"<< std::endl;
@@ -2834,19 +2879,6 @@ void SPXPlot::InitializeData(void) {
 		    icountsyst++;
 
                     Color_t icol=SPXUtilities::ICol(icountsyst);
-
-                    //double linewidth=steeringFile->ShowIndividualSystematicsAsLine();
-                    //if ( linewidth>0) {   
-                    // vsyst.at(isyst)->SetFillStyle(0);
-                    // vsyst.at(isyst)->SetLineWidth(int(linewidth));
-
-		    // if (debug) std::cout<<cn<<mn<<"Set linewidth= "<<vsyst.at(isyst)->GetLineWidth()<<std::endl;
- 
-                    //} else {
-                    //vsyst.at(isyst)->SetFillStyle(3001);
-                    // vsyst.at(isyst)->SetFillStyle(1001);
-                    //}
-                    //SPXGraphUtilities::SetColors(vsyst.at(isyst),icol);
 
                     SPXPlot::SetSystGraphProperties( vsyst.at(isyst),icol);
 
@@ -2861,19 +2893,48 @@ void SPXPlot::InitializeData(void) {
                  // otherwise it is better to show the individual components
                  std::vector<std::string>  systematicsgroups      = steeringFile->GetSystematicClasses();
 		 std::vector<int>          systematicsgroupscolor = steeringFile->GetSystematicClassesColor();
+		 std::vector<int>          systematicsgroupsedgecolor = steeringFile->GetSystematicClassesEdgeColor();
+		 std::vector<int>          systematicsgroupsedgestyle = steeringFile->GetSystematicClassesEdgeStyle();
+		 std::vector<int>          systematicsgroupsedgewidth = steeringFile->GetSystematicClassesEdgeWidth();
+
                  if (systematicsgroups.size()!=systematicsgroupscolor.size()) {
                   std::ostringstream oss;
-                  oss<<cn<<mn<<"Systematics group vectors have not the same size vsystgroups= "
+                  oss<<cn<<mn<<"Systematics group vectors have not the same size fill color vsystgroups= "
                              <<systematicsgroups.size()<<" systematicsgroupscolor= "<<systematicsgroupscolor.size();
+		  throw SPXGraphException(oss.str());
+                 }
+
+                 if (systematicsgroups.size()!=systematicsgroupsedgecolor.size()) {
+                  std::ostringstream oss;
+                  oss<<cn<<mn<<"Systematics group vectors have not the same size edge color vsystgroups= "
+                             <<systematicsgroups.size()<<" systematicsedgescolor= "<<systematicsgroupsedgecolor.size();
+		  throw SPXGraphException(oss.str());
+                 }
+
+                 if (systematicsgroups.size()!=systematicsgroupsedgestyle.size()) {
+                  std::ostringstream oss;
+                  oss<<cn<<mn<<"Systematics group vectors have not the same size edge style vsystgroups= "
+                             <<systematicsgroups.size()<<" systematicsedgestyle= "<<systematicsgroupsedgestyle.size();
+		  throw SPXGraphException(oss.str());
+                 }
+
+                 if (systematicsgroups.size()!=systematicsgroupsedgewidth.size()) {
+                  std::ostringstream oss;
+                  oss<<cn<<mn<<"Systematics group vectors have not the same size edge width vsystgroups= "
+                             <<systematicsgroups.size()<<" systematicsedgestyle= "<<systematicsgroupsedgewidth.size();
 		  throw SPXGraphException(oss.str());
                  }
 
                  if (debug) {
                   std::cout<<cn<<mn<<"Number of systematic groups= " <<systematicsgroups.size() <<std::endl;                  
+                  //std::cout<<cn<<mn<<" " <<std::endl;                  
                   for (int igroup=0; igroup<systematicsgroups.size(); igroup++) {
-                   std::cout<<cn<<mn<<" " <<std::endl;                  
                    std::cout<<cn<<mn<<igroup<<" systematic group= " <<systematicsgroups.at(igroup)
-                                            <<" color= "<< systematicsgroupscolor.at(igroup) <<std::endl;
+                                            <<" fill_color= "<< systematicsgroupscolor.at(igroup) 
+                                            <<" edge_color= "<< systematicsgroupsedgecolor.at(igroup) 
+                                            <<" edge_style= "<< systematicsgroupsedgestyle.at(igroup) 
+                                            <<" edge_width= "<< systematicsgroupsedgewidth.at(igroup) 
+                                            <<std::endl;
                   }
 	         }
 
@@ -2903,15 +2964,34 @@ void SPXPlot::InitializeData(void) {
                      TString sname="syst_";
                      sname+=systematicsgroups.at(igroup);
                      vsystgroups.back()->SetName(sname);
+
 		     Color_t icol=systematicsgroupscolor.at(igroup);     
                      //SPXGraphUtilities::SetColors( vsystgroups.back(),icol);
                      SPXPlot::SetSystGraphProperties( vsystgroups.back(),icol);
+
+                     Color_t ilinecolor=systematicsgroupsedgecolor.at(igroup);    
+		     vsystgroups.back()->SetLineColor(ilinecolor);
+
+                     Style_t ilinestyle=systematicsgroupsedgestyle.at(igroup);    
+		     vsystgroups.back()->SetLineStyle(ilinestyle);
+
+                     int ilinewidth=systematicsgroupsedgewidth.at(igroup);    
+		     vsystgroups.back()->SetLineWidth(ilinewidth);
+
+                     if (debug) {
+		       std::cout<<cn<<mn<<sname<<" vector set to ilinecolor= "
+                                <<ilinecolor<<" ilinestyle= "<<ilinestyle
+                                <<" linewidth= "<<ilinewidth<<" icol= "<<icol<<std::endl;
+                      SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors*)vsystgroups.back());
+                     }
+
                      systmap[systematicsgroups.at(igroup)]=vsystgroups.size()-1;
 		     //if (debug) std::cout<<cn<<mn<<"Created vector "<<vsystgroups.back()->GetName()<<" with vector "<<vsyst.at(isyst)->GetName()<<std::endl;
                     } else {
 		     //if (debug) std::cout<<cn<<mn<<"Add vector "<<std::endl;
 		     //if (debug) std::cout<<cn<<mn<<systematicsgroups.at(igroup).c_str()<<" count "<<systmap.count(systematicsgroups.at(igroup))<<std::endl;
 		     int i=systmap[systematicsgroups.at(igroup)];
+
 		     SPXGraphUtilities::AddinQuadrature(vsystgroups.at(i),vsyst.at(isyst),steeringFile->GetTakeSignforTotalError());
 		     //if (debug) std::cout<<cn<<mn<<"Added vector "<<vsyst.at(isyst)->GetName()<<" to vector "<<vsystgroups.at(i)->GetName()<<" index i= "<<i<<std::endl;
                      //if (debug) {    
@@ -2939,8 +3019,20 @@ void SPXPlot::InitializeData(void) {
 		      Color_t icol=systematicsgroupscolor.at(igroup);                    
                       //SPXGraphUtilities::SetColors( vsystgroups.back(),icol);
                       SPXPlot::SetSystGraphProperties( vsystgroups.back(),icol);
-		      //if (debug) std::cout<<cn<<mn<<"New group: "<<systematicsgroups.at(igroup).c_str()<< " with vector "<<vsyst.at(isyst)->GetName()
-		      //			  << " vsystgroups["<<vsystgroups.size()-1<<"]="<< vsystgroups.back()->GetName() <<std::endl;
+                      Color_t ilinecolor=systematicsgroupsedgecolor.at(igroup);    
+ 		      vsystgroups.back()->SetLineColor(ilinecolor);
+
+                      Style_t ilinestyle=systematicsgroupsedgestyle.at(igroup);    
+		      vsystgroups.back()->SetLineStyle(ilinestyle);
+
+                      int ilinewidth=systematicsgroupsedgewidth.at(igroup);    
+  		      vsystgroups.back()->SetLineWidth(ilinewidth);
+                      
+                      if (debug) { 
+		       std::cout<<cn<<mn<<"New group: "<<systematicsgroups.at(igroup).c_str()<< " with vector "<<vsyst.at(isyst)->GetName()
+		        		<< " vsystgroups["<<vsystgroups.size()-1<<"]="<< vsystgroups.back()->GetName() <<std::endl;
+		       SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors*)vsystgroups.back());
+                      }
                       systmap[systematicsgroups.at(igroup)]=vsystgroups.size()-1;
                      } else {
 		      int i=systmap[systematicsgroups.at(igroup)];
@@ -2966,20 +3058,62 @@ void SPXPlot::InitializeData(void) {
 		  std::cout<<cn<<mn<<"Number of systematic groups= " <<vsystgroups.size() <<" syst not in group "<<inotingroup<<std::endl;                  
                   for (int igroup=0; igroup<vsystgroups.size(); igroup++) {
 		   std::cout<<" "<<std::endl;
-		   std::cout<<cn<<mn<<" igroup= "<<igroup<<" systematic group= " <<vsystgroups.at(igroup)->GetName()
-                                             <<" icol= "<<vsystgroups.at(igroup)->GetLineColor()<<std::endl;
-		   vsystgroups.at(igroup)->Print();
+		   std::cout<<cn<<mn<<"igroup= "<<igroup<<" systematic group= " <<vsystgroups.at(igroup)->GetName()<<std::endl;
+                   //SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors *)vsystgroups.at(igroup));
+		   //vsystgroups.at(igroup)->Print();
                   }
 	         }             
 
-                 if (debug) std::cout<<cn<<mn<<"  "<<std::endl;
+                 if (debug) std::cout<<cn<<mn<<"Number is vsystgroup= "<<vsystgroups.size()<<std::endl;
                  for (int igroup=0; igroup<vsystgroups.size(); igroup++) {
 		  std::string systname=vsystgroups.at(igroup)->GetName();
-                  if (debug) std::cout<<cn<<mn<<" Enter "<<systname.c_str()<<" to dataFileGraphMap "<<std::endl;
-
+                  if (debug) {
+                   std::cout<<cn<<mn<<"Enter "<<systname.c_str()<<" to dataFileGraphMap "<<std::endl;
+                   //SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors*)vsystgroups.at(igroup));
+                  } 
  		  dataFileGraphMap.insert(StringGraphPair_T(systname,vsystgroups.at(igroup) ));
                  }
+
+                 if (debug) {
+                   std::cout<<cn<<mn<<"Finished to put systematics to dataFileGraphMap "<<std::endl;
+		 }
+
+                 // at the end at total uncertainty
+                 if (steeringFile->ShowTotalSystematics()!=0) {
+                  if (debug) std::cout<<cn<<mn<<"ShowTotalSystematics"<<std::endl;
+
+		  TGraphAsymmErrors *gsystot=data[i]->GetSystematicErrorGraph();
+                  if (!gsystot) {
+                   std::cout<<cn<<mn<<"WARNING total systematic uncertainty graph not found !"<<std::endl;
+                  } else {
+		   std::string systname="Total";
+                   TString gname="syst_total";
+                   //gname+=TString(gsystot->GetName()).ReplaceAll("_syst","");
+                   if (debug) std::cout<<cn<<mn<<"gname= "<<gname.Data()<<std::endl;
+                   gsystot->SetName(gname);
+                   // negative sign to show total uncertainty as line see SPXRatio::Draw()
+                   int icol=-1*steeringFile->ShowTotalSystematics();
+                   if (debug) std::cout<<cn<<mn<<"icol= "<<icol<<std::endl;
+
+                   gsystot->SetLineColor(icol);
+                   gsystot->SetFillColor(icol);
+
+                   if (systematicsgroupsedgewidth.size()>0)
+                    gsystot->SetLineWidth(systematicsgroupsedgewidth.back());
+
+                   if (debug) std::cout<<cn<<mn<<"Enter "<<systname.c_str()<<" to dataFileGraphMap "<<std::endl;
+          	   dataFileGraphMap.insert(StringGraphPair_T(systname,gsystot));
+                  }
+                 }
+                 if (debug) {
+                  std::cout<<cn<<mn<<"Finished to put total uncertainty graph to  dataFileGraphMap. "<<std::endl;
+		 }
+
                 }
+
+                if (debug) {
+                 std::cout<<cn<<mn<<"Show dataFileGraphMap "<<std::endl;
+		}
 
 		if(dataFileGraphMap.count(pci.dataSteeringFile.GetFilename())>0) {
 		 if(debug) {
@@ -2993,7 +3127,12 @@ void SPXPlot::InitializeData(void) {
  		 // order color surviving systematics by alphabeth
                  // above SetColor is overwritten as all systematics are contained in vsyst
 		 if (debug) std::cout<<cn<<mn<<"Order systematics color by name alphabetical order"<<std::endl;
-                 OrderSystVectorColorsByAlphabeth(vsyst);
+
+                 if (steeringFile->GetSystematicClassesColor().size()>0) {
+		  if (debug) std::cout<<cn<<mn<<"INFO no color reordering, since color defined by groups"<<std::endl;
+                 } else {
+                  OrderSystVectorColorsByAlphabeth(vsyst);
+                 }
                 }
 
 	}
@@ -3225,7 +3364,6 @@ void SPXPlot::OrderSystVectorColorsByAlphabeth(std::vector<TGraphAsymmErrors *> 
   if (debug) {
    std::cout<<cn<<mn<<"graphname= "<<graph->GetName()<<" icol= "<<icol<<std::endl;
   }
-
   SPXGraphUtilities::SetColors(vsysttmp.at(i),icol);
  }
 
@@ -3470,5 +3608,9 @@ void SPXPlot::SetSystGraphProperties(TGraphAsymmErrors * gsyst, Color_t icol){
 
  SPXGraphUtilities::SetColors(gsyst,icol);
 
+ //if (debug)
+ // std::cout<<cn<<mn<<"Calling SPXPrintGraphProperties "<<std::endl;  
+ // SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors *)gsyst);
+ //}
  return; 
 }

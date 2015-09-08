@@ -1,5 +1,5 @@
 //************************************************************/
-//
+// 
 //	Ratio Implementation
 //
 //	Implements the SPXRatio class, which validates the ratio
@@ -359,9 +359,9 @@ void SPXRatio::Divide(void) {
    graph->SetFillColor(kGray);
    ratioGraph.push_back(graph);
 
-   if(debug) std::cout <<cn<<mn<< "Successfully divided data stat graph with options: " << std::endl;
-   if(debug) std::cout << "\t Fill Style = " << 1001 << std::endl;
-   if(debug) std::cout << "\t Fill Color = " << kGray << std::endl;
+   if(debug) std::cout<<cn<<mn<< "Successfully divided data stat graph with options: " << std::endl;
+   if(debug) std::cout<< "\t Fill Style = " << 1001 << std::endl;
+   if(debug) std::cout<< "\t Fill Color = " << kGray << std::endl;
   } catch(const SPXException &e) {
    std::cerr << e.what() << std::endl;
    throw SPXGraphException(cn + mn + "Unable to divide data stat graphs");
@@ -377,9 +377,9 @@ void SPXRatio::Divide(void) {
    graph->SetFillColor(kGray);
    ratioGraph.push_back(graph);
 
-   if(debug) std::cout << cn<<mn<<"Successfully divided data tot graph with options: " << std::endl;
-   if(debug) std::cout << "\t Fill Style = " << 1001 << std::endl;
-   if(debug) std::cout << "\t Fill Color = " << kGray << std::endl;
+   if(debug) std::cout<<cn<<mn<<"Successfully divided data tot graph with options: " << std::endl;
+   if(debug) std::cout<< "\t Fill Style = " << 1001 << std::endl;
+   if(debug) std::cout<< "\t Fill Color = " << kGray << std::endl;
 
   } catch(const SPXException &e) {
    std::cerr << e.what() << std::endl;
@@ -475,6 +475,7 @@ void SPXRatio::Divide(void) {
   if (debug) {
    std::cout<<cn<<mn<<"ratioStyle.IsDataOverData() "<<std::endl;
    std::cout<<cn<<mn<<"Print denominator graph: "<<std::endl;
+   SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors*)denominatorGraph);
    denominatorGraph->Print();
   }
 
@@ -483,37 +484,82 @@ void SPXRatio::Divide(void) {
    // Only keep common bins 
    if (debug) {
     std::cout<<cn<<mn<<"First try to find common bins "<<std::endl;
-
    }
 
    for (int i=0; i<numeratorGraph.size(); i++){
     TGraphAsymmErrors* gnom=SPXGraphUtilities::FindCommonBins(denominatorGraph,numeratorGraph.at(i));
+    if (!gnom) {
+     std::ostringstream oss;
+     oss << cn <<mn<<"Unable to create graph gnom from "<<numeratorGraph[i]->GetName()
+	                                       <<" and "<< denominatorGraph->GetName();
+      throw SPXGraphException(oss.str());
+    }
+
     TGraphAsymmErrors* gden=SPXGraphUtilities::FindCommonBins(numeratorGraph.at(i),denominatorGraph);
+    if (!gden) {
+     std::ostringstream oss;
+     oss << cn <<mn<<"Unable to create graph gden from "<<numeratorGraph[i]->GetName()
+	                                       <<" and "<< denominatorGraph->GetName();
+      throw SPXGraphException(oss.str());
+    }
 
     if (debug) {
      std::cout<<cn<<mn<<"Merged binning gnom "<<gnom->GetName()<<std::endl;
+     SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors*)gnom);
      gnom->Print();
+
      std::cout<<cn<<mn<<"Merged binning gden "<<gden->GetName()<<std::endl;
      gden->Print();
     }
 
     denominatorGraph=gden;
     numeratorGraph.at(i)=gnom;
+   }
+
+   for (int i=0; i<numeratorGraphstatonly.size(); i++){
 
     TGraphAsymmErrors* gnomstatonly=SPXGraphUtilities::FindCommonBins(denominatorGraphstatonly,numeratorGraphstatonly.at(i));
+    if (!gnomstatonly) {
+     std::ostringstream oss;
+     oss << cn <<mn<<"Unable to create graph gnomstatonly from "<<numeratorGraphstatonly[i]->GetName()
+	                                              <<" and "<< denominatorGraphstatonly->GetName();
+      throw SPXGraphException(oss.str());
+    }
+
     TGraphAsymmErrors* gdenstatonly=SPXGraphUtilities::FindCommonBins(numeratorGraphstatonly.at(i),denominatorGraphstatonly);
+    if (!gdenstatonly) {
+     std::ostringstream oss;
+     oss << cn <<mn<<"Unable to create graph gdenstatonly from "<<numeratorGraphstatonly[i]->GetName()
+	                                              <<" and "<< denominatorGraphstatonly->GetName();
+      throw SPXGraphException(oss.str());
+    }
+
+    //if (debug) {
+    // SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors*)gnom);
+    //}
+
+    std::cout<<cn<<mn<<"Divison stat only done"<<std::endl;
 
     denominatorGraphstatonly=gdenstatonly;
     numeratorGraphstatonly.at(i)=gnomstatonly;
+
    }
  
    try { 
     for (int i=0; i<numeratorGraph.size(); i++){
      if (debug) {
+      std::cout<<cn<<mn<<"before calling MatchBinning "<<std::endl;
       std::cout<<cn<<mn<<"numeratorGraph["<<i<<"]: " << numeratorGraph[i]->GetName()<<std::endl;
+      SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors*)numeratorGraph[i]);
       numeratorGraph[i]->Print();
      }
      SPXGraphUtilities::MatchBinning(numeratorGraph[i], denominatorGraph, true);
+     if (debug) {
+      std::cout<<cn<<mn<<"after calling MatchBinning "<<std::endl;
+      std::cout<<cn<<mn<<"numeratorGraph["<<i<<"]: " << numeratorGraph[i]->GetName()<<std::endl;
+      SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors*)numeratorGraph[i]);
+      numeratorGraph[i]->Print();
+     }
     }
    } catch(const SPXException &e) {
     std::cerr << e.what() << std::endl;
@@ -566,7 +612,8 @@ void SPXRatio::Divide(void) {
 
      std::cout <<cn<<mn<<"numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName()
                <<" denominatorGraph= "<<denominatorGraph->GetName()<<" divideType= "<<divideType<<std::endl;
-
+ 
+     //SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors*)numeratorGraph[i]);
    }
 
    if ( numeratorGraph[i]->GetN()!=denominatorGraph->GetN()) {
@@ -594,11 +641,9 @@ void SPXRatio::Divide(void) {
    if (!graph) throw SPXGraphException(cn + mn + "Ratio Graph not found !");
   
    if (debug) {
-    std::cout << cn + mn + "\nFill Options for graph i= "<<i<<" with name: " << graph->GetName() << std::endl;
-    std::cout << "\t Fill Style = " << graph->GetFillStyle() << std::endl;
-    std::cout << "\t Fill Color = " << graph->GetFillColor() << std::endl;
-    std::cout << "\t Marker Style= "<< graph->GetMarkerStyle() << std::endl;
-    //graph->Print();
+    std::cout<<cn+mn+"After Divide numeratorGraph["<<i<<"]/denominatorGraph "<<numeratorGraph[i]->GetName()<< std::endl;
+    SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors*)graph);
+    graph->Print();
    }
    ratioGraph.push_back(graph);
   }
@@ -618,7 +663,6 @@ void SPXRatio::Divide(void) {
      throw SPXGraphException(cn + mn + oss.str());
     }
 
-    //TGraphAsymmErrors *den=0;
     if (ratioStyle.IsDataOverData()) {
      if (!denominatorGraphstatonly) {
       std::ostringstream oss;
@@ -626,11 +670,6 @@ void SPXRatio::Divide(void) {
       std::cout<<cn<<mn<<oss.str()<<std::endl;
       throw SPXGraphException(cn + mn + oss.str());
      }
-     //den=denominatorGraphstatonly;
-     //} 
-     //else {
-     // den=denominatorGraphstatonly
-     //}  
 
      if (debug) {
       std::cout<<cn<<mn<<"Divide graph"<<numeratorGraphstatonly.at(i)->GetName()
@@ -1358,73 +1397,90 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
  } else if ( IsDataOverData() ){
   
   if (!debug) std::cout<<"DataOverData!"<<std::endl;
-  //
+  
   std::vector<TGraphAsymmErrors * > ratioGraphord=SPXUtilities::OrderLargestBinNumberGraphVector(ratioGraph);
 
+  int isyst=0;
   for (std::vector<TGraphAsymmErrors *>::iterator igraph = ratioGraphord.begin();  igraph != ratioGraphord.end(); ++igraph ) { 
    TGraphAsymmErrors *graph = *igraph;
    if (!graph) std::cout<<"Graph not found !"<<std::endl;
    TString gname=graph->GetName();
 
-   Color_t icol=graph->GetLineColor();
+   Color_t icolfill  =graph->GetFillColor();
+   Style_t istyfill  =graph->GetFillStyle();
+   Style_t istyline  =graph->GetLineStyle();
+   Style_t icolline  =graph->GetLineColor();
+
    if (gname.Contains("syst_")) {
      option="e2";
 
-     //if (icol>910) icol=1;
-     //if (debug) std::cout<<cn<<mn<<" icol= "<<icol<<" "<<graph->GetName()<<std::endl;
-     //graph->SetFillColorAlpha(icol,0.1);
-     //graph->SetFillStyle(3001);
+     isyst++;
+
      TH1D *hedgelow =SPXGraphUtilities::GetEdgeHistogram(graph,true);
      TH1D *hedgehigh=SPXGraphUtilities::GetEdgeHistogram(graph,false);
-     if (icol<0) {
-      //SPXGraphUtilities::SetColors(graph,-icol);
-      hedgehigh->SetLineColor(-icol);
-      hedgelow ->SetLineColor(-icol);
+     if (icolline<0) {
+      hedgehigh->SetLineColor(-icolline);
+      hedgelow ->SetLineColor(-icolline);
+      graph->SetFillStyle(0);
+      graph->SetFillColor(-icolline);
      }
+     hedgehigh->SetLineStyle(istyline);
+     hedgelow ->SetLineStyle(istyline);
+
+     hedgehigh->SetFillStyle(0);
+     hedgelow ->SetFillStyle(0);
 
      int linewidth=graph->GetLineWidth();
      hedgehigh->SetLineWidth(linewidth);
      hedgelow ->SetLineWidth(linewidth);
 
-     if (debug) std::cout<<cn<<mn<<"Line width= "<<linewidth<<std::endl;
+     //if (debug) {
+     // SPXGraphUtilities::SPXPrintHistoProperties(hedgehigh);
+     // SPXGraphUtilities::SPXPrintHistoProperties(hedgelow);
+     //} 
 
      hedgehigh->Draw("][,same");
      hedgelow ->Draw("][,same");
    }
 
-   int ifill=graph->GetFillStyle();
    if (debug) {
     double emax=SPXGraphUtilities::GetLargestRelativeError(graph);   
-    std::cout<<cn<<mn<<"emax= "<<emax<<" Draw now gname= "<<gname.Data()<<" option= "<<option.c_str()<<" color= "<< graph->GetLineColor()<<" ifill= "<<ifill<<std::endl;
+    std::cout<<cn<<mn<<"emax= "<<emax<<" Draw now gname= "<<gname.Data()<<" option= "<<option.c_str()
+             <<" icolline= "<< icolline<<" icolfill= "<<icolfill
+             <<" istyline= "<< istyline<<" istyfill= "<<istyfill
+             <<std::endl;
+    //SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors*)graph);
     //graph->Print();
    }
 
-   if (icol>0 && ifill!=0)
+   if (icolline>0 && istyfill!=0) {
     graph->Draw(option.c_str());
-   else
-    std::cout<<cn<<mn<<"Graph "<<graph->GetName()<<" not plotted ifill= "<<ifill<<" color= "<< graph->GetLineColor()<<std::endl;
+   } else
+    if (debug) std::cout<<cn<<mn<<"INFO Graph "<<graph->GetName()<<" not plotted istyfill= "<<istyfill<<" color= "<< icolline<<std::endl;
   }
 
+  if (isyst<1) { 
   //
-  if (debug) std::cout<<cn<<mn<<"Graph stat "<< ratioGraphstatonly.size()<<std::endl;    
+   if (debug) std::cout<<cn<<mn<<"Graph stat "<< ratioGraphstatonly.size()<<std::endl;    
 
-  for (int igraphstat=0; igraphstat < ratioGraphstatonly.size(); igraphstat++) {
-   TGraphAsymmErrors *graphstat = ratioGraphstatonly[igraphstat];
-   if (!graphstat) std::cout<<"Graphstat not found !"<<std::endl;
-   TString gname=graphstat->GetName();
+   for (int igraphstat=0; igraphstat < ratioGraphstatonly.size(); igraphstat++) {
+    TGraphAsymmErrors *graphstat = ratioGraphstatonly[igraphstat];
+    if (!graphstat) std::cout<<"WARNING graphstat not found !"<<std::endl;
+    TString gname=graphstat->GetName();
 
-   std::cout<<cn<<mn<<"Graph "<<graphstat->GetName()<<std::endl;
+    if (debug) std::cout<<cn<<mn<<"Graph "<<graphstat->GetName()<<std::endl;
 
-   // avoid plotting the vertical line for the x-error bars
-   for (int ibin=0; ibin<graphstat->GetN(); ibin++) {
-    graphstat->SetPointEXhigh(ibin,0.);
-    graphstat->SetPointEXlow (ibin,0.);
+    // avoid plotting the vertical line for the x-error bars
+    for (int ibin=0; ibin<graphstat->GetN(); ibin++) {
+     graphstat->SetPointEXhigh(ibin,0.);
+     graphstat->SetPointEXlow (ibin,0.);
+    }
+    option="||";
+    if (debug) std::cout<<cn<<mn<<"Draw now gname= "<<gname.Data()<<" option= "<<option.c_str()<<std::endl;
+    if (debug) graphstat->Print();
+    graphstat->Draw(option.c_str());
    }
-   option="||";
-   if (debug) std::cout<<cn<<mn<<"Draw now gname= "<<gname.Data()<<" option= "<<option.c_str()<<std::endl;
-   if (debug) graphstat->Print();
-   graphstat->Draw(option.c_str());
-  }
+  } else if (debug) std::cout<<cn<<mn<<"statistical graphs not drawn, since isyst= "<<isyst<<std::endl;
   //
  } else {
   // Is a convolute 
@@ -1590,14 +1646,22 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
      hedgelow ->SetLineStyle(edgestyle);
      hedgehigh->SetLineStyle(edgestyle);
 
+     //int linewidth=graph->GetLineWidth();
+     //hedgehigh->SetLineWidth(linewidth);
+     //hedgelow ->SetLineWidth(linewidth);
      hedgelow ->SetLineWidth(4);
      hedgehigh->SetLineWidth(4);
     }
+
+    hedgelow ->SetFillStyle(0);
+    hedgehigh->SetFillStyle(0);
+
     if (debug) std::cout<<cn<<mn<<"Call hedgelow->Draw() "<<hedgelow->GetName()<<"with option "<< option.c_str()  <<std::endl;
     hedgelow ->Draw("][,same");
     hedgehigh->Draw("][,same");
    }
 
+   //graph->SetLineColor(edgecolor);
    if (edgecolor>=0) {
     if (debug) std::cout<<cn<<mn<<"Call graph->Draw "<<graph->GetName()<<"with option "<< option.c_str()  <<std::endl;
     graph->Draw(option.c_str());
@@ -1615,7 +1679,6 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
     graph->Print();
     std::cout << std::endl;
    }
-
   }
  }
 }

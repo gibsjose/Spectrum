@@ -637,9 +637,9 @@ TGraphAsymmErrors * SPXGraphUtilities::Divide(TGraphAsymmErrors *g1, TGraphAsymm
 
     //Make sure the two graphs are the same size
     if(n1 != n2) {
-     std::cout<<cn<<mn<<" Graph1: "<<g1->GetName()<<std::endl;
+     std::cout<<cn<<mn<<"Graph1: "<<g1->GetName()<<std::endl;
      g1->Print();
-     std::cout<<cn<<mn<<" Graph2: "<<g2->GetName()<<std::endl;
+     std::cout<<cn<<mn<<"Graph2: "<<g2->GetName()<<std::endl;
      g2->Print();
 
      std::ostringstream oss;
@@ -651,22 +651,23 @@ TGraphAsymmErrors * SPXGraphUtilities::Divide(TGraphAsymmErrors *g1, TGraphAsymm
 
     //std::cout << cn<<mn<<" n1= " <<n1<<" n2= "<<n2<< std::endl;
     
-
     //@TODO Pass result as parameter and return that way! Don't call 'new' in a function
     TGraphAsymmErrors *result = new TGraphAsymmErrors();
-
+    if (!result) std::cout<<cn<<mn<<"WARNING Error creating ratio graph"<< std::endl;
     result->SetName(g1->GetName());
-    result->SetMarkerStyle(g1->GetMarkerStyle());
 
-    result->SetMarkerColor(g1->GetMarkerColor());
-    result->SetMarkerSize(g1->GetMarkerSize());
+    //result->SetMarkerStyle(g1->GetMarkerStyle());
 
-    result->SetLineColor(g1->GetLineColor());
-    result->SetLineWidth(g1->GetLineWidth());
+    //result->SetMarkerColor(g1->GetMarkerColor());
+    //result->SetMarkerSize(g1->GetMarkerSize());
 
-    result->SetFillStyle(g1->GetFillStyle());
-    result->SetFillColor(g1->GetFillColor());
+    //result->SetLineColor(g1->GetLineColor());
+    //result->SetLineWidth(g1->GetLineWidth());
 
+    //result->SetFillStyle(g1->GetFillStyle());
+    //result->SetFillColor(g1->GetFillColor());
+
+    SPXGraphUtilities::SPXCopyGraphProperties((TGraphErrors *)g1,(TGraphErrors *)result);
 
     Double_t   	x1=0.0,   y1=0.0, x2=0.0, y2=0.0;
     Double_t 	dx1h=0.0, dx1l=0.0;
@@ -816,11 +817,85 @@ void SPXGraphUtilities::SPXCopyGraphProperties(TGraphErrors* g1, TGraphErrors* g
  if (!g2) throw SPXGraphException(cn + mn + "Graph g2 does not exist ! " );
 
  g2->SetName       (g1->GetName());
+
  g2->SetMarkerStyle(g1->GetMarkerStyle());
  g2->SetMarkerColor(g1->GetMarkerColor());
+
  g2->SetLineColor  (g1->GetLineColor());
  g2->SetLineStyle  (g1->GetLineStyle());
  g2->SetLineWidth  (g1->GetLineWidth());
+
+ g2->SetFillColor  (g1->GetFillColor());
+ g2->SetFillStyle  (g1->GetFillStyle());
+
+ return;
+}
+
+void SPXGraphUtilities::SPXCopyGraphProperties(TGraphErrors* g1, TH1D* h2){
+ std::string mn = "SPXCopyGraphProperties";
+ // copy properties of graph g1 to histogram h2
+
+ if (!g1) throw SPXGraphException(cn + mn + "Graph g1 does not exist ! " );
+ if (!h2) throw SPXGraphException(cn + mn + "Graph h2 does not exist ! " );
+
+ TString hname="histo";
+ hname+=g1->GetName();
+ h2->SetName       (hname);
+
+ h2->SetMarkerStyle(g1->GetMarkerStyle());
+ h2->SetMarkerColor(g1->GetMarkerColor());
+
+ h2->SetLineColor  (g1->GetLineColor());
+ h2->SetLineStyle  (g1->GetLineStyle());
+ h2->SetLineWidth  (g1->GetLineWidth());
+
+ h2->SetFillColor  (g1->GetFillColor());
+ h2->SetFillStyle  (g1->GetFillStyle());
+
+
+ return;
+}
+
+
+void SPXGraphUtilities::SPXPrintGraphProperties(TGraphErrors* g1){
+ std::string mn = "SPXPrintGraphProperties";
+ // Print properties of graph g1 
+
+ if (!g1) throw SPXGraphException(cn + mn + "Graph g1 does not exist ! " );
+
+ std::cout<<cn<<mn<<" Print properties of graph "<<g1->GetName()<<std::endl;
+
+ std::cout<<cn<<mn<<" MarkerStyle= "<<g1->GetMarkerStyle()<<std::endl;
+ std::cout<<cn<<mn<<" MarkerColor= "<<g1->GetMarkerColor()<<std::endl;
+
+ std::cout<<cn<<mn<<" LineStyle= "<<g1->GetLineStyle()<<std::endl;
+ std::cout<<cn<<mn<<" LineColor= "<<g1->GetLineColor()<<std::endl;
+ std::cout<<cn<<mn<<" LineWidth= "<<g1->GetLineWidth()<<std::endl;
+
+ std::cout<<cn<<mn<<" FillStyle= "<<g1->GetFillStyle()<<std::endl;
+ std::cout<<cn<<mn<<" FillColor= "<<g1->GetFillColor()<<std::endl;
+
+ return;
+}
+
+
+void SPXGraphUtilities::SPXPrintHistoProperties(TH1* h1){
+ std::string mn = "SPXPrintHistoProperties";
+ // Print properties of TH1 h1 
+
+ if (!h1) throw SPXGraphException(cn + mn + "Histogram h1 does not exist ! " );
+
+ std::cout<<cn<<mn<<" Print properties of histogram "<<h1->GetName()<<std::endl;
+
+ std::cout<<cn<<mn<<" MarkerStyle= "<<h1->GetMarkerStyle()<<std::endl;
+ std::cout<<cn<<mn<<" MarkerColor= "<<h1->GetMarkerColor()<<std::endl;
+
+ std::cout<<cn<<mn<<" LineStyle= "<<h1->GetLineStyle()<<std::endl;
+ std::cout<<cn<<mn<<" LineColor= "<<h1->GetLineColor()<<std::endl;
+ std::cout<<cn<<mn<<" LineWidth= "<<h1->GetLineWidth()<<std::endl;
+
+ std::cout<<cn<<mn<<" FillStyle= "<<h1->GetFillStyle()<<std::endl;
+ std::cout<<cn<<mn<<" FillColor= "<<h1->GetFillColor()<<std::endl;
 
  return;
 }
@@ -954,8 +1029,14 @@ TH1D *SPXGraphUtilities::GetEdgeHistogram(TGraphAsymmErrors * g, bool low) {
     TH1D *h1 = new TH1D(name,name,nbin,xbins); 
     if (!h1) std::cout << cn<<mn<<"WARNING: Problem creating edge histogram for graph "<<g->GetName()<<std::endl;
 
-    int icol=g->GetLineColor();
-    h1->SetLineColor(icol);
+    //h1->SetLineColor(g->GetLineColor());
+    //h1->SetLineStyle(g->GetLineStyle());
+    //h1->SetMarkerColor(g->GetMarkerColor());
+    //h1->SetMarkerStyle(g->GetMarkerStyle());
+    //h1->SetFillColor(g->GetFillColor());
+    //h1->SetFillStyle(g->GetFillStyle());
+
+    SPXGraphUtilities::SPXCopyGraphProperties((TGraphErrors*)g, h1);
 
     for(int ibin = 0; ibin < nbin; ibin++) {
         double eyh=g->GetErrorYhigh(ibin);
@@ -1494,7 +1575,7 @@ void SPXGraphUtilities::AddinQuadrature(TGraphAsymmErrors* g1, TGraphAsymmErrors
   return;
  }
 
- if (takesign) std::cout<<cn<<mn<<"WARNING takesign option not yet implemented "<<std::endl;
+ //if (takesign) std::cout<<cn<<mn<<"WARNING takesign option not yet implemented "<<std::endl;
 
  Double_t* EYhigh1 = g1-> GetEYhigh();
  Double_t* EYlow1  = g1-> GetEYlow();
@@ -1505,28 +1586,30 @@ void SPXGraphUtilities::AddinQuadrature(TGraphAsymmErrors* g1, TGraphAsymmErrors
  for (Int_t i=0; i<g1->GetN(); i++) {
   Double_t eyh=0., eyl=0.;
 
-  if (EYhigh1[i]<0 && EYlow1[i]>0) {
-   Double_t x1=0., y1=0.;
-   g1->GetPoint(i, x1,y1);
-   if (y1==0.) 
-    std::cout<<cn<<mn<<"INFO: switch signs for g1= "<<g1->GetName()<<" EYhigh1["<<i<<"]= " << EYhigh1[i]<<" EYlow1["<<i<<"]= "<<EYlow1[i]<< std::endl;   
-   else
-    std::cout<<cn<<mn<<"INFO: switch signs for relative g1= "<<g1->GetName()<<" EYhigh1["<<i<<"]= " << EYhigh1[i]/y1 <<" EYlow1["<<i<<"]= "<<EYlow1[i]/y1<< std::endl;   
-   double tmp=EYhigh1[i];
-   EYhigh1[i]= EYlow1[i];
-   EYlow1[i]=tmp;
-  }
+  if (takesign) {
+   if (EYhigh1[i]<0 && EYlow1[i]>0) {
+    Double_t x1=0., y1=0.;
+    g1->GetPoint(i, x1,y1);
+    if (y1==0.) 
+     std::cout<<cn<<mn<<"INFO: switch signs for g1= "<<g1->GetName()<<" EYhigh1["<<i<<"]= " << EYhigh1[i]<<" EYlow1["<<i<<"]= "<<EYlow1[i]<< std::endl;   
+    else
+     std::cout<<cn<<mn<<"INFO: switch signs for relative g1= "<<g1->GetName()<<" EYhigh1["<<i<<"]= " << EYhigh1[i]/y1 <<" EYlow1["<<i<<"]= "<<EYlow1[i]/y1<< std::endl;   
+    double tmp=EYhigh1[i];
+    EYhigh1[i]= EYlow1[i];
+    EYlow1[i]=tmp;
+   }
 
-  if (EYhigh2[i]<0 && EYlow2[i]>0) {
-   Double_t x2=0., y2=0.;
-   g2->GetPoint(i, x2,y2);
-   if (y2==0.) 
-    std::cout<<cn<<mn<<"INFO: switch signs for g2= "<<g2->GetName()<<" EYhigh2["<<i<<"]= " << EYhigh2[i] <<" EYlow2["<<i<<"]= "<<EYlow2[i]<< std::endl;   
-   else
-    std::cout<<cn<<mn<<"INFO: switch signs for relative g2= "<<g2->GetName()<<" EYhigh2["<<i<<"]= " << EYhigh2[i]/y2 <<" EYlow2["<<i<<"]= "<<EYlow2[i]/y2<< std::endl;   
-   double tmp=EYhigh2[i];
-   EYhigh2[i]= EYlow2[i];
-   EYlow2[i]=tmp;
+   if (EYhigh2[i]<0 && EYlow2[i]>0) {
+    Double_t x2=0., y2=0.;
+    g2->GetPoint(i, x2,y2);
+    if (y2==0.) 
+     std::cout<<cn<<mn<<"INFO: switch signs for g2= "<<g2->GetName()<<" EYhigh2["<<i<<"]= " << EYhigh2[i] <<" EYlow2["<<i<<"]= "<<EYlow2[i]<< std::endl;   
+    else
+     std::cout<<cn<<mn<<"INFO: switch signs for relative g2= "<<g2->GetName()<<" EYhigh2["<<i<<"]= " << EYhigh2[i]/y2 <<" EYlow2["<<i<<"]= "<<EYlow2[i]/y2<< std::endl;   
+    double tmp=EYhigh2[i];
+    EYhigh2[i]= EYlow2[i];
+    EYlow2[i]=tmp;
+   }
   }
 
   if ((EYhigh2[i]>0 && EYlow2[i]>0) || (EYhigh2[i]<0 && EYlow2[i]<0)) {
@@ -1548,13 +1631,13 @@ void SPXGraphUtilities::AddinQuadrature(TGraphAsymmErrors* g1, TGraphAsymmErrors
 }
 
 void SPXGraphUtilities::SetColors(TGraphAsymmErrors* g1, Color_t icol) {
- //
  std::string mn = "SetColors: ";
-
+ //
  if (!g1) {
   std::cout<<cn<<mn<<"WARNING Graph g1 not found ! "<<std::endl;
   return;
  }
+
  g1->SetLineColor(icol);
  g1->SetFillColor(icol);
  g1->SetMarkerColor(icol);

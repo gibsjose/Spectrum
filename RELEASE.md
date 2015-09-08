@@ -6,6 +6,8 @@
 
 ## Change Log
 
+ -Feature to only keep systematic uncertainty class of
+
  -Feature to remove class of systematics uncertainties 
 
  -SPXPlot/SPXRatio/SPXGraphUtilities

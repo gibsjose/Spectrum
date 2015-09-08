@@ -44,6 +44,7 @@ public:
         plotConfiguration = pc;
     	ratioStyle = rs;
         MatchBinning=true;
+        AddTotalSyst=0;  
 
         denominatorGraph=0;
 	denominatorGraphstatonly=0;
@@ -216,7 +217,10 @@ public:
 
     void Draw(std::string option, int istat, int itot, bool plotmarker, double xbox=0.5, double ybox=0.3);
 
-
+    void SetAddTotalSystematics(int icol){
+     AddTotalSyst=icol;  
+     return; 
+    }
 
 private:
     static bool debug;
@@ -251,6 +255,7 @@ private:
     std::vector<TGraphAsymmErrors *> ratioGraph;
     std::vector<TGraphAsymmErrors *> ratioGraphstatonly;
 
+    int AddTotalSyst;  // Flag to add total systematics in ratio 0: off >0 color
     bool MatchBinning;  //Flag to indocate if matchbinning should be called
 
     TGraphAsymmErrors *denominatorGraph;            //TGraph of the denominator

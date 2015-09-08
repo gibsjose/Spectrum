@@ -76,6 +76,9 @@ public:
 	static void ScaleYErrors(TGraphAsymmErrors * g, double scale);
 
         static void SPXCopyGraphProperties(TGraphErrors* g1, TGraphErrors* g2);
+        static void SPXCopyGraphProperties(TGraphErrors* g1, TH1D* h2);
+        static void SPXPrintGraphProperties(TGraphErrors* g1);
+        static void SPXPrintHistoProperties(TH1* h1);
 
 	static TH1D* GetEdgeHistogram(TGraphAsymmErrors * g, bool low = false);
 

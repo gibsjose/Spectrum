@@ -68,8 +68,14 @@ void SPXSteeringFile::SetDefaults(void) {
 	plotStaggered = false;
 	if(debug) std::cout << cn << mn << "plotStaggered set to default: \"false\"" << std::endl;
 
+	showIndividualSystematicswithName = false;
+	if(debug) std::cout << cn << mn << "showIndividualSystematicsWithName set to default: \0\"" << std::endl;
+
 	showIndividualSystematics = 0.;
 	if(debug) std::cout << cn << mn << "showIndividualSystematics set to default: \"0\"" << std::endl;
+
+	showTotalSystematics = 0.;
+	if(debug) std::cout << cn << mn << "showTotalSystematics set to default: \"0\"" << std::endl;
 
 	showIndividualSystematicsAsLine = 0.;
 	if(debug) std::cout << cn << mn << "showIndividualSystematicsAsLine set to default: \"0\"" << std::endl;
@@ -332,15 +338,21 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Add journal year on Legend: " << (AddJournalYear ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Add functional form of scale on Legend: " << (AddScaleFunctionalForm ? "YES" : "NO") << std::endl;
 
+        if (showIndividualSystematicswithName) {
+	 std::cout << "\t\t Show individual systematics with name in steering: " << std::endl;
+        }
+
         if (showIndividualSystematics==0)
 	 std::cout << "\t\t Show NO individual systematics: " << std::endl;
+
         if (showIndividualSystematics>0)
 	 std::cout << "\t\t Show individual systematics with one bin above "<<showIndividualSystematics << std::endl;
 
         if (showIndividualSystematicsAsLine)
 	 std::cout << "\t\t Show individual systematics as lines (not area) "<<showIndividualSystematicsAsLine << std::endl;
 
-
+        if (showTotalSystematics!=0)
+	 std::cout << "\t\t Show Total systematics with color "<<showTotalSystematics << std::endl;
 
         if (ordersystematiccolorbyalphabeth)
 	  std::cout << "\t\t Order systematics color by alphabethetical order of names "
@@ -482,6 +494,34 @@ void SPXSteeringFile::Print(void) {
 			std::cout << "\t\t\t Corrections Edge Color "  << j << ": " << tmp.correctionsEdgeColor << std::endl;
 			std::cout << "\t\t\t Corrections Marker Style "<< j << ": " << tmp.correctionsMarkerStyle << std::endl;
                         std::cout <<" " << std::endl;
+
+                        if (systematicsclasses.size()>0) {
+			 std::cout << "\t\t\t Number of systematic classes to group systematics components"<< systematicsclasses.size()<< std::endl;
+
+                         for (int i=0; i<systematicsclasses.size(); i++) {
+			  std::cout << "\t\t\t Class name = " << systematicsclasses.at(i) << std::endl;
+                          if (systematicsclassescolor.size()>i)
+			   std::cout << "\t\t\t Class fill color= " << systematicsclassescolor.at(i) << std::endl;
+                          else 
+			   std::cout << "\t\t\t Something wrong systematicsclassescolor.size()= " << systematicsclassescolor.size() << std::endl;
+
+                          if (systematicsclassesedgecolor.size()>i)
+			   std::cout << "\t\t\t Class edge color= " << systematicsclassesedgecolor.at(i) << std::endl;
+                          else 
+			   std::cout << "\t\t\t Something wrong systematicsclassesedgecolor.size()= " << systematicsclassesedgecolor.size() << std::endl;
+
+                          if (systematicsclassesedgestyle.size()>i)
+			   std::cout << "\t\t\t Class edge style= " << systematicsclassesedgestyle.at(i) << std::endl;
+                          else 
+			   std::cout << "\t\t\t Something wrong systematicsclassesedgestyle.size()= " << systematicsclassesedgestyle.size() << std::endl;
+
+                          if (systematicsclassesedgewidth.size()>i)
+			   std::cout << "\t\t\t Class edge width= " << systematicsclassesedgewidth.at(i) << std::endl;
+                          else 
+			   std::cout << "\t\t\t Something wrong systematicsclassesedgewidth.size()= " << systematicsclassesedgewidth.size() << std::endl;
+                         }
+                        } else
+			 std::cout << "\t\t\t No systematic classes defined "<< std::endl;
 
 			std::cout << "\t\t\t X Scale " << j << ": " << tmp.xScale << std::endl;
 			std::cout << "\t\t\t Y Scale " << j << ": " << tmp.yScale << std::endl << std::endl;
@@ -929,16 +969,16 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		  }
 		 }
 		}
-
-                if(debug) std::cout<<cn<<mn<<"Start parsing display_systematic_group_color " << std::endl;
-		tmp = reader->Get(plotSection, "display_systematic_group_color", "EMPTY");
+ 
+                if(debug) std::cout<<cn<<mn<<"Start parsing display_systematic_group_fill_color " << std::endl;
+		tmp = reader->Get(plotSection, "display_systematic_group_fill_color", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
-		 std::cout<<cn<<mn<<"INFO: No plot option for display_systematic_group_color found"<< std::endl;
+		 std::cout<<cn<<mn<<"INFO: No plot option for display_systematic_group_fill_color found"<< std::endl;
 		} else {	       
 		 //Parse into vector
 		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
 		 if(debug) {
-		  std::cout<<cn<<mn<<"display_systematic_group_color configuration string: " << tmp << " parsed into:" << std::endl;
+		  std::cout<<cn<<mn<<"display_systematic_group_fill_color configuration string: " << tmp << " parsed into:" << std::endl;
                  }
 		  for(int j = 0; j < tmpVector.size(); j++) {
 		   if (debug) std::cout<<cn<<mn<< "\t" << tmpVector[j] << std::endl;
@@ -946,6 +986,56 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		 }
 		}
 
+		//
+               if(debug) std::cout<<cn<<mn<<"Start parsing display_systematic_group_edge_color " << std::endl;
+		tmp = reader->Get(plotSection, "display_systematic_group_edge_color", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout<<cn<<mn<<"INFO: No plot option for display_systematic_group_edge_color found"<< std::endl;
+		} else {	       
+		 //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		 if(debug) {
+		  std::cout<<cn<<mn<<"display_systematic_group_edge_color configuration string: " << tmp << " parsed into:" << std::endl;
+                 }
+		  for(int j = 0; j < tmpVector.size(); j++) {
+		   if (debug) std::cout<<cn<<mn<< "\t" << tmpVector[j] << std::endl;
+                   systematicsclassesedgecolor.push_back( atoi(tmpVector.at(j).c_str()));	       
+		 }
+		}
+
+               if(debug) std::cout<<cn<<mn<<"Start parsing display_systematic_group_edge_style " << std::endl;
+		tmp = reader->Get(plotSection, "display_systematic_group_edge_style", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout<<cn<<mn<<"INFO: No plot option for display_systematic_group_edge_style found"<< std::endl;
+		} else {	       
+		 //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		 if(debug) {
+		  std::cout<<cn<<mn<<"display_systematic_group_edge_style configuration string: " << tmp << " parsed into:" << std::endl;
+                 }
+		  for(int j = 0; j < tmpVector.size(); j++) {
+		   if (debug) std::cout<<cn<<mn<< "\t" << tmpVector[j] << std::endl;
+                   systematicsclassesedgestyle.push_back( atoi(tmpVector.at(j).c_str()));	       
+		 }
+		}
+
+               if(debug) std::cout<<cn<<mn<<"Start parsing display_systematic_group_edge_width" << std::endl;
+		tmp = reader->Get(plotSection, "display_systematic_group_edge_width", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout<<cn<<mn<<"INFO: No plot option for display_systematic_group_edge_width found"<< std::endl;
+		} else {	       
+		 //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		 if(debug) {
+		  std::cout<<cn<<mn<<"display_systematic_group_edge_width configuration string: " << tmp << " parsed into:" << std::endl;
+                 }
+		  for(int j = 0; j < tmpVector.size(); j++) {
+		   if (debug) std::cout<<cn<<mn<< "\t" << tmpVector[j] << std::endl;
+                   systematicsclassesedgewidth.push_back( atoi(tmpVector.at(j).c_str()));	       
+		 }
+		}
+
+		//
 		// ->
        	        if(debug) std::cout<<cn<<mn<<"Start parsing remove_systematic_group " << std::endl;
 
@@ -964,6 +1054,25 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		}
 
                 // <-
+
+		//
+       	        if(debug) std::cout<<cn<<mn<<"Start parsing contain_systematic_group " << std::endl;
+
+		tmp = reader->Get(plotSection, "contain_systematic_group", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout<<cn<<mn<<"INFO: No plot option for contain_systematic_group found"<< std::endl;
+		} else {
+		 //Parse into vector
+		 showIndividualSystematicswithName=true;
+		 containsystematicsclasses = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		 if(debug) {
+		  std::cout<<cn<<mn<<"contain_systematic_group configuration string: " << tmp << " parsed into:" << std::endl;
+		  for(int j = 0; j < containsystematicsclasses.size(); j++) {
+		   std::cout<<cn<<mn<< "\t" << containsystematicsclasses[j] << std::endl;
+		  }
+		 }
+		}
+		//
 
 		// 
 		//Get the data_marker_color
@@ -2093,6 +2202,8 @@ void SPXSteeringFile::Parse(void) {
         showIndividualSystematics = reader->GetReal("GRAPH", "show_individual_systematics", showIndividualSystematics);
 
         showIndividualSystematicsAsLine = reader->GetReal("GRAPH", "show_systematics_as_lines", showIndividualSystematicsAsLine);
+
+        showTotalSystematics = reader->GetReal("GRAPH", "show_total_systematics", showTotalSystematics);
 
         ordersystematiccolorbyalphabeth = reader->GetBoolean("GRAPH", "order_systematic_colorbyalphabeth", ordersystematiccolorbyalphabeth);
 

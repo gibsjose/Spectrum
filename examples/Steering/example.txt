@@ -52,10 +52,12 @@ apply_grid_corr = true				;[Optional] Apply the grid corrections (e.g. hadronisa
 ;                                                           (as specified in SPXGrid steering) for all grids if true
 
 
-
 show_individual_systematics = 0                  ;[Optional] Show individual systematic on data above x%
-show_systematics_as_lines = 1                   ; [Optional] Show systematics as line, number is line thickness
+show_systematics_as_lines = 1                    ;[Optional] Show systematics as line, number is line thickness
 
+show_total_systematics = 1                       ;[Optional] Show total systematics on SPXRatio plot
+                                                 ;           number means color
+;
 order_systematic_colorbyalphabeth = false       ;[Optional] if set systematics colors are order by alphabethical order of name
 
 print_total_sigma = true                        ;[Optional] Print total integrated cross section at the end of the
@@ -172,13 +174,23 @@ grid_fill_style  = 1001,1002                              ;        type_fill_sty
 
 display_systematic_group = JES, JER                       ;[Optional] List of groups of systematics to be displayed
                                                           ;           active only for DataOVerData
+                                                          ;           components containing classname (like JES) in the
+                                                          ;           name are added in quadrature
                                                           ;           to be active show_individual_systemtics=0
                                                           ; if keyword "Others" is given all uncertainties not specified before are added here
-display_systematic_group_band_color = 2,3                 ;[Optional] color of band for systematic groups
+display_systematic_group_fill_color = 2,3                 ;[Optional] color of band for systematic groups
                                                           ;           for negative color: only plot edge histogram with color -idcolor
+display_systematic_group_edge_color = 2,3                 ;[Optional] color of band for systematic groups edge
+display_systematic_group_edge_style = 2,3                 ;[Optional] style for systematic groups edge histogram
+display_systematic_group_edge_width = 2,3                 ;[Optional] style for systematic groups edge histogram line width
+
+
+
 
 remove_systematic_group = JES,JER                         ; [Optional] Remove systematics that contains name from systematic map 
-;
+contain_systematic_group = JES,JER                        ; [Optional] Keep only systematics that contains name from systematic map 
+
+
 
 ;total_fill_style=1001					  ;[Optional] List of Total marker style OVERRIDES
 ;total_fill_color=800                                     ;[Optional] root color code and style https://root.cern.ch/root/html/TAttFill.html

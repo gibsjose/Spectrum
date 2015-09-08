@@ -232,6 +232,8 @@ public:
         bool GetSystematicCorrelationType(std::string name);
 
         void RemoveSystematicthatContains(std::string);
+        void KeepSystematicthatContains(std::string);
+
 	void UpdateSystematics(void);
 private:
 	static bool debug;		   //Flag indicating debug mode
