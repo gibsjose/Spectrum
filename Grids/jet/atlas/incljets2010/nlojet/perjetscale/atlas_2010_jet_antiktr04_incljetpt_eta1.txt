@@ -2,12 +2,8 @@
 ;
 ; Description:		
 ;	Example Grid Steering File
-;
-;--------------------------------------------------------------
+;==============================================================
 
-;==============================================================
-; General Options
-;==============================================================
 [GEN]
 debug = false
 
@@ -15,12 +11,10 @@ debug = false
 ; Description
 ;==============================================================
 [DESC]
-name = atlas_2010_jet_antiktr06_incljetpt_eta2
+name = atlas_2010_jet_antiktr04_incljetpt_eta1	
 author = Pavel Staravoitov 
 lumi_config_file = NONE                        
-;
 scaleform = P_{T,jet,bin}
-;
 reference_journal_name =  Phys.Rev. D86 (2012) 014022         
 reference_link_to_arxiv = http://arxiv.org/abs/1112.6297
 nlo_program_name = nlojet++                    
@@ -39,8 +33,8 @@ grid_divided_by_bin_width = true
 ; Grid Options
 ;==============================================================
 [GRID]								
-grid_file = ../atlas-incljets-arxiv-1112.6297/r06/atlas-incljets-eta2.root
-correction_files = ../atlas_2010_jet_antiktr06_incljetpt_eta2_hadcorr.txt
+grid_file = ../atlas-incljets-arxiv-1112.6297/r04/atlas-incljets-eta1.root
+correction_files = ../atlas_2010_jet_antiktr04_incljetpt_eta1_hadcorr.txt
 correction_files_label = k_{NP}
 correction_files_reference = arxiv-1112.6297
 correction_files_author    = ATLAS

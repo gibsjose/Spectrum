@@ -1,3 +1,5 @@
+
+
 ;==============================================================
 ;
 ; Description:		
@@ -21,6 +23,7 @@ plot_staggered = true
 ;match_binning = true
 apply_grid_corr = true
 label_sqrt_s = true
+label_scaleform = true
 
 ;band_with_pdf= false
 ;band_with_alphas= false
@@ -46,7 +49,7 @@ label_sqrt_s = true
 plot_type = data, grid, pdf
 pdf_directory = PDF
 data_directory = Data/jet/atlas/incljets2010
-grid_directory = Grids/jet/atlas/incljets2010/nlojet
+grid_directory = Grids/jet/atlas/incljets2010/nlojet/perjetscale
 data_steering_files = atlas_2010_jet_antiktr06_incljetpt_eta1.txt
 grid_steering_files = atlas_2010_jet_antiktr06_incljetpt_eta1.txt
 pdf_steering_files = CT10.txt
@@ -80,7 +83,7 @@ ratio_2 = ([grid_0, pdf_0]) / (data_0)
 plot_type = data, grid, pdf
 pdf_directory = PDF
 data_directory = Data/jet/atlas/incljets2010
-grid_directory = Grids/jet/atlas/incljets2010/nlojet
+grid_directory = Grids/jet/atlas/incljets2010/nlojet/perjetscale
 data_steering_files = atlas_2010_jet_antiktr06_incljetpt_eta2.txt
 grid_steering_files = atlas_2010_jet_antiktr06_incljetpt_eta2.txt
 pdf_steering_files = CT10.txt
@@ -114,7 +117,7 @@ ratio_2 = ([grid_0, pdf_0]) / (data_0)
 plot_type = data, grid, pdf
 pdf_directory = PDF
 data_directory = Data/jet/atlas/incljets2010
-grid_directory = Grids/jet/atlas/incljets2010/nlojet
+grid_directory = Grids/jet/atlas/incljets2010/nlojet/perjetscale
 data_steering_files = atlas_2010_jet_antiktr06_incljetpt_eta3.txt
 grid_steering_files = atlas_2010_jet_antiktr06_incljetpt_eta3.txt
 pdf_steering_files = CT10.txt
@@ -148,7 +151,7 @@ ratio_2 = ([grid_0, pdf_0]) / (data_0)
 plot_type = data, grid, pdf
 pdf_directory = PDF
 data_directory = Data/jet/atlas/incljets2010
-grid_directory = Grids/jet/atlas/incljets2010/nlojet
+grid_directory = Grids/jet/atlas/incljets2010/nlojet/perjetscale
 data_steering_files = atlas_2010_jet_antiktr06_incljetpt_eta4.txt
 grid_steering_files = atlas_2010_jet_antiktr06_incljetpt_eta4.txt
 pdf_steering_files = CT10.txt
@@ -182,7 +185,7 @@ ratio_2 = ([grid_0, pdf_0]) / (data_0)
 plot_type = data, grid, pdf
 pdf_directory = PDF
 data_directory = Data/jet/atlas/incljets2010
-grid_directory = Grids/jet/atlas/incljets2010/nlojet
+grid_directory = Grids/jet/atlas/incljets2010/nlojet/perjetscale
 data_steering_files = atlas_2010_jet_antiktr06_incljetpt_eta5.txt
 grid_steering_files = atlas_2010_jet_antiktr06_incljetpt_eta5.txt
 pdf_steering_files = CT10.txt
@@ -216,7 +219,7 @@ ratio_2 = ([grid_0, pdf_0]) / (data_0)
 plot_type = data, grid, pdf
 pdf_directory = PDF
 data_directory = Data/jet/atlas/incljets2010
-grid_directory = Grids/jet/atlas/incljets2010/nlojet
+grid_directory = Grids/jet/atlas/incljets2010/nlojet/perjetscale
 data_steering_files = atlas_2010_jet_antiktr06_incljetpt_eta6.txt
 grid_steering_files = atlas_2010_jet_antiktr06_incljetpt_eta6.txt
 pdf_steering_files = CT10.txt
@@ -250,7 +253,7 @@ ratio_2 = ([grid_0, pdf_0]) / (data_0)
 plot_type = data, grid, pdf
 pdf_directory = PDF
 data_directory = Data/jet/atlas/incljets2010
-grid_directory = Grids/jet/atlas/incljets2010/nlojet
+grid_directory = Grids/jet/atlas/incljets2010/nlojet/perjetscale
 data_steering_files = atlas_2010_jet_antiktr06_incljetpt_eta7.txt
 grid_steering_files = atlas_2010_jet_antiktr06_incljetpt_eta7.txt
 pdf_steering_files = CT10.txt

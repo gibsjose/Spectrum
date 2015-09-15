@@ -3,8 +3,6 @@
 ; Description:		
 ;	Example Grid Steering File
 ;
-;--------------------------------------------------------------
-
 ;==============================================================
 ; General Options
 ;==============================================================
@@ -15,7 +13,7 @@ debug = false
 ; Description
 ;==============================================================
 [DESC]
-name = atlas_2010_jet_antiktr06_incljetpt_eta2
+name = atlas_2010_jet_antiktr04_incljetpt_eta2
 author = Pavel Staravoitov 
 lumi_config_file = NONE                        
 ;
@@ -39,8 +37,8 @@ grid_divided_by_bin_width = true
 ; Grid Options
 ;==============================================================
 [GRID]								
-grid_file = ../atlas-incljets-arxiv-1112.6297/r06/atlas-incljets-eta2.root
-correction_files = ../atlas_2010_jet_antiktr06_incljetpt_eta2_hadcorr.txt
+grid_file = ../atlas-incljets-arxiv-1112.6297/r04/atlas-incljets-eta2.root
+correction_files = ../atlas_2010_jet_antiktr04_incljetpt_eta2_hadcorr.txt
 correction_files_label = k_{NP}
 correction_files_reference = arxiv-1112.6297
 correction_files_author    = ATLAS

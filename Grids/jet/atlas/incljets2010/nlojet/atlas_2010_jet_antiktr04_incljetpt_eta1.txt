@@ -2,28 +2,6 @@
 ;
 ; Description:		
 ;	Example Grid Steering File
-;
-; Authors:
-;	...
-;
-; Date:
-;	17.09.2014
-;
-; Other:
-;	Other information...
-;
-;==============================================================
-
-;--------------------------------------------------------------
-; NOTE: 
-;
-; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
-;
-;	"  some_thing = "  <--- BAD
-;	"; some_thing = "  <--- OKAY
-;
-; If you forget to do this, some trailing comments could
-; be included in the option's value
 ;--------------------------------------------------------------
 
 ;==============================================================
