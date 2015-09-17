@@ -4,7 +4,7 @@
 //
 //  Implements the SPXPDF class, which manages the PDF data
 //
-//  @Author:  J. Gibson, C. Embree, T. Carli - CERN ATLAS
+//  @Author:  J. Gibson, C. Embree, T. Carli - CERN
 //  @Date:    01.06.2013 - Renamed 15.10.2014
 //  @Email:   gibsjose@mail.gvsu.edu
 //

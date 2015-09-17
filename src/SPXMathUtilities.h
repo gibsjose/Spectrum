@@ -4,7 +4,7 @@
 //
 //	Some useful math utilities for Spectrum
 //
-//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN
 //	@Date:		29.10.2014
 //	@Email:		gibsjose@mail.gvsu.edu
 //

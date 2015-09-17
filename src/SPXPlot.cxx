@@ -6,7 +6,7 @@
 //  other non-configuration classes (non-steering/options) and
 //	manages the plotting, drawing, and ROOT objects
 //
-//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN
 //	@Date:		13.10.2014
 //	@Email:		gibsjose@mail.gvsu.edu
 //

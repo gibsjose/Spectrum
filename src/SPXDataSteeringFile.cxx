@@ -8,7 +8,7 @@
 //	interfacing between Grids, Data, and Cross Sections with
 //	the MyAnalysis Program
 //
-//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN
 //	@Date:		06.10.2014
 //	@Email:		gibsjose@mail.gvsu.edu
 //

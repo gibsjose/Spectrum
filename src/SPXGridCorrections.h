@@ -5,7 +5,7 @@
 //	Outlines the SPXGridCorrections class, which stores the
 //  corrections for each grid in a String-Double Vector map
 //
-//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN
 //	@Date:		26.11.2014
 //	@Email:		gibsjose@mail.gvsu.edu
 //

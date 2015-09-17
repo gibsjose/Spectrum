@@ -6,7 +6,7 @@
 //	convolution and all math required to calculate the cross-
 //	section from a PDF and a grid file.
 //
-//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN
 //	@Date:		14.10.2014
 //	@Email:		gibsjose@mail.gvsu.edu
 //

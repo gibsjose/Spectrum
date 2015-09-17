@@ -5,7 +5,7 @@
 //	Outlines the SPXRatioStyle class, which describes the type of
 //	ratio to be plotted in the ratio section.
 //
-//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN
 //	@Date:		25.09.2014
 //	@Email:		gibsjose@mail.gvsu.edu
 //

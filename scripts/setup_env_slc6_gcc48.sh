@@ -60,7 +60,7 @@ export LHAPATH=/afs/cern.ch/sw/lcg/external/lhapdfsets/current
 export HOPPET=$INSTALLDIR/hoppet/1.1.5
 
 ### APPLGRID ###
-export APPLGRID=$INSTALLDIR/applgrid/1.4.56 
+export APPLGRID=$INSTALLDIR/applgrid/1.4.56/root-6.02.05
 
 ### SHERPA ###
 #export SHERPA=${BASEDIR}/sherpa

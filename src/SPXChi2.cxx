@@ -3,7 +3,7 @@
 //	Chi2 calculations
 //
 //
-//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN
 //	@Date:		20.1.2015
 //	@Email:		tancredi.carli@cern.ch
 //

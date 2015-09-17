@@ -9,7 +9,7 @@
 //		spectrum		(DF_SPECTRUM)
 //		herafitter		(DF_HERAFITTER)
 //
-//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN
 //	@Date:		08.10.2014
 //	@Email:		gibsjose@mail.gvsu.edu
 //

@@ -5,7 +5,7 @@
 //	Outlines the SPXPDFErrorType class, which describes the PDF
 //	error type. The options are 'alpha_s' or 'pdf_band' or 'scale'
 //
-//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN
 //	@Date:		29.09.2014
 //	@Email:		gibsjose@mail.gvsu.edu
 //

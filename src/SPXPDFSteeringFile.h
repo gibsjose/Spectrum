@@ -7,7 +7,7 @@
 //	format that allows for interfacing between Grids, Data,
 //	and Cross Sections within Spectrum.
 //
-//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN
 //	@Date:		30.09.2014
 //	@Email:		gibsjose@mail.gvsu.edu
 //

@@ -2,7 +2,7 @@
 //
 //  Calculations Chi2 from SPXPDF and SPXData-objects
 //
-//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN 
 //	@Date:		14.1.2015
 //	@Email:		tancredi.carli@cern.ch
 //

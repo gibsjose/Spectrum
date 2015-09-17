@@ -7,7 +7,7 @@
 //	format that allows for interfacing between Grids, Data,
 //	and Cross Sections with the MyAnalysis PDF Program
 //
-//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN ATLAS
+//	@Author: 	J. Gibson, C. Embree, T. Carli - CERN
 //	@Date:		01.10.2014
 //	@Email:		gibsjose@mail.gvsu.edu
 //
