@@ -1996,8 +1996,8 @@ std::vector <TGraphAsymmErrors *>  SPXData::GetSystematicsErrorGraphs(void){
     if ((eyh<0 && eyl<0) || (eyh>0 && eyl>0) ) {
      std::ostringstream oss;
      oss << cn<<mn<<"WARNING: in "<<sname<<" ibin= "<<ibin<<" errors have same sign:  eyh= "<<eyh<<" eyl= "<<eyl;  
-     std::cout<<oss.str()<<endl;
-     std::cerr<<oss.str()<<endl;
+     std::cout<<oss.str()<<std::endl;
+     std::cerr<<oss.str()<<std::endl;
     }
 
     if (eyh<0 && eyl>0) {
