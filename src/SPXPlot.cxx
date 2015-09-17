@@ -3434,17 +3434,17 @@ void SPXPlot::WriteRootFile(TString rootfilename){
 
  rootfile=0;
  
- if (debug) std::cout<<cn<<mn<<"Output rootfile "<<rootfilename<<endl;
+ if (debug) std::cout<<cn<<mn<<"Output rootfile "<<rootfilename<<std::endl;
 
  rootfile= new TFile(rootfilename,"recreate");
  if (!rootfile) {
 
-  std::cout<<cn<<mn<<"Problem to open rootfile= "<<rootfilename.Data()<<endl;
-  std::cerr<<cn<<mn<<"Problem to open rootfile= "<<rootfilename.Data()<<endl;
+  std::cout<<cn<<mn<<"Problem to open rootfile= "<<rootfilename.Data()<<std::endl;
+  std::cerr<<cn<<mn<<"Problem to open rootfile= "<<rootfilename.Data()<<std::endl;
   throw SPXROOTException(cn+mn+"Pointer to rootfile not found ! Can not output root objects.");
 
  } else if (debug){
-  std::cout<<cn<<mn<<"Opened rootfile= "<<rootfilename<<endl;
+  std::cout<<cn<<mn<<"Opened rootfile= "<<rootfilename<<std::endl;
  }
 
  for(int icross = 0; icross < crossSections.size(); icross++) {
