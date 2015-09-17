@@ -1175,8 +1175,13 @@ void SPXPlot::DrawLegend(void) {
 
  if (debug) {
 
-  if (scalechoicedifferent) std::cout<<cn<<mn<<"Scale choice in cross sections is different !"<< std::endl;
-  else std::cout<<cn<<mn<<"Scale choice is the same in all cross sections !"<< std::endl;
+  if (scalechoicedifferent) {
+   std::cout<<cn<<mn<<"Scale choice in cross sections is different !"<< std::endl;
+   for(int icross = 0; icross < crossSections.size(); icross++) {
+    SPXGrid * grid=crossSections[icross].GetGrid();
+    std::cout<<" icross= "<<icross<<" "<<grid->GetGridName()<<" scaleform= "<<grid->GetScaleFunctionalForm()<<std::endl;
+   }
+  } else std::cout<<cn<<mn<<"Scale choice is the same in all cross sections !"<< std::endl;
 
   if (pdfsdifferent) std::cout<<cn<<mn<<"Different PDF in cross sections !"<< std::endl;
   else               std::cout<<cn<<mn<<"Same PDF in cross sections !"<< std::endl;

@@ -4,26 +4,6 @@
 ;	Example Grid Steering File
 ;
 ; Authors:
-;	...
-;
-; Date:
-;	17.09.2014
-;
-; Other:
-;	Other information...
-;
-;==============================================================
-
-;--------------------------------------------------------------
-; NOTE: 
-;
-; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
-;
-;	"  some_thing = "  <--- BAD
-;	"; some_thing = "  <--- OKAY
-;
-; If you forget to do this, some trailing comments could
-; be included in the option's value
 ;--------------------------------------------------------------
 
 ;==============================================================
@@ -39,7 +19,8 @@ debug = false
 name = atlas_2011_jet_antiktr04_incljetpt_eta1	
 author = Esteban~Fullana                       
 lumi_config_file = NONE                        
-scale = Ptjet                                  
+;
+scaleform = P_{T,jet,max}
 reference_journal_name = NONE                  
 reference_link_to_arxiv = http://arxiv.org/abs/1410.8857 
 nlo_program_name = nlojet++                    

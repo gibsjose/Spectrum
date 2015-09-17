@@ -3,16 +3,6 @@
 ; Description:		
 ;	Example Grid Steering File
 ;
-; Authors:
-;	Jon Doe
-;	Jean Pierre Larousse
-;	...
-;
-; Date:
-;	17.09.2014
-;
-; Other:
-;	Other information...
 ;
 ;==============================================================
 
@@ -41,7 +31,9 @@ debug = false
 name = atlas_2011_jet_antiktr06_incljetpt_eta5	
 author = Esteban Fullana                       
 lumi_config_file = NONE                        
-scale = Ptjet                                  
+;
+scaleform = P_{T,jet,max}
+;
 reference_journal_name = NONE                  
 reference_link_to_arxiv=http://arxiv.org/abs/1410.8857 
 nlo_program_name = nlojet++                    
