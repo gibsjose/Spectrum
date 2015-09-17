@@ -34,6 +34,7 @@ observable_definition_link_to_code = unknown
 x_units = GeV													
 y_units = pb													
 grid_divided_by_bin_width = true	
+grid_divided_by_doublediff_bin_width = true
 ;reference_divided_by_bin_width = true
 ;==============================================================
 ; Grid Options

@@ -165,6 +165,14 @@ public:
 		return this->referenceDividedByBinWidth;
 	}
 
+	bool IsGridDividedByDoubleDiffBinWidth(void) const {
+		return this->gridDividedByDoubleDiffBinWidth;
+	}
+
+	bool IsReferenceDividedByDoubleDiffBinWidth(void) const {
+		return this->referenceDividedByDoubleDiffBinWidth;
+	}
+
 	double GetYScale(void) const {
 		return this->yScale;
 	}

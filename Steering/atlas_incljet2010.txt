@@ -14,24 +14,26 @@ debug = true
 ; Graphing Options
 ;==============================================================
 [GRAPH]
-plot_band = false
+plot_band = true
 ; plot_error_ticks = true
 plot_marker = true
 plot_staggered = true
-;match_binning = true
-apply_grid_corr = true
+match_binning = true
+apply_grid_corr = false
 label_sqrt_s = true
-
-;band_with_pdf= false
-;band_with_alphas= false
+label_scaleform = true
+;
+;band_with_pdf= true
+;band_with_alphas= true
 ;band_with_scale = true
-;band_with_gridcorrection = false
-;band_total = false
+;band_with_gridcorrection = true
+;band_total = true
 
+;
 ;x_legend = 0.75
 ;y_legend = 0.9
-;x_info_legend = 0.35
-;y_info_legend = 0.25
+x_info_legend = 0.45
+y_info_legend = 0.25
 
 ; y_overlay_min =
 ; y_overlay_max =
@@ -42,27 +44,38 @@ label_sqrt_s = true
 ; Plot 0 Options
 ;==============================================================
 [PLOT_0]
-;plot_type = data[], grid[], pdf
-plot_type = data, grid, pdf
+plot_type = data, grid[], pdf
+;plot_type = data, grid, pdf
 pdf_directory = PDF
 data_directory = Data/jet/atlas/incljets2010
-grid_directory = Grids/jet/atlas/incljets2010/nlojet//perjetscale
 data_steering_files = atlas_2010_jet_antiktr04_incljetpt_eta1.txt
-grid_steering_files = atlas_2010_jet_antiktr04_incljetpt_eta1.txt
+;
+grid_directory = Grids/jet/atlas/incljets2010/nlojet//perjetscale,Grids/jet/atlas/incljets2010/nlojet//pereventscale
+grid_steering_files = atlas_2010_jet_antiktr04_incljetpt_eta1.txt,atlas_2010_jet_antiktr04_incljetpt_eta1.txt
+;
+;grid_directory = Grids/jet/atlas/incljets2010/nlojet//perjetscale
+;grid_steering_files = atlas_2010_jet_antiktr04_incljetpt_eta1.txt
+;
 pdf_steering_files = CT10.txt
+;
 desc = atlas_inclusive_jet2010_r06_eta1
 ;
 x_log = true
 y_log = true
 ;
-data_marker_style = 20
-data_marker_color = 1
+;data_marker_style = 20,21
+;data_marker_color = 1,2
+;
+grid_marker_style = 20,21
+grid_marker_color = 861,899
+grid_fill_style = 1001,1002
 ;
 display_style = overlay,ratio
 ;
 overlay_style = data, convolute
 ;
 ;
+ratio_title = NLO QCD/Data
 ratio_style_0 = data_tot
 ratio_0 = data_0
 ;
@@ -71,6 +84,9 @@ ratio_1 = data_0
 ;
 ratio_style_2 = convolute / !data
 ratio_2 = ([grid_0, pdf_0]) / (data_0)
+
+ratio_style_3 = convolute / !data
+ratio_3 = ([grid_1, pdf_0]) / (data_0)
 
 ;ratio_title = Data/ NLO QCD
 ;ratio_style_2 = !data / convolute

@@ -11,7 +11,7 @@
 //	@Email:		gibsjose@mail.gvsu.edu
 //
 //************************************************************/
-
+//
 
 #include <sstream>
 #include <string.h> //memcpy
@@ -1113,13 +1113,36 @@ void SPXPlot::DrawLegend(void) {
  bool bandsdifferent=false;
  bool hadcorronly=false;
  
+ bool scalechoicedifferent=false;
+ bool pdfsdifferent=false;
+
+ std::string pdfold="";
+ std::string scaleold="";
+ 
  for(int icross = 0; icross < crossSections.size(); icross++) {
-  SPXPDF * pdf=crossSections[icross].GetPDF();
 
   if (debug) {
    std::cout<<cn<<mn<<" "<< std::endl;
    std::cout<<cn<<mn<<"icross= "<<icross<<" Test band properties "<< std::endl;
   }
+
+  SPXPDF * pdf=crossSections[icross].GetPDF();
+  if (!pdf) throw SPXGeneralException(cn+mn+"PDF object not found !");
+
+  SPXGrid * grid=crossSections[icross].GetGrid();
+  if (!grid) throw SPXGeneralException(cn+mn+"Grid object not found !");
+
+  if (pdfold!=pdf->GetPDFName()) {
+   if (icross>0) pdfsdifferent=true;
+   pdfold=pdf->GetPDFName();
+  }
+  //std::cout<<cn<<mn<<"pdfold= "<<scaleold<<" from Grid "<< pdf->GetPDFName() << std::endl;
+
+  if (scaleold!=grid->GetScaleFunctionalForm()) {
+   if (icross>0) scalechoicedifferent=true;
+   scaleold=grid->GetScaleFunctionalForm();
+  }
+  //std::cout<<cn<<mn<<"scaleold= "<< scaleold <<" from Grid "<< grid->GetScaleFunctionalForm() << std::endl;
 
   bool bscale  =pdf->HasBandofType("_scale_");
   bool bpdf    =pdf->HasBandofType("_pdf_");
@@ -1131,6 +1154,7 @@ void SPXPlot::DrawLegend(void) {
 
   bandsdifferent=pdf->BandsHaveDifferentProperties();
   if (debug) {
+
    if (bandsdifferent) std::cout<<cn<<mn<<"icross= "<<icross<<" Bands have different properties !"<< std::endl;
    else                std::cout<<cn<<mn<<"icross= "<<icross<<" Bands have same properties ! "<< std::endl;
 
@@ -1141,14 +1165,23 @@ void SPXPlot::DrawLegend(void) {
    if (bhadcorr)   std::cout<<cn<<mn<<"Bands contains corrections uncertainty"<< std::endl;
    if (hadcorronly)std::cout<<cn<<mn<<"Bands contains ONLY corrections uncertainty"<< std::endl;
   }
- }
 
- if (debug) {
+
   if (bandsdifferent) std::cout<<cn<<mn<<"One Cross section with Bands with have different properties !"<< std::endl;
   else                std::cout<<cn<<mn<<"All cross section have bands with have same properties ! "<< std::endl;
  }
 
  if (debug) std::cout<<cn<<mn<<" "<< std::endl;
+
+ if (debug) {
+
+  if (scalechoicedifferent) std::cout<<cn<<mn<<"Scale choice in cross sections is different !"<< std::endl;
+  else std::cout<<cn<<mn<<"Scale choice is the same in all cross sections !"<< std::endl;
+
+  if (pdfsdifferent) std::cout<<cn<<mn<<"Different PDF in cross sections !"<< std::endl;
+  else               std::cout<<cn<<mn<<"Same PDF in cross sections !"<< std::endl;
+
+ }
 
  // Analyse what data are there...
  //
@@ -1611,7 +1644,7 @@ void SPXPlot::DrawLegend(void) {
    if (!bandsdifferent) {
     if (nlolabel) {
      TString text="";
-     if (icross==0) { //only Draw text for the first cross section
+     if (icross==0&&pdfsdifferent) { //only Draw text for the first cross section
       text+="NLO QCD";
       if(steeringFile->ApplyGridCorr()) {
 	std::vector<std::string> corrlabel=crossSections[icross].GetCorrectionLabels();
@@ -1623,9 +1656,7 @@ void SPXPlot::DrawLegend(void) {
        }
         //std::cout<<cn<<mn<<text.Data()<<" namesize= "<<namesize<<std::endl;
       }
-  
       text+=" with:";
-      // 
       if (gridcorrectionfound&&!nlouncertainty) text="";
       if (nlouncertainty) leg->AddEntry((TObject*)0, text, "");
      }
@@ -1723,112 +1754,107 @@ void SPXPlot::DrawLegend(void) {
 
     if (debug) std::cout<<cn<<mn<<"All bands have same properties !"<< std::endl;
 
-    for (int iband=0; iband<nbands; iband++) {
-     TGraphAsymmErrors * gband   =pdf->GetBand(iband);
-     std::string         gtype   =pdf->GetBandType(iband);
+    if (!pdfsdifferent) {
+     TString opt="";
+     if (steeringFile->GetPlotMarker()) opt="P";
+     if (steeringFile->GetPlotBand()) opt="LF";
+     TString text="NLO QCD ";
+     TGraphAsymmErrors * gband=pdf->GetTotalBand();
+     if (icross==0) {
+      text+=pdf->GetPDFName();
+      if (!scalechoicedifferent) {
+       if (nlouncertainty) leg->AddEntry(gband, text, opt);
+      }
+     } 
+     if (scalechoicedifferent) {
+      SPXGrid * grid=crossSections[icross].GetGrid();
+      TString scalename="#mu_{R} = #mu_{F}=";
+      scalename+=grid->GetScaleFunctionalForm();
+      if (nlouncertainty) leg->AddEntry(gband,scalename, opt);
+     }
+    } else {
 
-     if (debug) std::cout<<cn<<mn<<"iband= "<<iband<<" gtype= "<< gtype.c_str()<< std::endl;
+     for (int iband=0; iband<nbands; iband++) {
+      TGraphAsymmErrors * gband   =pdf->GetBand(iband);
+      std::string         gtype   =pdf->GetBandType(iband);
+
+      if (debug) std::cout<<cn<<mn<<"iband= "<<iband<<" gtype= "<< gtype.c_str()<< std::endl;
      
-     if (gtype.compare(std::string("pdf"))==0){
-      if (debug) std::cout<<cn<<mn<<"Band is of type PDF"<< std::endl;
-      pdffound=true; npdf++;
-      if (nlolabel) {
+      if (gtype.compare(std::string("pdf"))==0){
+       if (debug) std::cout<<cn<<mn<<"Band is of type PDF"<< std::endl;
+       pdffound=true; npdf++;
+       if (nlolabel) {
    
-       double Escale = pdf->GetChangeSqrtS();
-       // check if CMS energy in grid was changed "<<endl;
-       std::cout<<cn<<mn<<" Escale= "<<Escale<<std::endl;
+        double Escale = pdf->GetChangeSqrtS();
+        // check if CMS energy in grid was changed "<<endl;
+        std::cout<<cn<<mn<<" Escale= "<<Escale<<std::endl;
 
-       TString labelname=pdftype;
-       //int pdfcount=std::count (vpdf.begin(), vpdf.end(), pdftype);
+        TString labelname=pdftype;
+        //int pdfcount=std::count (vpdf.begin(), vpdf.end(), pdftype);
 
-       if (Escale!=1) {
+        if (Escale!=1) {
          //double sqrtsval = data.at(0)->GetSqrtS();
          double sqrtsval=1.0;
 	 labelname+=Form(" f*#sqrt{s} with f= %3.2f",sqrtsval*Escale);
-       }
-
-       int labelcount=std::count (vlabel.begin(), vlabel.end(), labelname);
-       if (debug) std::cout<<cn<<mn<<"icross= "<<icross<<" label= "<<labelname.Data()<<" labelcount= "<<labelcount<<std::endl;
-
-      /*
-       if (steeringFile->GetPlotMarker()) {
-        if (pdfcount<1) {
-         if (debug) std::cout<<cn<<mn<<"in PDF Plot marker add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<std::endl;
-  
-         if (pdftype.Sizeof()>namesize) namesize=pdftype.Sizeof();
-         TString opt="PE";
-         if (ratioStyle.IsDataOverConvolute()) opt=""; // for Data over convolute do not plot marker
-	 if (debug) std::cout<<cn<<mn<<"Add legend pdftype= "<<pdftype.Data()<<" gband= "<<gband->GetName()<<" opt= "<<opt.Data()<<std::endl;        
-
-         leg->AddEntry(gband, pdftype,opt);
-         vpdf.push_back(pdftype);
         }
-       } else if (steeringFile->GetPlotBand()) {
-	if (debug) std::cout<<cn<<mn<<"Add in legend iband= "<<iband
-			    <<" gband= "<<gband->GetName()<<" pdfcount= "<<pdfcount<<std::endl;
-        if (pdfcount<1) {
-  	 if (debug) std::cout<<cn<<mn<<"Add legend pdftype= "<<pdftype.Data()<<std::endl;      
-         if (pdftype.Sizeof()>namesize) namesize=pdftype.Sizeof();
-         leg->AddEntry(gband, pdftype, "LF");
-         vpdf.push_back(pdftype);
-        }
-       } else
-        std::cout << cn << mn <<"WARNING: do not know what to do not plotMarker, not plotBand"<< std::endl;
-     */
-       // only plot label once 
-       if (labelcount<1) {
 
-        TString opt="";
-        if (steeringFile->GetPlotMarker()) {
-         opt="PE";
-         if (ratioStyle.IsDataOverConvolute()) opt=""; // for Data over convolute do not plot marker
-        } else if (steeringFile->GetPlotBand()) {
-         opt="LF";
-        } else std::cout << cn << mn <<"WARNING: do not know what to do not plotMarker, not plotBand"<< std::endl;
+        int labelcount=std::count (vlabel.begin(), vlabel.end(), labelname);
+        if (debug) std::cout<<cn<<mn<<"icross= "<<icross<<" label= "<<labelname.Data()<<" labelcount= "<<labelcount<<std::endl;
 
-	if (debug) std::cout<<cn<<mn<<"Add in legend iband= "<<iband
+        // only plot label once 
+        if (labelcount<1) {
+
+         TString opt="";
+         if (steeringFile->GetPlotMarker()) {
+          opt="PE";
+          if (ratioStyle.IsDataOverConvolute()) opt=""; // for Data over convolute do not plot marker
+         } else if (steeringFile->GetPlotBand()) {
+          opt="LF";
+         } else std::cout << cn << mn <<"WARNING: do not know what to do not plotMarker, not plotBand"<< std::endl;
+
+	 if (debug) std::cout<<cn<<mn<<"Add in legend iband= "<<iband
 			     <<" gband= "<<gband->GetName()<<" labelcount= "<<labelcount<<" opt= "<<opt.Data()<<std::endl;
 
-  	if (debug) std::cout<<cn<<mn<<"Add legend label= "<<labelname.Data()<<std::endl;      
-        if (labelname.Sizeof()>namesize) namesize=labelname.Sizeof();
-        leg->AddEntry(gband, labelname, opt);
-        vlabel.push_back(labelname);
+   	 if (debug) std::cout<<cn<<mn<<"Add legend label= "<<labelname.Data()<<std::endl;      
+         if (labelname.Sizeof()>namesize) namesize=labelname.Sizeof();
+         leg->AddEntry(gband, labelname, opt);
+         vlabel.push_back(labelname);
+        }
        }
       }
-     }
 
-     if (nbands==1) { // band has same properties because there is only one uncertainty
+      if (nbands==1) { // band has same properties because there is only one uncertainty
        if (debug) std::cout<<cn<<mn<<"icross= "<<icross<<" nbands==1"<<std::endl;
-       if (vlabel.size()!=1) {
-	if (debug) std::cout<<cn<<mn<<"Add legend gband= "<<gband->GetName()<<" gtype= "<<gtype.c_str()<<std::endl;
+       if (vlabel.size()!=1) { 
+ 	if (debug) std::cout<<cn<<mn<<"Add legend gband= "<<gband->GetName()<<" gtype= "<<gtype.c_str()<<std::endl;
         leg->AddEntry(gband, TString(gtype), "LF");
        }
-     } else {
-      //if (debug) std::cout << cn << mn <<"npdf= "<<npdf<< std::endl;
-      //if (pdffound) {
-      // if (debug) std::cout << cn << mn <<"PDF found "<< pdftype.Data()<< std::endl;
-      //} else {
-      // if (debug) std::cout << cn << mn <<"No PDF band found "<< std::endl;
-      //
-      if (pdffound) {
-       if (debug) std::cout << cn << mn <<"Only plot corrections legend when no PDF "<< std::endl;
       } else {
-       if (debug) std::cout << cn << mn <<"No PDF -> plot correction legend "<< std::endl;
-       TString gname=gband->GetName();
-       if (gname.Contains("_corrections_")) {
-	std::vector<std::string> corrlabel=crossSections[icross].GetCorrectionLabels();
-        if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
-        for(int ic = 0; ic < corrlabel.size(); ic++) {
-	 if (debug) std::cout<<cn<<mn<<"add in legend ic= "<<ic<<" label= "<<corrlabel[ic].c_str()<<std::endl;       
-         leg->AddEntry(gband, TString(corrlabel[ic]), "LF");
-        }
-       } else if (debug) std::cout << cn << mn <<"No grid corrections specified "<< std::endl;
+       //if (debug) std::cout << cn << mn <<"npdf= "<<npdf<< std::endl;
+       //if (pdffound) {
+       // if (debug) std::cout << cn << mn <<"PDF found "<< pdftype.Data()<< std::endl;
+       //} else {
+       // if (debug) std::cout << cn << mn <<"No PDF band found "<< std::endl;
+       //
+       if (pdffound) {
+        if (debug) std::cout << cn << mn <<"Only plot corrections legend when no PDF "<< std::endl;
+       } else {
+        if (debug) std::cout << cn << mn <<"No PDF -> plot correction legend "<< std::endl;
+        TString gname=gband->GetName();
+        if (gname.Contains("_corrections_")) { 
+	 std::vector<std::string> corrlabel=crossSections[icross].GetCorrectionLabels();
+         if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
+         for(int ic = 0; ic < corrlabel.size(); ic++) {
+	  if (debug) std::cout<<cn<<mn<<"add in legend ic= "<<ic<<" label= "<<corrlabel[ic].c_str()<<std::endl;       
+          leg->AddEntry(gband, TString(corrlabel[ic]), "LF");
+         }
+        } else if (debug) std::cout << cn << mn <<"No grid corrections specified "<< std::endl;
+       }
       }
      }
     }
    }
   }
-
   //gPad->Update();
   gPad->RedrawAxis();
   //TLine l;
@@ -2087,10 +2113,12 @@ void SPXPlot::DrawLegend(void) {
   }       
 
   if (steeringFile->GetScaleFunctionalFormLabel() ) {
-   TString label="#mu_{R} = #mu_{F}=";
-   label+=grid->GetScaleFunctionalForm();
-   if (TString(label).Sizeof()>leginfomax) leginfomax=TString(label).Sizeof();
-   leginfo->AddEntry((TObject*)0, label,"");
+   if (!scalechoicedifferent) {
+    TString label="#mu_{R} = #mu_{F}=";
+    label+=grid->GetScaleFunctionalForm();
+    if (TString(label).Sizeof()>leginfomax) leginfomax=TString(label).Sizeof();
+    leginfo->AddEntry((TObject*)0, label,"");
+   }
   }       
  }
 
@@ -2620,16 +2648,29 @@ void SPXPlot::NormalizeCrossSections(void) {
 			bool gridDividedByBinWidth = pci->gridSteeringFile.IsGridDividedByBinWidth();
 			bool referenceDividedByBinWidth = pci->gridSteeringFile.IsReferenceDividedByBinWidth();
 
+                        bool dataDividedByDoubleDiffBinWidth =  pci->dataSteeringFile.IsDividedByDoubleDiffBinWidth();
+                        bool gridDividedByDoubleDiffBinWidth =  pci->gridSteeringFile.IsGridDividedByDoubleDiffBinWidth();
+                        bool referenceDividedByDoubleDiffBinWidth= pci->gridSteeringFile.IsReferenceDividedByDoubleDiffBinWidth();
+
 			if(debug) {
 			 std::cout << cn << mn << "normalizeToTotalSigma is " << (normalizeToTotalSigma ? "ON" : "OFF") << std::endl;
 			 std::cout << cn << mn << "dataDividedByBinWidth is " << (dataDividedByBinWidth ? "ON" : "OFF") << std::endl;
 			 std::cout << cn << mn << "gridDividedByBinWidth is " << (gridDividedByBinWidth ? "ON" : "OFF") << std::endl;
 			 std::cout << cn << mn << "referenceDividedByBinWidth is " << (referenceDividedByBinWidth ? "ON" : "OFF") << std::endl;
+
+			 std::cout << cn << mn << "dataDividedByDoubleDiffBinWidth is " << (dataDividedByDoubleDiffBinWidth ? "ON" : "OFF") << std::endl;
+			 std::cout << cn << mn << "gridDividedByDoubleDiffBinWidth is " << ( gridDividedByDoubleDiffBinWidth ? "ON" : "OFF") << std::endl;
+			 std::cout << cn << mn << "referenceDividedByDoubleDiffBinWidth is " << ( referenceDividedByDoubleDiffBinWidth ? "ON" : "OFF") << std::endl;
 			}
 
 			if(!dataDividedByBinWidth && gridDividedByBinWidth) {
 			 throw SPXGraphException(cn + mn + "Grid IS divided by the bin with but the data IS NOT: Not supported");
 			}
+
+			if(!dataDividedByDoubleDiffBinWidth && gridDividedByDoubleDiffBinWidth) {
+			 throw SPXGraphException(cn + mn + "Grid IS divided by the double diff variable bin with but the data IS NOT: Not supported");
+			}
+
 
 			double totalSigmaNom = SPXGraphUtilities::GetTotalSigma(gNom, gridDividedByBinWidth);
 			double totalSigmaRef = SPXGraphUtilities::GetTotalSigma(gRef, referenceDividedByBinWidth);
@@ -2650,6 +2691,19 @@ void SPXPlot::NormalizeCrossSections(void) {
 
 			//Set the yBinWidthScale, which is the scaling of the data's Y Bin Width Units to the data's X Units
 			double yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), pci->dataSteeringFile.GetYBinWidthUnits());
+
+			if(dataDividedByDoubleDiffBinWidth && !gridDividedByDoubleDiffBinWidth) {
+			 double dbinwidth= pci->dataSteeringFile.GetDoubleBinValueWidth();
+			 if(debug) std::cout << cn << mn << "Dividing Cross Section by the Double Diff Bin Width" << dbinwidth<< std::endl;
+			 yBinWidthScale*=dbinwidth;
+                        }
+			if(referenceDividedByDoubleDiffBinWidth) {
+			 if (gridDividedByDoubleDiffBinWidth) {
+                           std::ostringstream oss;
+                           oss << cn <<mn<<"reference divided by double bin width -> not supported ";
+                           throw SPXParseException(oss.str());
+                         }
+			}
 
 			SPXGraphUtilities::Scale(gNom, 1.0, (1.0 / yBinWidthScale));
 			SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / yBinWidthScale));

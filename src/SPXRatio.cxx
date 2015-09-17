@@ -1539,7 +1539,7 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
 
   if (debug) if(!detailedband) std::cout<<cn<<mn<<"This is a simple band detailedband=FALSE "<<std::endl;
   if (debug) if (plotmarker)  std::cout<<cn<<mn<<"Asked to plot with markers "<<std::endl;
-             else std::cout<<cn<<mn<<"plotmarker=FALSE "<<std::endl;
+             else             std::cout<<cn<<mn<<"plotmarker=FALSE "<<std::endl;
 
   if (!detailedband || plotmarker) {
    if (debug) if (plotmarker)  std::cout<<cn<<mn<<"Only plot total band"<<std::endl;

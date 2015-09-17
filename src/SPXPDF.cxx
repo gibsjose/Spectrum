@@ -292,6 +292,13 @@ TH1D *  SPXPDF::GetHisto(double renscale, double facscale){
    applgridok=true;
   }
 
+  if (debug) {
+    std::cout<<cn<<mn<<"applgrid found gridname= "<< gridName
+             << " was produced at sqrt(s)= "<<my_grid->getCMSScale()<<std::endl;
+    //std::cout<<cn<<mn<<"dynamic scale= "<<my_grid->getDynamicScale()<<std::endl;
+    //my_grid->getDocumentation();
+  }
+
   if (debug) std::cout<<cn<<mn<<"nLoops= "<<nLoops<<" renscale= "<<renscale<<" facscale= "<<facscale<<" xEscale= "<<xEscale<<std::endl;
 
   htmpsum= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renscale, facscale, xEscale);

@@ -6,6 +6,11 @@
 
 ## Change Log
 
+ -SPXPlot, SPXDataSteering, SPXGridSteering
+  included flag to indicate if Data or Grids are divided by the
+  double differential bin width and take this into account in 
+  cross section normalisation.
+
  -Feature to only keep systematic uncertainty class of
 
  -Feature to remove class of systematics uncertainties 

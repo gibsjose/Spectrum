@@ -457,7 +457,7 @@ void SPXDataSteeringFile::Parse(void) {
 	}
 
 	dividedByDoubleDiffBinWidth= reader->GetBoolean("DATA", "divided_by_doublediff_bin_width", false);
-	if(debug) std::cout << cn << mn << "Divided By Bin Width for suble differential varibale set to: " << (dividedByDoubleDiffBinWidth? "ON" : "OFF") << std::endl;
+	if(debug) std::cout << cn << mn << "Divided By Bin Width for double differential varibale set to: " << (dividedByDoubleDiffBinWidth? "ON" : "OFF") << std::endl;
 
 	dividedByBinWidth = reader->GetBoolean("DATA", "divided_by_bin_width", false);
 	if(debug) std::cout << cn << mn << "Divided By Bin Width set to: " << (dividedByBinWidth? "ON" : "OFF") << std::endl;

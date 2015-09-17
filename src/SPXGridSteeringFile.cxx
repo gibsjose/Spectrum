@@ -112,8 +112,8 @@ void SPXGridSteeringFile::Print(void) {
 	std::cout << "\t\t Y Scale: " << yScale << std::endl;
 	std::cout << "\t\t Grid Divided by Bin Width? " << (gridDividedByBinWidth ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Grid Divided by double differential Bin Width variable? " << (gridDividedByDoubleDiffBinWidth ? "YES" : "NO") << std::endl;
-	std::cout << "\t\t Reference Divided by Bin Width? " << (referenceDividedByBinWidth ? "YES" : "NO") << std::endl << std::endl;
-	std::cout << "\t\t Reference Divided by  double differential  Bin Width variable? " << (referenceDividedByDoubleDiffBinWidth? "YES" : "NO") << std::endl << std::endl;
+	std::cout << "\t\t Reference Divided by Bin Width? " << (referenceDividedByBinWidth ? "YES" : "NO") << std::endl;
+	std::cout << "\t\t Reference Divided by double differential Bin Width variable? " << (referenceDividedByDoubleDiffBinWidth? "YES" : "NO") << std::endl << std::endl;
 	std::cout << "\t Grid Options [GRID]" << std::endl;
 	std::cout << "\t\t Grid File: " << gridFilepath << std::endl;
 
