@@ -1654,12 +1654,12 @@ TGraphAsymmErrors* SPXGraphUtilities::FindCommonBins(TGraphAsymmErrors* gmaster,
  const bool debug=false; 
  
  if (!gmaster){
-  std::cout<<mn<<"Graph gmaster does not exist ! "<< endl; 
+  std::cout<<mn<<"Graph gmaster does not exist ! "<< std::endl; 
   throw SPXGraphException(cn + mn + "Master graph is invalid");
   return (TGraphAsymmErrors*)0; 
  }
  if (!gslave) {
-  std::cout<<mn<<"Graph gslave does not exist ! "<< endl; 
+  std::cout<<mn<<"Graph gslave does not exist ! "<< std::endl; 
   throw SPXGraphException(cn + mn + "Slave graph is invalid");
   return (TGraphAsymmErrors*)0; 
  }
