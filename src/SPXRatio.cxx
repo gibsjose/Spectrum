@@ -651,8 +651,8 @@ void SPXRatio::Divide(void) {
   // add statistical error from Data as separate graph 
   if (ratioStyle.IsDataOverConvolute() || ratioStyle.IsDataOverData()) {
 
-   if (debug) cout<<cn<<mn<<"Number of numeratorGraphstatonly= "<<numeratorGraphstatonly.size()<<std::endl;
-   if (numeratorGraphstatonly.size()==0) cout<<cn<<mn<<"WARNING No statistical ratio graphs found !"<<std::endl;
+   if (debug) std::cout<<cn<<mn<<"Number of numeratorGraphstatonly= "<<numeratorGraphstatonly.size()<<std::endl;
+   if (numeratorGraphstatonly.size()==0) std::cout<<cn<<mn<<"WARNING No statistical ratio graphs found !"<<std::endl;
 
    for (int i=0; i<numeratorGraphstatonly.size(); i++){
 
