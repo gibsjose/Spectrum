@@ -23,15 +23,10 @@ apply_grid_corr = false
 label_sqrt_s = true
 label_scaleform = true
 ;
-;band_with_pdf= true
-;band_with_alphas= true
-;band_with_scale = true
-;band_with_gridcorrection = true
-;band_total = true
 
 ;
-;x_legend = 0.75
-;y_legend = 0.9
+x_legend = 0.75
+y_legend = 0.9
 x_info_legend = 0.45
 y_info_legend = 0.25
 
@@ -56,7 +51,7 @@ grid_steering_files = atlas_2010_jet_antiktr04_incljetpt_eta1.txt,atlas_2010_jet
 ;grid_directory = Grids/jet/atlas/incljets2010/nlojet//perjetscale
 ;grid_steering_files = atlas_2010_jet_antiktr04_incljetpt_eta1.txt
 ;
-pdf_steering_files = CT10.txt
+pdf_steering_files = CT14.txt
 ;
 desc = atlas_inclusive_jet2010_r06_eta1
 ;

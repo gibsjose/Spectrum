@@ -2079,13 +2079,14 @@ void SPXSteeringFile::Parse(void) {
 	if(debug) std::cout << cn << mn << "OutputGraphicFormat set to default: "<< OutputGraphicFormat << std::endl;
 
 	OutputRootfile= reader->GetBoolean("GEN", "output_rootfile", OutputRootfile);
-        if (debug) std::cout << cn << mn << "OutputRootfile is ON" << std::endl;
-        std::cout << cn << mn << "OutputRootfile= "<< OutputRootfile << std::endl;
+        if (OutputRootfile) std::cout << cn << mn << "OutputRootfile is ON" << std::endl;
+        if (debug) std::cout << cn << mn << "OutputRootfile= "<< OutputRootfile << std::endl;
 
 	OutputGraphicFormat = reader->Get("GEN", "output_graphicformat", OutputGraphicFormat);
         if (debug) std::cout << cn << mn << "OutputGraphicFormat= "<< OutputGraphicFormat << std::endl;
 
 	//Set Defaults
+        if (debug) std::cout << cn << mn << "SetDefaults " << std::endl;
 	this->SetDefaults();
 
 	//Enable all debug configurations if debug is on

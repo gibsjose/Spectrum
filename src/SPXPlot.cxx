@@ -1759,23 +1759,34 @@ void SPXPlot::DrawLegend(void) {
 
     if (debug) std::cout<<cn<<mn<<"All bands have same properties !"<< std::endl;
 
-    if (!pdfsdifferent) {
+    if (!pdfsdifferent&&!ratioonly) {
      TString opt="";
      if (steeringFile->GetPlotMarker()) opt="P";
      if (steeringFile->GetPlotBand()) opt="LF";
-     TString text="NLO QCD ";
+     TString label="NLO QCD ";
      TGraphAsymmErrors * gband=pdf->GetTotalBand();
      if (icross==0) {
-      text+=pdf->GetPDFName();
-      if (!scalechoicedifferent) {
-       if (nlouncertainty) leg->AddEntry(gband, text, opt);
-      }
+      label+=pdf->GetPDFName();
+
+       if (nlouncertainty) {
+        if (label.Sizeof()>namesize) namesize=label.Sizeof();
+        if (debug) std::cout<<cn<<mn<<"Add in legend gband= "<<gband->GetName()<<" namesize= "<<namesize<<std::endl;
+        if (scalechoicedifferent) 
+	 leg->AddEntry((TObject*)0, label, "");
+        else 
+         leg->AddEntry(gband, label, opt);
+       }
+
      } 
      if (scalechoicedifferent) {
       SPXGrid * grid=crossSections[icross].GetGrid();
-      TString scalename="#mu_{R} = #mu_{F}=";
-      scalename+=grid->GetScaleFunctionalForm();
-      if (nlouncertainty) leg->AddEntry(gband,scalename, opt);
+      TString label="#mu_{R} = #mu_{F}=";
+      label+=grid->GetScaleFunctionalForm();
+      if (nlouncertainty) {
+       if (label.Sizeof()>namesize) namesize=label.Sizeof();
+       if (debug) std::cout<<cn<<mn<<"Add in legend gband= "<<gband->GetName()<<" namesize= "<<namesize<<std::endl;
+       leg->AddEntry(gband,label, opt);
+      }
      }
     } else {
 
@@ -2116,6 +2127,13 @@ void SPXPlot::DrawLegend(void) {
    if (TString(label).Sizeof()>leginfomax) leginfomax=TString(label).Sizeof();
    leginfo->AddEntry((TObject*)0, label,"");
   }       
+
+  //if (!pdfsdifferent&&ratioonly) {
+  // TString label="NLO QCD ";
+  // label+==grid->GetPDFName();
+  // if (label.Sizeof()>leginfomax) leginfomax=label.Sizeof();
+  // leginfo->AddEntry((TObject*)0, label,"");
+  //}
 
   if (steeringFile->GetScaleFunctionalFormLabel() ) {
    if (!scalechoicedifferent) {

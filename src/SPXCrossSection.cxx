@@ -249,7 +249,6 @@ void SPXCrossSection::ApplyCorrections() {
   std::cout<<cn<<mn<<"Available corrections from Grid ncorr= "<<ncorr<<" requested to include bncorr= "<<bncorr<<std::endl;
  }
 
-
  if (gridcorrection==0)
   std::cout<<cn<<mn<<"WARNING: gridcorrection not defined ncorr= "<<ncorr<<std::endl;
 
@@ -272,6 +271,12 @@ void SPXCrossSection::ApplyCorrections() {
   }
 
   bool includeinband=mainsteeringFile->GetGridCorrectionToBand(i);
+
+  //correct nominal graph
+  SPXGraphUtilities::MatchBinning(nominal, gcorr, true);
+  SPXGraphUtilities::Multiply(nominal,gcorr,1);
+
+ // correct PDF band
   pdf->ApplyBandCorrection(gcorr,corrLabel,includeinband);
  }
 

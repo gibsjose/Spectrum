@@ -6,6 +6,9 @@
 
 ## Change Log
 
+  -SPXCrossSection::ApplyCorrections 
+   correct now also nominal TGraphErrror for hadronisation and grid corrections
+
  -SPXPlot, SPXDataSteering, SPXGridSteering
   included flag to indicate if Data or Grids are divided by the
   double differential bin width and take this into account in 
