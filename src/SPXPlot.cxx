@@ -1145,12 +1145,13 @@ void SPXPlot::DrawLegend(void) {
   //std::cout<<cn<<mn<<"scaleold= "<< scaleold <<" from Grid "<< grid->GetScaleFunctionalForm() << std::endl;
 
   bool bscale  =pdf->HasBandofType("_scale_");
+  bool bAlternativeScaleChoice  =pdf->HasBandofType("_AlternativeScaleChoice_");
   bool bpdf    =pdf->HasBandofType("_pdf_");
   bool balphas =pdf->HasBandofType("_alphas_");
   bool bbeam   =pdf->HasBandofType("_BeamUncertainty_");
   bool bhadcorr=pdf->HasBandofType("_corrections_");
 
-  if (bhadcorr && !(bscale&&bpdf&&balphas)) hadcorronly=true;
+  if (bhadcorr && !(bscale&&bpdf&&balphas&&bAlternativeScaleChoice)) hadcorronly=true;
 
   bandsdifferent=pdf->BandsHaveDifferentProperties();
   if (debug) {
@@ -1158,6 +1159,7 @@ void SPXPlot::DrawLegend(void) {
    if (bandsdifferent) std::cout<<cn<<mn<<"icross= "<<icross<<" Bands have different properties !"<< std::endl;
    else                std::cout<<cn<<mn<<"icross= "<<icross<<" Bands have same properties ! "<< std::endl;
 
+   if (bAlternativeScaleChoice) std::cout<<cn<<mn<<"Bands contains AlternativeScaleChoice uncertainty"<< std::endl;
    if (bscale)     std::cout<<cn<<mn<<"Bands contains scale uncertainty"<< std::endl;
    if (bpdf)       std::cout<<cn<<mn<<"Bands contains PDF uncertainty"<< std::endl;
    if (balphas)    std::cout<<cn<<mn<<"Bands contains AlphaS uncertainty"<< std::endl;
@@ -1414,6 +1416,11 @@ void SPXPlot::DrawLegend(void) {
    TString datalabel=data.at(idata)->GetLegendLabel();
    //datalabel.ReplaceAll("high-mu","");
 
+   if (steeringFile->GetLabelDate()) {
+    datalabel+=" ";
+    datalabel+=data.at(idata)->GetDate();
+   }
+
    vdatalabel.push_back(datalabel);
 
    if (!etascan) {
@@ -1621,6 +1628,7 @@ void SPXPlot::DrawLegend(void) {
     TGraphAsymmErrors * gband = pdf->GetBand(iband);
     if (gtype.compare(std::string("alphas"))==0) nlouncertainty=true;
     if (gtype.compare(std::string("scale"))==0)  nlouncertainty=true;
+    if (gtype.compare(std::string("AlternativeScaleChoice"))==0)  nlouncertainty=true;
     if (gtype.compare(std::string("pdf"))==0) {
      pdffound=true; nlouncertainty=true;
     }
@@ -1684,21 +1692,22 @@ void SPXPlot::DrawLegend(void) {
      TGraphAsymmErrors * gband   =pdf->GetBand(iband);
      std::string         gtype   =pdf->GetBandType(iband);
 
-     if (debug) std::cout << cn << mn <<"Different properties iband= "<<iband<<" gtype= "<< gtype.c_str()<< std::endl;
+     if (debug) {
+      std::cout << cn << mn <<" "<< std::endl;
+      std::cout << cn << mn <<"Different properties iband= "<<iband<<" gtype= "<< gtype.c_str()<< std::endl;
+     }
 
      TString label="";
      TString bandtype=TString(gtype);
 
-     //if (debug) 
-     std::cout<<cn<<mn<<"bandtype= "<<bandtype.Data()<<std::endl;
+     if (debug) std::cout<<cn<<mn<<"bandtype= "<<bandtype.Data()<<std::endl;
 
      bandtype.ToUpper();
-     if (bandtype.Contains("ALPHAS")) bandtype="#alpha_{s}";
+     if (bandtype.Contains("ALPHAS"))          bandtype="#alpha_{s}";
      if (bandtype.Contains("BEAMUNCERTAINTY")) bandtype="E_{beam}";
-     if (bandtype.Contains("SCALE"))  {
-      bandtype="Scale";
-     }
-     
+     if (bandtype.Contains("ALTERNATIVESCALECHOICE")) bandtype="Scale choice";
+     else if (bandtype.Contains("SCALE"))             bandtype="Scale variation";
+
      if (bandtype.Contains("TOTAL"))  bandtype="Total";
      if (gtype.compare(std::string("pdf"))==0)
       label=pdftype+" "+bandtype;
@@ -1708,9 +1717,8 @@ void SPXPlot::DrawLegend(void) {
      if (debug) std::cout<<cn<<mn<<"label= "<<label.Data()<<std::endl;
 
      if (steeringFile->GetPlotMarker()) { 
-      //std::cout<<cn<<mn<<" Plot marker "<<std::endl;
-      if (debug) std::cout<<cn<<mn<<"0 add in legend iband= "<<iband<<" gband= "<<gband->GetName()
-			  <<" label= "<<label.Data()<<std::endl;
+      if (debug) std::cout<<cn<<mn<<"add in legend iband= "<<iband<<" gband= "<<gband->GetName()
+			          <<" label= "<<label.Data()<<std::endl;
       if (label.Sizeof()>namesize) namesize=label.Sizeof();
       if (debug) std::cout << cn << mn <<"Add data label to legend: "<<label.Data()<< " namesize= "<<namesize<<std::endl;
       leg->AddEntry(gband, label, "P");
@@ -1723,27 +1731,37 @@ void SPXPlot::DrawLegend(void) {
      
       if(gname.Contains("_alphas_")) edgecolor=pci.alphasEdgeColor;
       if(gname.Contains("_scale_"))  edgecolor=pci.scaleEdgeColor;
+      if(gname.Contains("_AlternativeScaleChoice_")) edgecolor=pci.AlternativeScaleChoiceEdgeColor;
       if(gname.Contains("_pdf_"))    edgecolor=pci.pdfEdgeColor;
       if(gname.Contains("BeamUncertainty")) edgecolor=pci.beamuncertaintyEdgeColor;
       if(gname.Contains("_total_"))  edgecolor=pci.totalEdgeColor;
       if(gname.Contains("_corrections_")) edgecolor=pci.correctionsEdgeColor;
 
-      //int edgestyle  =pci.correctionsEdgeStyle;
-      std::cout<<cn<<mn<<gname.Data()<<" edgecolor= "<<edgecolor<<std::endl;      
+      //std::cout<<cn<<mn<<gname.Data()<<" edgecolor= "<<edgecolor<<std::endl;      
       if (edgecolor<0) {
        opt="L";
-       TString hname="h";
+       TString hname="";
        hname+=gband->GetName();
+       //hname.ReplaceAll(".txt","");
        hname+="LowEdge";
+       gDirectory->ls();
        TH1D *hedge=(TH1D*)gDirectory->Get(hname);
+       // need to use key since name has /
+       //TKey *key = gDirectory->GetKey(hname);
+       //if (!key) {
+       //std::cout<<cn<<mn<<"WARNING key not found "<<hname.Data()<<std::endl;
+       // std::cerr<<cn<<mn<<"WARNING key not found "<<hname.Data()<<std::endl;
+       //}
+       //TH1D* hedge = (TH1D*)key->ReadObjectAny(TH1D::Class());
        if (hedge) {
 	if (debug) std::cout<<cn<<mn<<"hedge line= "<<hedge->GetLineWidth()<<std::endl;      
+        leg->SetLineWidth(hedge->GetLineWidth());
         if (label.Sizeof()>namesize) namesize=label.Sizeof();
-        if (debug) std::cout<<cn<<mn<<"Add label to legend: "<<label.Data()<< " namesize= "<<namesize<<std::endl;
+        if (debug) std::cout<<cn<<mn<<"Add label to legend: "<<label.Data()<<" opt= "<<opt<<" namesize= "<<namesize<<std::endl;
         leg->AddEntry(hedge, label, TString(opt));
        } else {
         if (label.Sizeof()>namesize) namesize=label.Sizeof();
-	if (debug) std::cout<<cn<<mn<<"hedge= "<<hname<<" not found. Fill band "<<std::endl;      
+	if (debug) std::cout<<cn<<mn<<"hedge= "<<hname<<" not found. Fill graph instead "<<std::endl;      
         if (debug) std::cout<<cn<<mn<<"Add in legend iband= "<<iband<<" gband= "<<gband->GetName()<<" namesize= "<<namesize<<std::endl;
         leg->AddEntry(gband, label, TString(opt));
        }
@@ -2420,8 +2438,7 @@ void SPXPlot::InitializeCrossSections(void) {
 		//Update the Convolute File Map
 		//string theoryname=pci.pdfSteeringFile.GetFilename()+gband->GetName();
 		std::string theoryname=gband->GetName();
-                // 
-
+       
                 if (gtype.compare(std::string("pdf"))==0){
 		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.pdfMarkerStyle;
@@ -2430,6 +2447,7 @@ void SPXPlot::InitializeCrossSections(void) {
                  edgecolor  =pci.pdfEdgeColor;
                  edgestyle  =pci.pdfEdgeStyle;
                 } 
+
                 if (gtype.compare(std::string("scale"))==0){
 		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.scaleMarkerStyle;
@@ -2438,6 +2456,16 @@ void SPXPlot::InitializeCrossSections(void) {
                  edgecolor  =pci.scaleEdgeColor;
                  edgestyle  =pci.scaleEdgeStyle;
                 } 
+
+                if (gtype.compare(std::string("AlternativeScaleChoice"))==0){
+		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
+                 markerstyle=pci.AlternativeScaleChoiceMarkerStyle;
+                 fillcolor  =pci.AlternativeScaleChoiceFillColor;
+                 fillstyle  =pci.AlternativeScaleChoiceFillStyle;
+                 edgecolor  =pci.AlternativeScaleChoiceEdgeColor;
+                 edgestyle  =pci.AlternativeScaleChoiceEdgeStyle;
+                } 
+
                 if (gtype.compare(std::string("alphas"))==0){
 		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.alphasMarkerStyle;
@@ -2446,6 +2474,7 @@ void SPXPlot::InitializeCrossSections(void) {
                  edgecolor  =pci.alphasEdgeColor;
                  edgestyle  =pci.alphasEdgeStyle;
                 }
+
                 if (gtype.compare(std::string("BeamUncertainty"))==0){
 		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.beamuncertaintyMarkerStyle;
@@ -2467,6 +2496,7 @@ void SPXPlot::InitializeCrossSections(void) {
                   edgestyle  =pci.correctionsEdgeStyle;
                  } 
                 }
+
                 if (gtype.compare(std::string("total"))==0){
 		 //if (debug) std::cout << cn << mn <<" matched "<< gtype.c_str() <<std::endl;
                  markerstyle=pci.totalMarkerStyle;
@@ -2804,8 +2834,6 @@ void SPXPlot::InitializeData(void) {
 
 		if(debug) std::cout << cn << mn << "Added data with key = [" << key << "] to dataSet" << std::endl;
 
-		//SPXData dataInstance = SPXData(pci);
-
                 SPXData *dataInstance = new SPXData(pci);
                 if (!dataInstance) throw SPXGeneralException(cn+mn+"Problem to create dataInstance");
 
@@ -2829,8 +2857,12 @@ void SPXPlot::InitializeData(void) {
 
                 dataInstance->Parse();
                 
-		std::vector<std::string> removesyst=steeringFile-> GetSystematicClassesToRemove();
-		std::vector<std::string> containsyst=steeringFile-> GetSystematicClassesToKeep();
+                // >GetSystematicClassesTo* now included in PlotConfiguration since otherwise one can only do one plot
+		//std::vector<std::string> removesyst=steeringFile ->GetSystematicClassesToRemove();               
+		//std::vector<std::string> containsyst=steeringFile->GetSystematicClassesToKeep();
+                std::vector<std::string> removesyst=pci.removesystematicsclasses;
+                std::vector<std::string> containsyst=pci.containsystematicsclasses;
+
                 if (removesyst.size()>0 && containsyst.size()>0) {
                  std::ostringstream oss;
                  oss <<cn<<mn<<"You can either use option remove_systematic_group or contain_systematic_group but not both";
@@ -3302,6 +3334,14 @@ void SPXPlot::DrawBand(SPXPDF *pdf, std::string option, SPXPlotConfigurationInst
    edgestyle  =pci.scaleEdgeStyle;
    fillstyle  =pci.scaleFillStyle;
    markerstyle=pci.scaleMarkerStyle;
+  }
+
+  if (gname.Contains("_AlternativeScaleChoice_")) { 
+   fillcolor  =pci.AlternativeScaleChoiceFillColor;
+   edgecolor  =pci.AlternativeScaleChoiceEdgeColor;
+   edgestyle  =pci.AlternativeScaleChoiceEdgeStyle;
+   fillstyle  =pci.AlternativeScaleChoiceFillStyle;
+   markerstyle=pci.AlternativeScaleChoiceMarkerStyle;
   }
 
   if (gname.Contains("_alphas_")) { 

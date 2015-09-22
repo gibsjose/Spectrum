@@ -52,12 +52,15 @@ const std::string focn = "SPXPlotConfiguration::";
 const std::string foicn = "SPXPlotConfigurationInstance::";
 
 struct SPXPlotConfigurationInstance {
+
 	std::string dataDirectory;
 	std::string gridDirectory;
 	std::string pdfDirectory;
+
 	SPXDataSteeringFile dataSteeringFile;
 	SPXGridSteeringFile gridSteeringFile;
 	SPXPDFSteeringFile pdfSteeringFile;
+
 	int dataMarkerStyle;
 	int dataMarkerColor;
 
@@ -83,6 +86,12 @@ struct SPXPlotConfigurationInstance {
 	int scaleEdgeStyle;
 	int scaleMarkerStyle;
 
+	int AlternativeScaleChoiceFillColor;
+	int AlternativeScaleChoiceFillStyle;
+	int AlternativeScaleChoiceEdgeColor;
+	int AlternativeScaleChoiceEdgeStyle;
+	int AlternativeScaleChoiceMarkerStyle;
+
 	int alphasFillColor;
 	int alphasFillStyle;
 	int alphasEdgeColor;
@@ -104,6 +113,16 @@ struct SPXPlotConfigurationInstance {
 	double xScale;
 	double yScale;
 	unsigned int id;
+
+        std::vector<std::string> systematicsclasses;      // groups to display systematics
+        std::vector<int>         systematicsclassescolor; // groups to display systematics fill colors
+        std::vector<int>         systematicsclassesedgecolor; // groups to display systematics edge colors
+        std::vector<int>         systematicsclassesedgestyle; // groups to display systematics edge style
+        std::vector<int>         systematicsclassesedgewidth; // groups to display systematics edge line width
+
+        std::vector<std::string> removesystematicsclasses;      // groups to remove systematics
+        std::vector<std::string> containsystematicsclasses;     // groups to contain systematics
+
 
 	static bool debug;
 
@@ -140,6 +159,12 @@ struct SPXPlotConfigurationInstance {
 		scaleEdgeColor = PC_EMPTY_COLOR;
 		scaleMarkerStyle = PC_EMPTY_STYLE;
 
+		AlternativeScaleChoiceFillStyle = PC_EMPTY_STYLE;
+		AlternativeScaleChoiceFillColor = PC_EMPTY_COLOR;
+		AlternativeScaleChoiceEdgeStyle = PC_EMPTY_STYLE;
+		AlternativeScaleChoiceEdgeColor = PC_EMPTY_COLOR;
+		AlternativeScaleChoiceMarkerStyle = PC_EMPTY_STYLE;
+
 		alphasFillStyle = PC_EMPTY_STYLE;
 		alphasFillColor = PC_EMPTY_COLOR;
 		alphasEdgeStyle = PC_EMPTY_STYLE;
@@ -159,6 +184,15 @@ struct SPXPlotConfigurationInstance {
 		correctionsMarkerStyle = PC_EMPTY_STYLE;
 		xScale = 1.0;
 		yScale = 1.0;
+
+		//systematicsclasses.clear();     
+		//systematicsclassescolor.clear();
+		//systematicsclassesedgecolor.clear();
+		//systematicsclassesedgestyle.clear(); 
+		//systematicsclassesedgewidth.clear(); 
+
+		//removesystematicsclasses.clear();
+                //containsystematicsclasses.clear(); 
 	}
 
 	//Returns true if ALL required fields are empty
@@ -261,7 +295,7 @@ struct SPXPlotConfigurationInstance {
 	const std::string ToString(void) const {
 		std::ostringstream tmp;
 
-		tmp << "\t Data Marker Style: " << dataMarkerStyle << std::endl;
+		tmp << "\t: " << dataMarkerStyle << std::endl;
 		tmp << "\t Data Marker Color: " << dataMarkerColor << std::endl;
 
 		tmp << "\t Grid Marker Style: " << gridMarkerStyle << std::endl;
@@ -286,6 +320,12 @@ struct SPXPlotConfigurationInstance {
 		tmp << "\t Scale Edge Color: "   << scaleEdgeColor << std::endl;
 		tmp << "\t Scale Marker Style: " << scaleMarkerStyle << std::endl;
 
+		tmp << "\t AlternativeScaleChoice Fill Style: "   << AlternativeScaleChoiceFillStyle << std::endl;
+		tmp << "\t AlternativeScaleChoice Fill Color: "   << AlternativeScaleChoiceFillColor << std::endl;
+		tmp << "\t AlternativeScaleChoice Edge Style: "   << AlternativeScaleChoiceEdgeStyle << std::endl;
+		tmp << "\t AlternativeScaleChoice Edge Color: "   << AlternativeScaleChoiceEdgeColor << std::endl;
+		tmp << "\t AlternativeScaleChoice Marker Style: " << AlternativeScaleChoiceMarkerStyle << std::endl;
+
 		tmp << "\t AlphaS Fill Style: "   << alphasFillStyle << std::endl;
 		tmp << "\t AlphaS Fill Color: "   << alphasFillColor << std::endl;
 		tmp << "\t AlphaS Edge Style: "   << alphasEdgeStyle << std::endl;
@@ -306,6 +346,28 @@ struct SPXPlotConfigurationInstance {
 
 		tmp << "\t X Scale: " << xScale << std::endl;
 		tmp << "\t Y Scale: " << yScale << std::endl;
+
+                for (int i=0; i<systematicsclasses.size(); i++)
+		  tmp << "\t systematicsclasses["<<i<<"]: " << systematicsclasses.at(i) << std::endl;
+
+                for (int i=0; i<systematicsclassescolor.size(); i++)
+		  tmp << "\t systematicsclassescolor["<<i<<"]: " << systematicsclassescolor.at(i) << std::endl;
+
+                for (int i=0; i<systematicsclassesedgecolor.size(); i++)
+		  tmp << "\t systematicsclassesedgecolor["<<i<<"]: " << systematicsclassesedgecolor.at(i) << std::endl;
+
+                for (int i=0; i<systematicsclassesedgestyle.size(); i++)
+		  tmp << "\t systematicsclassesedgestyle["<<i<<"]: " << systematicsclassesedgestyle.at(i) << std::endl;
+
+                for (int i=0; i<systematicsclassesedgewidth.size(); i++)
+		  tmp << "\t systematicsclassesedgewidth["<<i<<"]: " << systematicsclassesedgewidth.at(i) << std::endl;
+
+                for (int i=0; i<removesystematicsclasses.size(); i++)
+		  tmp << "\t removesystematicsclasses["<<i<<"]: " << removesystematicsclasses.at(i) << std::endl;
+
+                for (int i=0; i<containsystematicsclasses.size(); i++)
+		  tmp << "\t containssystematicsclasses["<<i<<"]: " << containsystematicsclasses.at(i) << std::endl;
+
 		return tmp.str();
 	}
 
@@ -466,6 +528,7 @@ public:
 
 		return filenameToPCIMap[filename];
 	}
+
 
 private:
 	static bool debug;

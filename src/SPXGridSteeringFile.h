@@ -44,6 +44,8 @@ private:
 	std::string author;						       //Grid author
 	std::string lumiConfigFile;					       //Sub-process configuration file for the grid program (APPLgrid)
 	std::string scaleform;						       //Choice of renormalization scale (Q^2)
+	std::string scaleformAlternativeScaleChoice;			       //Choice of renormalization scale alternative choice (Q^2)
+
 	std::string referenceJournalName;				       //Name of reference journal for the corresponding dataset
 	std::string referenceLinkToArXiv;				       //Link to reference on arXiv for the corresponding dataset
 	std::string nloProgramName;					       //NLO Program used to generate the grids
@@ -64,6 +66,8 @@ private:
 	//[GRID]
 	std::vector <std::string> vgridFilepath;
 	std::string gridFilepath;
+
+	std::vector <std::string> vgridFilepathAlternativeScaleChoice;
 
 	std::vector<std::string> correctionFiles;
 	std::vector<std::string> correctionFilesLabel;
@@ -113,6 +117,10 @@ public:
 		return this->name;
 	}
 
+	//const std::string & GetAlternativeScaleChoiceName(void) const {
+	//	return this->name;
+	//}
+
 	const std::string & GetComments(void) const {
 		return this->comments;
 	}
@@ -127,6 +135,10 @@ public:
 
 	const std::string & GetScaleFunctionalForm(void) const {
 		return this->scaleform;
+	}
+
+	const std::string & GetScaleAlternativeFunctionalForm(void) const {
+		return this->scaleformAlternativeScaleChoice;
 	}
 
 	const std::string & GetReferenceJournalName(void) const {
@@ -177,7 +189,6 @@ public:
 		return this->yScale;
 	}
 
-
 	const std::string & GetGridFilepath(void) const {
 		return this->gridFilepath;
 	}
@@ -185,7 +196,12 @@ public:
 	std::vector <std::string > GetGridFilepathVector(void) const {
 		return this->vgridFilepath;
 	}
+
+	std::vector <std::string > GetGridFilepathAlternativeScaleChoiceVector(void) const {
+		return this->vgridFilepathAlternativeScaleChoice;
+	}
  
+
         int GetNumberofGrids() {
 	 return vgridFilepath.size();
         }
@@ -210,6 +226,22 @@ public:
  	   //std::cout<<" oldname= "<<str.c_str()<<" newname= "<<newname.c_str()<<std::endl;
 
            vgridFilepath.push_back(newname);
+ 	   //std::cout<<" replaced name= "<<vgridFilepath.at(igrid).c_str()<<std::endl;
+          }
+	}
+
+	void PrependGridFilepathAlternativeScaleChoiceVector(std::string &path) {
+	  //std::cout<<" number of grids= "<<vgridFilepath.size()<<std::endl;
+	  std::vector <std::string> tmp;
+          tmp=vgridFilepathAlternativeScaleChoice;
+          vgridFilepathAlternativeScaleChoice.clear();
+	  for (int igrid=0; igrid<tmp.size(); igrid++) { 
+	   std::string str=tmp.at(igrid);
+	   std::string newname = path + "/" + str;
+
+ 	   //std::cout<<" oldname= "<<str.c_str()<<" newname= "<<newname.c_str()<<std::endl;
+
+           vgridFilepathAlternativeScaleChoice.push_back(newname);
  	   //std::cout<<" replaced name= "<<vgridFilepath.at(igrid).c_str()<<std::endl;
           }
 	}

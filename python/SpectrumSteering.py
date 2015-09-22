@@ -35,8 +35,9 @@ class SpectrumSteering(object):
      vardict=self.__dict__
 
      for key in vardict:
-      print 'Set ', key, ' to', vardict[key]
-      self.SetVar(key)
+      #print self.name,name,'Set ', key, ' to', vardict[key]
+      if key!='name':
+       self.SetVar(key)
 
      #for key in self.__dict__:
      # print 'Set ', key, ' to', self.__dict__[key]
@@ -70,8 +71,9 @@ class SpectrumSteering(object):
        if val:
         txt+=str(variable)+' = '+val
 
-      #print ' txt= ',txt
-     SpectrumSteering.fout.write(txt+'\n')
+     if txt:
+      print self.name,' write to file: ',txt
+      SpectrumSteering.fout.write(txt+'\n')
      return
 
 
@@ -96,10 +98,27 @@ class Graph(SpectrumSteering):
     self.plot_staggered = True
     self.match_binning = True
     self.apply_grid_corr = True
+    self.apply_nominal_corr = True
     self.show_systematics_as_lines = 0.
     self.show_total_systematics = 0
     self.order_systematic_colorbyalphabeth = True
     self.label_sqrt_s = True
+    self.label_date = True
+    self.label_scaleform = True
+    self.label_scaleform_alternative_scale_choice= True
+    self.label_informationlegend =""
+
+    self.band_with_pdf= True 
+    self.band_with_alphas= True 
+    self.band_with_scale= True 
+    self.band_total= True 
+    self.band_with_gridcorrection= True 
+
+    self.y_overlay_min=0
+    self.y_overlay_max=0
+    self.y_ratio_min=0
+    self.y_ratio_max=0
+
     self.x_legend = 0.
     self.y_legend = 0.
     self.x_info_legend = 0.
@@ -111,8 +130,8 @@ class Graph(SpectrumSteering):
 
 class Plot(SpectrumSteering):
 
-   name='[PLOT_0]'    # put Plot instance in a call later
-
+   name='[PLOT_XXX]'
+    
    def __init__(self):
      self.plot_type = ''
      self.pdf_directory = ''
@@ -137,3 +156,12 @@ class Plot(SpectrumSteering):
      self.ratio_title = ''
      self.ratio_style_0 = ''
      self.ratio_0 = ''
+
+
+
+class EtaLoop:
+  etalist = []
+
+  def __init__(self, ieta):
+     self.ieta = ieta
+     self.etalist.append(self)

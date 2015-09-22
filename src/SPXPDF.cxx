@@ -149,6 +149,7 @@ void SPXPDF::SetUpParameters(SPXPDFSteeringFile *psf) {
  h_PDF_results=0;
  h_AlphaS_results=0;
  h_Scale_results=0;
+ h_AlternativeScaleChoice_results=0;
  h_BeamUncertainty_results=0;
  h_Total_results=0;
 
@@ -211,6 +212,7 @@ void SPXPDF::ReadPDFSteeringFile(SPXPDFSteeringFile *psf) {
   PDFBandType = psf->GetBandType().ToString();
 
   PDFErrorType = psf->GetErrorType().ToString();
+
   if(psf->GetErrorType().IsAlphaS()) {
    if(debug) std::cout<<cn<<mn<<"turn do_AlphaS ON "<< std::endl;
    do_AlphaS = true;
@@ -264,15 +266,10 @@ TH1D *  SPXPDF::GetHisto(double renscale, double facscale){
  std::string mn = "GetHisto: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
- //bool varyscale=false;
- //if (renscale!=1. || facscale!=1) varyscale=true;
- //if (varyscale) {
- //  if (debug) std::cout<<cn<<mn<<"Scale variation renscale= "<<renscale<<" facscale= "<<facscale<<std::endl;
- //}
-
  TString name="xsec_pdf_"+default_pdf_set_name;
  if (debug) std::cout<<cn<<mn<<"Number of grids= "<<ngrid<<std::endl;
  TH1D* htmpsum=0;
+ //TH1D* htmpsumAlternativeScaleChoice=0;
  // if beam uncertainty should be calculated, here we need the default cross section
  double xEscale=1.;
  if (!do_Escale) xEscale=Escale; 
@@ -302,24 +299,47 @@ TH1D *  SPXPDF::GetHisto(double renscale, double facscale){
   if (debug) std::cout<<cn<<mn<<"nLoops= "<<nLoops<<" renscale= "<<renscale<<" facscale= "<<facscale<<" xEscale= "<<xEscale<<std::endl;
 
   htmpsum= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renscale, facscale, xEscale);
+  if (!htmpsum) {
+   throw SPXParseException(cn+mn+"Can not find histogram from convolution !");
+  }
 
   if (debug) std::cout<<cn<<mn<<"Set htmpsum name to "<<name.Data()<<std::endl;
   htmpsum->SetName(name);
 
+  if (debug) std::cout<<cn<<mn<<"Set htmpsum name to "<<name.Data()<<std::endl;
+  htmpsum->SetName(name);
+
+  //if (do_AlternativeScaleChoice && (renscale==1&&facscale==1)) {
+  //
+  // my_gridAlternativeScaleChoice=spxgrid->GetGridAlternativeScaleChoice(0);
+  // if (!my_gridAlternativeScaleChoice) {
+  //  std::cout<<cn<<mn<<"Warning: no alternative scale choice grid found ! "<<std::endl; 
+  // }
+
+  // htmpsumAlternativeScaleChoice= (TH1D*) my_gridAlternativeScaleChoice->convolute( getPDF, alphasPDF, nLoops, renscale, facscale, xEscale);
+  //if (!htmpsumAlternativeScaleChoice) {
+  //  throw SPXParseException(cn+mn+"Can not find histogram from convolution !");
+  // }
+  //}
+
  } else {
   applgridok=false;
   TH1D *htmp=0;
+  //TH1D *htmpAlternativeScaleChoice=0;
+
   for (int igrid=0; igrid<ngrid; igrid++) {
    my_grid=spxgrid->GetGrid(igrid);
    if (!my_grid) { 
     if (debug) std::cout<<cn<<mn<<"igrid= "<<igrid<<"No applgrid found gridname= "<<TString(gridName).Data()<<std::endl;
     throw SPXParseException(cn+mn+"Grid not found !");
    }
-   //
+ 
    gridName=spxgrid->GetName();
-   //
-
+ 
    htmp= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renscale, facscale, xEscale);
+   if (!htmp) {
+    throw SPXParseException(cn+mn+"Can not find histogram from convolution !");
+   }
 
    htmp->SetName(TString(gridName));
    if (debug) {
@@ -329,9 +349,24 @@ TH1D *  SPXPDF::GetHisto(double renscale, double facscale){
     htmp->Print("all");
    }
 
-   if (igrid==0) htmpsum=htmp;
-   else {
+   //if (do_AlternativeScaleChoice && (renscale==1&&facscale==1)) {
+   // appl::grid *gridAlternativeScaleChoice=spxgrid->GetGridAlternativeScaleChoice(igrid);
+   // if (!gridAlternativeScaleChoice) {
+   //  throw SPXParseException(cn+mn+"Alternative scale choice grid not found !");
+   // }
+
+   // htmpAlternativeScaleChoice= (TH1D*) gridAlternativeScaleChoice->convolute( getPDF, alphasPDF, nLoops, renscale, facscale, xEscale);
+   // if (!htmpAlternativeScaleChoice) {
+   //  throw SPXParseException(cn+mn+"Can not find AlternativeScaleChoice histogram from convolution !");
+   // }
+   //}
+
+   if (igrid==0) {
+    htmpsum=htmp;
+    //if (do_AlternativeScaleChoice && (renscale==1&&facscale==1)) htmpsumAlternativeScaleChoice=htmpAlternativeScaleChoice;
+   } else {
     SPXGraphUtilities::Add(htmpsum,htmp);
+    //if (do_AlternativeScaleChoice && (renscale==1&&facscale==1) ) SPXGraphUtilities::Add(htmpsumAlternativeScaleChoice,htmpAlternativeScaleChoice);
    }
    if (debug) {
     std::cout<<cn<<mn<<"igrid= "<<igrid<<" Print "<<htmpsum->GetName()<<std::endl;
@@ -347,19 +382,18 @@ TH1D *  SPXPDF::GetHisto(double renscale, double facscale){
   applgridok=true; 
  }
 
+ //if (do_AlternativeScaleChoice && (renscale==1&&facscale==1) ) {
+ // if (debug) std::cout<<cn<<mn<<"fill h_errors_AlternativeScaleChoice with htmpsum and htmpsumAlternativeScaleChoice  "<<std::endl;
+ // h_errors_AlternativeScaleChoice.clear();
+ // h_errors_AlternativeScaleChoice.push_back(htmpsum);
+ // h_errors_AlternativeScaleChoice.push_back(htmpsumAlternativeScaleChoice);
+ //}
+
  if (debug) {
   if (applgridok) std::cout<<cn<<mn<<"applgridok flag is ON "<<std::endl;
   else            std::cout<<cn<<mn<<"applgridok flag is OFF "<<std::endl;
   std::cout<<cn<<mn<<"Returning absolute"<<htmpsum->GetName()<<std::endl;
   htmpsum->Print("all");
-  //
-  //TString hname=TString("hratio_")+htmpsum->GetName()+TString("_divided_by_");
-  //hname+=htmpsum->GetName();
-  //TH1D * hratio=(TH1D*) hvar->Clone(hname);
-  //hratio->Divide(hpdfdefault);
-  //std::cout<<cn<<mn<<"Returning relative"<<hratio->GetName()<<std::endl;
-  //hratio->Print("all");
-
  }
  return htmpsum;
 };                 
@@ -383,6 +417,8 @@ void SPXPDF::Initialize()
   else            std::cout<<cn<<mn<<"do_AlphaS OFF" <<std::endl;
   if (do_Scale)   std::cout<<cn<<mn<<"do_Scale  ON " <<std::endl;
   else            std::cout<<cn<<mn<<"do_Scale  OFF" <<std::endl;
+  if (do_AlternativeScaleChoice)   std::cout<<cn<<mn<<"do_AlternativeScaleChoice ON " <<std::endl;
+  else            std::cout<<cn<<mn<<"do_AlternativeScaleChoice  OFF" <<std::endl;
   if (do_Escale)  std::cout<<cn<<mn<<"do_Escale  ON " <<std::endl;
   else            std::cout<<cn<<mn<<"do_Escale  OFF" <<std::endl;
   if (do_Total)   std::cout<<cn<<mn<<"do_Total  ON" <<std::endl;
@@ -495,7 +531,7 @@ void SPXPDF::Initialize()
  h_errors_PDF.clear();
  h_errors_AlphaS.clear();
  h_errors_Scale.clear();
- h_errors_Scale.clear();
+ h_errors_AlternativeScaleChoice.clear();
  h_errors_BeamUncertainty.clear();
 
  TH1D* temp_hist=0;
@@ -619,25 +655,43 @@ void SPXPDF::Initialize()
   h_errors_AlphaS.push_back(temp_hist);
   h_AlphaS_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
   TString name="xsec_alphas_"+default_pdf_set_name;
-  if (spxgrid) name+="_"+gridName;;
+  //if (spxgrid) name+="_"+gridName;;
   if (h_AlphaS_results) h_AlphaS_results->SetName(name);
  }
+
  if (do_Scale)   {
   h_Scale_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
   TString name="xsec_scale_"+default_pdf_set_name;
-  if (spxgrid) name+="_"+gridName;;
+  //if (spxgrid) name+="_"+gridName;
+  //std::cout<<cn<<mn<<"HUHU set h_Scale_results to name= "<<name<<std::endl;
   if (h_Scale_results) h_Scale_results->SetName(name);
  }
+
+ if (do_AlternativeScaleChoice)   {
+  std::string gridNameAlternativeScaleChoice="";
+  h_AlternativeScaleChoice_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
+  //TString name="xsec_AlternativeScaleChoice_"+default_pdf_set_name;
+  TString name="xsec_AlternativeScaleChoice_"+default_pdf_set_name;
+  if (spxgrid) {
+   //gridNameAlternativeScaleChoice+=spxgrid->GetAlternativeScaleChoiceName();
+   //gridNameAlternativeScaleChoice+=gridName;
+   name+="_"+gridNameAlternativeScaleChoice;
+  }
+  //std::cout<<cn<<mn<<"HUHU set h_AlternativeScaleChoice_results to name= "<<name<<std::endl;
+  if (h_AlternativeScaleChoice_results) h_AlternativeScaleChoice_results->SetName(name);
+ }
+
  if (do_PDFBand) {
   h_PDF_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
   TString name="xsec_pdf_"+default_pdf_set_name;
-  if (spxgrid) name+="_"+gridName;
+  //if (spxgrid) name+="_"+gridName;
   if (h_PDF_results) h_PDF_results->SetName(name);
  }
+
  if (do_Escale) {
   h_BeamUncertainty_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
   TString name="xsec_BeamUncertainty_"+default_pdf_set_name;
-  if (spxgrid) name+="_"+gridName;
+  //if (spxgrid) name+="_"+gridName;
   if (h_BeamUncertainty_results) h_BeamUncertainty_results->SetName(name);
  }
  // Now do the scale variations
@@ -708,7 +762,7 @@ void SPXPDF::Initialize()
      if (!hvar) std::cout<<cn<<mn<<"hvariation["<<iscale<<"] Histogram hvar not found "<<std::endl;
      TString hname=TString("hratio_")+hdef->GetName()+TString("_divided_by_");
      hname+=hvar->GetName();
-     if (spxgrid) hname+="_"+gridName;;
+     //if (spxgrid) hname+="_"+gridName;;
      TH1D * hratio=(TH1D*) hvar->Clone(hname);
      hratio->Divide(hdef);
      //std::cout<<cn<<mn<<" hvariation["<<iscale<<"]="<<hvar->GetName()<<std::endl;
@@ -1149,7 +1203,7 @@ void SPXPDF::Initialize()
     std::cout<<cn<<mn<<"TIMER CalcSystErrors  done t0= "<< t1.time()<<" [ms]"<<std::endl;
 #endif
 
- if (debug) std::cout<<cn<<mn<<"Now fill map  Mapallbands "<<std::endl;
+ if (debug) std::cout<<cn<<mn<<"Now fill map Mapallbands "<<std::endl;
 
  if (do_PDFBand) if(h_PDF_results) {
   if (debug) std::cout<<cn<<mn<<"Fill in map "<<h_PDF_results->GetName()<<std::endl;
@@ -1162,6 +1216,13 @@ void SPXPDF::Initialize()
   if (Mapallbands.count("scale")>0) std::cout<<cn<<mn<<"WARNING: Mapallbands[scale] already filled ! "<<std::endl;
   Mapallbands["scale"]=h_Scale_results;
  }
+
+ if (do_AlternativeScaleChoice) if(h_AlternativeScaleChoice_results){
+  if (debug) std::cout<<cn<<mn<<"Fill in map "<<h_AlternativeScaleChoice_results->GetName()<<std::endl;
+  if (Mapallbands.count("AlternativeScaleChoice")>0) std::cout<<cn<<mn<<"WARNING: Mapallbands[AlternativeScaleChoice] already filled ! "<<std::endl;
+  Mapallbands["AlternativeScaleChoice"]=h_AlternativeScaleChoice_results;
+ }
+
 
  if (do_AlphaS) if (h_AlphaS_results) {
   if (debug) std::cout<<cn<<mn<<"Fill in map "<<h_AlphaS_results->GetName()<<std::endl;
@@ -1212,6 +1273,7 @@ void SPXPDF::CalcSystErrors()
  if (debug) {
   std::cout<<cn<<mn<<"Start systematic error calculation for: "<<PDFtype<<std::endl;
   if (do_Scale)  std::cout<<cn<<mn<<"Calculate Scale uncertainty band "<<std::endl;
+  if (do_AlternativeScaleChoice) std::cout<<cn<<mn<<"Calculate alternative scale choice uncertainty band "<<std::endl;
   if (do_PDFBand)std::cout<<cn<<mn<<"Calculate PDF uncertainty band "<<std::endl;
   if (do_AlphaS) std::cout<<cn<<mn<<"Calculate AlphaS uncertainty band "<<std::endl;
   if (do_Escale) std::cout<<cn<<mn<<"Calculate beam energy uncertainty band "<<std::endl;
@@ -1220,6 +1282,7 @@ void SPXPDF::CalcSystErrors()
  if (do_PDFBand) CalcPDFBandErrors();
  if (do_AlphaS ) CalcAlphaSErrors();
  if (do_Scale)   CalcScaleErrors();
+ if (do_AlternativeScaleChoice) CalcAlternativeScaleChoiceErrors();
  if (do_Escale)  CalcBeamEnergyErrors();
 
  if (debug) std::cout<<cn<<mn<<"End systematic error calculation for: "<<PDFtype<<std::endl;
@@ -1565,8 +1628,28 @@ void SPXPDF::CalcPDFBandErrors()
      if (h_errors_Scale.at(0)==0) {    
       std::cerr<<cn<<mn<<"WARNING: h_Scale_errors not found. Can not be updated !"<<std::endl;
      } else {
-      if (debug) std::cout<<cn<<mn<<"Update h_errors_Scale[0] "<<h_errors_AlphaS.at(0)->GetName()<<" with x= "<<x_val<<" average= "<<average<<std::endl;
+      if (debug) std::cout<<cn<<mn<<"Update h_errors_Scale[0] "<<h_errors_Scale.at(0)->GetName()<<" with x= "<<x_val<<" average= "<<average<<std::endl;
       h_errors_Scale.at(0)->SetBinContent(bi,x_val,average); 
+     }
+    } 
+   }
+
+   if (do_AlternativeScaleChoice) {
+    if (h_AlternativeScaleChoice_results)  {
+    if (debug) std::cout<<cn<<mn<<"Update h_AlternativeScaleChoice_results with x= "<<x_val<<" average= "<<average<<std::endl;
+    h_AlternativeScaleChoice_results ->SetPoint(bi-1, x_val,average);
+    } else {
+     std::cerr<<cn<<mn<<"WARNING: h_AlternativeScaleChoice_results not found. Can not be updated !"<<std::endl;
+    }
+
+    if (h_errors_AlternativeScaleChoice.size()==0) {
+     std::cerr<<cn<<mn<<"WARNING: h_AlternativeScaleChoice_errors not found. Can not be updated !"<<std::endl;
+    } else {
+     if (h_errors_AlternativeScaleChoice.at(0)==0) {    
+      std::cerr<<cn<<mn<<"WARNING: h_AlternativeScaleChoice_errors not found. Can not be updated !"<<std::endl;
+     } else {
+      if (debug) std::cout<<cn<<mn<<"Update h_errors_AlternativeScaleChoice[0] "<<h_errors_AlternativeScaleChoice.at(0)->GetName()<<" with x= "<<x_val<<" average= "<<average<<std::endl;
+      h_errors_AlternativeScaleChoice.at(0)->SetBinContent(bi,x_val,average); 
      }
     } 
    }
@@ -1803,13 +1886,126 @@ void SPXPDF::CalcScaleErrors()
  SPXGraphUtilities::SetColors( h_Scale_results,fillColorCode);
 
  if (debug) {
-   std::cout<<cn<<mn<<" Line Color= "<<h_Scale_results->GetLineColor()<<std::endl;
-   std::cout<<cn<<mn<<" Fill Color= "<<h_Scale_results->GetFillColor()<<std::endl;
-   std::cout<<cn<<mn<<" h_Scale_results "<< h_Scale_results->GetName()<<std::endl;
+  std::cout<<cn<<mn<<" Line Color= "<<h_Scale_results->GetLineColor()<<std::endl;
+  std::cout<<cn<<mn<<" Fill Color= "<<h_Scale_results->GetFillColor()<<std::endl;
+  std::cout<<cn<<mn<<" h_Scale_results "<< h_Scale_results->GetName()<<std::endl;
   h_Scale_results->Print("all");
  }
 
  if (debug) std::cout<<cn<<mn<<"End calculation of ScaleErrors for: "<<PDFtype<<std::endl;
+}
+
+void SPXPDF::CalcAlternativeScaleChoiceErrors()
+{
+ std::string mn = "CalcAlternativeScaleChoiceErrors:";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ if (debug) std::cout<<cn<<mn<<"Starting calculation of AlternativeScaleChoiceErrors for: "<<PDFtype<<std::endl;
+
+ int ngrid=spxgrid->GetNumberofAlternativeScaleChoiceGrids();
+ if (ngrid!=1) throw SPXParseException(cn+mn+"More then one alternative grids not yet implemented !");
+ 
+ my_gridAlternativeScaleChoice=spxgrid->GetGridAlternativeScaleChoice(0);
+ if (!my_gridAlternativeScaleChoice) {
+  std::cout<<cn<<mn<<"Warning: no alternative scale choice grid found ! "<<std::endl; 
+  std::cerr<<cn<<mn<<"Warning: no alternative scale choice grid found ! "<<std::endl; 
+  return;
+ }
+
+ TH1D *htmpsumAlternativeScaleChoice= (TH1D*) my_gridAlternativeScaleChoice->convolute( getPDF, alphasPDF, nLoops);
+ if (!htmpsumAlternativeScaleChoice) {
+  throw SPXParseException(cn+mn+"Can not find histogram from convolution !");
+ }
+
+ h_errors_AlternativeScaleChoice.push_back(htmpsumAlternativeScaleChoice);
+
+ //for (int igrid=0; igrid<ngrid; igrid++) {
+ // if (do_AlternativeScaleChoice && (renscale==1&&facscale==1)) {
+ // appl::grid *gridAlternativeScaleChoice=spxgrid->GetGridAlternativeScaleChoice(igrid);
+ // if (!gridAlternativeScaleChoice) {
+ //  throw SPXParseException(cn+mn+"Alternative scale choice grid not found !");
+ //}
+
+ // htmpAlternativeScaleChoice= (TH1D*) gridAlternativeScaleChoice->convolute( getPDF, alphasPDF, nLoops, renscale, facscale, xEscale);
+ // if (!htmpAlternativeScaleChoice) {
+ //  throw SPXParseException(cn+mn+"Can not find AlternativeScaleChoice histogram from convolution !");
+ // }
+ //}
+ //if (do_AlternativeScaleChoice && (renscale==1&&facscale==1)) htmpsumAlternativeScaleChoice=htmpAlternativeScaleChoice;
+
+ //if (h_errors_AlternativeScaleChoice.size()==0){
+ // std::cout<<cn<<mn<<"Warning: h_errors_AlternativeScaleChoice not filled ! Should be filled by default "<<std::endl; 
+ // return;
+ //}
+
+ //if (h_errors_AlternativeScaleChoice.size()<2){
+ // std::cout<<cn<<mn<<"Warning: h_errors_AlternativeScaleChoice needs default and alternative scale choice "<<std::endl; 
+ // return;
+ //}
+
+ if (debug) {
+  TH1D *htmp=(TH1D*)h_errors_AlternativeScaleChoice.at(0)->Clone("htmp");
+  htmp->Divide(hpdfdefault);
+
+  std::cout<<cn<<mn<<"Ratio alternative/nominal "<<std::endl;
+  htmp->Print("all");
+ }
+
+ for (int ibin=1;ibin<h_errors_AlternativeScaleChoice[0]->GetNbinsX()+1;++ibin){
+  double max=h_errors_AlternativeScaleChoice[0]->GetBinContent(ibin);
+  //std::cout<<cn<<mn<<ibin<<" nom= "<<max<<std::endl;
+  double min=max;
+  double content=hpdfdefault->GetBinContent(ibin);
+  if (content>max) max=content;
+  if (content<min) min=content;
+
+  double init_x_val;
+  double init_y_val;
+  //different than nominal
+  h_AlternativeScaleChoice_results->GetPoint(ibin-1, init_x_val, init_y_val);
+  // Check why h_AlternativeScaleChoice_result different from h_errors_AlternativeScaleChoice
+  init_y_val=content;
+  //if (debug) { 
+  // std::cout<<cn<<mn<<ibin<<" *_results= "<<init_y_val<<" h_errors= "<<content<<" ratio= "<<content/init_y_val<<std::endl;
+  //}
+
+  if (init_y_val!=content) {
+   std::cerr<<cn<<mn<<ibin<<"WARNING *_results= "<<init_y_val<<" h_errors= "<<content
+            <<" should not be different ! but ratio= "<<content/init_y_val<<std::endl;
+  }
+
+  h_AlternativeScaleChoice_results->SetPoint(ibin-1, init_x_val, init_y_val);
+
+  //std::cout<<cn<<mn<<ibin<<" init_x_val= "<< init_x_val<<" init_y_val= "<< init_y_val
+  //         <<" content= "<<content<<" max= "<<max<<" min= "<<min<<std::endl;
+ 
+  //std::cout<<cn<<mn<<ibin<<" init_y_val-min= "<< init_y_val-min<<std::endl;
+
+  if (max>init_y_val)
+   h_AlternativeScaleChoice_results->SetPointEYhigh(ibin-1, max-init_y_val);
+  else
+   h_AlternativeScaleChoice_results->SetPointEYhigh(ibin-1, 0.);
+
+  if (min< init_y_val)
+   h_AlternativeScaleChoice_results->SetPointEYlow (ibin-1, init_y_val-min);
+  else
+   h_AlternativeScaleChoice_results->SetPointEYlow (ibin-1, 0.);
+
+  //std::cout<<cn<<mn<<ibin<<" max-init_y_val= "<< max-init_y_val
+  //                       <<" init_y_val-min= "<< init_y_val-min
+  //                       <<std::endl;
+ } /// ibin
+
+ // h_AlternativeScaleChoice_results->SetFillStyle  (fillStyleCode);
+ //SPXGraphUtilities::SetColors( h_AlternativeScaleChoice_results,fillColorCode);
+
+ if (debug) {
+  std::cout<<cn<<mn<<"Alternative scale choice graph "<< h_AlternativeScaleChoice_results->GetName()<<std::endl; 
+  h_AlternativeScaleChoice_results->Print();
+ }
+
+ return;
+
 }
 
 void SPXPDF::CalcTotalErrors()
@@ -1867,7 +2063,9 @@ void SPXPDF::CalcTotalErrors()
   for (BandMap_T::const_iterator it = Mapallbands.begin(); it !=Mapallbands.end(); ++it) {
    //
    // add now everything that is enabled in quadrature
- 
+   //
+    //!TString(it->first).Contains("AlternativeScaleChoice")
+
    double x=0., y=0.;
    it->second->GetPoint(ibin,x,y);
    icount++;
@@ -1890,12 +2088,12 @@ void SPXPDF::CalcTotalErrors()
    totalError_high+=pow(Error_high,2);
    totalError_low +=pow(Error_low ,2);
    //
-   //if (debug) {
-   //  std::cout <<cn<<mn<<it->first<<" ibin= "<<ibin
-   //	             <<" Error_high= " <<Error_high<<" Error_low= " <<Error_low
-   //                  <<" totalError_high= " <<totalError_high<<" totalError_low= " <<totalError_low
-   //                  << std::endl;
-   //}
+   if (debug) {
+    std::cout <<cn<<mn<<it->first<<" ibin= "<<ibin
+              <<" Error_high= " <<Error_high<<" Error_low= " <<Error_low
+              <<" totalError_high= " <<totalError_high<<" totalError_low= " <<totalError_low
+              << std::endl;
+   }
   }
   totalError_high=sqrt(totalError_high);
   totalError_low =sqrt(totalError_low);
@@ -2046,6 +2244,7 @@ void SPXPDF::Print()
 	  <<"\n"<<std::setw(w)<<"PDFBand:"              <<std::setw(w)<<(do_PDFBand? ON:OFF)
 	  <<"\n"<<std::setw(w)<<"AlphaS:"               <<std::setw(w)<<(do_AlphaS? ON:OFF)
 	  <<"\n"<<std::setw(w)<<"Scale:" <<std::setw(w)<<(do_Scale? ON:OFF)
+	  <<"\n"<<std::setw(w)<<"AlternativeScaleChoice:" <<std::setw(w)<<(do_AlternativeScaleChoice? ON:OFF)
 	  <<"\n"<<std::setw(w)<<"includeEIG:"           <<std::setw(w)<<(includeEIG? ON:OFF)
 	  <<"\n"<<std::setw(w)<<"includeQUAD:"          <<std::setw(w)<<(includeQUAD? ON:OFF)
 	  <<"\n"<<std::setw(w)<<"includeMAX:"           <<std::setw(w)<<(includeMAX? ON:OFF)
@@ -2092,6 +2291,7 @@ void SPXPDF::SetVariablesDefault()
  do_PDFBand=true;
  do_AlphaS=false;
  do_Scale =true;
+ do_AlternativeScaleChoice =false;
  do_Escale = false;
  do_Total =true;
 
@@ -2158,6 +2358,11 @@ void SPXPDF::SetDoScale(bool _doit) {
  do_Scale = _doit;
 }
 
+void SPXPDF::SetDoAlternativeScaleChoice(bool _doit) {
+ do_AlternativeScaleChoice = _doit;
+}
+
+
 void SPXPDF::SetDoTotError(bool _doit) {
  do_Total = _doit;
 }
@@ -2202,6 +2407,12 @@ void SPXPDF::CleanUpSPXPDF() {
  if (h_errors_Scale.size()>0) {
   for (int i=0; i<h_errors_Scale.size(); ++i) {
    delete h_errors_Scale.at(i);
+  }
+ }
+
+ if (h_errors_AlternativeScaleChoice.size()>0) {
+  for (int i=0; i<h_errors_AlternativeScaleChoice.size(); ++i) {
+   delete h_errors_AlternativeScaleChoice.at(i);
   }
  }
 
@@ -2444,8 +2655,18 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
   TH1D* htmp=SPXGraphUtilities::MatchandMultiply(hcorr,h_errors_Scale.at(iscale),false);
   h_errors_Scale.at(iscale)=htmp;
   h_errors_Scale.at(iscale)->SetName(hname);
-
  }
+
+ for (int iscale=0; iscale<h_errors_AlternativeScaleChoice.size(); iscale++) {
+  TString hname=h_errors_AlternativeScaleChoice.at(iscale)->GetName();
+  hname+="_"+corrLabel;
+
+  TH1D* htmp=SPXGraphUtilities::MatchandMultiply(hcorr,h_errors_AlternativeScaleChoice.at(iscale),false);
+  h_errors_AlternativeScaleChoice.at(iscale)=htmp;
+  h_errors_AlternativeScaleChoice.at(iscale)->SetName(hname);
+ }
+
+
  // read alphas uncertainty components
  for (int ialphas=0; ialphas<h_errors_AlphaS.size(); ialphas++) {
   TString hname=h_errors_AlphaS.at(ialphas)->GetName();
@@ -2729,6 +2950,7 @@ bool SPXPDF::HasDetailedBands(){
   TString gname=gband->GetName();
   if (gname.Contains("_total_")) detailedband=true;
   if (gname.Contains("_scale_")) detailedband=true;
+  if (gname.Contains("_AlternativeScaleChoice_")) detailedband=true;
   if (gname.Contains("_pdf_"))   detailedband=true;
   if (gname.Contains("_alphas_"))detailedband=true;
  }
@@ -2827,6 +3049,27 @@ TH1D* SPXPDF::GetIndividualScaleVariation(int iscale){
 
 }
 
+TH1D* SPXPDF::GetIndividualAlternativeScaleChoiceVariation(int iscale){
+ std::string mn = "GetIndividualAlternativeScaleChoiceVariation: ";
+
+ if (debug) std::cout<<cn<<mn<<"Return AlternativeScaleChoice variation i= "<<iscale<<std::endl;
+
+ TH1D *h1=0;
+ 
+ if (h_errors_AlternativeScaleChoice.size()==0) {
+   if (debug) std::cout<<cn<<mn<<"h_errors_AlternativeScaleChoice.size()==0 return 0 "<<std::endl;
+   return h1;
+  }
+
+ if (iscale>h_errors_AlternativeScaleChoice.size()) {
+  std::cout<<cn<<mn<<"Something is wrong scale i= "<<iscale<<" but size= "<<h_errors_AlternativeScaleChoice.size()<<std::endl;
+  return h1;
+ }
+
+ return h_errors_AlternativeScaleChoice.at(iscale);
+
+}
+
 void SPXPDF::SetIndividualScaleVariation(int iscale, TH1D *h){ 
  std::string mn = "SetIndividualScaleVariation: ";
  if (iscale>h_errors_Scale.size()) {
@@ -2838,6 +3081,21 @@ void SPXPDF::SetIndividualScaleVariation(int iscale, TH1D *h){
  if (!h) std::cout<<cn<<mn<<"WARNING histogram not found !"<<std::endl;
 
  h_errors_Scale.at(iscale)=h; 
+ return;
+}
+
+
+void SPXPDF::SetIndividualAlternativeScaleChoiceVariation(int iscale, TH1D *h){ 
+ std::string mn = "SetIndividualAlternativeScaleChoiceVariation: ";
+ if (iscale>h_errors_AlternativeScaleChoice.size()) {
+  std::ostringstream oss;
+  oss<<cn<<mn<< "iscale= "<<iscale<<" > maximum= "<<h_errors_AlternativeScaleChoice.size();
+  throw SPXParseException(oss.str());
+ }
+
+ if (!h) std::cout<<cn<<mn<<"WARNING histogram not found !"<<std::endl;
+
+ h_errors_AlternativeScaleChoice.at(iscale)=h; 
  return;
 }
 

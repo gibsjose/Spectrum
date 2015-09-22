@@ -63,5 +63,6 @@ reference_divided_by_doublediff_bin_width = false ; [Optional] indicate if Grid 
 ;==============================================================
 [GRID]
 grid_file = MyGrids/top/mcfm/grid-TTbar_mttatlas.root			;[REQUIRED] Path to the grid's root file
+grid_file_alternative_scalechoice = ; [Optional] File name of grid for alternative scale choice
 lowest_order = "NNLO"											;[Optional] Set the lowest order of what is in this grid
 change_sqrts = 1.0 ; [Option] change cms energy in percent default=1

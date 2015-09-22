@@ -31,13 +31,13 @@ TH1D * SPXGrid::CreateGrid(void) {
 
  std::vector <std::string> vgridfiles=pci->gridSteeringFile.GetGridFilepathVector();
 
- std::cout<<cn<<mn<<" Number of grids= "<< vgridfiles.size()<<std::endl;
+ if (debug) std::cout<<cn<<mn<<" Number of grids= "<< vgridfiles.size()<<std::endl;
 
  for (int igrid=0; igrid<vgridfiles.size(); igrid++) {
   std::string gridFile= vgridfiles.at(igrid);
   
   if (debug) {
-    std::cout <<cn<<mn<<" igrid= "<<igrid<<" gridFile "<<gridFile.c_str() << std::endl;
+   std::cout <<cn<<mn<<" igrid= "<<igrid<<" gridFile "<<gridFile.c_str() << std::endl;
   }
 
   if(!SPXFileUtilities::FileExists(gridFile)) {
@@ -51,7 +51,7 @@ TH1D * SPXGrid::CreateGrid(void) {
   }
   vgrid.push_back(grid);
 
- //Create a reference histogram from the grid
+  //Create a reference histogram from the grid
   TH1D *referenceHistogram = (TH1D *)grid->getReference();
 
   if (!referenceHistogram) {
@@ -78,6 +78,30 @@ TH1D * SPXGrid::CreateGrid(void) {
   } else {
    SPXGraphUtilities::Add( referenceHistogramsum, referenceHistogram);
   }
+
+ }
+
+ std::vector <std::string> vgridfilesAlternativeScaleChoice=pci->gridSteeringFile.GetGridFilepathAlternativeScaleChoiceVector();
+ std::cout<<cn<<mn<<" Number of alternative scale choice grids= "<< vgridfilesAlternativeScaleChoice.size()<<std::endl;
+
+ for (int igrid=0; igrid<vgridfilesAlternativeScaleChoice.size(); igrid++) {
+  std::string gridFileAlternativeScaleChoice= vgridfilesAlternativeScaleChoice.at(igrid);
+  
+  if (debug) {
+   std::cout <<cn<<mn<<" igrid= "<<igrid<<" gridFileAlternativeScaleChoice "<<gridFileAlternativeScaleChoice.c_str() << std::endl;
+  }
+
+  if(!SPXFileUtilities::FileExists(gridFileAlternativeScaleChoice)) {
+   throw SPXFileIOException(gridFileAlternativeScaleChoice, cn+mn+"Unable to open AlternativeScaleChoice grid file");
+  }
+
+  std::cout <<cn<<mn<<"Get alternative scale choice grid igrid= "<< igrid << std::endl;
+
+  appl::grid * gridAlternativeScaleChoice = new appl::grid(gridFileAlternativeScaleChoice);
+  if (!gridAlternativeScaleChoice) {
+   throw SPXGeneralException(cn+mn+"APPLGrid: appl::grid(" + gridFileAlternativeScaleChoice + ") did not return a valid object pointer");
+  }
+  vgridAlternativeScaleChoice.push_back(gridAlternativeScaleChoice);
 
  }
  

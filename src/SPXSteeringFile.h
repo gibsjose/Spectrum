@@ -82,8 +82,11 @@ private:
         
         bool printTotalSigma;   // Flag to indicate that, if total integrated cross section should be printed
 
-	bool gridCorr;		//Flag to indicate that, if specified in the steering, the grid corrections should be applied
+	bool gridCorr;		//Flag if corrections should be applied to grid/convolute
+	bool nomCorr;		//Flag if correction should be applied to nominal histogram
 	bool labelSqrtS;	//Flag to indicate that the Sqrt(s) value should be shown in the legend
+
+	bool labelDate;	        //Flag to add Data beside label
 
 	bool   showIndividualSystematicswithName; //Flag to show individual systematics data uncertainties that contain name
                                           // given in steering
@@ -100,6 +103,7 @@ private:
         bool BandwithPDF;        // show the Uncertainty band with the PDF uncertainties
 	bool BandwithAlphaS;     // show the Uncertainty band with alphas  uncertainties
 	bool BandwithScales;     // show the Uncertainty band with ren&fac scales uncertainties
+	bool BandwithScalesAlternativeScaleChoice;     // show the Uncertainty band with ren&fac scales alternative scale choice uncertainties
 	bool BandTotal;          // show the Total uncertainty band
 
         std::vector<bool> gridcorrections; // flags if grid correction go into band
@@ -228,9 +232,17 @@ public:
 		return this->gridCorr;
 	}
 
+	bool ApplyNominalCorr(void) const {
+		return this->nomCorr;
+	}
+
 
 	bool GetLabelSqrtS(void) const {
 		return this->labelSqrtS;
+	}
+
+	bool GetLabelDate(void) const {
+		return this->labelDate;
 	}
 
         double ShowIndividualSystematics(){
@@ -348,6 +360,10 @@ public:
 
 	bool GetBandwithScales(void) const {
 		return this->BandwithScales;
+	}
+
+	bool GetBandwithAlternativeScaleChoice(void) const {
+		return this->BandwithScalesAlternativeScaleChoice;
 	}
 
 	bool GetBandTotal(void) const {

@@ -98,7 +98,7 @@ void SPXPlotType::Parse(std::string s) {
 		type |= PT_DATA;
 	}
 
-        if (debug) std::cout << cn << mn << " After data type= "<<type << std::endl;
+        if (debug) std::cout << cn << mn << "After data type= "<<type << std::endl;
 	//else {
 	//	throw SPXParseException("Incorrect plot type: Data configuration string: Unrecognized option: " + data + ": MUST be either \"data\" or \"data[]\"");
 	//}
@@ -113,7 +113,7 @@ void SPXPlotType::Parse(std::string s) {
 		type |= PT_GRID;
 	}
 
-        if (debug) std::cout << cn << mn << " After grid type= "<<type << std::endl;
+        if (debug) std::cout << cn << mn << "After grid type= "<<type << std::endl;
 	//else {
 	//	throw SPXParseException("Incorrect plot type: Grid configuration string: Unrecognized option: " + grid + ": MUST be either \"grid\" or \"grid[]\"");
 	//}
@@ -128,7 +128,7 @@ void SPXPlotType::Parse(std::string s) {
 		type |= PT_PDF;
 	}
 
-        if (debug) std::cout << cn << mn << " After pdf type= "<<type << std::endl;
+        if (debug) std::cout << cn << mn << "After pdf type= "<<type << std::endl;
 
 	//else {
 	//	throw SPXParseException("Incorrect plot type: PDF configuration string: Unrecognized option: " + pdf + ": MUST be either \"pdf\" or \"pdf[]\"");

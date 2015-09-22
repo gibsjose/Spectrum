@@ -48,9 +48,13 @@ plot_staggered = true		                ;[Optional] Stagger points horizontally t
 match_binning = true				;[Optional] Match the binning for all graphs in the plot - [default = true]
 take_sign_intoaccount_for_total_error = true    ;[Optional] When calculating total data uncertainty all positve/negative uncertainties
                                                 ;           are added in positive/negative uncertainty  
-apply_grid_corr = true				;[Optional] Apply the grid corrections (e.g. hadronisation) 
+apply_grid_corr = true				;[Optional] Apply corrections (e.g. hadronisation) to grid/convolute
 ;                                                           (as specified in SPXGrid steering) for all grids if true
-
+apply_nominal_corr = true			;[Optional] Apply the corrections (e.g. hadronisation) to nominal histo 
+;                                                           (as specified in SPXGrid steering) 
+                                                            By default apply_nominal_corr = true
+                                                            If apply_grid_corr = true can take true or false valse values
+                                                               apply_grid_corr = false always apply_nominal_corr = false
 
 show_individual_systematics = 0                  ;[Optional] Show individual systematic on data above x%
 show_systematics_as_lines = 1                    ;[Optional] Show systematics as line, number is line thickness
@@ -68,6 +72,7 @@ label_sqrt_s = true				;[Optional] Specify to show the Sqrt(s) on the legend - [
 label_journalyear = true                        ;[Optional] Add journal year
 label_informationlegend = ""                    ;[Optional] additional label on information legend
 label_scaleform = true                          ;[Optional] add label of functional form of scale on legend
+label_date = false                              ;[Optional] add date from DataSteering file after label name
 
 x_legend = 0.9				        ;[Optional] X(Right)-Position of main Legend, based on top right side
 y_legend = 0.9					;[Optional] Y(Top)-Position of main legend, based on top right side
@@ -180,13 +185,15 @@ display_systematic_group = JES, JER                       ;[Optional] List of gr
                                                           ; if keyword "Others" is given all uncertainties not specified before are added here
 display_systematic_group_fill_color = 2,3                 ;[Optional] color of band for systematic groups
                                                           ;           for negative color: only plot edge histogram with color -idcolor
+
+                                                          ; display_systematic_* options are presently only tested for one plot configuration
 display_systematic_group_edge_color = 2,3                 ;[Optional] color of band for systematic groups edge
 display_systematic_group_edge_style = 2,3                 ;[Optional] style for systematic groups edge histogram
 display_systematic_group_edge_width = 2,3                 ;[Optional] style for systematic groups edge histogram line width
 
 
-
-
+                                                          ; remove/contain_systematic_group works for several plot configuration
+                                                          ; but should be used only with one data-set 
 remove_systematic_group = JES,JER                         ; [Optional] Remove systematics that contains name from systematic map 
 contain_systematic_group = JES,JER                        ; [Optional] Keep only systematics that contains name from systematic map 
 

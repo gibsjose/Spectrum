@@ -62,6 +62,10 @@ public:
 	 return pci->gridSteeringFile.GetName();
 	}
 
+	//const std::string & GetAlternativeScaleChoiceName(void) const {
+	// return pci->gridSteeringFile.GetAlternativeScaleChoiceName();
+	//}
+
 	const std::string & GetNLOProgramNameName(void) const {
 	 return pci->gridSteeringFile.GetNLOProgramName();
 	}
@@ -69,7 +73,6 @@ public:
 	const std::string & GetScaleFunctionalForm(void) const {
 	 return pci->gridSteeringFile.GetScaleFunctionalForm();
 	}
-
 
 	//Creates the Grid and return the reference histogram
 	TH1D * CreateGrid(void);
@@ -81,8 +84,19 @@ public:
          return vgrid.at(i);
         };
 
+        appl::grid *GetGridAlternativeScaleChoice(int i){ 
+	 if (i>vgridAlternativeScaleChoice.size()) {
+	  std::cout<<"GetGridAlternativeScaleChoice:: something is wrong i= "<<i<<" but vector size "<<vgridAlternativeScaleChoice.size()<<std::endl;
+	 }
+         return vgridAlternativeScaleChoice.at(i);
+        };
+
         int GetNumberofGrids() {
 	 return vgrid.size();
+        }
+
+        int GetNumberofAlternativeScaleChoiceGrids() {
+	 return vgridAlternativeScaleChoice.size();
         }
 
 	//Returns the Grid Reference histogram
@@ -105,6 +119,8 @@ private:
 
 	//appl::grid *grid;		     // APPLGrid Grid
 	std::vector <appl::grid *> vgrid;    // vector of APPLGrid Grid
+
+	std::vector <appl::grid *> vgridAlternativeScaleChoice; // vector of APPLGrid Grid for alternative scale choice
 
 	bool referenceHistogramCorrupted;    // Flag indicating that the reference histogram has been corrupted
 	TH1D * referenceHistogram;	     // Reference histogram

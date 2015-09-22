@@ -5,7 +5,16 @@
 @gibsjose @csembree Tancredi Carli
 
 ## Change Log
+ 
+  -Modification to include scale choice in uncertainties bands
 
+  -SPXSteering: introduce flag if grid corrections should go to nominal
+
+  -added python script to generate steering files
+
+  -SPXSteering/SPXPlotConfiguration remove/contain_systematic_group are now in SPXPlotConfiguration
+   before it did not work for many plot configurations Plot_0 Plot_1
+  
   -SPXCrossSection::ApplyCorrections 
    correct now also nominal TGraphErrror for hadronisation and grid corrections
 

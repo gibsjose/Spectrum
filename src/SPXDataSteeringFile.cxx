@@ -42,6 +42,9 @@ void SPXDataSteeringFile::SetDefaults(void) {
 	reaction.clear();
 	if(debug) std::cout << cn << mn << "reaction set to default: \" \"" << std::endl;
 
+        date="";
+	if(debug) std::cout << cn << mn << "date set to default: \" \"" << std::endl;
+
 	datasetYear.clear();
 	if(debug) std::cout << cn << mn << "datasetYear set to default: \" \"" << std::endl;
 
@@ -158,6 +161,8 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t\t Dataset Luminosity label: " << datasetLumilabel << std::endl;
 	std::cout << "\t\t Dataset Luminosity: " << lumiValue <<" +- "<<lumiError<<"[%]"<< std::endl;
 
+	std::cout << "\t\t Date of table: " << date << std::endl;
+
 	std::cout << "\t\t Add luminosity as systematic uncertainty " << ( addLumiSystematic ? "ON" : "OFF") << std::endl;
 
 	std::cout << "\t\t Reference Journal Name: " << referenceJournalName << std::endl;
@@ -176,10 +181,10 @@ void SPXDataSteeringFile::Print(void) {
 	std::cout << "\t\t Jet Algorithm Radius: " << jetAlgorithmRadius << std::endl << std::endl;
 
         if (doublediffBinname.size()>0) {
-	 std::cout << "\t\t Name of double differential variable: " << doublediffBinname << std::endl << std::endl;
-	 std::cout << "\t\t Minimum value of double differential variable: " << doublediffBinValueMin << std::endl << std::endl;
-	 std::cout << "\t\t Maxmium value of double differential variable: " << doublediffBinValueMax << std::endl << std::endl;
-	 std::cout << "\t\t Bin width double differential variable: " << doublediffBinWidth << std::endl << std::endl;
+	 std::cout << "\t\t Name of double differential variable: " << doublediffBinname << std::endl;
+	 std::cout << "\t\t Minimum value of double differential variable: " << doublediffBinValueMin << std::endl; 
+	 std::cout << "\t\t Maxmium value of double differential variable: " << doublediffBinValueMax << std::endl;
+	 std::cout << "\t\t Bin width double differential variable: " << doublediffBinWidth << std::endl;
         }
 
 	std::cout << "\t Data Options [DATA]" << std::endl;
@@ -271,6 +276,14 @@ void SPXDataSteeringFile::Parse(void) {
 	} else {
 		reaction = tmp;
 		if(debug) std::cout << cn << mn << "Successfully read Reaction: " << reaction << std::endl;
+	}
+
+	tmp = reader->Get("DESC", "table_date", "EMPTY");
+	if(!tmp.compare("EMPTY")) {
+		if(debug) std::cout << cn << mn << "Date of table was not specified" << std::endl;
+	} else {
+		date = tmp;
+		if(debug) std::cout << cn << mn << "Successfully read in table date: " << date << std::endl;
 	}
 
 	tmp = reader->Get("DESC", "data_set_year", "EMPTY");

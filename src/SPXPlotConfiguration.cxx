@@ -65,6 +65,12 @@ bool SPXPlotConfigurationInstance::debug=false;
 //	options["scale_edge_color"] --> Vector of scale edge colors (optional)
 //	options["scale_edge_style"] --> Vector of scale edge style (optional)
 //	options["scale_marker_style"] --> Vector of scale marker styles (optional)
+
+//	options["AlternativeScale_fill_style"] --> Vector of alternative scale choice fill style (optional)
+//	options["AlternativeScale_fill_color"] --> Vector of alternative scale choice fill colors (optional)
+//	options["AlternativeScale_edge_color"] --> Vector of alternative scale choice edge colors (optional)
+//	options["AlternativeScale_edge_style"] --> Vector of alternative scale choice edge style (optional)
+//	options["AlternativeScale_marker_style"] --> Vector of alternative scale choice marker styles (optional)
 //
 //	options["alphas_fill_style"] --> Vector of alphas fill style (optional)
 //	options["alphas_fill_color"] --> Vector of alphas fill colors (optional)
@@ -145,6 +151,12 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	std::vector<std::string> ses;	//Scale edge style
 	std::vector<std::string> sec;	//Scale edge color
 	std::vector<std::string> sms;	//Scale marker style
+
+	std::vector<std::string> xfs;	//alternative Scale choice fill style
+	std::vector<std::string> xfc;	//alternative Scale choice fill color
+	std::vector<std::string> xes;	//alternative Scale choice edge style
+	std::vector<std::string> xec;	//alternative Scale choice edge color
+	std::vector<std::string> xms;	//alternative Scale choice marker style
 
 	std::vector<std::string> afs;	//AlphaS fill style
 	std::vector<std::string> afc;	//AlphaS fill color
@@ -291,42 +303,42 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		 tmpVector = options["data_marker_style"];
 		 std::cout << cn << mn << "\tdata_marker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
  		} else {
-		 if(debug) std::cout << cn << mn << "No data_marker_style  option specified" << std::endl;
+		 if(debug) std::cout << cn << mn << "No data_marker_style option specified" << std::endl;
 		}
 
 		if(options.count("data_marker_color")) {
 		 tmpVector = options["data_marker_color"];
 		 std::cout << cn << mn << "\tdata_marker_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
  		} else {
-		 if(debug) std::cout << cn << mn << "No data_marker_color  option specified" << std::endl;
+		 if(debug) std::cout << cn << mn << "No data_marker_color option specified" << std::endl;
 		}
 
 		if(options.count("grid_marker_style")) {
 		 tmpVector = options["grid_marker_style"];
 		 std::cout << cn << mn << "\tgrid_marker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
  		} else {
-		 if(debug) std::cout << cn << mn << "No grid_marker_style  option specified" << std::endl;
+		 if(debug) std::cout << cn << mn << "No grid_marker_style option specified" << std::endl;
 		}
 
 		if(options.count("grid_marker_color")) {
 		 tmpVector = options["grid_marker_color"];
 		 std::cout << cn << mn << "\tgrid_marker_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
  		} else {
-		 if(debug) std::cout << cn << mn << "No grid_marker_color  option specified" << std::endl;
+		 if(debug) std::cout << cn << mn << "No grid_marker_color option specified" << std::endl;
 		}
 
 		if(options.count("grid_fill_style")) {
 		 tmpVector = options["grid_fill_style"];
 		 std::cout << cn << mn << "\tgrid_fill_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
  		} else {
-		 if(debug) std::cout << cn << mn << "No grid_fill_style  option specified" << std::endl;
+		 if(debug) std::cout << cn << mn << "No grid_fill_style option specified" << std::endl;
 		}
 
 		if(options.count("total_fill_style")) {
 			tmpVector = options["total_fill_style"];
 			std::cout << cn << mn << "\ttotal_fill_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
 		} else {
-			if(debug) std::cout << cn << mn << "No total_fill_style  option specified" << std::endl;
+			if(debug) std::cout << cn << mn << "No total_fill_style option specified" << std::endl;
 		}
 
 		if(options.count("total_fill_color")) {
@@ -496,6 +508,42 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		} else {
 			if(debug) std::cout << cn << mn << "No scale_marker_style option specified" << std::endl;
 		}
+		//
+		if(options.count("alternative_scale_choice_fill_style")) {
+			tmpVector = options["alternative_scale_choice_fill_style"];
+			std::cout << cn << mn <<"\talternative_scale_choice_fill_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No alternative_scale_choice_fill_style option specified" << std::endl;
+		}
+
+		if(options.count("alternative_scale_choice_fill_color")) {
+			tmpVector = options["alternative_scale_choice_fill_color"];
+			std::cout << cn<<mn<<"\talternative_scale_choice_fill_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No alternative_scale_choice_fill_color option specified" << std::endl;
+		}
+
+		if(options.count("alternative_scale_choice_edge_style")) {
+			tmpVector = options["alternative_scale_choice_edge_style"];
+			std::cout << cn << mn <<"\talternative_scale_choice_edge_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No alternative_scale_choice_edge_style option specified" << std::endl;
+		}
+
+		if(options.count("alternative_scale_choice_edge_color")) {
+			tmpVector = options["alternative_scale_choice_edge_color"];
+			std::cout << cn<<mn<<"\t alternative_scale_choice_edge_color = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No alternative_scale_choice_edge_color option specified" << std::endl;
+		}
+
+		if(options.count("alternative_scale_choice_marker_style")) {
+			tmpVector = options["alternative_scale_choice_marker_style"];
+			std::cout << cn << mn <<"\talternative_scale_choice_marker_style = " << SPXStringUtilities::VectorToCommaSeparatedList(tmpVector) << std::endl;
+		} else {
+			if(debug) std::cout << cn << mn << "No alternative_scale_choice_marker_style option specified" << std::endl;
+		}
+		//
 
 		if(options.count("x_scale")) {
 			tmpVector = options["x_scale"];
@@ -555,6 +603,12 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	unsigned int sesSize = 0;   
 	unsigned int secSize = 0;	
 	unsigned int smsSize = 0;   
+
+	unsigned int xfsSize = 0;   
+	unsigned int xfcSize = 0;	
+	unsigned int xesSize = 0;   
+	unsigned int xecSize = 0;	
+	unsigned int xmsSize = 0;   
 
 	unsigned int afsSize = 0;   
 	unsigned int afcSize = 0;   
@@ -643,7 +697,23 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	if(options.count("scale_marker_style")) {
 		smsSize = options["scale_marker_style"].size();
 	}
-
+      
+	if(options.count("alternative_scale_choice_fill_style")) {
+		xfsSize = options["alternative_scale_choice_fill_style"].size();
+	}
+	if(options.count("alternative_scale_choice_fill_color")) {
+		xfcSize = options["alternative_scale_choice_fill_color"].size();
+	}
+	if(options.count("alternative_scale_choice_edge_style")) {
+		xesSize = options["alternative_scale_choice_edge_style"].size();
+	}
+	if(options.count("alternative_scale_choice_edge_color")) {
+		xecSize = options["alternative_scale_choice_edge_color"].size();
+	}
+	if(options.count("alternative_scale_choice_marker_style")) {
+		xmsSize = options["alternative_scale_choice_marker_style"].size();
+	}
+      
 	if(options.count("alphas_fill_style")) {
 		afsSize = options["alphas_fill_style"].size();
 	}
@@ -676,7 +746,6 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 	if(options.count("beamuncertainty_marker_style")) {
 		bmsSize = options["beamuncertainty_marker_style"].size();
 	}
-        //--
 
 	if(options.count("corrections_fill_style")) {
 		cfsSize = options["corrections_fill_style"].size();
@@ -777,7 +846,6 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		throw SPXParseException(oss.str());
 	}
 
-
 	if((tmsSize != 0) && (tmsSize != psfSize)) {
 		std::ostringstream oss;
 		oss << "Size of total_marker_style vector (" << tmsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
@@ -836,14 +904,42 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		throw SPXParseException(oss.str());
 	}
 
-
-
 	if((smsSize != 0) && (smsSize != psfSize)) {
 		std::ostringstream oss;
 		oss << "Size of scale_marker_style vector (" << smsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
 		throw SPXParseException(oss.str());
 	}
 
+	if((xfsSize != 0) && (xfsSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of alternative_scale_choice_fill_style vector (" << xfsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+
+	if((xfcSize != 0) && (xfcSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of alternative_scale_choice_fill_color vector (" << xfcSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+
+	if((xesSize != 0) && (xesSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of alternative_scale_choice_edge_style vector (" << xesSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+
+	if((xecSize != 0) && (xecSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of alternative_scale_choice_edge_color vector (" << xecSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+
+	if((xmsSize != 0) && (xmsSize != psfSize)) {
+		std::ostringstream oss;
+		oss << "Size of alternative_scale_choice_marker_style vector (" << xmsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
+		throw SPXParseException(oss.str());
+	}
+       
 	if((afsSize != 0) && (afsSize != psfSize)) {
 		std::ostringstream oss;
 		oss << "Size of alphas_fill_style vector (" << afsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
@@ -874,7 +970,6 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		throw SPXParseException(oss.str());
 	}
 
-	//---
 	if((bfsSize != 0) && (bfsSize != psfSize)) {
 		std::ostringstream oss;
 		oss << "Size of beamuncertainty_fill_style vector (" << bfsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
@@ -904,7 +999,6 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		oss << "Size of beamuncertainty_marker_style vector (" << bmsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
 		throw SPXParseException(oss.str());
 	}
-	//---
 
 	if((cfsSize != 0) && (cfsSize != psfSize)) {
 		std::ostringstream oss;
@@ -936,7 +1030,6 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		throw SPXParseException(oss.str());
 	}
        
-
 	//Check directory size: Could either be of length 1, in which case the directory is prepended to each steering file, or
 	//	the exact length of the steering file list
 	if((ddrSize != 1) && (ddrSize != dsfSize)) {
@@ -1028,6 +1121,12 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		  if(secSize) sec.push_back(options["scale_edge_color"].at(0));		
 		  if(smsSize) sms.push_back(options["scale_marker_style"].at(0));		
 
+		  if(xfsSize) xfs.push_back(options["alternative_scale_choice_fill_style"].at(0));		
+		  if(xfcSize) xfc.push_back(options["alternative_scale_choice_fill_color"].at(0));		
+		  if(xesSize) xes.push_back(options["alternative_scale_choice_edge_style"].at(0));		
+		  if(xecSize) xec.push_back(options["alternative_scale_choice_edge_color"].at(0));		
+		  if(xmsSize) xms.push_back(options["alternative_scale_choice_marker_style"].at(0));		
+
 		  if(afsSize) afs.push_back(options["alphas_fill_style"].at(0));		
 		  if(afcSize) afc.push_back(options["alphas_fill_color"].at(0));		
 		  if(aesSize) aes.push_back(options["alphas_edge_style"].at(0));		
@@ -1095,29 +1194,33 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		  if(tfsSize) tfs.push_back(options["total_fill_style"].at(0));		//Just one instance of pdf fill style
 		  if(tfcSize) tfc.push_back(options["total_fill_color"].at(0));		//Just one instance of pdf fill color
-		  if(tecSize) tfc.push_back(options["total_edge_color"].at(0));		//Just one instance of pdf edge color
-		  if(tecSize) tfc.push_back(options["total_edge_style"].at(0));		//Just one instance of pdf edge style
+		  if(tecSize) tec.push_back(options["total_edge_color"].at(0));		//Just one instance of pdf edge color
+		  if(tecSize) tec.push_back(options["total_edge_style"].at(0));		//Just one instance of pdf edge style
 		  if(tmsSize) tms.push_back(options["total_marker_style"].at(0));		//Just one instance of pdf marker style
 
 		  if(pfsSize) pfs.push_back(options["pdf_fill_style"].at(0));		//Just one instance of pdf fill style
 		  if(pfcSize) pfc.push_back(options["pdf_fill_color"].at(0));		//Just one instance of pdf fill color
-		  if(pesSize) pfs.push_back(options["pdf_edge_style"].at(0));		//Just one instance of pdf edge style
-		  if(pecSize) pfc.push_back(options["pdf_edge_color"].at(0));		//Just one instance of pdf edge color
+		  if(pesSize) pes.push_back(options["pdf_edge_style"].at(0));		//Just one instance of pdf edge style
+		  if(pecSize) pec.push_back(options["pdf_edge_color"].at(0));		//Just one instance of pdf edge color
 		  if(pmsSize) pms.push_back(options["pdf_marker_style"].at(0));		//Just one instance of pdf marker style
 
 		  if(sfsSize) sfs.push_back(options["scale_fill_style"].at(0));	   
 		  if(sfcSize) sfc.push_back(options["scale_fill_color"].at(0));	        //Just one instance of scale fill style
-		  if(sesSize) sfs.push_back(options["scale_edge_style"].at(0));	   
-		  if(secSize) sfc.push_back(options["scale_edge_color"].at(0));	        //Just one instance of scale fill style
+		  if(sesSize) ses.push_back(options["scale_edge_style"].at(0));	   
+		  if(secSize) sec.push_back(options["scale_edge_color"].at(0));	        //Just one instance of scale fill style
 		  if(smsSize) sms.push_back(options["scale_marker_style"].at(0));	   
+
+		  if(xfsSize) xfs.push_back(options["alternative_scale_choice_fill_style"].at(0));	   
+		  if(xfcSize) xfc.push_back(options["alternative_scale_choice_fill_color"].at(0));	        //Just one instance of scale fill style
+		  if(xesSize) xes.push_back(options["alternative_scale_choice_edge_style"].at(0));	   
+		  if(xecSize) xec.push_back(options["alternative_scale_choice_edge_color"].at(0));	        //Just one instance of scale fill style
+		  if(xmsSize) xms.push_back(options["alternative_scale_choice_marker_style"].at(0));	   
 
 		  if(afsSize) afs.push_back(options["alphas_fill_style"].at(0));	   
 		  if(afcSize) afc.push_back(options["alphas_fill_color"].at(0));	        //Just one instance of alphas fill style
 		  if(aesSize) aes.push_back(options["alphas_edge_style"].at(0));	   
 		  if(aecSize) aec.push_back(options["alphas_edge_color"].at(0));	        //Just one instance of alphas edge style
 		  if(amsSize) ams.push_back(options["alphas_marker_style"].at(0));	   
-
-		  //---
 
 		  if(bfsSize) bfs.push_back(options["beamuncertainty_fill_style"].at(0));	   
 		  if(bfcSize) bfc.push_back(options["beamuncertainty_fill_color"].at(0));//Just one instance of beamuncertainty fill style
@@ -1187,6 +1290,11 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		  if(secSize) sec.push_back(options["scale_edge_color"].at(i));
 		  if(smsSize) sms.push_back(options["scale_marker_style"].at(i));
 
+		  if(xfsSize) xfs.push_back(options["alternative_scale_choice_fill_style"].at(i));
+		  if(xfcSize) xfc.push_back(options["alternative_scale_choice_fill_color"].at(i));
+		  if(xesSize) xes.push_back(options["alternative_scale_choice_edge_style"].at(i));
+		  if(xecSize) xec.push_back(options["alternative_scale_choice_edge_color"].at(i));
+		  if(xmsSize) xms.push_back(options["alternative_scale_choice_marker_style"].at(i));
 
 		  if(afsSize) afs.push_back(options["alphas_fill_style"].at(i));
 		  if(afcSize) afc.push_back(options["alphas_fill_color"].at(i));
@@ -1259,6 +1367,12 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		  if(sesSize) ses.push_back(options["scale_edge_style"].at(0));
 		  if(secSize) sec.push_back(options["scale_edge_color"].at(0));
 		  if(smsSize) sms.push_back(options["scale_marker_style"].at(0));
+
+		  if(xfsSize) xfs.push_back(options["alternative_scale_choice_fill_style"].at(0));
+		  if(xfcSize) xfc.push_back(options["alternative_scale_choice_fill_color"].at(0));
+		  if(xesSize) xes.push_back(options["alternative_scale_choice_edge_style"].at(0));
+		  if(xecSize) xec.push_back(options["alternative_scale_choice_edge_color"].at(0));
+		  if(xmsSize) xms.push_back(options["alternative_scale_choice_marker_style"].at(0));
 
 		  if(afsSize) afs.push_back(options["alphas_fill_style"].at(0));
 		  if(afcSize) afc.push_back(options["alphas_fill_color"].at(0));
@@ -1497,7 +1611,19 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		if(secSize) pci.scaleEdgeColor = atoi(sec.at(i).c_str());
 		else 		pci.scaleEdgeColor = PC_EMPTY_EDGE;
+	       
+		if(xfsSize) pci.AlternativeScaleChoiceFillStyle = atoi(xfs.at(i).c_str());
+		else 	    pci.AlternativeScaleChoiceFillStyle = PC_EMPTY_STYLE;
 
+		if(xfcSize) pci.AlternativeScaleChoiceFillColor = atoi(xfc.at(i).c_str()); 
+		else 	    pci.AlternativeScaleChoiceFillColor = PC_EMPTY_COLOR;
+
+		if(xesSize) pci.AlternativeScaleChoiceEdgeStyle = atoi(xes.at(i).c_str());
+		else 	    pci.AlternativeScaleChoiceEdgeStyle = PC_EMPTY_EDGE;
+
+		if(xecSize) pci.AlternativeScaleChoiceEdgeColor = atoi(xec.at(i).c_str());
+		else 	    pci.AlternativeScaleChoiceEdgeColor = PC_EMPTY_EDGE;
+	       
 		if(smsSize) pci.scaleMarkerStyle = atoi(sms.at(i).c_str());
 		else		pci.scaleMarkerStyle = PC_EMPTY_STYLE;
 
@@ -1554,6 +1680,19 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 
 		if(ysSize)	pci.yScale = atof(ysc.at(i).c_str());
 		else		pci.yScale = 1.0;
+
+                // contains_systematic_class is vector<string> but elements should be the same for each configuration instance
+              
+                if (options.count("contain_systematic_group")>0) {
+		 std::cout<<cn<<mn<<"fill contain_systematic_group nnumber= "<<options["contain_systematic_group"].size()<<std::endl;
+                 for (int j=0; j<options["contain_systematic_group"].size(); j++)
+		  options["contain_systematic_group"].at(j);
+                 pci.containsystematicsclasses=options["contain_systematic_group"];
+                } else if (debug) std::cout<<cn<<mn<<"contain_systematic_group not found in options"<<std::endl;        
+
+                if (options.count("remove_systematic_group")>0)
+                 pci.removesystematicsclasses=options["remove_systematic_group"];
+                else if (debug) std::cout<<cn<<mn<<"remove_systematic_group not found in options"<<std::endl;        
 
 		//Attempt to add the configuration instance
 		try {

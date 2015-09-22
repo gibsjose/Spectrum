@@ -1417,7 +1417,17 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
      isyst++;
 
      TH1D *hedgelow =SPXGraphUtilities::GetEdgeHistogram(graph,true);
+     if (!hedgelow) {
+      std::cout<<cn<<mn<<"EdgeLow histogram not found !"<<std::endl;
+      std::cerr<<cn<<mn<<"EdgeLow histogram not found !"<<std::endl;
+     }
+
      TH1D *hedgehigh=SPXGraphUtilities::GetEdgeHistogram(graph,false);
+     if (!hedgehigh) {
+      std::cout<<cn<<mn<<"EdgeHigh histogram not found !"<<std::endl;
+      std::cerr<<cn<<mn<<"EdgeHigh histogram not found !"<<std::endl;
+     }
+
      if (icolline<0) {
       hedgehigh->SetLineColor(-icolline);
       hedgelow ->SetLineColor(-icolline);
@@ -1434,10 +1444,11 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
      hedgehigh->SetLineWidth(linewidth);
      hedgelow ->SetLineWidth(linewidth);
 
-     //if (debug) {
-     // SPXGraphUtilities::SPXPrintHistoProperties(hedgehigh);
-     // SPXGraphUtilities::SPXPrintHistoProperties(hedgelow);
-     //} 
+     if (debug) {
+     //std::cout<<cn<<mn<<"HUHU HistoProperties "<<std::endl;
+      SPXGraphUtilities::SPXPrintHistoProperties(hedgehigh);
+      SPXGraphUtilities::SPXPrintHistoProperties(hedgelow);
+     } 
 
      hedgehigh->Draw("][,same");
      hedgelow ->Draw("][,same");
@@ -1532,6 +1543,7 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
    TString gname=graph1->GetName();
    if (gname.Contains("_total_")) detailedband=true;
    if (gname.Contains("_scale_")) detailedband=true;
+   if (gname.Contains("_AlternativeScaleChoice_")) detailedband=true;
    if (gname.Contains("_pdf_"))   detailedband=true;
    if (gname.Contains("_alphas_"))detailedband=true;
    if (gname.Contains("_beamuncertainty_"))detailedband=true;
@@ -1598,6 +1610,13 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
     fillstyle  =pci.scaleFillStyle;
     markerstyle=pci.scaleMarkerStyle;
    }
+   if (gname.Contains("_AlternativeScaleChoice_")) { 
+    fillcolor  =pci.AlternativeScaleChoiceFillColor;
+    edgecolor  =pci.AlternativeScaleChoiceEdgeColor;
+    edgestyle  =pci.AlternativeScaleChoiceEdgeStyle;
+    fillstyle  =pci.AlternativeScaleChoiceFillStyle;
+    markerstyle=pci.AlternativeScaleChoiceMarkerStyle;
+   }
    if (gname.Contains("_alphas_")) { 
     fillcolor  =pci.alphasFillColor;
     edgecolor  =pci.alphasEdgeColor;
@@ -1637,8 +1656,12 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
     graph->SetMarkerStyle(markerstyle);
    }
 
+   //std::cout<<cn<<mn<<"edgecolor= "<<edgecolor<<" gname= "<<gname<<std::endl;
+
    if (edgecolor!=DEFAULT && edgecolor!=0) {
+
     TH1D *hedgelow =SPXGraphUtilities::GetEdgeHistogram(graph,true);
+    //std::cout<<cn<<mn<<"create edge histogram "<<edgecolor<<" name= "<<hedgelow->GetName()<<std::endl;
     TH1D *hedgehigh=SPXGraphUtilities::GetEdgeHistogram(graph,false);
     hedgelow ->SetLineColor(abs(edgecolor));
     hedgehigh->SetLineColor(abs(edgecolor));
@@ -1656,14 +1679,14 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
     hedgelow ->SetFillStyle(0);
     hedgehigh->SetFillStyle(0);
 
-    if (debug) std::cout<<cn<<mn<<"Call hedgelow->Draw() "<<hedgelow->GetName()<<"with option "<< option.c_str()  <<std::endl;
+    if (debug) std::cout<<cn<<mn<<"Call hedgelow->Draw() "<<hedgelow->GetName()<<" with option "<< option.c_str()  <<std::endl;
     hedgelow ->Draw("][,same");
     hedgehigh->Draw("][,same");
    }
 
    //graph->SetLineColor(edgecolor);
    if (edgecolor>=0) {
-    if (debug) std::cout<<cn<<mn<<"Call graph->Draw "<<graph->GetName()<<"with option "<< option.c_str()  <<std::endl;
+    if (debug) std::cout<<cn<<mn<<"Call graph->Draw "<<graph->GetName()<<" with option "<< option.c_str()  <<std::endl;
     graph->Draw(option.c_str());
    }
 

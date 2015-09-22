@@ -41,6 +41,9 @@ void SPXGridSteeringFile::SetDefaults(void) {
 	scaleform.clear();
 	if(debug) std::cout << cn << mn << "scaleform set to default: \" \"" << std::endl;
 
+	scaleformAlternativeScaleChoice.clear();
+	if(debug) std::cout << cn << mn << "scaleformAlternativeScaleChoice set to default: \" \"" << std::endl;
+
 	referenceJournalName.clear();
 	if(debug) std::cout << cn << mn << "referenceJournalName set to default: \" \"" << std::endl;
 
@@ -83,6 +86,9 @@ void SPXGridSteeringFile::SetDefaults(void) {
 	vgridFilepath.clear();
 	if(debug) std::cout << cn << mn << "vgridFilepath set to default: \" \"" << std::endl;
 
+	vgridFilepathAlternativeScaleChoice.clear();
+	if(debug) std::cout << cn << mn << "vgridFilepathAlternativeScaleChoice set to default: \" \"" << std::endl;
+
 	lowestOrder = 1;
 	if(debug) std::cout << cn << mn << "lowestOrder set to default: \"NLO\" (1)" << std::endl;
 
@@ -101,6 +107,7 @@ void SPXGridSteeringFile::Print(void) {
 	std::cout << "\t\t Author: " << author << std::endl;
 	std::cout << "\t\t Lumi Config File: " << lumiConfigFile << std::endl;
 	std::cout << "\t\t Scale function form: " << scaleform << std::endl;
+	std::cout << "\t\t Scale function form alternative scale choice : " << scaleformAlternativeScaleChoice << std::endl;
 	std::cout << "\t\t Reference Journal Name: " << referenceJournalName << std::endl;
 	std::cout << "\t\t Reference Link to arXiv: " << referenceLinkToArXiv << std::endl;
 	std::cout << "\t\t NLO Program Name: " << nloProgramName << std::endl;
@@ -119,8 +126,14 @@ void SPXGridSteeringFile::Print(void) {
 
 	std::cout << "\t\t Number of Grid Files: " << vgridFilepath.size() << std::endl;
         for (int i=0; i< vgridFilepath.size(); i++) {
-	std::cout << "\t\t Name: " << vgridFilepath.at(i) << std::endl;
+	 std::cout << "\t\t Name: " << vgridFilepath.at(i) << std::endl;
         }
+
+	std::cout << "\t\t Number of Grid Files for alternative scale choice: " << vgridFilepathAlternativeScaleChoice.size() << std::endl;
+        for (int i=0; i< vgridFilepathAlternativeScaleChoice.size(); i++) {
+	 std::cout << "\t\t Name: " << vgridFilepathAlternativeScaleChoice.at(i) << std::endl;
+        }
+
 	std::cout << "\t\t Correction Files: " << std::endl;
 	for(int i = 0; i < correctionFiles.size(); i++) {
 		std::cout << "\t\t\t " << correctionFiles.at(i) << std::endl;
@@ -226,6 +239,14 @@ void SPXGridSteeringFile::Parse(void) {
 		if(debug) std::cout << cn << mn << "Successfully read Scale: " << scaleform << std::endl;
 	}
 
+	scaleformAlternativeScaleChoice = reader->Get("DESC", "scaleform_alternative_scale_choice", "EMPTY");
+	if(!scaleformAlternativeScaleChoice.compare("EMPTY")) {
+	        if(debug) std::cout << cn << mn << "Scale form AlternativeScaleChoice was not specified" << std::endl;
+		scaleformAlternativeScaleChoice.clear();
+	} else {
+		if(debug) std::cout << cn << mn << "Successfully read Scale: " << scaleformAlternativeScaleChoice << std::endl;
+	}
+
 	referenceJournalName = reader->Get("DESC", "reference_journal_name", "EMPTY");
 	if(!referenceJournalName.compare("EMPTY")) {
 		if(debug) std::cout << cn << mn << "Reference Journal Name was not specified" << std::endl;
@@ -298,13 +319,7 @@ void SPXGridSteeringFile::Parse(void) {
 	if(debug) std::cout << cn << mn << "Reference Divided By Bin Width set to: " << (referenceDividedByDoubleDiffBinWidth ? "ON" : "OFF") << std::endl;
 
 	//Grid Options [GRID]
-	//gridFilepath = reader->Get("GRID", "grid_file", "EMPTY");
-	//if(!gridFilepath.compare("EMPTY")) {
-	//	throw SPXINIParseException("GRAPH", "grid_file", "You MUST specify the grid_file");
-	//} else {
-	//	if(debug) std::cout << cn << mn << "Successfully read Grid Filepath: " << gridFilepath << std::endl;
-	//}
-	//>>>>
+
 	tmp = reader->Get("GRID", "grid_file", "EMPTY");
 	if (!tmp.compare("EMPTY")) {
 	 if(debug) std::cout << cn << mn << "No correction files were specified" << std::endl;
@@ -321,6 +336,24 @@ void SPXGridSteeringFile::Parse(void) {
 	  std::cout << " " <<std::endl;
 	 }
 	}
+
+	tmp = reader->Get("GRID", "grid_file_alternative_scalechoice", "EMPTY");
+	if (!tmp.compare("EMPTY")) {
+	 if(debug) std::cout << cn << mn << "No correction files were specified" << std::endl;
+	 vgridFilepathAlternativeScaleChoice.clear();
+	} else {
+	 //Parse into vector
+	 vgridFilepathAlternativeScaleChoice = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+
+	 if (debug) {
+	  std::cout << cn << mn << "grid_files_alternative_scalechoice string \"" << tmp << "\" parsed into:" << std::endl;
+	  for (int i = 0; i < vgridFilepathAlternativeScaleChoice.size(); i++) {
+	   std::cout << "\t " << vgridFilepathAlternativeScaleChoice.at(i)<<std::endl;
+	  }
+	  std::cout << " " <<std::endl;
+	 }
+	}
+
         //
 	//
 	tmp = reader->Get("GRID", "correction_files", "EMPTY");

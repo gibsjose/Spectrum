@@ -996,19 +996,19 @@ TH1D *SPXGraphUtilities::GraphToHistogram(TGraphAsymmErrors * g) {
 
 
 TH1D *SPXGraphUtilities::GetEdgeHistogram(TGraphAsymmErrors * g, bool low) {
-    std::string mn =" GetEdgeHistogram: ";
+    std::string mn ="GetEdgeHistogram: ";
     //Make sure histogram is valid
     if(!g) {
      throw SPXGraphException(cn + mn + "Graph provided was invalid");
     }
 
     //TString name=TString("h")+g->GetName();
-    TString name="";
+    TString name=g->GetName();
     if (low) name+="LowEdge";
     else     name+="HighEdge";
-    name+=g->GetName();
+    //name+=g->GetName();
 
-    //std::cout<<cn<<mn<<" name= "<<name<<std::endl;
+    //std::cout<<cn<<mn<<"HUHU name= "<<name<<std::endl;
   
     int nbin=g->GetN();
 
@@ -1053,6 +1053,17 @@ TH1D *SPXGraphUtilities::GetEdgeHistogram(TGraphAsymmErrors * g, bool low) {
         h1->SetBinError  (ibin+1,0.);
         //std::cout << cn<<mn<<ibin<<" x= " << x <<" y= "<<y<<" ey= "<<ey<< std::endl;
     }
+
+    h1->SetName(name);
+
+    //TKey *key = gDirectory->GetKey(name);
+    //if (!key) {
+    // std::cout << cn<<mn<<"key not found " << name << std::endl;
+    //} else
+    // std::cout << cn<<mn<<"key found " << name<< std::endl;
+
+    //std::cout << cn<<mn<<"List gDirectory Histogram: " << h1->GetName()<< std::endl;
+    //gDirectory->ls();
 
     //std::cout << cn<<mn<<"Print Histogram: " << h1->GetName()<< std::endl;
     //h1->Print("all");

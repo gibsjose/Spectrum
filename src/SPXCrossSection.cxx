@@ -60,13 +60,15 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
  if (debug) {
 
   std::cout<<cn<<mn<<"Created the PDF-class "<<std::endl;
-  std::cout<<cn<<mn<<"dividedByBinWidth= " <<dividedByBinWidth<<std::endl;
+  std::cout<<cn<<mn<<"dividedByBinWidth= " <<(dividedByBinWidth? "ON" : "OFF")<<std::endl;
 
-  std::cout<<cn<<mn<<"GetBandwithPDF= "    <<mainsteeringFile->GetBandwithPDF()<<std::endl;
-  std::cout<<cn<<mn<<"GetBandwithAlphas= " <<mainsteeringFile->GetBandwithAlphaS()<<std::endl;
-  std::cout<<cn<<mn<<"GetBandwithScales= " <<mainsteeringFile->GetBandwithScales()<<std::endl;
-  std::cout<<cn<<mn<<"GetBeamUncertainty= "<<mainsteeringFile->GetBeamUncertainty()<<std::endl;
-  std::cout<<cn<<mn<<"GetBandTotal= "      <<mainsteeringFile->GetBandTotal()<<std::endl;
+  std::cout<<cn<<mn<<"GetBandwithPDF= "    <<(mainsteeringFile->GetBandwithPDF() ? "ON" : "OFF") <<std::endl;
+  std::cout<<cn<<mn<<"GetBandwithAlphas= " <<(mainsteeringFile->GetBandwithAlphaS()? "ON" : "OFF")<<std::endl;
+  std::cout<<cn<<mn<<"GetBandwithScales= " <<(mainsteeringFile->GetBandwithScales()? "ON" : "OFF")<<std::endl;
+  std::cout<<cn<<mn<<"GetBandwithAlternativeScaleChoice= " <<(mainsteeringFile->GetBandwithAlternativeScaleChoice()? "ON" : "OFF")<<std::endl;
+  std::cout<<cn<<mn<<"GetBeamUncertainty= "<<(mainsteeringFile->GetBeamUncertainty()? "ON" : "OFF")<<std::endl;
+  std::cout<<cn<<mn<<"GetBandTotal= "      <<(mainsteeringFile->GetBandTotal()? "ON" : "OFF")<<std::endl;
+
   for (int i=0; i<bncorr; i++) {
    if (mainsteeringFile->GetGridCorrectionToBand(i))
     std::cout<<cn<<mn<<"Grid correction i= "<<i<<" is ON -> include to Map "<<std::endl;
@@ -94,10 +96,15 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
 
   if (mainsteeringFile->GetBandwithPDF()==false) 
    pdf->SetDoPDFBand (mainsteeringFile->GetBandwithPDF()); 
+
   if (mainsteeringFile->GetBandwithAlphaS()==true) 
    pdf->SetDoAlphaS  (mainsteeringFile->GetBandwithAlphaS());
+
   if (mainsteeringFile->GetBandwithScales()==false) 
    pdf->SetDoScale   (mainsteeringFile->GetBandwithScales());
+
+  if (mainsteeringFile->GetBandwithAlternativeScaleChoice()==true) 
+   pdf->SetDoAlternativeScaleChoice(mainsteeringFile->GetBandwithAlternativeScaleChoice());
 
 
   if (mainsteeringFile->GetBeamUncertainty()!=1.) 
@@ -272,10 +279,12 @@ void SPXCrossSection::ApplyCorrections() {
 
   bool includeinband=mainsteeringFile->GetGridCorrectionToBand(i);
 
-  //correct nominal graph
-  SPXGraphUtilities::MatchBinning(nominal, gcorr, true);
-  SPXGraphUtilities::Multiply(nominal,gcorr,1);
-
+  if (mainsteeringFile->ApplyNominalCorr()){
+   if (debug) std::cout<<cn<<mn<<"Apply correction to nominal "<<std::endl;
+   //correct nominal graph
+   SPXGraphUtilities::MatchBinning(nominal, gcorr, true);
+   SPXGraphUtilities::Multiply(nominal,gcorr,1);
+  }
  // correct PDF band
   pdf->ApplyBandCorrection(gcorr,corrLabel,includeinband);
  }

@@ -78,6 +78,7 @@ class SPXPDF {
         void CalcPDFBandErrors();
         void CalcAlphaSErrors();
         void CalcScaleErrors();
+        void CalcAlternativeScaleChoiceErrors();
         void CalcTotalErrors();
         void CalcBeamEnergyErrors();
 
@@ -110,6 +111,7 @@ class SPXPDF {
         bool GetDoPDFBand() const{return do_PDFBand;};
         bool GetDoAlphaS()  const{return do_AlphaS;};
         bool GetDoScale()   const{return do_Scale;};
+        bool GetDoAlternativeScaleChoice() const{return do_AlternativeScaleChoice;};
         bool GetDoTotal()   const{return do_Total;};
         bool GetDoBeamEnergyUncertainty() const{return do_Escale;};
 
@@ -135,6 +137,10 @@ class SPXPDF {
 	TH1D* GetIndividualScaleVariation(int iscale);
 	void  SetIndividualScaleVariation(int iscale, TH1D *h); 
 
+	int GetNumberOfIndividualAlternativeScaleChoiceVariations() {return h_errors_AlternativeScaleChoice.size();}
+	TH1D* GetIndividualAlternativeScaleChoiceVariation(int iscale);
+	void  SetIndividualAlternativeScaleChoiceVariation(int iscale, TH1D *h); 
+
 	int GetNumberOfIndividualAlphaSVariations() {return h_errors_AlphaS.size();}
 	TH1D* GetIndividualAlphaSVariation(int ialphas);
 	void  SetIndividualAlphaSVariation(int iscale, TH1D *h); 
@@ -159,6 +165,7 @@ class SPXPDF {
         void SetDoPDFBand(bool _doit);
         void SetDoAlphaS(bool _doit);
         void SetDoScale(bool _doit);
+        void SetDoAlternativeScaleChoice(bool _doit);
         void SetDoTotError(bool _doit);
 
         void SetAlphaSmemberNumDown(int _memberNum);
@@ -205,6 +212,7 @@ class SPXPDF {
         TGraphAsymmErrors *h_PDF_results; // PDF uncertainty
         TGraphAsymmErrors *h_AlphaS_results;  // alphas uncertainty
         TGraphAsymmErrors *h_Scale_results;   // scale uncertainty
+        TGraphAsymmErrors *h_AlternativeScaleChoice_results;   // alternative scale choice uncertainty
         TGraphAsymmErrors *h_BeamUncertainty_results;   // scale uncertainty
         TGraphAsymmErrors *h_Total_results;   // total uncertainty
 
@@ -253,6 +261,7 @@ class SPXPDF {
 	std::string AlphaSPDFSetNameUp;
 
         appl::grid *my_grid;
+        appl::grid *my_gridAlternativeScaleChoice;
         int ngrid;
 
         SPXGrid *spxgrid;
@@ -260,6 +269,7 @@ class SPXPDF {
         std::vector<TH1D*> h_errors_AlphaS;
         std::vector<TH1D*> h_errors_PDF;
         std::vector<TH1D*> h_errors_Scale;
+        std::vector<TH1D*> h_errors_AlternativeScaleChoice;
         std::vector<TH1D*> h_errors_BeamUncertainty;
 
         TH1D *hpdfdefault;
@@ -271,6 +281,7 @@ class SPXPDF {
         bool do_PDFBand;
         bool do_AlphaS;
         bool do_Scale;
+        bool do_AlternativeScaleChoice;
         bool do_Escale;
         bool do_Total;
 

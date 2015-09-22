@@ -50,6 +50,8 @@ private:
 	std::string referenceArXivYear;		// Year of arXiv
 	std::string publicationStatus;		// Status of publication
 
+	std::string date;                       // Date of data-table
+
 	//[GRAPH]
 	double sqrtS;				// Sqrt(s) value for dataset
 	std::string legendLabel; 		// Legend label describing the data set
@@ -125,6 +127,10 @@ public:
 
 	const std::string & GetDatasetYear(void) const {
 		return datasetYear;
+	}
+
+	const std::string & GetDate(void) const {
+		return date;
 	}
 
 	const std::string & GetDatasetLumi(void) const {
