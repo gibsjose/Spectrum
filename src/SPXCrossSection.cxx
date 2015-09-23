@@ -77,13 +77,11 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
   }
  }
 
-
  int ncorr=pci->gridSteeringFile.GetNumberOfCorrectionFiles(); 
  if (debug){                                                      // start counting at 0
   std::cout<<cn<<mn<<"Number of corrections from main steering "<<bncorr+1<<std::endl;
   std::cout<<cn<<mn<<"Number of corrections from grid steering "<< ncorr+1<<std::endl;
  }
-
 
  if (bncorr>ncorr) {
   std::cout<<cn<<mn<<"Number of grid correction in Grid file "<<ncorr

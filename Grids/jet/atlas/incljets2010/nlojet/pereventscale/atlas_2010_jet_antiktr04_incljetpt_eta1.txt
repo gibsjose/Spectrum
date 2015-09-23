@@ -18,6 +18,7 @@ name = atlas_2010_jet_antiktr04_incljetpt_eta1
 author = Pavel Staravoitov 
 lumi_config_file = NONE                        
 scaleform = P_{T,jet,max}
+scaleform_alternative_scale_choice = P_{T,jet}
 ;
 reference_journal_name =  Phys.Rev. D86 (2012) 014022         
 reference_link_to_arxiv = http://arxiv.org/abs/1112.6297
@@ -34,12 +35,16 @@ y_units = pb
 grid_divided_by_bin_width = true
 ;
 ;grid_divided_by_doublediff_bin_width = false
+alternative_grid_divided_by_doublediff_bin_width = true
 ;reference_divided_by_bin_width = true
 ;==============================================================
 ; Grid Options
 ;==============================================================
 [GRID]								
 grid_file = incljets_rapidity_00_03_R04_P2.root
+; this does not work fsince would require grid_divided_by_doublediff_bin_width = true
+grid_file_alternative_scalechoice = ../atlas-incljets-arxiv-1112.6297/r04/atlas-incljets-eta1.root
+;
 correction_files = ../atlas_2010_jet_antiktr04_incljetpt_eta1_hadcorr.txt
 correction_files_label = k_{NP}
 correction_files_reference = arxiv-1112.6297

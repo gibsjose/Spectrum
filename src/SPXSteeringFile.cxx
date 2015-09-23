@@ -116,16 +116,28 @@ void SPXSteeringFile::SetDefaults(void) {
 	if(debug) std::cout << cn << mn << "labelDate set to default: \"false\"" << std::endl;
 
 	xLegend = 0.8;
-	if(debug) std::cout << cn << mn << "xLegend set to default: \"0.75\"" << std::endl;
+	if(debug) std::cout << cn << mn << "xLegend set to default: "<< xLegend << std::endl;
 
 	yLegend = 0.93;
-	if(debug) std::cout << cn << mn << "yLegend set to default: \"0.93\"" << std::endl;
+	if(debug) std::cout << cn << mn << "yLegend set to default: " <<yLegend<< std::endl;
 
 	xInfoLegend = 0.4;
-	if(debug) std::cout << cn << mn << "xInfoLegend set to default: \"0.4\"" << std::endl;
+	if(debug) std::cout << cn << mn << "xInfoLegend set to default: "<< xInfoLegend << std::endl;
 
 	yInfoLegend = 0.3;
-	if(debug) std::cout << cn << mn << "yInfoLegend set to default: \"0.3\"" << std::endl;
+	if(debug) std::cout << cn << mn << "yInfoLegend set to default: "<< yInfoLegend << std::endl;
+
+	xLegendPlot = 0.8;
+	if(debug) std::cout << cn << mn << "xLegendPlot set to default: "<<xLegendPlot << std::endl;
+
+	yLegendPlot = 0.93;
+	if(debug) std::cout << cn << mn << "yLegend set to default: " <<yLegendPlot<< std::endl;
+
+	xInfoLegendPlot = 0.4;
+	if(debug) std::cout << cn << mn << "xInfoLegend set to default: "<< xInfoLegendPlot <<std::endl;
+
+	yInfoLegendPlot = 0.3;
+	if(debug) std::cout << cn << mn << "yInfoLegend set to default: "<<yInfoLegendPlot<< std::endl;       
 
 	InfoLegendLabel = "";
 	if(debug) std::cout << cn << mn << "InfoLegendLabel set to default: empty string" << std::endl;
@@ -148,11 +160,38 @@ void SPXSteeringFile::SetDefaults(void) {
 	yOverlayMax = MAX_EMPTY;
 	if(debug) std::cout << cn << mn << "yOverlayMax set to default: \"" << MAX_EMPTY << "\"" << std::endl;
 
+	xOverlayMinPlot = MIN_EMPTY;
+	if(debug) std::cout << cn << mn << "xOverlayMin set to default: \"" << MIN_EMPTY << "\"" << std::endl;
+
+	xOverlayMaxPlot = MAX_EMPTY;
+	if(debug) std::cout << cn << mn << "xOverlayMax set to default: \"" << MAX_EMPTY << "\"" << std::endl;
+
+	yOverlayMinPlot = MIN_EMPTY;
+	if(debug) std::cout << cn << mn << "yOverlayMin set to default: \"" << MIN_EMPTY << "\"" << std::endl;
+
+	yOverlayMaxPlot = MAX_EMPTY;
+	if(debug) std::cout << cn << mn << "yOverlayMax set to default: \"" << MAX_EMPTY << "\"" << std::endl;
+
 	yRatioMin = MIN_EMPTY;
 	if(debug) std::cout << cn << mn << "yRatioMin set to default: \"" << MIN_EMPTY << "\"" << std::endl;
 
 	yRatioMax = MAX_EMPTY;
 	if(debug) std::cout << cn << mn << "yRatioMax set to default: \"" << MAX_EMPTY << "\"" << std::endl;
+
+	xOverlayMaxPlot = MAX_EMPTY;
+	if(debug) std::cout << cn << mn << "xOverlayMaxPlot set to default: \"" << MAX_EMPTY << "\"" << std::endl;
+
+	yOverlayMinPlot = MIN_EMPTY;
+	if(debug) std::cout << cn << mn << "yOverlayMinPlot set to default: \"" << MIN_EMPTY << "\"" << std::endl;
+
+	yOverlayMaxPlot = MAX_EMPTY;
+	if(debug) std::cout << cn << mn << "yOverlayMaxPlot set to default: \"" << MAX_EMPTY << "\"" << std::endl;
+
+	yRatioMinPlot = MIN_EMPTY;
+	if(debug) std::cout << cn << mn << "yRatioMinPlot set to default: \"" << MIN_EMPTY << "\"" << std::endl;
+
+	yRatioMaxPlot = MAX_EMPTY;
+	if(debug) std::cout << cn << mn << "yRatioMaxPlot set to default: \"" << MAX_EMPTY << "\"" << std::endl;
 
 	CalculateChi2 = 0;
 	if(debug) std::cout << cn << mn << "CalculateChi2 set to default: OFF" << std::endl;
@@ -2199,6 +2238,70 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 			if(debug) std::cout << cn << mn << "configurations[y_log] = " << configurations["y_log"].at(0) << std::endl;
 		}
 
+		//
+   	        // default are parameters from 
+	        xOverlayMinPlot = reader->GetReal(plotSection, "x_overlay_min", xOverlayMin);
+                if (xOverlayMinPlot!=xOverlayMin) {
+		  if(debug) std::cout << cn << mn << "xOverlayMin set to " << xOverlayMinPlot << std::endl;
+		  xOverlayMin=xOverlayMinPlot;
+		}
+
+	        xOverlayMaxPlot = reader->GetReal(plotSection, "x_overlay_max", xOverlayMax);
+                if (xOverlayMaxPlot!=xOverlayMax) {
+		 if(debug) std::cout << cn << mn << "xOverlayMax set to " << xOverlayMaxPlot << std::endl;
+                 xOverlayMax=xOverlayMaxPlot;
+		}
+
+	        yOverlayMinPlot = reader->GetReal(plotSection, "y_overlay_min", xOverlayMin);
+                if (yOverlayMinPlot!=yOverlayMin) {
+		 if(debug) std::cout << cn << mn << "yOverlayMin set to " << yOverlayMinPlot << std::endl;
+                 yOverlayMin=yOverlayMinPlot;
+		}
+
+
+	        yOverlayMaxPlot = reader->GetReal(plotSection, "y_overlay_max", xOverlayMax);
+                if (yOverlayMaxPlot!=yOverlayMax) {
+		 if(debug) std::cout << cn << mn << "yOverlayMax set to " << yOverlayMaxPlot << std::endl;
+                 yOverlayMax=yOverlayMaxPlot;
+		}
+
+	        yRatioMinPlot   = reader->GetReal(plotSection, "y_ratio_min", yRatioMin);
+                if (yRatioMinPlot!=yRatioMin) {
+		 if(debug) std::cout << cn << mn << "yRatioMin set to " << yRatioMinPlot << std::endl;
+                 yRatioMin=yRatioMinPlot;
+		}
+
+	        yRatioMaxPlot   = reader->GetReal(plotSection, "y_ratio_max", yRatioMax);
+                if (yRatioMaxPlot!=yRatioMax) {
+		 if(debug) std::cout << cn << mn << "yRatioMax set to " << yRatioMaxPlot << std::endl;
+                 yRatioMax=yRatioMaxPlot;
+		}
+
+	        xLegendPlot   = reader->GetReal(plotSection, "x_legend", xLegend);
+                if (xLegendPlot!=xLegend) {
+		 if(debug) std::cout << cn << mn << "xLegendPlot set to " << xLegendPlot<< std::endl;
+                 xLegendPlot=xLegendPlot;
+		}
+
+	        yLegendPlot   = reader->GetReal(plotSection, "y_legend", yLegend);
+                if (yLegendPlot!=yLegend) {
+		 if(debug) std::cout << cn << mn << "yLegend set to " << yLegendPlot<< std::endl;
+                 yLegend=yLegendPlot;
+		}
+
+	        xInfoLegendPlot   = reader->GetReal(plotSection, "x_info_legend", xInfoLegend);
+                if (xInfoLegendPlot!=xInfoLegend) {
+		 if(debug) std::cout << cn << mn << "xLegend set to " << xLegendPlot<< std::endl;
+                 xInfoLegend=xInfoLegendPlot;
+		}
+
+	        yInfoLegendPlot   = reader->GetReal(plotSection, "y_info_legend", yInfoLegend);
+                if (yInfoLegendPlot!=yInfoLegend) {
+                 yInfoLegend=yInfoLegendPlot;
+		 if(debug) std::cout << cn << mn << "yInfoLegend set to " << yInfoLegendPlot<< std::endl;
+		}
+
+		//
 		//Get the desc
 		tmp = reader->Get(plotSection, "desc", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
@@ -2493,7 +2596,6 @@ void SPXSteeringFile::Parse(void) {
 	XDataBoxLabel = reader->GetReal("GRAPH", "x_databox", XDataBoxLabel);
 	YDataBoxLabel = reader->GetReal("GRAPH", "y_databox", YDataBoxLabel);
 
-
 	xOverlayMin = reader->GetReal("GRAPH", "x_overlay_min", xOverlayMin);
 	xOverlayMax = reader->GetReal("GRAPH", "x_overlay_max", xOverlayMax);
 
@@ -2501,7 +2603,6 @@ void SPXSteeringFile::Parse(void) {
 	yOverlayMax = reader->GetReal("GRAPH", "y_overlay_max", yOverlayMax);
 	yRatioMin   = reader->GetReal("GRAPH", "y_ratio_min", yRatioMin);
 	yRatioMax   = reader->GetReal("GRAPH", "y_ratio_max", yRatioMax);
-
 
 	CalculateChi2 = reader->GetInteger("GRAPH", "calculate_chi2", CalculateChi2);
 

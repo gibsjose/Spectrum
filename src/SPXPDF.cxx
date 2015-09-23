@@ -1903,7 +1903,8 @@ void SPXPDF::CalcAlternativeScaleChoiceErrors()
  if (debug) std::cout<<cn<<mn<<"Starting calculation of AlternativeScaleChoiceErrors for: "<<PDFtype<<std::endl;
 
  int ngrid=spxgrid->GetNumberofAlternativeScaleChoiceGrids();
- if (ngrid!=1) throw SPXParseException(cn+mn+"More then one alternative grids not yet implemented !");
+ if (ngrid>1) throw SPXParseException(cn+mn+"More than one alternative grids not yet implemented !");
+ if (ngrid<1) throw SPXParseException(cn+mn+"No alternative grid found !");
  
  my_gridAlternativeScaleChoice=spxgrid->GetGridAlternativeScaleChoice(0);
  if (!my_gridAlternativeScaleChoice) {

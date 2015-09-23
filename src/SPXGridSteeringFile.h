@@ -59,6 +59,9 @@ private:
 	bool gridDividedByBinWidth;
 	bool referenceDividedByBinWidth;
 
+	bool AlternativeGridChoicegridDividedByBinWidth;
+	bool AlternativeGridChoicegridDividedByDoubleDiffBinWidth;
+
 	bool gridDividedByDoubleDiffBinWidth;
 	bool referenceDividedByDoubleDiffBinWidth;
 	double yScale;
@@ -173,12 +176,20 @@ public:
 		return this->gridDividedByBinWidth;
 	}
 
+	bool IsAlternativeGridChoiceGridDividedByBinWidth(void) const {
+		return this->AlternativeGridChoicegridDividedByBinWidth;
+	}
+
 	bool IsReferenceDividedByBinWidth(void) const {
 		return this->referenceDividedByBinWidth;
 	}
 
 	bool IsGridDividedByDoubleDiffBinWidth(void) const {
 		return this->gridDividedByDoubleDiffBinWidth;
+	}
+
+	bool IsAlternativeGridChoiceGridDividedByDoubleDiffBinWidth(void) const {
+		return this->AlternativeGridChoicegridDividedByDoubleDiffBinWidth;
 	}
 
 	bool IsReferenceDividedByDoubleDiffBinWidth(void) const {

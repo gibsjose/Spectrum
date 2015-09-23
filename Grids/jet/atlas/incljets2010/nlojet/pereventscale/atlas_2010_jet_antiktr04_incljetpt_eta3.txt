@@ -40,6 +40,7 @@ name = atlas_2010_jet_antiktr04_incljetpt_eta3
 author = Pavel Staravoitov 
 lumi_config_file = NONE                                              
 scaleform = P_{T,jet,max}
+;scaleform_alternative_scale_choice = P_{T,jet}
 reference_journal_name =  Phys.Rev. D86 (2012) 014022         
 reference_link_to_arxiv = http://arxiv.org/abs/1112.6297
 nlo_program_name = nlojet++                    

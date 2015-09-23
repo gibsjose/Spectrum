@@ -68,8 +68,15 @@ void SPXGridSteeringFile::SetDefaults(void) {
 	gridDividedByBinWidth = true;
 	if(debug) std::cout << cn << mn << "gridDividedByBinWidth set to default: \"true\"" << std::endl;
 
+	AlternativeGridChoicegridDividedByBinWidth = true;
+	if(debug) std::cout << cn << mn << "AlternativeGridChoicegridDividedByBinWidth set to default: \"true\"" << std::endl;
+
 	gridDividedByDoubleDiffBinWidth = false;
 	if(debug) std::cout << cn << mn << "gridDividedByDoubleDiffBinWidth set to default: \"false\"" << std::endl;
+
+	AlternativeGridChoicegridDividedByDoubleDiffBinWidth = false;
+	if(debug) std::cout << cn << mn << "AlternativeGridChoicegridDividedByDoubleDiffBinWidth set to default: \"false\"" << std::endl;
+
 
 	referenceDividedByBinWidth = false;
 	if(debug) std::cout << cn << mn << "referenceDividedByBinWidth set to default: \"false\"" << std::endl;
@@ -119,6 +126,7 @@ void SPXGridSteeringFile::Print(void) {
 	std::cout << "\t\t Y Scale: " << yScale << std::endl;
 	std::cout << "\t\t Grid Divided by Bin Width? " << (gridDividedByBinWidth ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Grid Divided by double differential Bin Width variable? " << (gridDividedByDoubleDiffBinWidth ? "YES" : "NO") << std::endl;
+	std::cout << "\t\t AlternativeGridChoice Grid Divided by double differential Bin Width variable? " << (AlternativeGridChoicegridDividedByDoubleDiffBinWidth ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Reference Divided by Bin Width? " << (referenceDividedByBinWidth ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Reference Divided by double differential Bin Width variable? " << (referenceDividedByDoubleDiffBinWidth? "YES" : "NO") << std::endl << std::endl;
 	std::cout << "\t Grid Options [GRID]" << std::endl;
@@ -306,8 +314,15 @@ void SPXGridSteeringFile::Parse(void) {
 	if(debug) 
          std::cout << cn << mn << "yscale= " << yScale << std::endl;        
 
+	AlternativeGridChoicegridDividedByBinWidth = reader->GetBoolean("GRAPH", "alternative_grid_divided_by_bin_width", AlternativeGridChoicegridDividedByBinWidth);
+	if(debug) std::cout << cn << mn << "Grid Divided By Bin Width set to: " << (AlternativeGridChoicegridDividedByBinWidth ? "ON" : "OFF") << std::endl;
+
+
 	gridDividedByBinWidth = reader->GetBoolean("GRAPH", "grid_divided_by_bin_width", gridDividedByBinWidth);
 	if(debug) std::cout << cn << mn << "Grid Divided By Bin Width set to: " << (gridDividedByBinWidth ? "ON" : "OFF") << std::endl;
+
+	AlternativeGridChoicegridDividedByDoubleDiffBinWidth = reader->GetBoolean("GRAPH", "alternative_grid_divided_by_doublediff_bin_width", AlternativeGridChoicegridDividedByDoubleDiffBinWidth);
+	if(debug) std::cout << cn << mn << "Grid Divided By double differential varibale Bin Width set to: " << (AlternativeGridChoicegridDividedByDoubleDiffBinWidth ? "ON" : "OFF") << std::endl;
 
 	gridDividedByDoubleDiffBinWidth = reader->GetBoolean("GRAPH", "grid_divided_by_doublediff_bin_width", gridDividedByDoubleDiffBinWidth);
 	if(debug) std::cout << cn << mn << "Grid Divided By double differential varibale Bin Width set to: " << (gridDividedByDoubleDiffBinWidth ? "ON" : "OFF") << std::endl;

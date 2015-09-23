@@ -119,7 +119,8 @@ private:
 
         std::vector<double> RenScales; // vector for renormalisation scale variations
         std::vector<double> FacScales; // vector for factorisation scale variations
-
+ 
+        // from Graph field
 	double xLegend;		    //X Position of the main legend, based on top-right corner
 	double yLegend;		    //Y Position of the main legend, based on top-right corner
 	double xInfoLegend;	    //X Position of the information legend, based on  corner
@@ -131,6 +132,20 @@ private:
 	double xOverlayMax;	    //Force X-Axis maximum for overlay section
 	double yRatioMin;	    //Force Y-Axis minimum for ratio section
 	double yRatioMax;	    //Force Y-Axis maximum for ratio section
+
+        // from Plot field (will take priority on Graph field)
+	double xLegendPlot;	
+	double yLegendPlot;	
+	double xInfoLegendPlot;	    
+	double yInfoLegendPlot;	    
+	std::string InfoLegendLabelPlot;	
+	double yOverlayMinPlot;	
+	double yOverlayMaxPlot;	    
+	double xOverlayMinPlot;	    
+	double xOverlayMaxPlot;	    
+	double yRatioMinPlot;	    
+	double yRatioMaxPlot;	    
+
 
         int CalculateChi2;      // Calculate Chi2
         int DumpTables;      // Dump Latex tables

@@ -2695,6 +2695,7 @@ void SPXPlot::NormalizeCrossSections(void) {
                           }
                          }
                         }
+
 			//Check if data/grid are/are not normalized by total sigma or bin width
 			bool normalizeToTotalSigma = pci->dataSteeringFile.IsNormalizedToTotalSigma();
 			bool dataDividedByBinWidth = pci->dataSteeringFile.IsDividedByBinWidth();
@@ -2716,6 +2717,13 @@ void SPXPlot::NormalizeCrossSections(void) {
 			 std::cout << cn << mn << "referenceDividedByDoubleDiffBinWidth is " << ( referenceDividedByDoubleDiffBinWidth ? "ON" : "OFF") << std::endl;
 			}
 
+                        bool AlternativeGridChoicegridDividedByDoubleDiffBinWidth =  pci->gridSteeringFile.IsAlternativeGridChoiceGridDividedByDoubleDiffBinWidth();
+                        bool  isAlternativeGridDividedByBinWidth =  pci->gridSteeringFile.IsAlternativeGridChoiceGridDividedByBinWidth();
+                        if (isAlternativeGridDividedByBinWidth) {
+			 if (debug) std::cout<<cn<<mn<<" AlternativeGridChoiceGridDividedByBinWidth is ON "<<std::endl;
+			 std::cerr<<cn<<mn<<"AlternativeGridChoiceGridDividedByBinWidth not yet implemented "<<std::endl;
+                        }
+
 			if(!dataDividedByBinWidth && gridDividedByBinWidth) {
 			 throw SPXGraphException(cn + mn + "Grid IS divided by the bin with but the data IS NOT: Not supported");
 			}
@@ -2724,6 +2732,9 @@ void SPXPlot::NormalizeCrossSections(void) {
 			 throw SPXGraphException(cn + mn + "Grid IS divided by the double diff variable bin with but the data IS NOT: Not supported");
 			}
 
+			if(!dataDividedByDoubleDiffBinWidth && AlternativeGridChoicegridDividedByDoubleDiffBinWidth) {
+			 throw SPXGraphException(cn + mn + "AlternativeGridChoiceGrid IS divided by the double diff variable bin with but the data IS NOT: Not supported");
+			}
 
 			double totalSigmaNom = SPXGraphUtilities::GetTotalSigma(gNom, gridDividedByBinWidth);
 			double totalSigmaRef = SPXGraphUtilities::GetTotalSigma(gRef, referenceDividedByBinWidth);
@@ -2745,11 +2756,20 @@ void SPXPlot::NormalizeCrossSections(void) {
 			//Set the yBinWidthScale, which is the scaling of the data's Y Bin Width Units to the data's X Units
 			double yBinWidthScale = SPXGraphUtilities::GetYBinWidthUnitsScale(pci->dataSteeringFile.GetXUnits(), pci->dataSteeringFile.GetYBinWidthUnits());
 
+                        double AlternativeGridChoiceyBinWidthScale=yBinWidthScale;
+
+			if(dataDividedByDoubleDiffBinWidth && !AlternativeGridChoicegridDividedByDoubleDiffBinWidth) {
+			 double dbinwidth= pci->dataSteeringFile.GetDoubleBinValueWidth();
+			 if(debug) std::cout << cn << mn << "AlternativeGridChoice Dividing Cross Section by the Double Diff Bin Width" << dbinwidth<< std::endl;
+			 AlternativeGridChoiceyBinWidthScale*=dbinwidth;
+                        }
+
 			if(dataDividedByDoubleDiffBinWidth && !gridDividedByDoubleDiffBinWidth) {
 			 double dbinwidth= pci->dataSteeringFile.GetDoubleBinValueWidth();
 			 if(debug) std::cout << cn << mn << "Dividing Cross Section by the Double Diff Bin Width" << dbinwidth<< std::endl;
 			 yBinWidthScale*=dbinwidth;
                         }
+
 			if(referenceDividedByDoubleDiffBinWidth) {
 			 if (gridDividedByDoubleDiffBinWidth) {
                            std::ostringstream oss;
@@ -2760,7 +2780,6 @@ void SPXPlot::NormalizeCrossSections(void) {
 
 			SPXGraphUtilities::Scale(gNom, 1.0, (1.0 / yBinWidthScale));
 			SPXGraphUtilities::Scale(gRef, 1.0, (1.0 / yBinWidthScale));
-
                         //
                         // loop over bands (pdf, alphas, scale etc) as set in SPXPDF
                         //
@@ -2777,18 +2796,35 @@ void SPXPlot::NormalizeCrossSections(void) {
 
                           double totalSigma=SPXGraphUtilities::GetTotalSigma(gband, gridDividedByBinWidth);
 
-    			  if(dataDividedByBinWidth && !gridDividedByBinWidth) {
+                          if (TString(gband->GetName()).Contains("AlternativeGridChoice")) {
+        		   if (debug) std::cout << cn << mn << "Normalise band " << gband->GetName() << std::endl;  
+    			   if(dataDividedByBinWidth && !isAlternativeGridDividedByBinWidth) {
 
-			  if(debug) std::cout << cn << mn << "Divide by binwidth "<< std::endl;
-                           SPXGraphUtilities::DivideByBinWidth(gband);
-                          }
+			   if(debug) std::cout << cn << mn << "AlternativeGridChoice Divide by binwidth "<< std::endl;
+                            SPXGraphUtilities::DivideByBinWidth(gband);
+                           }
 
-			  if(debug) std::cout << cn << mn << "Scaling by 1 / Y Bin Width Scale: " << (1.0 / yBinWidthScale) << std::endl;
-                          SPXGraphUtilities::Scale(gband, 1.0, (1.0 / yBinWidthScale));
-   			  if(normalizeToTotalSigma) {
-			   if(totalSigma== 0) throw SPXGeneralException(cn + mn + "Divide by zero error: Total Sigma is zero");
-			   if(debug) std::cout << cn << mn << "Scaling by 1 / total sigma: " << std::scientific << (1.0 / totalSigma) << std::endl;
-			   SPXGraphUtilities::Scale(gband, 1.0, (1.0 / totalSigma));
+			   if (debug) std::cout << cn << mn << "Scaling by 1 / Y Bin Width Scale: " << (1.0 / yBinWidthScale) << std::endl;
+                           SPXGraphUtilities::Scale(gband, 1.0, (1.0 / AlternativeGridChoiceyBinWidthScale));
+   			   if(normalizeToTotalSigma) {
+			    if(totalSigma== 0) throw SPXGeneralException(cn + mn + "Divide by zero error: Total Sigma is zero");
+			    if(debug) std::cout << cn << mn << "Scaling by 1 / total sigma: " << std::scientific << (1.0 / totalSigma) << std::endl;
+			    SPXGraphUtilities::Scale(gband, 1.0, (1.0 / totalSigma));
+                           }
+			  } else { 
+    			   if(dataDividedByBinWidth && !gridDividedByBinWidth) {
+
+			    if(debug) std::cout << cn << mn << "Divide by binwidth "<< std::endl;
+                            SPXGraphUtilities::DivideByBinWidth(gband);
+                           }
+
+			   if (debug) std::cout << cn << mn << "Scaling by 1 / Y Bin Width Scale: " << (1.0 / yBinWidthScale) << std::endl;
+                           SPXGraphUtilities::Scale(gband, 1.0, (1.0 / yBinWidthScale));
+   			   if(normalizeToTotalSigma) {
+			    if(totalSigma== 0) throw SPXGeneralException(cn + mn + "Divide by zero error: Total Sigma is zero");
+			    if(debug) std::cout << cn << mn << "Scaling by 1 / total sigma: " << std::scientific << (1.0 / totalSigma) << std::endl;
+			    SPXGraphUtilities::Scale(gband, 1.0, (1.0 / totalSigma));
+                           }
                           }
                          }
                         }
