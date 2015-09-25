@@ -166,6 +166,8 @@ private:
         void WriteRootFile(TString rootfilename);
         void   OrderSystVectorColorsByAlphabeth(std::vector<TGraphAsymmErrors *> vsyst);
         void SetSystGraphProperties(TGraphAsymmErrors * gsyst, Color_t icol);
+
+        std::string GetCorrectionLabel(SPXCrossSection cross);
 };
 
 #endif

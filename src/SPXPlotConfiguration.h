@@ -448,6 +448,23 @@ public:
 		return description;
 	}
 
+	bool CheckPlotOptions(std::string name){
+	  //std::cout<<"CheckPLotOptions: name= "<<name<<std::endl;
+	  //for(std::map<std::string, double>::reverse_iterator it=plotoptions.rbegin(); it!=plotoptions.rend(); ++it) {
+	    //std::cout<<"CheckPLot plotoptions["<<it->first<<"]= "<<it->second<<endl;
+	    //}
+          //if (  plotoptions.count(name)>0) std::cout<<" found "<<std::endl;
+	  return plotoptions.count(name)>0;
+        }
+
+	double GetPlotOptions(std::string name) {
+	 if (plotoptions.count(name)==0) {
+	  std::cout<<"GetPlotOptions:: Not found "<<name<<" Please, check first "<<std::endl;
+         }
+	 return plotoptions[name];
+	}
+
+
 	SPXDisplayStyle & GetDisplayStyle(void) {
 		return displayStyle;
 	}
@@ -542,6 +559,8 @@ private:
 	std::string ratioTitle;
 	std::vector<SPXRatioStyle> ratioStyles;
 	std::vector<std::string> ratios;
+
+        std::map<std::string,double> plotoptions;
 
 	std::vector<SPXPlotConfigurationInstance> configurationInstances;
 

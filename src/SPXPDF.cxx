@@ -1374,8 +1374,11 @@ void SPXPDF::CalcBeamEnergyErrors()
 
   if (debug) {
    double def=hnom->GetBinContent(ibin);
-   std::cout<<"ibin= "<<ibin<<" max= "<<max<<" min= "<<min
-                      <<" max/def= "<< max/def<<" min/def= "<<min/def <<std::endl;
+   if (def!=0)
+    std::cout<<cn<<mn<<"ibin= "<<ibin<<" max= "<<max<<" min= "<<min
+                     <<" max/def= "<< max/def<<" min/def= "<<min/def <<std::endl;
+   else
+    std::cout<<cn<<mn<<"ibin= "<<ibin<<" max= "<<max<<" min= "<<min<<" def is zero "<<std::endl;
   }
 
   double init_x_val;

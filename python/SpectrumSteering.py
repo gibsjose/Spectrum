@@ -95,6 +95,7 @@ class Graph(SpectrumSteering):
 
     self.show_individual_systematics = 0
     self.plot_marker = True
+    self.plot_error_ticks = True
     self.plot_staggered = True
     self.match_binning = True
     self.apply_grid_corr = True
@@ -133,7 +134,7 @@ class Graph(SpectrumSteering):
     self.x_info_legend = 0.
     self.y_info_legend = 0.
 
-
+    self.calculate_chi2=0.
 
 
 class Plot(SpectrumSteering):
@@ -176,6 +177,9 @@ class Plot(SpectrumSteering):
      self.display_systematic_group_edge_width = 0
      self.x_log=True
      self.y_log=True
+
+     self.data_marker_style=''
+     self.data_marker_color=''
 
      self.total_fill_style=0
      self.total_fill_color=0

@@ -2240,69 +2240,124 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 
 		//
    	        // default are parameters from 
-	        xOverlayMinPlot = reader->GetReal(plotSection, "x_overlay_min", xOverlayMin);
-                if (xOverlayMinPlot!=xOverlayMin) {
-		  if(debug) std::cout << cn << mn << "xOverlayMin set to " << xOverlayMinPlot << std::endl;
-		  xOverlayMin=xOverlayMinPlot;
-		}
+	        tmp   = reader->Get(plotSection, "x_overlay_min", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		  // is option
+		} else {
+		 //Add to configurations map
+		 tmpVector.clear();
+		 tmpVector.push_back(tmp);
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("x_overlay_min", tmpVector));
+		 tmpVector.clear();
+		 if(debug) std::cout << cn << mn << "configurations[x_overlay_min] = " << configurations["x_overlay_min"].at(0) << std::endl;    }
 
-	        xOverlayMaxPlot = reader->GetReal(plotSection, "x_overlay_max", xOverlayMax);
-                if (xOverlayMaxPlot!=xOverlayMax) {
-		 if(debug) std::cout << cn << mn << "xOverlayMax set to " << xOverlayMaxPlot << std::endl;
-                 xOverlayMax=xOverlayMaxPlot;
-		}
+	        tmp   = reader->Get(plotSection, "x_overlay_max", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		  // is option
+		} else {
+		 //Add to configurations map
+		 tmpVector.clear();
+		 tmpVector.push_back(tmp);
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("x_overlay_max", tmpVector));
+		 tmpVector.clear();
+		 if(debug) std::cout << cn << mn << "configurations[x_overlay_max] = " << configurations["x_overlay_max"].at(0) << std::endl;    }
 
-	        yOverlayMinPlot = reader->GetReal(plotSection, "y_overlay_min", xOverlayMin);
-                if (yOverlayMinPlot!=yOverlayMin) {
-		 if(debug) std::cout << cn << mn << "yOverlayMin set to " << yOverlayMinPlot << std::endl;
-                 yOverlayMin=yOverlayMinPlot;
-		}
+	        tmp   = reader->Get(plotSection, "y_overlay_min", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		  // is option
+		} else {
+		 //Add to configurations map
+		 tmpVector.clear();
+		 tmpVector.push_back(tmp);
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("y_overlay_min", tmpVector));
+		 tmpVector.clear();
+		 if(debug) std::cout << cn << mn << "configurations[y_overlay_min] = " << configurations["y_overlay_min"].at(0) << std::endl;    }
 
+	        tmp   = reader->Get(plotSection, "y_overlay_max", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		  // is option
+		} else {
+		 //Add to configurations map
+		 tmpVector.clear();
+		 tmpVector.push_back(tmp);
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("y_overlay_max", tmpVector));
+		 tmpVector.clear();
+		 if(debug) std::cout << cn << mn << "configurations[y_overlay_max] = " << configurations["y_overlay_max"].at(0) << std::endl;    }
 
-	        yOverlayMaxPlot = reader->GetReal(plotSection, "y_overlay_max", xOverlayMax);
-                if (yOverlayMaxPlot!=yOverlayMax) {
-		 if(debug) std::cout << cn << mn << "yOverlayMax set to " << yOverlayMaxPlot << std::endl;
-                 yOverlayMax=yOverlayMaxPlot;
-		}
+	        tmp   = reader->Get(plotSection, "y_ratio_min", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		  // is option
+		} else {
+		 //Add to configurations map
+		 tmpVector.clear();
+		 tmpVector.push_back(tmp);
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("y_ratio_min", tmpVector));
+		 tmpVector.clear();
+		 if(debug) std::cout << cn << mn << "configurations[y_ratio_min] = " << configurations["y_ratio_min"].at(0) << std::endl;        }
 
-	        yRatioMinPlot   = reader->GetReal(plotSection, "y_ratio_min", yRatioMin);
-                if (yRatioMinPlot!=yRatioMin) {
-		 if(debug) std::cout << cn << mn << "yRatioMin set to " << yRatioMinPlot << std::endl;
-                 yRatioMin=yRatioMinPlot;
-		}
+	        tmp   = reader->Get(plotSection, "y_ratio_max", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		  // is option
+		} else {
+		 //Add to configurations map
+		 tmpVector.clear();
+		 tmpVector.push_back(tmp);
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("y_ratio_max", tmpVector));
+		 tmpVector.clear();
+		 if(debug) std::cout << cn << mn << "configurations[y_ratio_max] = " << configurations["y_ratio_max"].at(0) << std::endl;
+                }
 
-	        yRatioMaxPlot   = reader->GetReal(plotSection, "y_ratio_max", yRatioMax);
-                if (yRatioMaxPlot!=yRatioMax) {
-		 if(debug) std::cout << cn << mn << "yRatioMax set to " << yRatioMaxPlot << std::endl;
-                 yRatioMax=yRatioMaxPlot;
-		}
+	        tmp   = reader->Get(plotSection, "x_legend", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		  // is option
+		} else {
+		 //Add to configurations map
+		 tmpVector.clear();
+		 tmpVector.push_back(tmp);
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("x_legend", tmpVector));
+		 tmpVector.clear();
+		 if(debug) std::cout << cn << mn << "configurations[x_legend] = " << configurations["x_legend"].at(0) << std::endl;      
+                }
 
-	        xLegendPlot   = reader->GetReal(plotSection, "x_legend", xLegend);
-                if (xLegendPlot!=xLegend) {
-		 if(debug) std::cout << cn << mn << "xLegendPlot set to " << xLegendPlot<< std::endl;
-                 xLegendPlot=xLegendPlot;
-		}
+	        tmp   = reader->Get(plotSection, "y_legend", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		  // is option
+		} else {
+		 //Add to configurations map
+		 tmpVector.clear();
+		 tmpVector.push_back(tmp);
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("y_legend", tmpVector));
+		 tmpVector.clear();
+		 if(debug) std::cout << cn << mn << "configurations[y_legend] = " << configurations["y_legend"].at(0) << std::endl;      
+                }
 
-	        yLegendPlot   = reader->GetReal(plotSection, "y_legend", yLegend);
-                if (yLegendPlot!=yLegend) {
-		 if(debug) std::cout << cn << mn << "yLegend set to " << yLegendPlot<< std::endl;
-                 yLegend=yLegendPlot;
-		}
+	        tmp   = reader->Get(plotSection, "x_info_legend", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		  // is option
+		} else {
+		 //Add to configurations map
+		 tmpVector.clear();
+		 tmpVector.push_back(tmp);
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("x_info_legend", tmpVector));
+		 tmpVector.clear();
+		 if(debug) std::cout << cn << mn << "configurations[x_info_legend] = " << configurations["x_info_legend"].at(0) << std::endl;
+                }
 
-	        xInfoLegendPlot   = reader->GetReal(plotSection, "x_info_legend", xInfoLegend);
-                if (xInfoLegendPlot!=xInfoLegend) {
-		 if(debug) std::cout << cn << mn << "xLegend set to " << xLegendPlot<< std::endl;
-                 xInfoLegend=xInfoLegendPlot;
-		}
-
-	        yInfoLegendPlot   = reader->GetReal(plotSection, "y_info_legend", yInfoLegend);
-                if (yInfoLegendPlot!=yInfoLegend) {
-                 yInfoLegend=yInfoLegendPlot;
-		 if(debug) std::cout << cn << mn << "yInfoLegend set to " << yInfoLegendPlot<< std::endl;
-		}
+	        tmp   = reader->Get(plotSection, "y_info_legend", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		  // is option
+		} else {
+		 //Add to configurations map
+		 tmpVector.clear();
+		 tmpVector.push_back(tmp);
+		 configurations.insert(std::pair<std::string, std::vector<std::string> >("y_info_legend", tmpVector));
+		 tmpVector.clear();
+		 if(debug) std::cout << cn << mn << "configurations[y_info_legend] = " << configurations["y_info_legend"].at(0) << std::endl;  
+                }
 
 		//
 		//Get the desc
+                //
 		tmp = reader->Get(plotSection, "desc", "EMPTY");
 		if(!tmp.compare("EMPTY")) {
 			throw SPXINIParseException(plotSection, "desc", "You MUST specify the desc");

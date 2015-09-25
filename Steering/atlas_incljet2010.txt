@@ -25,7 +25,7 @@ label_scaleform = true
 ;
 
 ;
-x_legend = 0.75
+x_legend = 1.2
 y_legend = 0.9
 x_info_legend = 0.45
 y_info_legend = 0.25

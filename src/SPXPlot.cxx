@@ -601,19 +601,75 @@ void SPXPlot::DrawOverlayPadFrame(void) {
 
 	DetermineOverlayFrameBounds(xMinOverlay, xMaxOverlay, yMinOverlay, yMaxOverlay);
 
+        //if (debug) {
+	// std::cout<<cn<<mn<<"xMinOverlay = "<<xMinOverlay<<std::endl;
+	// std::cout<<cn<<mn<<"xMaxOverlay = "<<xMaxOverlay<<std::endl;
+	// std::cout<<cn<<mn<<"yMaxOverlay = "<<yMaxOverlay<<std::endl;
+	// std::cout<<cn<<mn<<"yMinOverlay = "<<yMinOverlay<<std::endl;
+        //}
+
+        double xmin=steeringFile->GetXOverlayMin();
+        double xmax=steeringFile->GetXOverlayMax();
+        double ymin=steeringFile->GetYOverlayMin();
+        double ymax=steeringFile->GetYOverlayMax();
+
+        if (debug) {
+	 std::cout<<cn<<mn<<"x_overlay_max= "<<xmax<<std::endl;
+	 std::cout<<cn<<mn<<"x_overlay_min= "<<xmin<<std::endl;
+	 std::cout<<cn<<mn<<"y_overlay_max= "<<ymax<<std::endl;
+	 std::cout<<cn<<mn<<"y_overlay_min= "<<ymin<<std::endl;
+        }
+        // values can be overwritten bby steering parameters given in Plot field
+        if (pc.CheckPlotOptions("x_overlay_max")){
+         xmax=pc.GetPlotOptions("x_overlay_max");
+	 if (debug) std::cout<<cn<<mn<<"x_overlay_max= "<<xmax<<std::endl;
+        } 
+
+        if (pc.CheckPlotOptions("x_overlay_min")){
+         xmin=pc.GetPlotOptions("x_overlay_min");
+	 if (debug) std::cout<<cn<<mn<<"x_overlay_min= "<<xmin<<std::endl;
+        } 
+
+        if (pc.CheckPlotOptions("y_overlay_max")){
+         xmax=pc.GetPlotOptions("y_overlay_max");
+	 if (debug) std::cout<<cn<<mn<<"y_overlay_max= "<<ymax<<std::endl;
+        } 
+
+        if (pc.CheckPlotOptions("y_overlay_min")){
+         xmin=pc.GetPlotOptions("y_overlay_min");
+	 if (debug) std::cout<<cn<<mn<<"y_overlay_min= "<<ymin<<std::endl;
+        } 
+
+        if (debug) {
+	 std::cout<<cn<<mn<<"x_overlay_max= "<<xmax<<std::endl;
+	 std::cout<<cn<<mn<<"x_overlay_min= "<<xmin<<std::endl;
+	 std::cout<<cn<<mn<<"y_overlay_max= "<<ymax<<std::endl;
+	 std::cout<<cn<<mn<<"y_overlay_min= "<<ymin<<std::endl;
+        }
 	//Force to steering file Y bounds if set
-	if(steeringFile->GetYOverlayMin() != MIN_EMPTY) {
-		yMinOverlay = steeringFile->GetYOverlayMin();
+	//if(steeringFile->GetYOverlayMin() != MIN_EMPTY) {
+	//	yMinOverlay = steeringFile->GetYOverlayMin();
+	if(ymin != MIN_EMPTY) {
+		yMinOverlay = ymin;
 		if(debug) std::cout << cn << mn << "Forcing Overlay Y Axis Minimum to " << yMinOverlay << std::endl;
 	}
-	if(steeringFile->GetYOverlayMax() != MAX_EMPTY) {
-		yMaxOverlay = steeringFile->GetYOverlayMax();
+	//if(steeringFile->GetYOverlayMax() != MAX_EMPTY) {
+	//	yMaxOverlay = steeringFile->GetYOverlayMax();
+	if(ymax != MAX_EMPTY) {
+		yMaxOverlay = ymax;
 		if(debug) std::cout << cn << mn << "Forcing Overlay Y Axis Maxmimum to " << yMaxOverlay << std::endl;
 	}
 
-	if(steeringFile->GetXOverlayMin() != MIN_EMPTY) {
-		xMinOverlay = steeringFile->GetXOverlayMin();
+	//if(steeringFile->GetXOverlayMin() != MIN_EMPTY) {
+	//	xMinOverlay = steeringFile->GetXOverlayMin();
+	if(xmin != MIN_EMPTY) {
+		xMinOverlay = xmin;
 		if(debug) std::cout << cn << mn << "Forcing Overlay X Axis Minimum to " << xMinOverlay << std::endl;
+	}
+
+	if(xmax != MAX_EMPTY) {
+		xMaxOverlay = xmax;
+		if(debug) std::cout << cn << mn << "Forcing Overlay X Axis Minimum to " << xMaxOverlay << std::endl;
 	}
 
 	/* commenting this is can lead to a corrupted eps file ! .. no idea why
@@ -677,14 +733,67 @@ void SPXPlot::DrawRatioPadFrame(void) {
 
 	DetermineRatioFrameBounds(xMinRatio, xMaxRatio, yMinRatio, yMaxRatio);
 
+        if (debug) {
+	 std::cout<<"After DetermineRatioFrameBounds:"<<std::endl;
+	 std::cout<<cn<<mn<<"yMaxRatio= "<<yMaxRatio<<std::endl;
+	 std::cout<<cn<<mn<<"yMinRatio= "<<yMinRatio<<std::endl;
+	 std::cout<<cn<<mn<<"xMaxRatio= "<<xMaxRatio<<std::endl;
+	 std::cout<<cn<<mn<<"xMinRatio= "<<xMinRatio<<std::endl;
+        }
+
+        double xmin=steeringFile->GetXOverlayMin();
+        double xmax=steeringFile->GetXOverlayMax();
+        double ymin=steeringFile->GetYRatioMin();
+        double ymax=steeringFile->GetYRatioMax();
+
+        if (debug) {
+	 std::cout<<"After reading steeringFile [Graph]:"<<std::endl;
+	 std::cout<<cn<<mn<<"y_ratio_max= "<<ymax<<std::endl;
+	 std::cout<<cn<<mn<<"y_ratio_min= "<<ymin<<std::endl;
+	 std::cout<<cn<<mn<<"x_ratio_max= "<<xmax<<std::endl;
+	 std::cout<<cn<<mn<<"x_ratio_min= "<<xmin<<std::endl;
+        }
+
+        if (pc.CheckPlotOptions("y_ratio_max")){
+         ymax=pc.GetPlotOptions("y_ratio_max");
+	 if (debug) std::cout<<cn<<mn<<"y_ratio_max= "<<ymax<<std::endl;
+        } 
+
+        if (pc.CheckPlotOptions("y_ratio_min")){
+         ymin=pc.GetPlotOptions("y_ratio_min");
+	 if (debug) std::cout<<cn<<mn<<"y_ratio_min= "<<ymin<<std::endl;
+        } 
+
+        if (pc.CheckPlotOptions("x_overlay_max")){
+         xmax=pc.GetPlotOptions("x_overlay_max");
+	 if (debug) std::cout<<cn<<mn<<"x_overlay_max= "<<xmax<<std::endl;
+        } 
+
+        if (pc.CheckPlotOptions("x_overlay_min")){
+         xmin=pc.GetPlotOptions("x_overlay_min");
+	 if (debug) std::cout<<cn<<mn<<"x_overlay_min= "<<xmin<<std::endl;
+        } 
+
+        if (debug) {
+	 std::cout<<"After reading steeringFile [Plot]:"<<std::endl;
+	 std::cout<<cn<<mn<<"y_ratio_max= "<<ymax<<std::endl;
+	 std::cout<<cn<<mn<<"y_ratio_min= "<<ymin<<std::endl;
+	 std::cout<<cn<<mn<<"x_ratio_max= "<<xmax<<std::endl;
+	 std::cout<<cn<<mn<<"x_ratio_min= "<<xmin<<std::endl;
+        }
+        //
 	//Force to steering file Y bounds if set
-	if(steeringFile->GetYRatioMin() != MIN_EMPTY) {
-		yMinRatio = steeringFile->GetYRatioMin();
-		if(debug) std::cout << cn << mn << "Forcing Ratio Y Axis Minimum to " << yMinRatio << std::endl;
+	//if(steeringFile->GetYRatioMin() != MIN_EMPTY) {
+        if( ymin != MIN_EMPTY) {
+	  //yMinRatio = steeringFile->GetYRatioMin();
+          yMinRatio = ymin;
+	  if(debug) std::cout << cn << mn << "Forcing Ratio Y Axis Minimum to " << yMinRatio << std::endl;
 	}
-	if(steeringFile->GetYRatioMax() != MAX_EMPTY) {
-		yMaxRatio = steeringFile->GetYRatioMax();
-		if(debug) std::cout << cn << mn << "Forcing Ratio Y Axis Maxmimum to " << yMaxRatio << std::endl;
+	//if(steeringFile->GetYRatioMax() != MAX_EMPTY) {
+	if( ymax != MAX_EMPTY) {
+	  //yMaxRatio = steeringFile->GetYRatioMax();
+          yMaxRatio = ymax;
+	  if(debug) std::cout << cn << mn << "Forcing Ratio Y Axis Maxmimum to " << yMaxRatio << std::endl;
 	}
 
 	//Force Ratio X Min/Max to match Overlay, if plotted (should already match anyway...)
@@ -693,17 +802,28 @@ void SPXPlot::DrawRatioPadFrame(void) {
 	 xMaxRatio = xMaxOverlay;
 	} else { // otherwise read in values from Steering
 	
-	 if(steeringFile->GetXOverlayMin() != MIN_EMPTY) {
-		xMinRatio = steeringFile->GetXOverlayMin();
-		if(debug) std::cout << cn << mn << "Forcing Overlay X Axis Minimum to " << xMinRatio << std::endl;
+	 //if(steeringFile->GetXOverlayMin() != MIN_EMPTY) {
+         if( xmin != MIN_EMPTY) {
+	   //xMinRatio = steeringFile->GetXOverlayMin();
+	  xMinRatio = xmin;
+	  if(debug) std::cout << cn << mn << "Forcing Overlay X Axis Minimum to " << xMinRatio << std::endl;
 	 }
-	 if(steeringFile->GetXOverlayMax() != MAX_EMPTY) {
-	   xMaxRatio = steeringFile->GetXOverlayMax();
-		if(debug) std::cout << cn << mn << "Forcing Overlay X Axis Maxmimum to " << xMaxRatio << std::endl;
-	 }
-      
+
+	 //if(steeringFile->GetXOverlayMax() != MAX_EMPTY) {
+         if( xmax!= MAX_EMPTY) {
+	   //xMaxRatio = steeringFile->GetXOverlayMax();
+          xMaxRatio = xmax;
+	  if(debug) std::cout << cn << mn << "Forcing Overlay X Axis Maxmimum to " << xMaxRatio << std::endl;
+	 }      
         }
 
+        if (debug) {
+	 std::cout<<"Drawing ratio frame with:"<<std::endl;
+	 std::cout<<cn<<mn<<"yMaxRatio= "<<yMaxRatio<<std::endl;
+	 std::cout<<cn<<mn<<"yMinRatio= "<<yMinRatio<<std::endl;
+	 std::cout<<cn<<mn<<"xMaxRatio= "<<xMaxRatio<<std::endl;
+	 std::cout<<cn<<mn<<"xMinRatio= "<<xMinRatio<<std::endl;
+        }
 	//@TODO What to do here for forcing Y axis within logarithmic limits like I do for overlay? It doesn't matter now, since
 	//			only overlay Y is logarithmic, and the X follows the overlay exactly (if it's plotted)
 
@@ -1118,6 +1238,8 @@ void SPXPlot::DrawLegend(void) {
 
  std::string pdfold="";
  std::string scaleold="";
+
+ debug=true;
  
  for(int icross = 0; icross < crossSections.size(); icross++) {
 
@@ -1660,14 +1782,8 @@ void SPXPlot::DrawLegend(void) {
      if (icross==0&&pdfsdifferent) { //only Draw text for the first cross section
       text+="NLO QCD";
       if(steeringFile->ApplyGridCorr()) {
-	std::vector<std::string> corrlabel=crossSections[icross].GetCorrectionLabels();
-       if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
-       for(int ic = 0; ic < corrlabel.size(); ic++) {
-	std::string label=" #otimes "+corrlabel[ic];
-        //if (debug) std::cout<<cn<<mn<<"grid correction label= "<<label.c_str()<<std::endl;
-        text+=TString(label); // do this better
-       }
-        //std::cout<<cn<<mn<<text.Data()<<" namesize= "<<namesize<<std::endl;
+        text+=" #otimes ";
+        text+=GetCorrectionLabel(crossSections[icross]);
       }
       text+=" with:";
       if (gridcorrectionfound&&!nlouncertainty) text="";
@@ -1861,7 +1977,10 @@ void SPXPlot::DrawLegend(void) {
        if (debug) std::cout<<cn<<mn<<"icross= "<<icross<<" nbands==1"<<std::endl;
        if (vlabel.size()!=1) { 
  	if (debug) std::cout<<cn<<mn<<"Add legend gband= "<<gband->GetName()<<" gtype= "<<gtype.c_str()<<std::endl;
-        leg->AddEntry(gband, TString(gtype), "LF");
+	std::string text=GetCorrectionLabel(crossSections[icross]);
+        //leg->AddEntry(gband, TString(gtype), "LF");
+         
+        leg->AddEntry(gband, TString(text), "LF");
        }
       } else {
        //if (debug) std::cout << cn << mn <<"npdf= "<<npdf<< std::endl;
@@ -1899,6 +2018,15 @@ void SPXPlot::DrawLegend(void) {
  double x1=0., y1=0., x2=0., y2=0.;
  double xlegend=steeringFile->GetXLegend();
  double ylegend=steeringFile->GetYLegend();
+
+ if (pc.CheckPlotOptions("x_legend")){
+  xlegend=pc.GetPlotOptions("x_legend");
+  if (debug) std::cout<<cn<<mn<<"x_legend= "<<xlegend<<std::endl;
+ } 
+ if (pc.CheckPlotOptions("y_legend")){
+  ylegend=pc.GetPlotOptions("y_legend");
+  if (debug) std::cout<<cn<<mn<<"y_legend= "<<ylegend<<std::endl;
+ } 
 
  leg->Print();
 
@@ -2170,6 +2298,17 @@ void SPXPlot::DrawLegend(void) {
  if (nraw>10) yfac=0.1;
  double x2info=steeringFile->GetXInfoLegend();
  double y2info=steeringFile->GetYInfoLegend();
+
+ if (pc.CheckPlotOptions("x_info_legend")){
+  x2info=pc.GetPlotOptions("x_info_legend");
+  if (debug) std::cout<<cn<<mn<<"x2info= "<<x2info<<std::endl;
+ } 
+
+ if (pc.CheckPlotOptions("y_info_legend")){
+  y2info=pc.GetPlotOptions("y_info_legend");
+  if (debug) std::cout<<cn<<mn<<"y2info= "<<y2info<<std::endl;
+ } 
+
  if (nraw>3) y2info*=1.1;
  if (nraw>4) y2info*=1.15;
 
@@ -2231,8 +2370,8 @@ void SPXPlot::CanvasToPNG(void) {
          //if (debug) std::cout<<cn<<mn<<" output format= "<< steeringFile->GetOutputGraphicFormat()<<std::endl;
          
          epsfilename.ReplaceAll("png",TString(steeringFile->GetOutputGraphicFormat()));
-         epsfilename.ReplaceAll("_plot_0","");
-         epsfilename.ReplaceAll("_plot_1","");
+         //epsfilename.ReplaceAll("_plot_0","");
+         //epsfilename.ReplaceAll("_plot_1","");
 
          if (debug) {
           std::cout<<cn<<mn<<"Print epsfilename= "<< epsfilename.Data()<<std::endl;
@@ -2265,6 +2404,7 @@ std::string SPXPlot::GetPNGFilename(std::string desc) {
  }
 
  filename = "./plots/" + desc + "_plot_" + (ULong_t)id + ".png";
+
 
  if(debug) std::cout << cn << mn << "Created PNG Filename: " << filename << std::endl;
 
@@ -2720,7 +2860,7 @@ void SPXPlot::NormalizeCrossSections(void) {
                         bool AlternativeGridChoicegridDividedByDoubleDiffBinWidth =  pci->gridSteeringFile.IsAlternativeGridChoiceGridDividedByDoubleDiffBinWidth();
                         bool  isAlternativeGridDividedByBinWidth =  pci->gridSteeringFile.IsAlternativeGridChoiceGridDividedByBinWidth();
                         if (isAlternativeGridDividedByBinWidth) {
-			 if (debug) std::cout<<cn<<mn<<" AlternativeGridChoiceGridDividedByBinWidth is ON "<<std::endl;
+			 if (debug) std::cout<<cn<<mn<<"AlternativeGridChoiceGridDividedByBinWidth is ON "<<std::endl;
 			 std::cerr<<cn<<mn<<"AlternativeGridChoiceGridDividedByBinWidth not yet implemented "<<std::endl;
                         }
 
@@ -3766,4 +3906,20 @@ void SPXPlot::SetSystGraphProperties(TGraphAsymmErrors * gsyst, Color_t icol){
  // SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors *)gsyst);
  //}
  return; 
+}
+
+std::string SPXPlot::GetCorrectionLabel(SPXCrossSection cross){
+ std::string mn = ":GetCorrectionLabel: ";
+
+ std::string text="";
+ std::vector<std::string> corrlabel=cross.GetCorrectionLabels();
+ if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
+ for(int ic = 0; ic < corrlabel.size(); ic++) {
+  if (ic>0) text+=" #otimes ";
+  text+=corrlabel[ic];
+  //if (debug) std::cout<<cn<<mn<<"grid correction label= "<<label.c_str()<<std::endl;
+  //text+=TString(label); // do this better
+ }
+ 
+ return text;
 }

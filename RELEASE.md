@@ -12,7 +12,7 @@
 
   -SPXSteering: introduce flag if grid corrections should go to nominal
 
-  -added python script to generate steering files
+  -added python scripts to generate steering files
 
   -SPXSteering/SPXPlotConfiguration remove/contain_systematic_group are now in SPXPlotConfiguration
    before it did not work for many plot configurations Plot_0 Plot_1
