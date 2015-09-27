@@ -100,6 +100,7 @@ class Graph(SpectrumSteering):
     self.match_binning = True
     self.apply_grid_corr = True
     self.apply_nominal_corr = True
+    self.contain_grid_corr = ''
     self.show_systematics_as_lines = 0.
     self.show_total_systematics = 0
     self.order_systematic_colorbyalphabeth = True
@@ -186,12 +187,14 @@ class Plot(SpectrumSteering):
      self.total_edge_style=0
      self.total_edge_color=0
      self.total_marker_style=0
+     self.total_marker_color=0
 
      self.pdf_fill_style=0
      self.pdf_fill_color=0
      self.pdf_edge_style=0
      self.pdf_edge_color=0
      self.pdf_marker_style=0
+     self.pdf_marker_color=0
 
      self.scale_fill_style=0
      self.scale_fill_color=0
@@ -199,28 +202,35 @@ class Plot(SpectrumSteering):
      self.scale_edge_style=0
      self.scale_edge_color=0
      self.scale_marker_style=0
+     self.scale_marker_color=0
 
      self.alternative_scale_choice_fill_style=0
      self.alternative_scale_choice_fill_color=0
-     self.alternative_scale_choice_marker_style=0
      self.alternative_scale_choice_edge_style=0
      self.alternative_scale_choice_edge_color=0
+     self.alternative_scale_choice_marker_style=0
+     self.alternative_scale_choice_marker_color=0
 
      self.alphas_fill_style=0
      self.alphas_fill_color=0
      self.alphas_edge_style=0
      self.alphas_edge_color=0
      self.alphas_marker_style=0
+     self.alphas_marker_color=0
 
-     self.correction_fill_style=0
-     self.correction_fill_color=0
-     self.correction_marker_style=0
+     self.corrections_fill_style=0
+     self.corrections_fill_color=0
+     self.corrections_edge_color=0
+     self.corrections_edge_style=0
+     self.corrections_marker_style=0
+     self.corrections_marker_color=0
 
      self.beamuncertainty_fill_style=0
      self.beamuncertainty_fill_color=0
      self.beamuncertainty_edge_style=0
      self.beamuncertainty_edge_color=0
      self.beamuncertainty_marker_style=0
+     self.beamuncertainty_marker_color=0
 
      self.display_style = ''
      self.overlay_style = ''

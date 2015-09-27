@@ -45,7 +45,7 @@ public:
 
 private:
 	SPXSteeringFile *steeringFile;		//Pointer to a fully parsed steering file
-	std::vector<SPXPlot> plots;			//Vector of plots
+	std::vector<SPXPlot> plots;		//Vector of plots
 
 	void Initialize(void) {
 

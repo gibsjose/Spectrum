@@ -1786,3 +1786,20 @@ TGraphAsymmErrors* SPXGraphUtilities::FindCommonBins(TGraphAsymmErrors* gmaster,
  }
  return g3;
 }
+
+bool SPXGraphUtilities::GraphWithNoError(TGraphAsymmErrors * g) {
+    std::string mn = "GraphWithNoError: ";
+    //Make sure graph is valid
+    if(!g) {
+     throw SPXGraphException(cn + mn + "Graph provided was invalid");
+    }
+    bool allerrorszero=true;
+    int nbin=g->GetN();
+    double eyl, eyh;
+    for(int ibin = 0; ibin < nbin; ibin++) {
+     eyl=g->GetErrorYlow(ibin);
+     eyh=g->GetErrorYhigh(ibin);
+     if (eyl!=0 || eyh!=0) return false;
+    }
+    return allerrorszero;
+}

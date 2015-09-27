@@ -2460,10 +2460,10 @@ void SPXPDF::PrintMap(BandMap_T &m) {
  std::string mn = "PrintMap: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
- if (debug) std::cout<<cn<<mn<<" Map size= "<<Mapallbands.size()<<std::endl;
+ if (debug) std::cout<<cn<<mn<<"Map size= "<<Mapallbands.size()<<std::endl;
 
  for(BandMap_T::const_iterator it = m.begin(); it != m.end(); ++it) {
-  std::cout <<cn<<mn<< " " << std::endl;
+  std::cout <<cn<<mn<<" " << std::endl;
   std::cout <<cn<<mn<< "map["<<it->first<<"]="<< " graph name " << it->second->GetName() << std::endl;
   it->second->Print("all");
  }

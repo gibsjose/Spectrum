@@ -31,6 +31,8 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
  if (!mainsteeringFile)
   throw SPXParseException(cn+mn+"main steering file not found !");
 
+ numberofgridcorrection=0;
+
  //Attempt to create the Grid
  try {
   grid = new SPXGrid(pci);
@@ -55,8 +57,6 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
  //@TODO What to do when the grid IS divided but the reference is NOT?
  dividedByBinWidth = this->pci->gridSteeringFile.IsGridDividedByBinWidth();
 
- int bncorr=mainsteeringFile->GetNumberofCorrectionToBand();
-
  if (debug) {
 
   std::cout<<cn<<mn<<"Created the PDF-class "<<std::endl;
@@ -69,25 +69,30 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
   std::cout<<cn<<mn<<"GetBeamUncertainty= "<<(mainsteeringFile->GetBeamUncertainty()? "ON" : "OFF")<<std::endl;
   std::cout<<cn<<mn<<"GetBandTotal= "      <<(mainsteeringFile->GetBandTotal()? "ON" : "OFF")<<std::endl;
 
+  /*
+ int bncorr=mainsteeringFile->GetNumberofCorrectionToBand();
   for (int i=0; i<bncorr; i++) {
    if (mainsteeringFile->GetGridCorrectionToBand(i))
     std::cout<<cn<<mn<<"Grid correction i= "<<i<<" is ON -> include to Map "<<std::endl;
    else
     std::cout<<cn<<mn<<"Grid correction i= "<<i<<" is OFF  "<<std::endl;
   }
+  */
  }
+
 
  int ncorr=pci->gridSteeringFile.GetNumberOfCorrectionFiles(); 
  if (debug){                                                      // start counting at 0
-  std::cout<<cn<<mn<<"Number of corrections from main steering "<<bncorr+1<<std::endl;
+   //std::cout<<cn<<mn<<"Number of corrections from main steering "<<bncorr+1<<std::endl;
   std::cout<<cn<<mn<<"Number of corrections from grid steering "<< ncorr+1<<std::endl;
  }
 
+ /*
  if (bncorr>ncorr) {
   std::cout<<cn<<mn<<"Number of grid correction in Grid file "<<ncorr
            <<" and main steering file "<<bncorr<<" do not match"<<std::endl;
   }
-
+  */
   // The logic below only works, if we invert the defaults set in
   // SPXSteering
   //
@@ -220,16 +225,17 @@ void SPXCrossSection::UpdateBand() {
 
 void SPXCrossSection::ApplyCorrections() {
  std::string mn = "ApplyCorrections: ";
+ debug=true;
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if(!mainsteeringFile)
   throw SPXParseException(cn+mn+"Main steering file not found !");
 
  if(mainsteeringFile->ApplyGridCorr()) {
-   if (debug) std::cout<<cn<<mn<<"INFO: grid corrections will be applied to cross sections !" << std::endl;
+  if (debug) std::cout<<cn<<mn<<"INFO: grid corrections will be applied to cross sections !" << std::endl;
  } else {
-   if (debug) std::cout<<cn<<mn<<"INFO: No grid correction asked for in steering file ! return " << std::endl;
-   return;
+  if (debug) std::cout<<cn<<mn<<"INFO: No grid correction asked for in steering file ! return " << std::endl;
+  return;
  }
 
  if (debug) std::cout<<cn<<mn<<"Parse grid corrections" << std::endl;
@@ -248,6 +254,10 @@ void SPXCrossSection::ApplyCorrections() {
                   <<" and main steering file "<<bncorr<<" do not match"<<std::endl;
  }
 
+ if (!mainsteeringFile->KeepGridCorr().empty()) {
+   std::cout<<cn<<mn<<"INFO: Only keep systematics that contains "<<mainsteeringFile->KeepGridCorr()<<std::endl;
+ }
+
  if (debug) std::cout<<cn<<mn<<">>>>>>>>>>>>>>>>> APPLY CORRECTIONS <<<<<<<<<<<<<<<<<"<<std::endl;
 
  if (debug) {
@@ -263,8 +273,27 @@ void SPXCrossSection::ApplyCorrections() {
   std::string griddir  = pci->gridDirectory;
   
   filename=griddir+"/"+filename;
-  std::cout<<cn<<mn<<"Apply corrections from filename= "<<filename<<" label= "<<corrLabel.c_str()<<std::endl;
 
+  if (!mainsteeringFile->KeepGridCorr().empty()) {
+     std::cout<<cn<<mn<<"Test if filename= "<<filename<<" contains= "<<mainsteeringFile->KeepGridCorr()<<std::endl;
+    if (TString(filename).Contains(mainsteeringFile->KeepGridCorr())){
+     std::cout<<cn<<mn<<"Apply corrections from filename= "<<filename<<" label= "<<corrLabel.c_str()<<std::endl;
+    } else {
+     std::cout<<cn<<mn<<"Do NOT apply corrections filename= "<<filename<<" label= "<<corrLabel.c_str()<<std::endl;
+     continue;
+    }
+  } else {
+   std::cout<<cn<<mn<<"Apply corrections from filename= "<<filename<<" label= "<<corrLabel.c_str()<<std::endl;
+  }
+
+  numberofgridcorrection++; //count number of correction actually applied
+  bool includeinband=true;
+  if (numberofgridcorrection>1) includeinband=false;
+
+  if (debug) {
+   std::cout<<cn<<mn<<"includeinband= "<<(includeinband ? "ON" : "OFF")
+            <<" numberofgridcorrection= "<<numberofgridcorrection<<std::endl;
+  }
   TGraphAsymmErrors *gcorr=gridcorrection->GetCorrectionGraph(filename);
   if (!gcorr) {
    throw SPXGraphException(cn+mn+"Correction graph not found for filename= "+filename);
@@ -275,7 +304,13 @@ void SPXCrossSection::ApplyCorrections() {
    gcorr->Print();
   }
 
-  bool includeinband=mainsteeringFile->GetGridCorrectionToBand(i);
+  if (mainsteeringFile->KeepGridCorr().empty()) {
+   includeinband=mainsteeringFile->GetGridCorrectionToBand(i);
+   if (debug) {
+    std::cout<<cn<<mn<<"includeinband= "<<(includeinband ? "ON" : "OFF")<<" i= "<<i<<std::endl;
+    std::cout<<cn<<mn<<"contain_apply_grid overwrites band_with_grid "<<std::endl;
+   }
+  }
 
   if (mainsteeringFile->ApplyNominalCorr()){
    if (debug) std::cout<<cn<<mn<<"Apply correction to nominal "<<std::endl;
@@ -283,7 +318,8 @@ void SPXCrossSection::ApplyCorrections() {
    SPXGraphUtilities::MatchBinning(nominal, gcorr, true);
    SPXGraphUtilities::Multiply(nominal,gcorr,1);
   }
- // correct PDF band
+  // correct PDF band
+  if (debug) std::cout<<cn<<mn<<"Now correct PDF band includeinband="<<(includeinband ? "ON" : "OFF")<<std::endl;
   pdf->ApplyBandCorrection(gcorr,corrLabel,includeinband);
  }
 
@@ -298,14 +334,15 @@ std::vector<std::string> SPXCrossSection::GetCorrectionLabels() {
  correctionlabels.clear();
 
  int ncorr=pci->gridSteeringFile.GetNumberOfCorrectionFiles(); 
+ //int ncorr=numberofgridcorrection;    
  if(ncorr == 0) {
   std::cout << cn << mn << "WARNING: No grid correction file specified, but ApplyCorrection called !" << std::endl;
   return correctionlabels;
  }
 
- // if (debug) {
- // std::cout << cn << mn <<"corrections ncorr= " << ncorr << std::endl;
- //}
+ if (debug) {
+  std::cout << cn << mn <<"corrections ncorr= " << ncorr << std::endl;
+ }
  
  correctionlabels.clear();
 
@@ -314,13 +351,27 @@ std::vector<std::string> SPXCrossSection::GetCorrectionLabels() {
   std::string corrLabel= pci->gridSteeringFile.GetCorrectionFileLabel(i);
   std::string griddir  = pci->gridDirectory;
   
+  if (debug) std::cout<<cn<<mn<<"filename= "<<filename<<std::endl; 
+
+  if (!mainsteeringFile->KeepGridCorr().empty()) {
+   if (TString(filename).Contains(mainsteeringFile->KeepGridCorr())){
+    if (debug) std::cout<<cn<<mn<<"Put corrections filename= "<<filename<<" to label "<<std::endl;
+   } else {
+    if (debug) std::cout<<cn<<mn<<"Do NOT put corrections filename= "<<filename<<" to label "<<std::endl;
+    continue;
+   }
+  }
+  
   correctionlabels.push_back(corrLabel);
 
-  //if (debug) {
-  // std::cout<<cn<<mn<<"corrLabel= "<<corrLabel.c_str()<<std::endl;
-  //}
  
  }
+
+ if (debug) {
+  for (int i=0; i<correctionlabels.size(); i++)
+    std::cout<<cn<<mn<<"corrLabel["<<i<<"]= "<<correctionlabels.at(i)<<std::endl;
+ }
+
  return correctionlabels;
 }
 void SPXCrossSection::MatchBinning(StringGraphMap_T dataFileGraphMap) {

@@ -55,6 +55,7 @@ apply_nominal_corr = true			;[Optional] Apply the corrections (e.g. hadronisatio
                                                             By default apply_nominal_corr = true
                                                             If apply_grid_corr = true can take true or false valse values
                                                                apply_grid_corr = false always apply_nominal_corr = false
+contain_grid_corr = ' '                          ;[Optional] Apply only grid correction that contain string
 
 show_individual_systematics = 0                  ;[Optional] Show individual systematic on data above x%
 show_systematics_as_lines = 1                    ;[Optional] Show systematics as line, number is line thickness

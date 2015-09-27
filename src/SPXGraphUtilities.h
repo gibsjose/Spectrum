@@ -111,6 +111,7 @@ public:
 
         static void StaggerGraph(int index, int ngraph, TGraphAsymmErrors *graph);
         static void SetColors(TGraphAsymmErrors* g1, Color_t icol);
+        static bool GraphWithNoError(TGraphAsymmErrors* g1);
 };
 
 #endif

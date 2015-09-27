@@ -1024,6 +1024,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		throw SPXParseException(oss.str());
 	}
 
+
 	if((cfsSize != 0) && (cfsSize != psfSize)) {
 		std::ostringstream oss;
 		oss << "Size of corrections_fill_style vector (" << cfsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
@@ -1053,7 +1054,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
 		oss << "Size of corrections_marker_style vector (" << cmsSize << ") DOES NOT match the size of the pdf_steering_files vector (" << psfSize << ")";
 		throw SPXParseException(oss.str());
 	}
-       
+	
 	//Check directory size: Could either be of length 1, in which case the directory is prepended to each steering file, or
 	//	the exact length of the steering file list
 	if((ddrSize != 1) && (ddrSize != dsfSize)) {

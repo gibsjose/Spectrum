@@ -390,7 +390,7 @@ void SPXGridCorrections::Print(void) {
 
 
 TGraphAsymmErrors * SPXGridCorrections::GetCorrectionGraph(std::string &filename){
- std::string mn = "GetCorrectionGraph ";
+ std::string mn = "GetCorrectionGraph: ";
 
  TGraphAsymmErrors* gcorr= new TGraphAsymmErrors();
  if (!gcorr) throw SPXGraphException(cn + mn + "ERROR creating graph ");

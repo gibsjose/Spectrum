@@ -1371,6 +1371,7 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
  //double xmin=0.25, ymin=0.3, boxsize=0.05;
  double xmin=xbox, ymin=ybox, boxsize=0.05;
 
+ if(debug) std::cout<<cn<<mn<<"ratioStyle= "<<ratioStyle.ToString()<<std::endl;
   
  // plot data if requested
  if(IsDataStat() || IsDataTot()) {
@@ -1504,9 +1505,11 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
     TGraphAsymmErrors *graph = ratioGraph[igraph];
     if (!graph) std::cout<<"Graph not found !"<<std::endl;
     TString gname=graph->GetName();
-    if (debug) std::cout<<cn<<mn<<"Draw now gname= "<<gname.Data()<<" option= "<<option.c_str()<<std::endl;
-    if (debug) graph->Print();
-   
+    if (debug) {
+     std::cout<<cn<<mn<<"Draw now gname= "<<gname.Data()<<" option= "<<option.c_str()<<std::endl;
+     SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors*)graph);
+     graph->Print();
+    }
     graph->Draw(option.c_str());
    }
 
@@ -1537,21 +1540,31 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
    return;
   }
 
+  if(ratioStyle.IsConvoluteOverNominal()) {
+   if (debug) std::cout<<cn<<mn<<"Is convolute over nominal number of ratio= "<< ratioGraph.size()<<std::endl;
+  }
+
   bool detailedband=false;
+  int nband=0; TString bandname="";
   for (int igraph1=0; igraph1 < ratioGraph.size(); igraph1++) {
    TGraphAsymmErrors *graph1 = ratioGraph[igraph1];
    TString gname=graph1->GetName();
-   if (gname.Contains("_total_")) detailedband=true;
-   if (gname.Contains("_scale_")) detailedband=true;
-   if (gname.Contains("_AlternativeScaleChoice_")) detailedband=true;
-   if (gname.Contains("_pdf_"))   detailedband=true;
-   if (gname.Contains("_alphas_"))detailedband=true;
-   if (gname.Contains("_beamuncertainty_"))detailedband=true;
+   if (gname.Contains("_total_")) {detailedband=true; nband++; bandname="_total_";}
+   if (gname.Contains("_scale_")) {detailedband=true; nband++; bandname="_scale_";}
+   if (gname.Contains("_AlternativeScaleChoice_")) {detailedband=true; nband++; bandname="_AlternativeScaleChoice_";}
+   if (gname.Contains("_pdf_"))    {detailedband=true; nband++; bandname="_pdf_";}
+   if (gname.Contains("_alphas_")) {detailedband=true; nband++; bandname="_alphas_";}
+   if (gname.Contains("_corrections_")) {detailedband=true; nband++; bandname="_corrections_";}
+   if (gname.Contains("_beamuncertainty_")) {detailedband=true; nband++; bandname="_beamuncertainty_";}
   }
 
-  if (debug) if(!detailedband) std::cout<<cn<<mn<<"This is a simple band detailedband=FALSE "<<std::endl;
-  if (debug) if (plotmarker)  std::cout<<cn<<mn<<"Asked to plot with markers "<<std::endl;
-             else             std::cout<<cn<<mn<<"plotmarker=FALSE "<<std::endl;
+  if (debug) {
+   if(!detailedband) std::cout<<cn<<mn<<"This is a simple band detailedband=FALSE "<<std::endl;
+   if (plotmarker)  std::cout<<cn<<mn<<"Asked to plot with markers "<<std::endl;
+   else             std::cout<<cn<<mn<<"plotmarker=FALSE "<<std::endl;
+   std::cout<<cn<<mn<<"Number of band found in ratioGraph= "<<nband<<std::endl;   
+   if (nband==1) std::cout<<cn<<mn<<"Only band is "<<bandname.Data()<<std::endl;
+  }
 
   if (!detailedband || plotmarker) {
    if (debug) if (plotmarker)  std::cout<<cn<<mn<<"Only plot total band"<<std::endl;
@@ -1566,6 +1579,27 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
    }
   }
 
+  if (nband==1) {
+   for (int igraph1=0; igraph1 < ratioGraph.size(); igraph1++) {
+    TGraphAsymmErrors *graph = ratioGraph[igraph1];
+    TString gname=graph->GetName();
+    if (gname.Contains(bandname)) {
+     if (debug) std::cout<<cn<<mn<<"Draw graph "<<graph->GetName()<<std::endl;
+      if (SPXGraphUtilities::GraphWithNoError(graph)) {
+      if (debug) std::cout<<cn<<mn<<"All errors are zero switch to histogram "<<std::endl;
+      TH1D* h1=SPXGraphUtilities::GraphToHistogram(graph);
+      h1->SetLineColor(graph->GetLineColor());
+      h1->SetLineStyle(graph->GetLineStyle());
+      h1->Draw("hist,][,same");
+     } else {
+      graph->Draw(option.c_str());
+     }
+     return;
+    }
+   }
+  }
+
+
   if (debug) std::cout<<cn<<mn<<"Now order bands and plots"<<std::endl;
 
   // order bands for better plotting
@@ -1577,8 +1611,6 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
 
   if(ratioStyle.IsDataOverConvolute()) {
    if (debug) std::cout<<cn<<mn<<"Get plot configuration: "<<numeratorDataFile.c_str()<<std::endl;
-   //pci=plotConfiguration.GetPlotConfigurationInstance(denominatorConvolutePDFFile);
-   //pci=plotConfiguration.GetPlotConfigurationInstance(numeratorDataFile);
    throw SPXGraphException(cn+mn+"You should not come here, can not plot detailed band for data in numerator");
   } else {
    if (debug) std::cout<<cn<<mn<<"Get plot configuration: "<<numeratorConvolutePDFFile.c_str()<<std::endl;
@@ -1588,9 +1620,9 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
   //if (!pci) std::cout<<cn<<mn<<"WARNING: pci not found "<<std::endl;
 
   // now plot graph: largest first
-  //std::cout<<cn<<mn<<" \n iterate over map " <<std::endl;
+  if (debug) std::cout<<cn<<mn<<"iterate over map " <<std::endl;
   for(std::map<int, TGraphAsymmErrors *>::reverse_iterator it=bands.rbegin(); it!=bands.rend(); ++it) {
-   std::cout<<cn<<mn<<it->first<<" "<<it->second->GetName()<<std::endl;
+   if (debug) std::cout<<cn<<mn<<"key= "<<it->first<<" gname= "<<it->second->GetName()<<std::endl;
 
    TGraphAsymmErrors *graph = it->second;
    const int DEFAULT=-99;
@@ -1656,7 +1688,7 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
     graph->SetMarkerStyle(markerstyle);
    }
 
-   //std::cout<<cn<<mn<<"edgecolor= "<<edgecolor<<" gname= "<<gname<<std::endl;
+   if (debug) std::cout<<cn<<mn<<"edgecolor= "<<edgecolor<<" gname= "<<gname<<std::endl;
 
    if (edgecolor!=DEFAULT && edgecolor!=0) {
 
@@ -1674,6 +1706,7 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
      //hedgelow ->SetLineWidth(linewidth);
      hedgelow ->SetLineWidth(4);
      hedgehigh->SetLineWidth(4);
+     graph->SetLineWidth(4);
     }
 
     hedgelow ->SetFillStyle(0);

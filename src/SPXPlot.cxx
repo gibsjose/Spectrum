@@ -256,9 +256,7 @@ void SPXPlot::ScaleAxes(void) {
   		 xAxisRatio->SetLabelSize(xAxisOverlay->GetLabelSize() / rScale);
  		 yAxisRatio->SetLabelSize(yAxisOverlay->GetLabelSize() / rScale);
 
-
 		}
-
 
 		//NOTE: Not sure why I have to do -0.25 to begin with... For some reason at 0.0 (total offset = 0.8 when below is false)
 		// there is an additional offset relative to the overlay title. 0.55 (0.8 + (-0.25)) looks nice, however.
@@ -818,7 +816,7 @@ void SPXPlot::DrawRatioPadFrame(void) {
         }
 
         if (debug) {
-	 std::cout<<"Drawing ratio frame with:"<<std::endl;
+	 std::cout<<cn<<mn<<"Drawing ratio frame with:"<<std::endl;
 	 std::cout<<cn<<mn<<"yMaxRatio= "<<yMaxRatio<<std::endl;
 	 std::cout<<cn<<mn<<"yMinRatio= "<<yMinRatio<<std::endl;
 	 std::cout<<cn<<mn<<"xMaxRatio= "<<xMaxRatio<<std::endl;
@@ -1133,6 +1131,8 @@ void SPXPlot::DrawRatio(void) {
  unsigned int statRatios = 0;
  unsigned int totRatios = 0;
 
+ if (debug) std::cout<<cn<<mn<<"Number of ratio= "<< pc.GetNumberOfRatios()<<std::endl;
+
  for(int iratio = 0; iratio < pc.GetNumberOfRatios(); iratio++) {
   std::string ratioOptions;
   if(steeringFile->GetPlotBand()) 
@@ -1145,19 +1145,18 @@ void SPXPlot::DrawRatio(void) {
    ratioOptions += "Z";
 		
   //Set x errors to zero if ratio involves convolute AND is not plot band
-  if(ratios.at(iratio).HasConvolute() && !steeringFile->GetPlotBand()) {
-   //Never clear X errors for DataStat or DataTot (extra check: HasConvolute() should already rule out stat/tot...)
-   // if(!ratios[i].IsDataStat() && !ratios[i].IsDataTot()) {
-   //  std::vector<TGraphAsymmErrors *> ratiographs=ratios[i].GetRatioGraph();
-   //  for (int igraph=0; igraph < ratiographs.size(); igraph++) {
-   //   TGraphAsymmErrors *graph = ratiographs[igraph];
-   //  }
-   // if(debug) std::cout << cn << mn << "Set X errors to zero for ratios[" << i << "]" << std::endl;
-  }
+  //if(ratios.at(iratio).HasConvolute() && !steeringFile->GetPlotBand()) {
+  //Never clear X errors for DataStat or DataTot (extra check: HasConvolute() should already rule out stat/tot...)
+  // if(!ratios[i].IsDataStat() && !ratios[i].IsDataTot()) {
+  //  std::vector<TGraphAsymmErrors *> ratiographs=ratios[i].GetRatioGraph();
+  //  for (int igraph=0; igraph < ratiographs.size(); igraph++) {
+  //   TGraphAsymmErrors *graph = ratiographs[igraph];
+  //  }
+  // if(debug) std::cout << cn << mn << "Set X errors to zero for ratios[" << i << "]" << std::endl;
+  //}
 
   if(ratios.at(iratio).IsDataStat()) {
    statRatios++;
-
    //Warn if not the first graph AND first graph is not data_tot: Will possibly cover up points
    if((iratio != 0) && !ratios.at(0).IsDataTot()) {
     std::cerr << cn << mn << "WARNING: Data Stat band could possibly hide other bands/points plotted underneath it: Move data_stat to ratio_0?" << std::endl;
@@ -1178,7 +1177,7 @@ void SPXPlot::DrawRatio(void) {
   if (debug) {
    std::cout<<cn<<mn<<"Draw ratio with xbox= "<<xbox<<" ybox= "<<ybox<<std::endl;
    if (plotmarker) std::cout<<cn<<mn<<"plotmarker TRUE "<<std::endl;
-   std::cout<<cn<<mn<<"Draw ratio with options= "<<ratioOptions.c_str()<<std::endl;
+   std::cout<<cn<<mn<<"Draw ratio "<<iratio<<" with options= "<<ratioOptions.c_str()<<std::endl;
   }
   ratios.at(iratio).Draw(ratioOptions.c_str(),statRatios, totRatios ,plotmarker,xbox,ybox);
  
@@ -1227,6 +1226,37 @@ void SPXPlot::DrawLegend(void) {
  if (debug&&ratioonly) std::cout << cn << mn <<"Is ratio only "<< std::endl;
  if (debug&&dataonly)  std::cout << cn << mn <<"Is data only " << std::endl;
 
+ int icontainsdata=0;
+ int icontainsconvolute=0;
+ int icontainsnominal=0;
+ 
+ bool nodatawithmarker=false;
+ for (int i = 0; i < pc.GetNumberOfRatios(); i++) {
+  //
+  SPXRatioStyle ratioStyle = pc.GetRatioStyle(i);
+  if (debug) std::cout<<cn<<mn<<"ratio style= "<<ratioStyle.ToString()<<std::endl;
+
+  TString name=TString(ratioStyle.ToString());
+  if (name.Contains("data") &&!(name.Contains("data_tot") || name.Contains("data_stat") ||  name.Contains("convolute / data")) ) {
+   if (debug) std::cout<<cn<<mn<<"ratio style contains data"<<std::endl;
+   icontainsdata++;
+  }
+
+  if (TString(ratioStyle.ToString()).Contains("convolute")) {
+   if (debug) std::cout<<cn<<mn<<"ratio style contains convolute"<<std::endl;
+   icontainsconvolute++;
+  }
+  if (TString(ratioStyle.ToString()).Contains("nominal")) {
+   if (debug) std::cout<<cn<<mn<<"ratio style contains nominal"<<std::endl;
+   icontainsnominal++;
+  }
+ }
+
+ if (icontainsdata==0) nodatawithmarker=true;
+ if (debug) {
+  if (nodatawithmarker) std::cout<<cn<<mn<<"ratio style contains NO data"<<std::endl;
+ }
+
  // Look first, if properties of bands are different
  int old_fill_style=-999, old_fill_color=-999;
  int old_marker_style=-999, old_marker_color=-999;
@@ -1273,7 +1303,8 @@ void SPXPlot::DrawLegend(void) {
   bool bbeam   =pdf->HasBandofType("_BeamUncertainty_");
   bool bhadcorr=pdf->HasBandofType("_corrections_");
 
-  if (bhadcorr && !(bscale&&bpdf&&balphas&&bAlternativeScaleChoice)) hadcorronly=true;
+  // if (bhadcorr && !(bscale&&bpdf&&balphas&&bAlternativeScaleChoice)) hadcorronly=true;
+  if (bhadcorr && !(bscale||bpdf||balphas||bAlternativeScaleChoice)) hadcorronly=true;
 
   bandsdifferent=pdf->BandsHaveDifferentProperties();
   if (debug) {
@@ -1289,7 +1320,6 @@ void SPXPlot::DrawLegend(void) {
    if (bhadcorr)   std::cout<<cn<<mn<<"Bands contains corrections uncertainty"<< std::endl;
    if (hadcorronly)std::cout<<cn<<mn<<"Bands contains ONLY corrections uncertainty"<< std::endl;
   }
-
 
   if (bandsdifferent) std::cout<<cn<<mn<<"One Cross section with Bands with have different properties !"<< std::endl;
   else                std::cout<<cn<<mn<<"All cross section have bands with have same properties ! "<< std::endl;
@@ -1532,7 +1562,6 @@ void SPXPlot::DrawLegend(void) {
 
   if (debug) std::cout<<cn<<mn<<"Number of data objects= "<< data.size()<<std::endl;
 
-
   for (int idata = 0; idata < data.size(); idata++) {                 
 
    TString datalabel=data.at(idata)->GetLegendLabel();
@@ -1560,11 +1589,12 @@ void SPXPlot::DrawLegend(void) {
     }
  
     if (differentetabin){
-     datalabel+=" ";
-     double binmin = data.at(idata)->GetDoubleBinValueMin();
-     double binmax = data.at(idata)->GetDoubleBinValueMax();
-     TString varname=data.at(idata)->GetDoubleBinVariableName();
-     datalabel+=this->FormatetabinLabel(varname, binmin,binmax);
+     //datalabel+=" ";
+     //double binmin = data.at(idata)->GetDoubleBinValueMin();
+     //double binmax = data.at(idata)->GetDoubleBinValueMax();
+     //TString varname=data.at(idata)->GetDoubleBinVariableName();
+     //datalabel+=this->FormatetabinLabel(varname, binmin,binmax);
+     datalabel+=GetEtaLabel(data.at(idata));
     }
 
     if (differentlumi){
@@ -1578,7 +1608,7 @@ void SPXPlot::DrawLegend(void) {
     }
 
     if (steeringFile->GetAddJournalYear()) {
-     if (debug) std::cout<<" Add journal year= "<<data.at(idata)->GetJournalYear()<<std::endl;
+     if (debug) std::cout<<cn<<mn<<"Add journal year= "<<data.at(idata)->GetJournalYear()<<std::endl;
      datalabel+=" "+data.at(idata)->GetJournalYear();
      //datalabel=" #splitline{"+datalabel+"}{";
      //datalabel+=data.at(idata)->GetJournalYear();
@@ -1586,7 +1616,8 @@ void SPXPlot::DrawLegend(void) {
     }
 
     //if (!ratioonly && data.size()>0) { // ratioonly figures have data in the ratio, no separate label
-    if (data.size()>0&&!bandsdifferent && !(dataonly&&ratioonly)) { // do not plot data label when the is one band with different properties
+    // do not plot data label when there is one band with different properties
+    if (data.size()>0&&!bandsdifferent && !(dataonly&&ratioonly) &&!nodatawithmarker) { 
      if (!onlysyst) {
       if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
       if (debug) std::cout<<cn<<mn<<"Add to legend Data Label: "<<datalabel.Data()<<" namesize= "<<namesize<<std::endl;
@@ -1601,56 +1632,52 @@ void SPXPlot::DrawLegend(void) {
      if (debug) std::cout<<cn<<mn<<"Ratio only or data.size==0  "<<std::endl;
 
     //if (debug) std::cout<<cn<<mn<<"B namesize= "<<namesize<<std::endl;
-
    } else { // This is for the eta-scan
-    if (onedataset) {
-     if (idata==0) {
-      TString datalabel=data.at(idata)->GetLegendLabel();
-      if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
-      if (debug) std::cout<<cn<<mn<<"Add data label to legend: "<<datalabel.Data()<< " namesize= "<<namesize<<std::endl;
-      leg->AddEntry((TObject*)0, datalabel, "");
-      // leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
+    if (!nodatawithmarker) {
+     if (onedataset) {
+      if (idata==0) {
+       TString datalabel=data.at(idata)->GetLegendLabel();
+       if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
+       if (debug) std::cout<<cn<<mn<<"Add data label to legend: "<<datalabel.Data()<< " namesize= "<<namesize<<std::endl;
+       leg->AddEntry((TObject*)0, datalabel, "");
+       // leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
+      }
+
+      if (debug) std::cout<<cn<<mn<<" onlysyst= "<< (onlysyst ? "ON" : "OFF")<<std::endl;
+
+      if (!onlysyst) { // for systematics only move Data label to leginfo
+	//double binmin = data.at(idata)->GetDoubleBinValueMin();
+	//double binmax = data.at(idata)->GetDoubleBinValueMax();
+	//TString varname=data.at(idata)->GetDoubleBinVariableName();
+	//TString datalabel;
+	//if (binmin!=0) {
+        //datalabel.Form(" %3.2f ",binmin); 
+	//} else {
+        //varname.ReplaceAll("#leq","");
+        //varname.ReplaceAll("","");
+	// }
+	//datalabel+=varname;
+	//datalabel+=Form(" %3.2f ",binmax);
+	datalabel=GetEtaLabel(data.at(idata));
+
+       SPXPlotConfigurationInstance mypci=pc.GetPlotConfigurationInstance(idata);
+       double yScale = mypci.yScale;
+       if (debug) std::cout<<cn<<mn<<" etascan= "<< (etascan ? "ON" : "OFF")<<" yScale= "<<yScale<<std::endl;
+       if (etascan&&yScale!=1) {
+        datalabel+="(#times";
+        datalabel+=SPXDrawUtilities::FormatwithExp(yScale);
+        datalabel+=")";
+       }
+
+       if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
+       if (debug) std::cout<<cn<<mn<<"Add to legend data label: "<<datalabel.Data()<< " namesize= "<<namesize<<std::endl;
+       leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
+      } 
+     } else {
+      if (debug) std::cout<<cn<<mn<<"WARNING: etascan label is only supported for one data-set"<< std::endl;
      }
-
-     if (debug) std::cout<<cn<<mn<<" onlysyst= "<< (onlysyst ? "ON" : "OFF")<<std::endl;
-
-     if (!onlysyst) { // for systematics only move Data label to leginfo
-      double binmin = data.at(idata)->GetDoubleBinValueMin();
-      double binmax = data.at(idata)->GetDoubleBinValueMax();
-      TString varname=data.at(idata)->GetDoubleBinVariableName();
-      TString datalabel;
-      if (binmin!=0) {
-       datalabel.Form(" %3.2f ",binmin); 
-      } else {
-       varname.ReplaceAll("#leq","");
-       varname.ReplaceAll("","");
-      }
-      datalabel+=varname;
-      datalabel+=Form(" %3.2f ",binmax);
-
-      SPXPlotConfigurationInstance mypci=pc.GetPlotConfigurationInstance(idata);
-      double yScale = mypci.yScale;
-      std::cout<<cn<<mn<<" etascan= "<< (etascan ? "ON" : "OFF")<<" yScale= "<<yScale<<std::endl;
-      if (etascan&&yScale!=1) {
-       /*
-        int exp; double x;
-        SPXMathUtilities::frexp10(yScale, exp, x);
-        if (debug) std::cout<<cn<<mn<<"value= "<<yScale<<" x= "<<x<<" 10^"<<exp<<std::endl;
-        //datalabel+=Form(" #fontsize{0.02}{ (#times %1.1f 10^{%d})}",x,exp);
-        //datalabel+=Form("#font[8]{ (#times %1.1f 10^{%d}) }",x,exp);
-        datalabel+=Form("(#times %1.1f 10^{%d}) ",x,exp);
-       */
-       datalabel+="(#times";
-       datalabel+=SPXDrawUtilities::FormatwithExp(yScale);
-       datalabel+=")";
-      }
-
-      if (TString(datalabel).Sizeof()>namesize) namesize=TString(datalabel).Sizeof();
-      if (debug) std::cout<<cn<<mn<<"Add to legend data label: "<<datalabel.Data()<< " namesize= "<<namesize<<std::endl;
-      leg->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
-     } 
     } else {
-     if (debug) std::cout<<cn<<mn<<"WARNING: etascan label is only supported for one data-set"<< std::endl;
+     if (debug) std::cout<<cn<<mn<<"INFO etascan= "<< (etascan ? "ON" : "OFF")<<", but no data-set "<<std::endl;
     }
    }
   }
@@ -1659,7 +1686,6 @@ void SPXPlot::DrawLegend(void) {
  //if (debug) leg->Print();
 
  //if (debug) std::cout<<cn<<mn<<"C namesize= "<<namesize<<std::endl;
-
  
  if (ratioonly&&dataonly&&!onlysyst) {
 
@@ -1667,13 +1693,12 @@ void SPXPlot::DrawLegend(void) {
   //std::vector <TGraphAsymmErrors> vratiograph;
   for (int i = 0; i < pc.GetNumberOfRatios(); i++) {
    //
-   //SPXRatioStyle ratioStyle = pc.GetRatioStyle(i);
-   //SPXRatio ratioInstance = SPXRatio(pc, ratioStyle);
+   SPXRatioStyle ratioStyle = pc.GetRatioStyle(i);
+   if (debug) std::cout<<cn<<mn<<"ratio style= "<<ratioStyle.ToString()<<std::endl;
    //
    SPXRatio ratioInstance = ratios.at(i);
    TString datadir=TString(ratioInstance.GetDataDirectory());
    //
-   //TGraphAsymmErrors *dengraph=GetDenominatorGraph();  
    
    std::string num=ratioInstance.GetNumeratorDataLabel();
    std::string den=ratioInstance.GetDenominatorDataLabel();
@@ -1722,22 +1747,6 @@ void SPXPlot::DrawLegend(void) {
    SPXPDF * pdf=crossSections[icross].GetPDF();
    if (!pdf) {std::cout<<cn<<mn<<"PDF not found ! "<<std::endl; continue;}
 
-   // Get Grid object
-   //SPXGrid *grid=crossSections[icross].GetGrid();
-   //if (!grid) {std::cout<<cn<<mn<<"grid not found ! "<<std::endl; continue;}
-   //
-   //std::string nloprogramname;
-   //if (steeringFile->GetAddonLegendNLOProgramName() ) {
-   // nloprogramname=grid->GetNLOProgramNameName();
-   // if (debug) std::cout<<cn<<mn<<"Add NLO Program name= "<<nloprogramname.c_str()<<std::endl;      
-   //}       
-
-   //std::string scaleform;
-   //if (steeringFile->GetScaleFunctionalFormLabel() ) {
-   // scaleform=grid->GetScaleFunctionalForm();
-   // if (debug) std::cout<<cn<<mn<<"Add functional form for scale= "<<scaleform.c_str()<<std::endl;      
-   //}       
-
    int nbands=pdf->GetNBands();
    TString pdftype = pdf->GetPDFtype();
    if (nbands<1) throw SPXGeneralException(cn+mn+"No band found, but PDF object exist !"); 
@@ -1776,28 +1785,34 @@ void SPXPlot::DrawLegend(void) {
     else                     std::cout << cn << mn <<"No NLO labels "<< std::endl;
    }
 
+   TString labelnlo="NLO QCD Uncertainties";
+   if(steeringFile->ApplyGridCorr()) {
+    labelnlo+=" #otimes ";
+    labelnlo+=GetCorrectionLabel(crossSections[icross]);
+   }
+
    if (!bandsdifferent) {
     if (nlolabel) {
-     TString text="";
+     //TString text="";
      if (icross==0&&pdfsdifferent) { //only Draw text for the first cross section
-      text+="NLO QCD";
-      if(steeringFile->ApplyGridCorr()) {
-        text+=" #otimes ";
-        text+=GetCorrectionLabel(crossSections[icross]);
-      }
-      text+=" with:";
-      if (gridcorrectionfound&&!nlouncertainty) text="";
-      if (nlouncertainty) leg->AddEntry((TObject*)0, text, "");
+       //text+="NLO QCD";
+       //if(steeringFile->ApplyGridCorr()) {
+       // text+=" #otimes ";
+       // text+=GetCorrectionLabel(crossSections[icross]);
+       //}
+      labelnlo+=" with:";
+      if (gridcorrectionfound&&!nlouncertainty) labelnlo="";
+      if (debug) std::cout << cn << mn <<"Add label to legend: "<<labelnlo.Data()<< " namesize= "<<namesize<<std::endl;
+      if (nlouncertainty) leg->AddEntry((TObject*)0, labelnlo, "");
      }
     }
    } else {
     if (nlouncertainty) {
-
      TString label="NLO QCD Uncertainties";
-     if (label.Sizeof()>namesize) namesize=label.Sizeof();
-     if (debug) std::cout << cn << mn <<"Add data label to legend: "<<label.Data()<< " namesize= "<<namesize<<std::endl;
+     if (labelnlo.Sizeof()>namesize) namesize=labelnlo.Sizeof();
+     if (debug) std::cout << cn << mn <<"Add label to legend: "<<labelnlo.Data()<< " namesize= "<<namesize<<std::endl;
  
-     leg->AddEntry((TObject*)0,label, "");
+     leg->AddEntry((TObject*)0,labelnlo, "");
     }
     if (gridcorrectionfound&&!nlouncertainty)
      leg->AddEntry((TObject*)0,"Uncertainties", "");
@@ -1823,12 +1838,17 @@ void SPXPlot::DrawLegend(void) {
      if (bandtype.Contains("BEAMUNCERTAINTY")) bandtype="E_{beam}";
      if (bandtype.Contains("ALTERNATIVESCALECHOICE")) bandtype="Scale choice";
      else if (bandtype.Contains("SCALE"))             bandtype="Scale variation";
-
      if (bandtype.Contains("TOTAL"))  bandtype="Total";
      if (gtype.compare(std::string("pdf"))==0)
       label=pdftype+" "+bandtype;
      else
       label=bandtype;
+
+     if (TString(gband->GetName()).Contains("corrections")) {
+      label="Corrections ";
+      label+=GetCorrectionLabel(crossSections[icross]);
+      std::cout<<cn<<mn<<"corrections found label= "<<label<<std::endl;
+     } 
 
      if (debug) std::cout<<cn<<mn<<"label= "<<label.Data()<<std::endl;
 
@@ -1897,9 +1917,14 @@ void SPXPlot::DrawLegend(void) {
      TString opt="";
      if (steeringFile->GetPlotMarker()) opt="P";
      if (steeringFile->GetPlotBand()) opt="LF";
-     TString label="NLO QCD ";
+     TString label="NLO QCD";
+     if(steeringFile->ApplyGridCorr()) {
+      label+=" #otimes ";
+      label+=GetCorrectionLabel(crossSections[icross]);
+     }
      TGraphAsymmErrors * gband=pdf->GetTotalBand();
      if (icross==0) {
+      label+=" with ";
       label+=pdf->GetPDFName();
 
        if (nlouncertainty) {
@@ -1910,7 +1935,6 @@ void SPXPlot::DrawLegend(void) {
         else 
          leg->AddEntry(gband, label, opt);
        }
-
      } 
      if (scalechoicedifferent) {
       SPXGrid * grid=crossSections[icross].GetGrid();
@@ -1937,7 +1961,7 @@ void SPXPlot::DrawLegend(void) {
    
         double Escale = pdf->GetChangeSqrtS();
         // check if CMS energy in grid was changed "<<endl;
-        std::cout<<cn<<mn<<" Escale= "<<Escale<<std::endl;
+        std::cout<<cn<<mn<<"Escale= "<<Escale<<std::endl;
 
         TString labelname=pdftype;
         //int pdfcount=std::count (vpdf.begin(), vpdf.end(), pdftype);
@@ -1975,12 +1999,24 @@ void SPXPlot::DrawLegend(void) {
 
       if (nbands==1) { // band has same properties because there is only one uncertainty
        if (debug) std::cout<<cn<<mn<<"icross= "<<icross<<" nbands==1"<<std::endl;
-       if (vlabel.size()!=1) { 
- 	if (debug) std::cout<<cn<<mn<<"Add legend gband= "<<gband->GetName()<<" gtype= "<<gtype.c_str()<<std::endl;
-	std::string text=GetCorrectionLabel(crossSections[icross]);
-        //leg->AddEntry(gband, TString(gtype), "LF");
-         
-        leg->AddEntry(gband, TString(text), "LF");
+       if (!etascan) {
+        if (vlabel.size()!=1) { 
+  	 if (debug) std::cout<<cn<<mn<<"Add legend gband= "<<gband->GetName()<<" gtype= "<<gtype.c_str()<<std::endl;
+	 std::string text=GetCorrectionLabel(crossSections[icross]);
+         leg->AddEntry(gband, TString(text), "LF");
+        }
+       } else {
+	//	std::cout<<" HUHU etascan "<<std::endl;
+	std::cout<<cn<<mn<<"etascan is ON "<<std::endl;
+	TString label="";
+	//if (TString(gtype).Contains("ew")) label="ew correction";
+        //if (icross==0) leg->AddEntry((TObject*)0,label, "");        
+	if (debug) std::cout<<cn<<mn<<"Setting line width to "<<gband->GetLineWidth()<<std::endl;
+        leg->SetLineWidth(gband->GetLineWidth());
+        label=GetEtaLabel(data.at(icross)); 
+        TString opt="LF"; if (TString(gtype).Contains("ew")) opt="L";
+        if (label.Sizeof()>namesize) namesize=label.Sizeof();
+        leg->AddEntry(gband, label, opt);        
        }
       } else {
        //if (debug) std::cout << cn << mn <<"npdf= "<<npdf<< std::endl;
@@ -2008,11 +2044,7 @@ void SPXPlot::DrawLegend(void) {
     }
    }
   }
-  //gPad->Update();
   gPad->RedrawAxis();
-  //TLine l;
-  //l.DrawLine(gPad->GetUxmin(), gPad->GetUymax(), gPad->GetUxmax(), gPad->GetUymax());
-  //l.DrawLine(gPad->GetUxmax(), gPad->GetUymin(), gPad->GetUxmax(), gPad->GetUymax());
  }
 
  double x1=0., y1=0., x2=0., y2=0.;
@@ -2028,9 +2060,9 @@ void SPXPlot::DrawLegend(void) {
   if (debug) std::cout<<cn<<mn<<"y_legend= "<<ylegend<<std::endl;
  } 
 
- leg->Print();
-
+ //leg->Print();
  int nraw=leg->GetNRows();
+
  if (debug) { 
    std::cout << cn << mn <<"nraw= "<<nraw<<" namesize= "<< namesize
              << " linesize= "<<linesize<<" charactersize= "<< charactersize<<std::endl;
@@ -2043,6 +2075,16 @@ void SPXPlot::DrawLegend(void) {
   //if (nraw>10) csize =charactersize*0.2; 
  }
 
+ double fac=0.50, xfac=1.0;
+ if (nraw>7) {fac*=1.0; xfac*=3.0;}
+ if (debug) std::cout<<cn<<mn<<"fac= "<<fac<<" xfac= "<<xfac<<std::endl;
+
+ if (nraw>5)  {
+  leg->SetNColumns(2);
+  leg->SetFillColor(5);
+  fac*=1.0; xfac*=1.5;
+  //csize =charactersize*0.5; 
+ }
  //leg->SetEntrySeparation(0.1);
  leg->SetTextSize(csize); 
 
@@ -2052,19 +2094,14 @@ void SPXPlot::DrawLegend(void) {
   if (nraw>12) leg->SetNColumns(4);
  }
 
- double fac=0.50, xfac=1.0;
- //if (namesize<20) fac=0.4;
- //if (namesize>30) fac=0.2;
+
  if (onlysyst) {
-  //if (nraw>5) {fac*=1.2; xfac*=1.0;}
-  //if (nraw>8) {fac*=1.75; xfac*=1.1;}
-  //else if (nraw>10) {fac*=1.0; xfac*=1.1;}
   if (leg->GetNColumns()>3)      {fac*=1.0; xfac*=1.5;}
   else if (leg->GetNColumns()>2) {fac*=0.9; xfac*=1.4;}
-
  }
 
  double bwidth=fac*namesize*charactersize; 
+
  x1 = xlegend-bwidth; x2=xfac*xlegend;
  double xmin=0.18;
  //if (debug) {
@@ -2081,9 +2118,8 @@ void SPXPlot::DrawLegend(void) {
 
  if (nraw>4)  lsize*=0.6;
  if (debug) std::cout<<cn<<mn<<"2 lsize= "<<lsize<<" nraw= "<<nraw<<std::endl;
+
  if (onlysyst) {
-   //if (nraw>8)  lsize*=0.4;
-   //if (nraw>20) lsize*=0.25;
    if (leg->GetNRows()>10)     {lsize*=0.15;}
    else if (leg->GetNRows()>6) {lsize*=0.2;}
    else if (leg->GetNRows()>4) {lsize*=0.3;}
@@ -2132,13 +2168,12 @@ void SPXPlot::DrawLegend(void) {
 
   if (onlysyst) { // for systematic only move data label to leginfo
    TString datalabel=data.at(idata)->GetLegendLabel();
-   //leginfo->AddEntry(data.at(idata)->GetTotalErrorGraph(), datalabel, "P");
    leginfo->AddEntry((TObject*)0, datalabel, "");
   }
 
   //if (!etascan&&steeringFile->GetInfoLegendLabel().size()>0) {
   if (steeringFile->GetInfoLegendLabel().size()>0) {
-    if (idata==0) { // Draw info lable only once
+   if (idata==0) { // Draw info lable only once
     TString label=steeringFile->GetInfoLegendLabel();
     if (debug) std::cout<<cn<<mn<<"Add to info legend idata= "<<idata<<" add info legend label "<<label.Data()<<std::endl;
     if (label.Sizeof()>leginfomax) leginfomax=label.Sizeof();
@@ -2261,7 +2296,7 @@ void SPXPlot::DrawLegend(void) {
 
  for (int icross = 0; icross < crossSections.size(); icross++) {
   if (icross>0) {
-   std::cout<<"WARNING Labels only implemented for one cross sections"<<std::endl;
+    std::cout<<cn<<mn<<"WARNING Labels only implemented for one cross sections"<<std::endl;
    continue;
   }
   SPXGrid *grid=crossSections[icross].GetGrid();
@@ -2370,7 +2405,10 @@ void SPXPlot::CanvasToPNG(void) {
          //if (debug) std::cout<<cn<<mn<<" output format= "<< steeringFile->GetOutputGraphicFormat()<<std::endl;
          
          epsfilename.ReplaceAll("png",TString(steeringFile->GetOutputGraphicFormat()));
-         //epsfilename.ReplaceAll("_plot_0","");
+	 if (debug) std::cout<<cn<<mn<<"id= "<<id<<std::endl;
+         TString text="_plot_";
+         text+=id;
+         epsfilename.ReplaceAll(text,"");
          //epsfilename.ReplaceAll("_plot_1","");
 
          if (debug) {
@@ -2417,6 +2455,8 @@ void SPXPlot::InitializeRatios(void) {
 
  //Create a ratio for each ratio instance
  SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+
+ if (debug) std::cout<<cn<<mn<<"Number of ratio= "<<pc.GetNumberOfRatios()<<std::endl;
 
  for(int i = 0; i < pc.GetNumberOfRatios(); i++) {
 
@@ -2540,7 +2580,6 @@ void SPXPlot::InitializeCrossSections(void) {
               if (pdf==0) {
                throw SPXParseException(cn+mn+"pdf object not found !");
               }
-              //int nbands=(crossSections[i].GetPDF())->GetNBands();
               int nbands=pdf->GetNBands();
 
               if (debug) std::cout << cn << mn <<"Number of bands= " <<nbands<< std::endl;
@@ -2548,7 +2587,6 @@ void SPXPlot::InitializeCrossSections(void) {
               if (nbands==0) {
                throw SPXParseException(cn+mn+"No bands found in pdf");
               }
-
 
               //StringPair_T convolutePair = StringPair_T(pci.gridSteeringFile.GetFilename(), pci.pdfSteeringFile.GetFilename());
 	      std::string keyname=pci.gridSteeringFile.GetFilename();
@@ -2648,7 +2686,7 @@ void SPXPlot::InitializeCrossSections(void) {
 
                 if (debug) {
 		 std::cout << cn << mn <<" "<<std::endl;
-		 std::cout << cn << mn <<"gband: "<< gband->GetName()<<" Setting: \n"
+		 std::cout << cn << mn <<i<<" gband: "<< gband->GetName()<<" Setting: \n"
                                         <<"\t \t \t \t fillcolor= "<< fillcolor<<" fillstyle= "<<fillstyle
                                         <<" edgecolor= "<< edgecolor<<" edgestyle= "<<edgestyle
                                         <<" markerstyle= "<<markerstyle <<std::endl;
@@ -2689,6 +2727,9 @@ void SPXPlot::InitializeCrossSections(void) {
 		  gband->SetMarkerStyle(markerstyle);
 		  gband->SetFillStyle  (fillstyle);
                   SPXGraphUtilities::SetColors(gband,fillcolor);
+
+                  if (debug) SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors*)gband);
+
                  }
                 }
    	       }
@@ -2709,9 +2750,6 @@ void SPXPlot::InitializeCrossSections(void) {
 
 
                if (refGraph) {
-		 //if (steeringFile->GetOutputRootfile()) {
-   	         //refGraph->Write();
-		 //}
      	        if(debug) std::cout << cn << mn << i<<" Set refGraph" <<std::endl;
 	        //refGraph->SetMarkerSize(1.2);
 	        refGraph->SetMarkerStyle(pci.pdfMarkerStyle);
@@ -2720,12 +2758,10 @@ void SPXPlot::InitializeCrossSections(void) {
 	        //refGraph->SetLineColor(pci.pdfFillColor);
 	        //refGraph->SetFillColor(pci.pdfFillColor);
                 SPXGraphUtilities::SetColors(refGraph,pci.pdfFillColor);
+
                }
 
                if (nomGraph) {
-		 //if (steeringFile->GetOutputRootfile()) {
-  	         //nomGraph->Write();
-		 //}
     	        if(debug) std::cout << cn << mn << i<<" Set nomGraph" <<std::endl;
 	        //nomGraph->SetMarkerSize(1.2);
 	        nomGraph->SetMarkerStyle(pci.pdfMarkerStyle);
@@ -2734,6 +2770,8 @@ void SPXPlot::InitializeCrossSections(void) {
 	        //nomGraph->SetLineColor(pci.pdfFillColor);
 	        //nomGraph->SetFillColor(pci.pdfFillColor);
                 SPXGraphUtilities::SetColors(nomGraph,pci.pdfFillColor);
+
+                if (debug) SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors*)nomGraph);
                }
 
 	      /*
@@ -2861,7 +2899,7 @@ void SPXPlot::NormalizeCrossSections(void) {
                         bool  isAlternativeGridDividedByBinWidth =  pci->gridSteeringFile.IsAlternativeGridChoiceGridDividedByBinWidth();
                         if (isAlternativeGridDividedByBinWidth) {
 			 if (debug) std::cout<<cn<<mn<<"AlternativeGridChoiceGridDividedByBinWidth is ON "<<std::endl;
-			 std::cerr<<cn<<mn<<"AlternativeGridChoiceGridDividedByBinWidth not yet implemented "<<std::endl;
+			 //std::cerr<<cn<<mn<<"AlternativeGridChoiceGridDividedByBinWidth not yet implemented "<<std::endl;
                         }
 
 			if(!dataDividedByBinWidth && gridDividedByBinWidth) {
@@ -3566,6 +3604,7 @@ void SPXPlot::DrawBand(SPXPDF *pdf, std::string option, SPXPlotConfigurationInst
 
     hedgelow ->SetLineWidth(4);
     hedgehigh->SetLineWidth(4);
+    gband->SetLineWidth(4);
    }
    hedgelow ->Draw("][,same");
    hedgehigh->Draw("][,same");
@@ -3913,13 +3952,55 @@ std::string SPXPlot::GetCorrectionLabel(SPXCrossSection cross){
 
  std::string text="";
  std::vector<std::string> corrlabel=cross.GetCorrectionLabels();
- if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
- for(int ic = 0; ic < corrlabel.size(); ic++) {
+ //if (debug) std::cout<<cn<<mn<<"Number of corrections= "<<corrlabel.size()<<std::endl;           
+
+ int ncorr=cross.GetNumberofCorrections();
+
+ for(int ic = 0; ic < ncorr; ic++) {
+
+  if (ic>corrlabel.size()){
+   std::ostringstream oss;
+   oss<<cn<<mn<<"Number of correction to be applied is "<<ncorr<<" but corrlabel vector size "<<corrlabel.size()<<std::endl;
+   std::cout<<oss<<std::endl;
+   throw SPXGraphException(oss.str());
+  
+  }
+
   if (ic>0) text+=" #otimes ";
-  text+=corrlabel[ic];
+  text+=corrlabel.at(ic);
+
   //if (debug) std::cout<<cn<<mn<<"grid correction label= "<<label.c_str()<<std::endl;
   //text+=TString(label); // do this better
  }
  
  return text;
+}
+
+TString SPXPlot::GetEtaLabel(SPXData *data){
+ std::string mn = ":GetEtaLabel: ";
+
+ if (!data) {
+  std::ostringstream oss;
+  oss<<cn<<mn<<"Data object not found !"<<std::endl;
+  std::cout<<oss<<std::endl;
+  throw SPXGraphException(oss.str());
+ }
+
+ double binmin = data->GetDoubleBinValueMin();
+ double binmax = data->GetDoubleBinValueMax();
+ TString varname=data->GetDoubleBinVariableName();
+ TString datalabel="";
+
+ //if (binmin!=0) {
+ // datalabel.Form(" %3.2f ",binmin); 
+ //} else {
+ //varname.ReplaceAll("#leq","");
+ // varname.ReplaceAll("","");
+ //}
+ //datalabel+=varname;
+ //datalabel+=Form(" %3.2f ",binmax);
+
+ datalabel=this->FormatetabinLabel(varname, binmin,binmax);
+
+ return datalabel;
 }

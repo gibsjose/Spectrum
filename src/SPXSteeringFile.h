@@ -83,6 +83,7 @@ private:
         bool printTotalSigma;   // Flag to indicate that, if total integrated cross section should be printed
 
 	bool gridCorr;		//Flag if corrections should be applied to grid/convolute
+	std::string ContainGridCorr; // only keep correction that contain this string
 	bool nomCorr;		//Flag if correction should be applied to nominal histogram
 	bool labelSqrtS;	//Flag to indicate that the Sqrt(s) value should be shown in the legend
 
@@ -247,6 +248,10 @@ public:
 		return this->gridCorr;
 	}
 
+	std::string KeepGridCorr(void) const {
+		return this->ContainGridCorr;
+	}
+
 	bool ApplyNominalCorr(void) const {
 		return this->nomCorr;
 	}
@@ -385,6 +390,7 @@ public:
 		return this->BandTotal;
 	}
 
+	
 	int GetNumberofCorrectionToBand() {
 	 //std::cout<<" gridcorrections.size()= "<<gridcorrections.size()<<std::endl;
 	 return gridcorrections.size(); 

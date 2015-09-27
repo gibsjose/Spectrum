@@ -93,6 +93,12 @@ void SPXSteeringFile::SetDefaults(void) {
 	TakeSignforTotalError = true;
 	if(debug) std::cout << cn << mn << "TakeSignforTotalError set to default: \"true\"" << std::endl;
 
+	gridCorr = true;
+	if(debug) std::cout << cn << mn << "TakeSignforTotalError set to default: \"true\"" << std::endl;
+
+	ContainGridCorr ="";
+	if(debug) std::cout << cn << mn << "TakeSignforTotalError set to default: Empty" << std::endl;
+
 	RemoveXbins.clear(); 
 	DataCutXmin.clear();
 	DataCutXmax.clear();
@@ -354,9 +360,13 @@ void SPXSteeringFile::Print(void) {
 
 	std::cout << "\t Graphing configurations [GRAPH]" << std::endl;
 	std::cout << "\t\t Plot Band is: " << (plotBand ? "ON" : "OFF") << std::endl;
-	std::cout << "\t\t Plot cross section Uncertainties with PDF uncertainties: " << (BandwithPDF ? "ON" : "OFF") << std::endl;
+	std::cout << "\t\t Plot cross section Uncertainty with PDF uncertainties: " << (BandwithPDF ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Plot cross section Uncertainty with AlphaS uncertainties: " << (BandwithAlphaS ? "ON" : "OFF") << std::endl;
-	std::cout << "\t\t Plot cross section Uncertainty with ren&fac scale uncertainties: " << (BandwithScales ? "ON" : "OFF") << std::endl;    
+	std::cout << "\t\t Plot cross section Uncertainty with grid corrections uncertainties: " << ( gridcorrections.size()>0 ? "ON" : "OFF") << std::endl;    
+        for (int i=0; i< gridcorrections.size(); i++) {
+	  std::cout<<"\t\t i= "<<i<<" gridcorrection= "<<(gridcorrections.at(i) ? "ON" : "OFF")<<std::endl;
+        }
+
 	std::cout << "\t\t Plot cross section Uncertainty with ren&fac scale uncertainties alternative scale choice: " << (BandwithScalesAlternativeScaleChoice ? "ON" : "OFF") << std::endl;    
         std::cout << "\t\t Plot Cross section Uncertainties with total uncertainties: " << (BandTotal ? "ON" : "OFF") << std::endl;
 
@@ -2562,7 +2572,7 @@ void SPXSteeringFile::Parse(void) {
 	 if(gridcorrections.size()>0) {
 	  std::cout << cn << mn << "band_with_correction number=" << gridcorrections.size() << " parsed into:" << std::endl;
 	  for(int j = 0; j < gridcorrections.size(); j++) {
-	   std::cout << cn << mn << "\t" << gridcorrections[j] << std::endl;
+	    std::cout << cn << mn << "\t" << " j= "<< j<< "= "<< (gridcorrections[j] ? "ON" : "OFF") << std::endl;
 	  }
          }
 	}
@@ -2629,6 +2639,9 @@ void SPXSteeringFile::Parse(void) {
 	 nomCorr       = reader->GetBoolean("GRAPH", "apply_nominal_corr", nomCorr);
         else
 	  nomCorr=false;
+
+	ContainGridCorr= reader->Get("GRAPH", "contain_grid_corr", ContainGridCorr);
+
 
 	labelSqrtS     = reader->GetBoolean("GRAPH", "label_sqrt_s", labelSqrtS);
 

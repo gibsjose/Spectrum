@@ -97,21 +97,12 @@ public:
 
 	SPXGridCorrections *GetGridCorrections() { return gridcorrection;}; 
 
-	//SPXGridCorrections *  GetCorrections(int icorr) { 
-	//
-	//SPXGridCorrections *  empty;
-	//if (icorr>vgridcorrections.size()) { 
-        // std::cout<<cn<<mn<<"WARNING ask grid correction icorr= "<<icorr<<"> grod correction size "<<vgridcorrections.size()<<std::endl;
-        //return empty;
-	//}
-        //return vgridcorrections.at(icorr);
-	//}; 
-
         void MatchBinning(StringGraphMap_T dataFileGraphMap);
         void UpdateBand(void);
 
         void PrintTotalCrossSection(void);
 
+	int GetNumberofCorrections(){ return numberofgridcorrection;}
 private:
 	static bool debug;		       // Flag indicating debug mode
 
@@ -130,10 +121,8 @@ private:
 
         std::vector<std::string> correctionlabels; // labels of corrections from Grid Steering file
        	                                           // corrections can be Hadcorr, e.w.
-        //std::vector<SPXGridCorrections *> vgridcorrections; // corrections from Grid Steering file
-       	                                           // corrections can be Hadcorr, e.w.
 
-
+	int numberofgridcorrection;                // counts number of grid corrections
 };
 
 #endif

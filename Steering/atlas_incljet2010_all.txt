@@ -31,8 +31,8 @@ label_scaleform = true
 ;band_with_gridcorrection = false
 ;band_total = false
 
-;x_legend = 0.75
-;y_legend = 0.9
+x_legend = 1.15
+y_legend = 0.9
 x_info_legend = 0.5
 y_info_legend = 0.2
 

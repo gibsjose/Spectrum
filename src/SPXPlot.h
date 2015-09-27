@@ -164,10 +164,11 @@ private:
         TString FormatwithExp(double xinput);
 
         void WriteRootFile(TString rootfilename);
-        void   OrderSystVectorColorsByAlphabeth(std::vector<TGraphAsymmErrors *> vsyst);
+        void OrderSystVectorColorsByAlphabeth(std::vector<TGraphAsymmErrors *> vsyst);
         void SetSystGraphProperties(TGraphAsymmErrors * gsyst, Color_t icol);
 
         std::string GetCorrectionLabel(SPXCrossSection cross);
+        TString GetEtaLabel(SPXData *data);
 };
 
 #endif
