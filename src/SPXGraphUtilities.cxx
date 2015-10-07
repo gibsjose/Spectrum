@@ -143,13 +143,13 @@ TGraphErrors* SPXGraphUtilities::TH1TOTGraph(TH1 *h1)
  //convert the histogram h1 into a TGraphErrors
  //
  std::string mn = "TH1TOTGraph: ";
- if (!h1) cout <<cn<<mn<< " histogram not found !" << endl;
+ if (!h1) cout <<cn<<mn<< " histogram not found !" << std::endl;
 
  //else h1->Print();
  //cout<<name<<" n= "<<h1->GetNbinsX()<<endl;
  //TGraphErrors* g1;
  TGraphErrors* g1= new TGraphErrors();
- if (!g1) cout<<cn<<mn<<" graph g1 not created "<<endl;
+ if (!g1) cout<<cn<<mn<<" graph g1 not created "<<std::endl;
  //g1->Print();
 
  Double_t x, y, ex, ey;
