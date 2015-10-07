@@ -232,6 +232,9 @@ class Plot(SpectrumSteering):
      self.beamuncertainty_marker_style=0
      self.beamuncertainty_marker_color=0
 
+     self.data_cut_xmax=0
+     self.data_cut_xmin=0
+
      self.display_style = ''
      self.overlay_style = ''
 
