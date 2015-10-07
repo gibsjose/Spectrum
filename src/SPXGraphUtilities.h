@@ -100,8 +100,14 @@ public:
 	static void DivideByBinWidth(TGraphAsymmErrors * g);
 
         static TGraphAsymmErrors* TH1TOTGraphAsymm(TH1 *h1);
+        static TGraphErrors* TH1TOTGraph(TH1 *h1);
 
         static void Add(TH1D *h1, TH1D *h2);
+
+        static TGraphAsymmErrors * CopyGraph(TGraphAsymmErrors *g1);
+
+        static TGraphAsymmErrors * AddGraphs(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, int noerr=0);
+        static void Add(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, int noerr=0); 
 
         static void Multiply(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, int noerr=0);
         static void AddtoBand(TGraphErrors* g1, TGraphAsymmErrors* g2, bool addinquadrature=true);
@@ -112,6 +118,11 @@ public:
         static void StaggerGraph(int index, int ngraph, TGraphAsymmErrors *graph);
         static void SetColors(TGraphAsymmErrors* g1, Color_t icol);
         static bool GraphWithNoError(TGraphAsymmErrors* g1);
+
+        static TGraphAsymmErrors *SPXTGraphSetXErrorsZero(TGraphAsymmErrors *g1);
+        static TGraphAsymmErrors *SPXTGraphSetYErrorsZero(TGraphAsymmErrors *g1);
+        static TGraphErrors *SPXTGraphSetXErrorsZero(TGraphErrors *g1);
+        static TGraphErrors *SPXTGraphSetYErrorsZero(TGraphErrors *g1);
 };
 
 #endif

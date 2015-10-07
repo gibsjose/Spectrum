@@ -97,7 +97,6 @@ public:
 	 return pci.dataSteeringFile.GetDate();
         }
 
-
         const std::string & GetJournalLegendLabel(void) {
 	 return pci.dataSteeringFile.GetReferenceJournalName();
         }

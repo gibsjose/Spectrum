@@ -57,13 +57,45 @@ public:
 	template<typename T>
 	static T StringToNumber(const std::string& numberAsString) {
 		T valor;
-		std::stringstream stream(numberAsString);
+ 
+		// Replace D (from Fortran written files) to standard scientific notation
+		std::string str1=numberAsString;
+		if (isdigit((int)LeftTrim(str1).at(0)) || LeftTrim(str1).at(0)=='-') {
+                 if (str1.find("D")!=std::string::npos) {
+		   //std::cout<<"Replace old string "<<str1<<std::endl;
+                 str1.replace(numberAsString.find("D"),1,"e");
+		 //std::cout<<"Replace D to E new string "<<str1<<std::endl;
+                 //double valor1=atof(str1.c_str());
+ 		 //std::cout<<"valor1= "<< std::scientific << valor1 <<std::endl;
+                 }
+                }
+		//std::stringstream stream(numberAsString);
+                std::stringstream stream(str1);
 		stream >> valor;
 		if (stream.fail()) {
-			throw SPXParseException("Could not convert string " + numberAsString + " to a number");
+		  //throw SPXParseException("Could not convert string " + numberAsString + " to a number");
+                  throw SPXParseException("Could not convert string " + str1 + " to a number");
 		}
+		//std::cout<<"valor= "<< std::scientific <<valor<<std::endl;
 		return valor;
 	}
+
+        template<typename T> 
+        static T GetNumberfromStringVector(std::vector <std::string> names, const std::string& String) {
+        //
+        for(int i = 0; i < names.size(); i++) {
+         //    if (TString(names.at(i)).Contains(String)) {
+         if (names.at(i).find(String) != std::string::npos) {
+          for(int j = i+1; j < names.size(); j++) {
+           if (!names.at(j).empty()) { 
+            return StringToNumber<T>(names.at(j));         
+           }
+          }
+         } 
+        }
+        return 0;
+}
+
 
 	static bool BeginsWith(std::string &s, std::string &b) {
 		if(s.find(b) == 0) {
@@ -243,7 +275,9 @@ public:
 			if(!cell.empty()) {
 				try {
 					double val = StringToNumber<double>(cell);
-					dVector.push_back((double)atof(cell.c_str()));
+					//dVector.push_back((double)atof(cell.c_str()));
+                                        dVector.push_back(val);
+					//std::cout<<" val= "<<std::scientific <<val<<" vec= "<<dVector.back()<<std::endl;
 				} catch(const SPXException &e) {
 					throw;
 				}
@@ -303,7 +337,7 @@ public:
 	}
 };
 
-
+ template<typename T> static T GetStringfromVector(std::vector <std::string> names, const std::string& String);
  
 
 #endif

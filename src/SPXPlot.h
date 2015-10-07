@@ -33,6 +33,7 @@
 #include "SPXUtilities.h"
 #ifdef DEVELOP
 #include "SPXpValue.h"
+#include "SPXCImodel.h"
 #endif      
 
 #include "SPXLatexTable.h"

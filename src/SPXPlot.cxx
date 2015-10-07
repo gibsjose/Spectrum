@@ -107,8 +107,22 @@ void SPXPlot::Plot(void) {
 	// std::cout<<cn<<mn<<"CrossSection size "<<crossSections.size()<<std::endl;
 	// std::cout<<cn<<mn<<"id= "<<id<<std::endl;
         //}
-	SPXpValue* pvalue= new SPXpValue(data,crossSections, steeringFile);
-        pvalue->SetPlotNumber(id); 
+	//SPXpValue* pvalue= new SPXpValue(data,crossSections, steeringFile);
+        //pvalue->SetPlotNumber(id); 
+
+        //if (debug) {
+	// std::cout<<" "<<std::endl;
+	// std::cout<<cn<<mn<<"Now call pValue calculation "<<std::endl;
+	// std::cout<<cn<<mn<<"Data size "<<data.size()<<std::endl;
+	// std::cout<<cn<<mn<<"CrossSection size "<<crossSections.size()<<std::endl;
+	// std::cout<<cn<<mn<<"id= "<<id<<std::endl;
+        //}
+
+	SPXCImodel* pcimodel= new SPXCImodel(data,crossSections, steeringFile);
+        pcimodel->SetPlotNumber(id); 
+        pcimodel->SetRatioPad(ratioPad); 
+        pcimodel->Analyze(); 
+
 #endif      
 	//if (debug) std::cout<<cn<<mn<<"Dump Latex table "<<steeringFile->GetDumpTables()<<std::endl;         
         if (steeringFile->GetDumpTables()!=0) {
@@ -2419,6 +2433,9 @@ void SPXPlot::CanvasToPNG(void) {
 
         if (steeringFile->GetOutputRootfile()) {
 	 TString rootfilename=filename;
+         TString text="_plot_";
+         text+=id;
+         rootfilename.ReplaceAll(text,"");
          rootfilename.ReplaceAll("png","root");
 	 this->WriteRootFile(rootfilename);
         }

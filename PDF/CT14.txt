@@ -25,13 +25,13 @@
 ; General Options
 ;==============================================================
 [GEN]
-debug = true
+debug = false
 ;==============================================================
 ; Description
 ;==============================================================
 [DESC]
 name = CT14nlo ; name of LHGrid-file
-type = CT14nlo ; general name used for printing etc
+type = CT14 ; general name used for printing etc
 order = 1   ; 1=NLO 2=NNLO
 num_members = 57 ; number of PDF members
 ; pdf_set_path =

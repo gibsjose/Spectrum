@@ -137,6 +137,39 @@ double SPXGraphUtilities::GetLargestRelativeError(TGraphAsymmErrors* graph) {
  return errormax;
 }
 
+TGraphErrors* SPXGraphUtilities::TH1TOTGraph(TH1 *h1)
+{
+ //
+ //convert the histogram h1 into a TGraphErrors
+ //
+ std::string mn = "TH1TOTGraph: ";
+ if (!h1) cout <<cn<<mn<< " histogram not found !" << endl;
+
+ //else h1->Print();
+ //cout<<name<<" n= "<<h1->GetNbinsX()<<endl;
+ //TGraphErrors* g1;
+ TGraphErrors* g1= new TGraphErrors();
+ if (!g1) cout<<cn<<mn<<" graph g1 not created "<<endl;
+ //g1->Print();
+
+ Double_t x, y, ex, ey;
+ for (Int_t i=0; i<h1->GetNbinsX(); i++) {
+   // cout<<cn<<mn<<<<" i= "<<i<<endl;
+   y=h1->GetBinContent(i+1);
+  ey=h1->GetBinError(i+1);
+   x=h1->GetBinCenter(i+1);
+  ex=h1->GetBinWidth(i+1)/2.;
+
+  //cout<<cn<<mn << i<<" x,y = " << x << " " << y << " ex,ey = " << ex << " " << ey << endl;
+
+  g1->SetPoint(i,x,y);
+  g1->SetPointError(i,ex,ey);
+ }
+
+ return g1;
+}
+
+
 TGraphAsymmErrors* SPXGraphUtilities::TH1TOTGraphAsymm(TH1 *h1)
 {
   //
@@ -1255,6 +1288,270 @@ void SPXGraphUtilities::DivideByBinWidth(TGraphAsymmErrors *g) {
     return;
 }
 
+
+ void SPXGraphUtilities::Add(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, int noerr) {
+ //
+ // Add graph g1 and graph g2
+ // result is stored in g1
+ //
+ // noerr=0: add error from graph 2 in quadrature 
+ //       1: do not consider error from graph 2
+ // 
+ std::string mn = "Add: ";
+ bool debug=false;
+
+ int nBins1 = g1->GetN();
+ int nBins2 = g2->GetN();
+ if (nBins1!=nBins2) {
+  std::ostringstream oss;
+  oss << cn <<mn<<"WARNING: Graph g1 "<<g1->GetName()<<" NBin1= "<<nBins1
+                   <<" and graph g2 "<<g2->GetName()<<" NBin2= "<<nBins2
+                   <<" do not have the same lenght ! ";
+  throw SPXParseException(oss.str());
+ }
+
+ double *x1   = g1->GetX();
+ double *y1   = g1->GetY();
+ double *exl1 = g1->GetEXlow();
+ double *exh1 = g1->GetEXhigh();
+ double *eyl1 = g1->GetEYlow();
+ double *eyh1 = g1->GetEYhigh();
+
+ double *x2   = g2->GetX();
+ double *y2   = g2->GetY();
+ double *exl2 = g2->GetEXlow();
+ double *exh2 = g2->GetEXhigh();
+ double *eyl2 = g2->GetEYlow();
+ double *eyh2 = g2->GetEYhigh();
+
+ //Loop over the smallest of the two
+ unsigned int n = (nBins1 < nBins2 ? nBins1 : nBins2);
+
+ if (debug) {
+  std::cout << " " << std::endl;
+  std::cout << cn << mn << "Print g1 before: " <<g1->GetName()<< std::endl;
+  g1->Print();
+
+  std::cout << " " << std::endl;
+  std::cout << cn << mn << "Print g2 before: " <<g2->GetName()<< std::endl;
+  g2->Print();
+
+ }
+
+ for(int i = 0; i < nBins1; i++) {
+   bool nomatch=true;
+  for(int j = 0; j < nBins2; j++) {
+
+   //Check for exact bin match
+   // std::cout<<"Old x1="<<x1[i]  <<" x2="<<x2[j]
+   //          <<" exl1= "<<exl1[i]<<" exh1= "<<exh1[i]
+   //          <<" exl2= "<<exl2[j]<<" exh2= "<<exh2[j]
+   //          << std::endl;
+
+    if(((x1[i] - exl1[i]) == (x2[j]-exl2[j])) && ((x1[i] + exh1[i]) == (x2[j]+exh2[j]))) {
+    //double emean=(dx1+dx2)/2.;
+    //if (fabs(x1-x2)>=emean && fabs(x1-x2)>dx 
+    nomatch=false;
+
+    //Bins match; Scale y, eyl, and eyh
+    y1[i] += y2[j];
+
+    // errors add up in quadrature
+    double eyl=0., eyh=0.;
+    // do not modify the graph, these are pointers !
+    if (noerr==1) {eyl=0.; eyh=0.;}
+
+    if (y1[i]*y1[i]!=0. && y2[i]*y2[i]!=0.) eyl=sqrt(y1[i]*y1[i]+y2[i]*y2[i]);
+
+    if (y2[i]*y2[i]!=0.) eyh=sqrt(y1[i]*y1[i]+y2[i]*y2[i]);
+
+    if (debug) std::cout << cn << mn << "Bins Match (i, j): (" << i << ", " << j << ")" 
+                        <<" New y1= "<<y1[i]<<" eyl= "<<eyl<<" eyh= "<<eyh<< std::endl;
+
+    g1->SetPoint(i, x1[i],y1[i]);
+    g1->SetPointError(i,exl1[i],exh1[i],eyl,eyh);
+    break;
+   }; 
+  };
+  if(nomatch) std::cout << cn << mn << "No Bins Match for bin i= " << i << std::endl;  
+ };
+
+ if (debug) {
+  std::cout << " " << std::endl;
+  std::cout << cn << mn << "Print g1 after " << g1->GetName()<<std::endl;
+  g1->Print();
+
+  std::cout << " " << std::endl;
+  std::cout << cn << mn << "Print g2 before: " <<g2->GetName()<< std::endl;
+  g2->Print();
+ }
+ return;
+}
+
+ TGraphAsymmErrors * SPXGraphUtilities::AddGraphs(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, int noerr) {
+ //
+ // Add graph g1 and graph g2 and create new graph
+ // new graph is returned
+ //
+ // noerr=0: add error from graph 2 in quadrature 
+ //       1: do not consider error from graph 2
+ // 
+ std::string mn = "Add: ";
+ bool debug=false;
+
+ int nBins1 = g1->GetN();
+ int nBins2 = g2->GetN();
+ if (nBins1!=nBins2) {
+  std::ostringstream oss;
+  oss << cn <<mn<<"WARNING: Graph g1 "<<g1->GetName()<<" NBin1= "<<nBins1
+                   <<" and graph g2 "<<g2->GetName()<<" NBin2= "<<nBins2
+                   <<" do not have the same lenght ! ";
+  throw SPXParseException(oss.str());
+ }
+
+ double *x1   = g1->GetX();
+ double *y1   = g1->GetY();
+ double *exl1 = g1->GetEXlow();
+ double *exh1 = g1->GetEXhigh();
+ double *eyl1 = g1->GetEYlow();
+ double *eyh1 = g1->GetEYhigh();
+
+ double *x2   = g2->GetX();
+ double *y2   = g2->GetY();
+ double *exl2 = g2->GetEXlow();
+ double *exh2 = g2->GetEXhigh();
+ double *eyl2 = g2->GetEYlow();
+ double *eyh2 = g2->GetEYhigh();
+
+ TGraphAsymmErrors* g3= new TGraphAsymmErrors();
+ TString gname=g1->GetName();
+ gname+=g2->GetName();
+
+ g3->SetName(gname);
+
+ //Loop over the smallest of the two
+ unsigned int n = (nBins1 < nBins2 ? nBins1 : nBins2);
+
+ if (debug) {
+  std::cout << " " << std::endl;
+  std::cout << cn << mn << "Print g1 before: " <<g1->GetName()<< std::endl;
+  g1->Print();
+
+  std::cout << " " << std::endl;
+  std::cout << cn << mn << "Print g2 before: " <<g2->GetName()<< std::endl;
+  g2->Print();
+
+ }
+
+ for(int i = 0; i < nBins1; i++) {
+  bool nomatch=true;
+  for(int j = 0; j < nBins2; j++) {
+
+   //Check for exact bin match
+   // std::cout<<"Old x1="<<x1[i]  <<" x2="<<x2[j]
+   //          <<" exl1= "<<exl1[i]<<" exh1= "<<exh1[i]
+   //          <<" exl2= "<<exl2[j]<<" exh2= "<<exh2[j]
+   //          << std::endl;
+
+    if(((x1[i] - exl1[i]) == (x2[j]-exl2[j])) && ((x1[i] + exh1[i]) == (x2[j]+exh2[j]))) {
+    //double emean=(dx1+dx2)/2.;
+    //if (fabs(x1-x2)>=emean && fabs(x1-x2)>dx 
+    nomatch=false;
+
+    //Bins match; Scale y, eyl, and eyh
+    double y3=y1[i] + y2[j];
+
+    // errors add up in quadrature
+    double eyl=0., eyh=0.;
+    eyl=eyl1[i]*eyl1[i]+eyl2[i]*eyl2[i];
+    if (eyl>0) eyl=sqrt(eyl);
+
+    eyh=eyh1[i]*eyh1[i]+eyh2[i]*eyh2[i];
+    if (eyh>0) eyh=sqrt(eyh);
+
+    if (noerr==1) {eyl=0.; eyh=0.;}
+
+    if (debug) std::cout << cn << mn << "Bins Match (i, j): (" << i << ", " << j << ")" 
+                        <<" New y3= "<<y3<<" eyl= "<<eyl<<" eyh= "<<eyh<< std::endl;
+
+    g3->SetPoint(i, x1[i],y3);
+    g3->SetPointError(i,exl1[i],exh1[i],eyl,eyh);
+    break;
+   }; 
+  };
+  if(nomatch) std::cout << cn << mn << "No Bins Match for bin i= " << i << std::endl;  
+ };
+
+ if (debug) {
+  std::cout << " " << std::endl;
+  std::cout << cn << mn << "Print g1: " << g1->GetName()<<std::endl;
+  g1->Print();
+
+  std::cout << " " << std::endl;
+  std::cout << cn << mn << "Print g2: " <<g2->GetName()<< std::endl;
+  g2->Print();
+
+  std::cout << " " << std::endl;
+  std::cout << cn << mn << "Print g3: " <<g3->GetName()<< std::endl;
+  g3->Print();
+ }
+ return g3;
+}
+
+//
+ TGraphAsymmErrors * SPXGraphUtilities::CopyGraph(TGraphAsymmErrors *g1) {
+ //
+ // Copy graph g1 to graph g2 
+ // new graph is returned
+ //
+ // 
+ std::string mn = "Copy: ";
+ bool debug=false;
+
+ int nBins1 = g1->GetN();
+
+ double *x1   = g1->GetX();
+ double *y1   = g1->GetY();
+ double *exl1 = g1->GetEXlow();
+ double *exh1 = g1->GetEXhigh();
+ double *eyl1 = g1->GetEYlow();
+ double *eyh1 = g1->GetEYhigh();
+
+ TGraphAsymmErrors* g2= new TGraphAsymmErrors();
+ TString gname="Copyof";
+ gname+=g1->GetName();
+ g2->SetName(gname);
+
+
+ if (debug) {
+  std::cout << " " << std::endl;
+  std::cout << cn << mn << "Print g1 before: " <<g1->GetName()<< std::endl;
+  g1->Print();
+
+ }
+
+ for(int i = 0; i < nBins1; i++) {
+
+  g2->SetPoint(i, x1[i],y1[i]);
+  g2->SetPointError(i,exl1[i],exh1[i],eyl1[i],eyh1[i]); 
+ 
+ };
+
+ if (debug) {
+  std::cout << " " << std::endl;
+  std::cout << cn << mn << "Print g1: " <<g1->GetName()<<std::endl;
+  g1->Print();
+
+  std::cout << " " << std::endl;
+  std::cout << cn << mn << "Print g2: " <<g2->GetName()<< std::endl;
+  g2->Print();
+
+ }
+ return g2;
+}
+//
+
+
 void  SPXGraphUtilities::Add(TH1D *h1, TH1D *h2){
  //
  // Add histogram h2 to h1
@@ -1803,3 +2100,94 @@ bool SPXGraphUtilities::GraphWithNoError(TGraphAsymmErrors * g) {
     }
     return allerrorszero;
 }
+
+TGraphAsymmErrors * SPXGraphUtilities::SPXTGraphSetXErrorsZero(TGraphAsymmErrors *g1){
+    std::string mn = "SPXTGraphSetXErrorsZero: ";
+
+    if (!g1) {
+     throw SPXGraphException(cn + mn + "Graph provided was invalid");
+    }
+
+    TGraphAsymmErrors* g2= new TGraphAsymmErrors();
+    g2->SetName(g1->GetName());
+    SPXGraphUtilities::SPXCopyGraphProperties((TGraphErrors *)g1,(TGraphErrors *)g2);
+
+    Double_t x=0., y=0.;
+    for (Int_t i=0; i<g1->GetN(); i++) {
+     g1->GetPoint(i,x,y);
+     g2->SetPoint(i,x,y);
+     double eyl=g1->GetErrorYlow(i);
+     double eyh=g1->GetErrorYhigh(i);
+     g2->SetPointError(i,0.,0.,eyl,eyh);
+
+    }
+    return g2;
+}
+TGraphAsymmErrors * SPXGraphUtilities::SPXTGraphSetYErrorsZero(TGraphAsymmErrors *g1){
+    std::string mn = "SPXTGraphSetYErrorsZero: ";
+
+    if (!g1) {
+     throw SPXGraphException(cn + mn + "Graph provided was invalid");
+    }
+
+    TGraphAsymmErrors* g2= new TGraphAsymmErrors();
+    g2->SetName(g1->GetName());
+    SPXGraphUtilities::SPXCopyGraphProperties((TGraphErrors *)g1,(TGraphErrors *)g2);
+
+    Double_t x=0., y=0.;
+    for (Int_t i=0; i<g1->GetN(); i++) {
+     g1->GetPoint(i,x,y);
+     g2->SetPoint(i,x,y);
+     double exl=g1->GetErrorXlow(i);
+     double exh=g1->GetErrorXhigh(i);
+     g2->SetPointError(i,exl,exh,0.,0.);
+
+    }
+    return g2;
+}
+
+TGraphErrors * SPXGraphUtilities::SPXTGraphSetYErrorsZero(TGraphErrors *g1){
+    std::string mn = "SPXTGraphSetYErrorsZero: ";
+
+    if (!g1) {
+     throw SPXGraphException(cn + mn + "Graph provided was invalid");
+    }
+
+    TGraphErrors* g2= new TGraphErrors();
+    g2->SetName(g1->GetName());
+    SPXGraphUtilities::SPXCopyGraphProperties((TGraphErrors *)g1,(TGraphErrors *)g2);
+
+    Double_t x=0., y=0.;
+    for (Int_t i=0; i<g1->GetN(); i++) {
+     g1->GetPoint(i,x,y);
+     g2->SetPoint(i,x,y);
+     double ex=g1->GetErrorX(i);
+     g2->SetPointError(i,ex,0.);
+
+    }
+    return g2;
+}
+
+TGraphErrors * SPXGraphUtilities::SPXTGraphSetXErrorsZero(TGraphErrors *g1){
+    std::string mn = "SPXTGraphSetXErrorsZero: ";
+
+    if (!g1) {
+     throw SPXGraphException(cn + mn + "Graph provided was invalid");
+    }
+
+    TGraphErrors* g2= new TGraphErrors();
+    g2->SetName(g1->GetName());
+    SPXGraphUtilities::SPXCopyGraphProperties((TGraphErrors *)g1,(TGraphErrors *)g2);
+
+    Double_t x=0., y=0.;
+    for (Int_t i=0; i<g1->GetN(); i++) {
+     g1->GetPoint(i,x,y);
+     g2->SetPoint(i,x,y);
+     double ey=g1->GetErrorY(i);
+     g2->SetPointError(i,0.,ey);
+
+    }
+    return g2;
+}
+
+

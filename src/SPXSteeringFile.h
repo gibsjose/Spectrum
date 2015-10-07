@@ -164,6 +164,7 @@ private:
 	unsigned int ParseNumberOfRatios(unsigned int plotNumber);
 	void ParsePlotConfigurations();
 
+
 public:
 
 	//These functions simplify the main file's interface to parsing

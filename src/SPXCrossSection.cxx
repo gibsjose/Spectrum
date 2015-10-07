@@ -209,7 +209,6 @@ void SPXCrossSection::PrintTotalCrossSection() {
   }
  }
 
-
  return;
 }
 

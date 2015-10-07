@@ -1525,7 +1525,7 @@ void SPXPlotConfiguration::Parse(std::map<std::string, std::vector<std::string> 
         if (debug) {
 	 std::cout<<cn<<mn<<"Print plotoptions map "<<std::endl;
 	 for(std::map<std::string, double>::reverse_iterator it=plotoptions.rbegin(); it!=plotoptions.rend(); ++it) {
-	  std::cout<<" plotoptions["<<it->first<<"]= "<<it->second<<endl;
+	   std::cout<<" plotoptions["<<it->first<<"]= "<<it->second<<std::endl;
  	 }
         }
 
