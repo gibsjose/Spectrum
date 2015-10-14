@@ -38,6 +38,7 @@
 #endif      
 
 #include "SPXLatexTable.h"
+#include "SPXChi2.h"
 
 #include "SPXException.h"
 

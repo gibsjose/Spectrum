@@ -80,12 +80,13 @@ private:
 	std::vector <double> DataCutXmin;         // Value below which data points are removed if  RemoveXbins=true
 	std::vector <double> DataCutXmax;         // Value above which data points are removed if  RemoveXbins=true
         
-        bool printTotalSigma;   // Flag to indicate that, if total integrated cross section should be printed
+        bool printTotalSigma;   // if true total integrated cross section should be printed
 
-	bool gridCorr;		//Flag if corrections should be applied to grid/convolute
+	bool gridCorr;		// if true  corrections should be applied to grid/convolute
 	std::string ContainGridCorr; // only keep correction that contain this string
-	bool nomCorr;		//Flag if correction should be applied to nominal histogram
-	bool labelSqrtS;	//Flag to indicate that the Sqrt(s) value should be shown in the legend
+	bool nomCorr;		// if true correction should be applied to nominal histogram
+	bool labelSqrtS;	// if true Sqrt(s) value should be shown in the legend
+	bool labelChi2;	        // if true Chi2 should be add on label
 
 	bool labelDate;	        //Flag to add Data beside label
 
@@ -163,7 +164,8 @@ private:
 	unsigned int ParseNumberOfPlots(void);
 	unsigned int ParseNumberOfRatios(unsigned int plotNumber);
 	void ParsePlotConfigurations();
-
+ 
+        bool ParameterScan; // grid has parameter scan
 
 public:
 
@@ -257,9 +259,12 @@ public:
 		return this->nomCorr;
 	}
 
-
 	bool GetLabelSqrtS(void) const {
 		return this->labelSqrtS;
+	}
+
+	bool GetLabelChi2(void) const {
+		return this->labelChi2;
 	}
 
 	bool GetLabelDate(void) const {
@@ -390,7 +395,6 @@ public:
 	bool GetBandTotal(void) const {
 		return this->BandTotal;
 	}
-
 	
 	int GetNumberofCorrectionToBand() {
 	 //std::cout<<" gridcorrections.size()= "<<gridcorrections.size()<<std::endl;
@@ -443,24 +447,6 @@ public:
       	 return set_grid_styles;      
         }
 
-        //bool HasData(int iplot) {
-	// if (iplot>hasdata.size()) {
-	// std::ostringstream oss;
-	//  oss << "SPXSteering:: Something is wrong iplot= "<<iplot<<" but hasdata vector size= "<<hasdata.size();
-	// throw SPXParseException(oss.str());
-	// };
-	// return hasdata.at(iplot);
-	//};
-
-        //bool HasMC(int iplot) {
-	// if (iplot>hasmc.size()) {
-        //  std::ostringstream oss;
-	//  oss << "SPXSteering:: Something is wrong iplot= "<<iplot<<" but hasmc vector size= "<<hasmc.size();
-	//  throw SPXParseException(oss.str());
-        // }
-        // return hasmc.at(iplot);
-        //};
-
 	unsigned int GetNumberOfPlotConfigurations(void) const {
 		return this->plotConfigurations.size();
 	}
@@ -510,6 +496,10 @@ public:
         double GetDataCutXmin(int i);
         double GetDataCutXmax(int i);
         bool GetDataRemoveXbinsFlag(int i);
+
+	bool GetParameterScan(void) const {
+		return this->ParameterScan;
+	}
 
 };
 

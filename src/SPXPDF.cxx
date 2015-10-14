@@ -108,6 +108,7 @@ SPXPDF::SPXPDF(SPXPDFSteeringFile *psf, int iflpdf, double Q2value, TH1D* h1)
   hpdf->Print("all");
  }
 
+ ParameterScan=false;
 
  if (debug) std::cout<<cn<<"SPXPDF: end constructor PDF-only "<<std::endl;
 }
@@ -266,7 +267,7 @@ TH1D *  SPXPDF::GetHisto(double renscale, double facscale){
  std::string mn = "GetHisto: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
- TString name="xsec_pdf_"+default_pdf_set_name;
+ std::string name="xsec_pdf_"+default_pdf_set_name;
  if (debug) std::cout<<cn<<mn<<"Number of grids= "<<ngrid<<std::endl;
  TH1D* htmpsum=0;
  //TH1D* htmpsumAlternativeScaleChoice=0;
@@ -303,11 +304,9 @@ TH1D *  SPXPDF::GetHisto(double renscale, double facscale){
    throw SPXParseException(cn+mn+"Can not find histogram from convolution !");
   }
 
-  if (debug) std::cout<<cn<<mn<<"Set htmpsum name to "<<name.Data()<<std::endl;
-  htmpsum->SetName(name);
-
-  if (debug) std::cout<<cn<<mn<<"Set htmpsum name to "<<name.Data()<<std::endl;
-  htmpsum->SetName(name);
+  name=GetName(name);
+  if (debug) std::cout<<cn<<mn<<"Set htmpsum name to "<<name<<std::endl;
+  htmpsum->SetName(name.c_str());
 
   //if (do_AlternativeScaleChoice && (renscale==1&&facscale==1)) {
   //
@@ -325,8 +324,7 @@ TH1D *  SPXPDF::GetHisto(double renscale, double facscale){
  } else {
   applgridok=false;
   TH1D *htmp=0;
-  //TH1D *htmpAlternativeScaleChoice=0;
-
+ 
   for (int igrid=0; igrid<ngrid; igrid++) {
    my_grid=spxgrid->GetGrid(igrid);
    if (!my_grid) { 
@@ -341,9 +339,10 @@ TH1D *  SPXPDF::GetHisto(double renscale, double facscale){
     throw SPXParseException(cn+mn+"Can not find histogram from convolution !");
    }
 
-   htmp->SetName(TString(gridName));
+   gridName=GetName(gridName);
+   htmp->SetName(gridName.c_str());
    if (debug) {
-    std::cout<<cn<<mn<<" igrid= "<<igrid<<" adding "<<TString(gridName).Data()<<std::endl;
+    std::cout<<cn<<mn<<" igrid= "<<igrid<<" adding "<<gridName<<std::endl;
 
     std::cout<<cn<<mn<<"Print "<<htmp->GetName()<<std::endl;
     htmp->Print("all");
@@ -639,7 +638,8 @@ void SPXPDF::Initialize()
   if (debug) std::cout<<cn<<mn<<"Histogram from PDF not applgrid ! "<<std::endl;
   temp_hist=this->FillPdfHisto();
   std::cout<<cn<<mn<<" hpdf= "<<hpdf->GetName()<<std::endl;
-  temp_hist->SetName(hpdf->GetName());
+  std::string name=GetName(hpdf->GetName());
+  temp_hist->SetName(name.c_str());
  }
 
  if (!temp_hist) std::cout<<cn<<mn<<"ERROR could not do the convolution; temp_hist not found ! "<<std::endl;
@@ -654,45 +654,49 @@ void SPXPDF::Initialize()
  if (do_AlphaS) {
   h_errors_AlphaS.push_back(temp_hist);
   h_AlphaS_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
-  TString name="xsec_alphas_"+default_pdf_set_name;
+  std::string name="xsec_alphas_"+default_pdf_set_name;
   //if (spxgrid) name+="_"+gridName;;
-  if (h_AlphaS_results) h_AlphaS_results->SetName(name);
+  name=GetName(name);
+  if (h_AlphaS_results) h_AlphaS_results->SetName(name.c_str());
  }
 
  if (do_Scale)   {
   h_Scale_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
-  TString name="xsec_scale_"+default_pdf_set_name;
+  std::string name="xsec_scale_"+default_pdf_set_name;
   //if (spxgrid) name+="_"+gridName;
-  //std::cout<<cn<<mn<<"HUHU set h_Scale_results to name= "<<name<<std::endl;
-  if (h_Scale_results) h_Scale_results->SetName(name);
+  name=GetName(name);
+  if (h_Scale_results) h_Scale_results->SetName(name.c_str());
  }
 
  if (do_AlternativeScaleChoice)   {
   std::string gridNameAlternativeScaleChoice="";
   h_AlternativeScaleChoice_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
   //TString name="xsec_AlternativeScaleChoice_"+default_pdf_set_name;
-  TString name="xsec_AlternativeScaleChoice_"+default_pdf_set_name;
+  std::string name="xsec_AlternativeScaleChoice_"+default_pdf_set_name;
   if (spxgrid) {
    //gridNameAlternativeScaleChoice+=spxgrid->GetAlternativeScaleChoiceName();
    //gridNameAlternativeScaleChoice+=gridName;
    name+="_"+gridNameAlternativeScaleChoice;
   }
   //std::cout<<cn<<mn<<"HUHU set h_AlternativeScaleChoice_results to name= "<<name<<std::endl;
-  if (h_AlternativeScaleChoice_results) h_AlternativeScaleChoice_results->SetName(name);
+  name=GetName(name);
+  if (h_AlternativeScaleChoice_results) h_AlternativeScaleChoice_results->SetName(name.c_str());
  }
 
  if (do_PDFBand) {
   h_PDF_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
-  TString name="xsec_pdf_"+default_pdf_set_name;
+  std::string name="xsec_pdf_"+default_pdf_set_name;
   //if (spxgrid) name+="_"+gridName;
-  if (h_PDF_results) h_PDF_results->SetName(name);
+  name=GetName(name);
+  if (h_PDF_results) h_PDF_results->SetName(name.c_str());
  }
 
  if (do_Escale) {
   h_BeamUncertainty_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
-  TString name="xsec_BeamUncertainty_"+default_pdf_set_name;
+  std::string name="xsec_BeamUncertainty_"+default_pdf_set_name;
   //if (spxgrid) name+="_"+gridName;
-  if (h_BeamUncertainty_results) h_BeamUncertainty_results->SetName(name);
+  name=GetName(name);
+  if (h_BeamUncertainty_results) h_BeamUncertainty_results->SetName(name.c_str());
  }
  // Now do the scale variations
  if (debug)
@@ -731,7 +735,8 @@ void SPXPDF::Initialize()
      char rname[100];
      sprintf(rname,"%s_muR%3.1f_muF%3.1f",PDFname.c_str(),RenScales[iscale],FacScales[iscale]);
      h_scale_temp->SetTitle(rs);
-     h_scale_temp->SetName(rname);
+     std::string name=GetName(std::string(rname));
+     h_scale_temp->SetName(name.c_str());
      //if (debug) {
      // std::cout<<iscale<<" print histogram: "<<rname<<std::endl;
      // h_scale_temp->Print("all");
@@ -748,7 +753,10 @@ void SPXPDF::Initialize()
    temp_hist=this->FillPdfHisto();
    std::cout<<cn<<mn<<" hpdf= "<<hpdf->GetName()<<std::endl;
    //temp_hist->SetName((TString) ("h_pdf_default"));
-   temp_hist->SetName(hpdf->GetName());
+ 
+   std::string name=hpdf->GetName();
+   name=GetName(name);
+   temp_hist->SetName(name.c_str());
   }
 
   if (debug) {
@@ -873,7 +881,7 @@ void SPXPDF::Initialize()
     std::cout<<cn<<mn<<oss.str()<<std::endl;
    }
 
-   TString AlphaSPDFSetHistNameDown=AlphaSPDFSetNameDown+"_value_alphas= ";
+   std::string AlphaSPDFSetHistNameDown=AlphaSPDFSetNameDown+"_value_alphas= ";
    TString namedown; namedown.Form("%3.3f",value_alphaS_down);
    AlphaSPDFSetHistNameDown+=namedown;
 
@@ -882,11 +890,15 @@ void SPXPDF::Initialize()
    if (applgridok) {
     //
     temp_hist= this->GetHisto();
-    temp_hist->SetName((TString) ("xsec_alphas_pdfset"+AlphaSPDFSetHistNameDown));
+    std::string name="xsec_alphas_pdfset"+AlphaSPDFSetHistNameDown;
+    name=this->GetName(name);
+    temp_hist->SetName(name.c_str());
    } else {
     if (debug) std::cout<<cn<<mn<<"applgrid not found; histogram from PDF not applgrid ! "<<std::endl;
     temp_hist=this->FillPdfHisto();
-    temp_hist->SetName((TString) ("pdfonly_"+AlphaSPDFSetHistNameDown));
+    std::string name="pdfonly_"+AlphaSPDFSetHistNameDown;
+    name=this->GetName(name);
+    temp_hist->SetName(name.c_str());
    }
 
    if (!temp_hist) std::cout<<cn<<mn<<"temp_hist not found ! "<<std::endl;
@@ -931,18 +943,24 @@ void SPXPDF::Initialize()
     std::cout<<cn<<mn<<oss.str()<<std::endl;
    }
 
-   TString AlphaSPDFSetHistNameUp=AlphaSPDFSetNameUp+"_value_alphas= ";
+   std::string AlphaSPDFSetHistNameUp=AlphaSPDFSetNameUp+"_value_alphas= ";
    TString nameup; nameup.Form("%3.3f",value_alphaS_up);
    AlphaSPDFSetHistNameUp+=nameup;
 
    temp_hist= this->GetHisto();
    if (applgridok) {
     //
-    temp_hist->SetName((TString) ("xsec_alphas_pdfset_"+AlphaSPDFSetHistNameUp));
+    std::string name="xsec_alphas_pdfset_"+AlphaSPDFSetHistNameUp;
+    name=this->GetName(name);
+    temp_hist->SetName(name.c_str());
+    //std::string name="alphas_s= "+nameup;
+    //temp_hist->SetTitle(name);
    } else {
     if (debug) std::cout<<cn<<mn<<"Histogram from PDF not applgrid ! "<<std::endl;
+    std::string name="pdfonly_"+AlphaSPDFSetHistNameUp;
+    name=this->GetName(name);
     temp_hist=this->FillPdfHisto();
-    temp_hist->SetName((TString) ("pdfonly_"+AlphaSPDFSetHistNameUp));
+    temp_hist->SetName(name.c_str());
    }
 
    if (debug) {
@@ -1137,17 +1155,22 @@ void SPXPDF::Initialize()
     std::cout<<cn<<mn<<"TIMER convolute done t0= "<< t0.time()<<" [ms]"<<std::endl;
 #endif
 
-    TString hname=temp_hist->GetName()+TString("_pdf_")+default_pdf_set_name+"_id_";
-    hname+=pdferri;
-    if (spxgrid) hname+="_"+gridName;
-    temp_hist->SetName(hname);
+    std::string hname=temp_hist->GetName();
+    //hname+="_pdf_"+default_pdf_set_name+"_id_";
+    hname+=Form("_set_%d",pdferri);
+    //if (spxgrid) hname+="_"+gridName;
+    //hname.erase(std::remove(hname.begin(), hname.end(), '\'), parname.end());
+    //hname=this->GetName(hname);
+    temp_hist->SetName(hname.c_str());
 
    } else {
     if (debug) std::cout<<cn<<mn<<"Histogram from PDF not applgrid ! "<<std::endl;
     TH1D *tmp=this->FillPdfHisto();
     if (!tmp) std::cout<<cn<<mn<<"tmp histogram not found "<<std::endl;
     temp_hist=(TH1D*)tmp->Clone(tmp->GetName());
-    temp_hist->SetName(tmp->GetName());
+    std::string name=tmp->GetName();
+    name=this->GetName(name);
+    temp_hist->SetName(name.c_str());
    }
 
    if (!temp_hist) std::cout<<cn<<mn<<"temp_hist histogram not found "<<std::endl;
@@ -1301,7 +1324,6 @@ void SPXPDF::CalcBeamEnergyErrors()
  std::string mn = "CalcBeamEnergyErrors: ";
  if (debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
-
  if (debug) {
   std::cout<<cn<<mn<<"Calculate beam energy uncertainty for "<<std::endl;
   std::cout<<cn<<mn<<"Escale= "<<Escale<<std::endl;
@@ -1317,9 +1339,9 @@ void SPXPDF::CalcBeamEnergyErrors()
 
  TH1D *hnom= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renscale, facscale,  1.);
  if (!hnom) {std::cout<<cn<<mn<<"WARNING: Can not convolute nominal beam energy "<<std::endl; return;}
- hnom->SetName("NominalBeamEnergyUncertainy");
- //should be already filled
- //h_BeamUncertainty_results=SPXGraphUtilities::TH1TOTGraphAsymm(hnom);
+ std::string name="NominalBeamEnergyUncertainy";
+ name=this->GetName(name);
+ hnom->SetName(name.c_str());
 
  if (debug) {
   std::cout<<cn<<mn<<"Nominal "<<std::endl;
@@ -1331,17 +1353,17 @@ void SPXPDF::CalcBeamEnergyErrors()
   hratio->Print("all");
  }
 
-
  TH1D *htmp= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renscale, facscale,  1./Escale);
  if (!htmp) {std::cout<<cn<<mn<<"WARNING: Can not convolute up beam energy "<<std::endl; return;}
- TString hname=Form("xsec_BeamUncertainty_%4.3f_%s",Escale,default_pdf_set_name.c_str());
- htmp->SetName(hname);
- h_BeamUncertainty_results->SetName(hname);
+ std::string hname=Form("xsec_BeamUncertainty_%4.3f_%s",Escale,default_pdf_set_name.c_str());
+ hname=this->GetName(hname);
+ htmp->SetName(hname.c_str());
+ h_BeamUncertainty_results->SetName(hname.c_str());
  h_errors_BeamUncertainty.push_back(htmp);
 
  if (debug) {
   std::cout<<cn<<mn<<"After varying beam energy up (ratio to default): "<<std::endl;
-  TH1D * hratio=(TH1D*) htmp->Clone(hname);
+  TH1D * hratio=(TH1D*) htmp->Clone(hname.c_str());
   hratio->Divide(hnom);
   hratio->Print("all");
  }
@@ -1349,13 +1371,14 @@ void SPXPDF::CalcBeamEnergyErrors()
  htmp= (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renscale, facscale, Escale);
  if (!htmp) {std::cout<<cn<<mn<<"WARNING: Can not convolute down beam energy "<<std::endl; return;}
  hname=Form("xsec_BeamUncertainty_%4.3f_%s",1./Escale,default_pdf_set_name.c_str());
- htmp->SetName(hname);
+ hname=this->GetName(hname);
+ htmp->SetName(hname.c_str());
  h_errors_BeamUncertainty.push_back(htmp);
 
  if (debug) {
   std::cout<<cn<<mn<<"After varying beam energy down: "<<std::endl;
   hname+="ratio";
-  TH1D * hratio=(TH1D*) htmp->Clone(hname);
+  TH1D * hratio=(TH1D*) htmp->Clone(hname.c_str());
   hratio->Divide(hnom);
   hratio->Print("all");
  }
@@ -1698,6 +1721,7 @@ void SPXPDF::CalcPDFBandErrors()
 
    }
   }
+
   h_PDF_results->SetPointEYhigh(bi-1, this_err_up);
   h_PDF_results->SetPointEYlow (bi-1, this_err_down);
 
@@ -1713,6 +1737,7 @@ void SPXPDF::CalcPDFBandErrors()
  }  /// loop over bins
 
  if(debug) std::cout<<cn<<mn<<"End calculation of PDFBandErrors for: "<<PDFtype<<std::endl;
+ return;
 }
 
 void SPXPDF::CalcAlphaSErrors()
@@ -1840,6 +1865,7 @@ void SPXPDF::CalcAlphaSErrors()
  SPXGraphUtilities::SetColors(h_AlphaS_results,fillColorCode);
 
  if (debug) std::cout<<cn<<mn<<"End AlphaS uncertainty calculation for: "<<PDFtype<<std::endl;
+ return;
 }
 
 void SPXPDF::CalcScaleErrors()
@@ -1870,16 +1896,10 @@ void SPXPDF::CalcScaleErrors()
   double init_x_val;
   double init_y_val;
   h_Scale_results->GetPoint(ibin-1, init_x_val, init_y_val);
-  // default of ren scale should be the same as for the other bands, otherwise total band is not largest
-  //h_Scale_results->SetPoint(ibin-1, init_x_val, central);
-  //h_Scale_results->SetPointEYhigh(ibin-1, max-central);
-  //h_Scale_results->SetPointEYlow(ibin-1, central-min);
   h_Scale_results->SetPoint(ibin-1, init_x_val, init_y_val);
   h_Scale_results->SetPointEYhigh(ibin-1, max-init_y_val);
   h_Scale_results->SetPointEYlow(ibin-1, init_y_val-min);
  } /// ibin
-
- //h_Scale_results->SetName(h_errors_Scale[0]->GetName());
 
  h_Scale_results->SetFillStyle  (fillStyleCode);
  //h_Scale_results->SetMarkerColor(fillColorCode);
@@ -1896,6 +1916,7 @@ void SPXPDF::CalcScaleErrors()
  }
 
  if (debug) std::cout<<cn<<mn<<"End calculation of ScaleErrors for: "<<PDFtype<<std::endl;
+ return;
 }
 
 void SPXPDF::CalcAlternativeScaleChoiceErrors()
@@ -2049,10 +2070,10 @@ void SPXPDF::CalcTotalErrors()
  }
 
  // Create total uncertainty graph
- TString name="xsec_total_"+default_pdf_set_name;
+ std::string name="xsec_total_"+default_pdf_set_name;
  if (spxgrid) name+="_"+spxgrid->GetName();
-
- h_Total_results=(TGraphAsymmErrors *) (Mapallbands.begin()->second)->Clone(name);
+ name=this->GetName(name);
+ h_Total_results=(TGraphAsymmErrors *) (Mapallbands.begin()->second)->Clone(name.c_str());
  if (!h_Total_results) {
   throw SPXGraphException(cn+mn+"Could not create h_Total_results !");
  }
@@ -2116,9 +2137,6 @@ void SPXPDF::CalcTotalErrors()
  Mapallbands["total"]=h_Total_results;
 
  h_Total_results->SetFillStyle  (fillStyleCode);
- //h_Total_results->SetMarkerColor(fillColorCode);
- //h_Total_results->SetLineColor  (fillColorCode);
- //h_Total_results->SetFillColor  (fillColorCode);
  SPXGraphUtilities::SetColors( h_Total_results,fillColorCode);
 }
 
@@ -2147,7 +2165,14 @@ void SPXPDF::DrawPDFRatio(int iset1, int iset2){
 }
 
 double SPXPDF::GetMaximum(int iset){
- return h_errors_PDF[iset]->GetMaximum();
+ std::string mn = "GetMaximum:";
+
+  if (iset>=h_errors_PDF.size()){
+   std::ostringstream oss;
+   oss << cn << mn << "ERROR out of bound iset= "<< iset<<" but h_errors_PDF.size()= "<<h_errors_PDF.size();
+   throw SPXParseException(oss.str());
+  }
+  return h_errors_PDF.at(iset)->GetMaximum();
 }
 
 
@@ -2255,12 +2280,15 @@ void SPXPDF::Print()
      <<"\n SPXPDF::Print:<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"<<std::endl;
 }
 
-//default values for variables to avoid crashes and check for proper setup before doing anything
+
 void SPXPDF::SetVariablesDefault()
 {
- if (debug) std::cout<<"SPXPDF::setVariablesDefault: Start default values being set."<<std::endl;
+ std::string mn = "SetVariablesDefault: ";
+ //
+ // default values for variables to avoid crashes and check for proper setup before doing anything
+ //
+ if (debug) std::cout<<cn<<mn<<"Start default values being set."<<std::endl;
  std::string defaultString="";
- //int defaultInt=-1;
 
  DEFAULT=-1;
 
@@ -2303,8 +2331,6 @@ void SPXPDF::SetVariablesDefault()
  AlphaSmemberNumUp=DEFAULT;
  AlphaSPDFSetNameDown=defaultString;
  AlphaSPDFSetNameUp=defaultString;
- //AlphaSPDFSetHistNameDown=defaultString;
- //AlphaSPDFSetHistNameUp=defaultString;
 
  alphaS_value_worldAverage=0.1184;
  //alphaS_absUnc_worldAverage=0.0020;
@@ -2312,14 +2338,16 @@ void SPXPDF::SetVariablesDefault()
 
  Escale=1.;
 
- if (debug) std::cout<<cn<<"setVariablesDefault: End default values are set."<<std::endl;
+ if (debug) std::cout<<cn<<mn<<"End default values are set."<<std::endl;
 }
 
-
-//mutator methods
+//
+// mutator methods
+//
 void SPXPDF::SetDebug(bool _debug) {
  debug=_debug;
 }
+
 void SPXPDF::SetGridName(std::string _gridName) {
  gridName=_gridName;
 }
@@ -2327,33 +2355,39 @@ void SPXPDF::SetGridName(std::string _gridName) {
 void SPXPDF::SetSteeringFileName(std::string _steeringFileName) {
  steeringFileName=_steeringFileName;
 }
+
 void SPXPDF::SetPDFtype(std::string _PDFtype) {
  PDFtype=_PDFtype;
 }
+
 void SPXPDF::SetPDFname(std::string _PDFname) {
  PDFname=_PDFname;
 }
+
 void SPXPDF::SetNumPDFMembers(int _n_PDFMembers) {
  n_PDFMembers=_n_PDFMembers;
 }
+
 void SPXPDF::SetFillStyleCode(int _fillStyleCode) {
  fillStyleCode=_fillStyleCode;
 }
+
 void SPXPDF::SetFillColorCode(int _fillColorCode) {
  fillColorCode=_fillColorCode;
 }
+
 void SPXPDF::SetPDFBandType(std::string _PDFBandType) {
  PDFBandType=_PDFBandType;
 }
+
 void SPXPDF::SetPDFErrorType(std::string _PDFErrorType) {
  PDFErrorType=_PDFErrorType;
 }
-//void SPXPDF::SetPDFErrorSize(string _PDFErrorSize) {
-// PDFErrorSize=_PDFErrorSize;
 
 void SPXPDF::SetDoPDFBand(bool _doit) {
  do_PDFBand = _doit;
 }
+
 void SPXPDF::SetDoAlphaS(bool _doit) {
  do_AlphaS = _doit;
 }
@@ -2365,7 +2399,6 @@ void SPXPDF::SetDoScale(bool _doit) {
 void SPXPDF::SetDoAlternativeScaleChoice(bool _doit) {
  do_AlternativeScaleChoice = _doit;
 }
-
 
 void SPXPDF::SetDoTotError(bool _doit) {
  do_Total = _doit;
@@ -2394,7 +2427,8 @@ void SPXPDF::SetAlphaSPDFSetNameUp(std::string _name) {
 }
 
 void SPXPDF::CleanUpSPXPDF() {
-  if (debug) std::cout<<cn<<" CleanUpSPXPDF: Starting to clean up..."<<std::endl;
+ std::string mn = "CleanUpSPXPDF: ";
+ if (debug) std::cout<<cn<<mn<<"Starting to clean up..."<<std::endl;
 
  if (h_errors_PDF.size()>0) {
   for (int i=0; i<h_errors_PDF.size(); ++i) {
@@ -2420,7 +2454,7 @@ void SPXPDF::CleanUpSPXPDF() {
   }
  }
 
- if (debug) std::cout<<cn<<"CleanUpSPXPDF: Finished clean up!"<<std::endl;
+ if (debug) std::cout<<cn<<mn<<"Finished clean up!"<<std::endl;
 }
 
 
@@ -2429,16 +2463,16 @@ TH1D * SPXPDF::FillPdfHisto(){
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if (!hpdf) {
-  throw SPXParseException(cn+mn+"WARNING: FillPdfHistos histo not found ");
+  throw SPXParseException(cn+mn+"Histogram not found ");
  }
- //const int nstep=1000;
+ //
  const double xmin=hpdf->GetBinCenter(1);
  const int    nbin=hpdf->GetNbinsX();
  const double xmax=hpdf->GetBinWidth(nbin)/2.+hpdf->GetBinCenter(nbin);
  const double binw=hpdf->GetBinWidth(1);
 
- if (debug) std::cout<<cn<<"FillPdfHisto: xmin= "<<xmin<<" xmax= "<<xmax<<" binw= "<<binw<<std::endl;
- if (debug) std::cout<<cn<<"FillPdfHisto: Q2= "<<Q2<<std::endl;
+ if (debug) std::cout<<cn<<mn<<" xmin= "<<xmin<<" xmax= "<<xmax<<" binw= "<<binw<<std::endl;
+ if (debug) std::cout<<cn<<mn<<" Q2= "<<Q2<<std::endl;
 
  double xfl[13];
  for (int i=0; i<nbin; i++){
@@ -2448,7 +2482,7 @@ TH1D * SPXPDF::FillPdfHisto(){
 
   int ibin=hpdf->FindBin(x);
   if (debug)
-   std::cout<<cn<<"FillPdfHisto: ibin= "<<ibin<<" Q2= "<<Q2<<" x= "<<x<<" xfl["<<ifl<<"]= "<<xfl[6+ifl]<<std::endl;
+   std::cout<<cn<<mn<<"ibin= "<<ibin<<" Q2= "<<Q2<<" x= "<<x<<" xfl["<<ifl<<"]= "<<xfl[6+ifl]<<std::endl;
 
   hpdf->SetBinContent(ibin,x,xfl[6+ifl]);
  }
@@ -2472,14 +2506,15 @@ void SPXPDF::PrintMap(BandMap_T &m) {
 }
 
 TGraphAsymmErrors * SPXPDF::GetBand(int i){ 
+ std::string mn = "GetBand: ";
  if (i>Mapallbands.size()){
   std::ostringstream oss;
-  oss << cn <<"GetBands:"<<"ERROR i= "<<i<<" is too large Number of bands= "<< Mapallbands.size();
+  oss << cn <<mn<<"ERROR i= "<<i<<" is too large Number of bands= "<< Mapallbands.size();
   throw SPXParseException(oss.str());
  }
  int j=0.;
  for(BandMap_T::const_iterator it = Mapallbands.begin(); it != Mapallbands.end(); ++it) {
-  //if (debug) std::cout<<cn<<"GetBands: i= "<<i<<" j= "<<j<<" bandname= "<<it->second->GetName()<<std::endl;
+  //if (debug) std::cout<<cn<<mn<<" i= "<<i<<" j= "<<j<<" bandname= "<<it->second->GetName()<<std::endl;
   if (j==i) {
     return it->second;
   } else j++;
@@ -2522,7 +2557,7 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
   gcorr->Print();
  }
  
- bool dividebybinwidth=true;
+ bool dividebybinwidth=true; // Is this correct HUHU ???
 
  //if (debug) std::cout<<cn<<mn<<" map size= "<<Mapallbands.size()<<std::endl;
 
@@ -2577,10 +2612,11 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
   // gcorr->Print();
   //}
 
-  TString newname=gband->GetName(); 
+  std::string newname=gband->GetName(); 
   if (debug) std::cout <<cn<<mn<<"Alter multiplication gband name: " << gband->GetName()<< std::endl;
   newname+="_"+corrLabel;
-  gband->SetName(newname);
+  newname=this->GetName(newname);
+  gband->SetName(newname.c_str());
   gband2=(TGraphAsymmErrors*)gband->Clone();;
  }
 
@@ -2590,7 +2626,7 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
  }
 
  // use only the correction, not the uncertainty in ratio
- TString hname=hpdfdefault->GetName();
+ std::string hname=hpdfdefault->GetName();
  hname+="_"+corrLabel;
  TGraphAsymmErrors* gcorr2=(TGraphAsymmErrors*)gcorr->Clone(TString("g"+hname));;
  SPXGraphUtilities::ClearYErrors(gcorr2);
@@ -2620,7 +2656,8 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
  TH1D* htmp=SPXGraphUtilities::MatchandMultiply(hcorr, hpdfdefault,dividebybinwidth);
  hpdfdefault=htmp;
  //}
- hpdfdefault->SetName(hname);
+ hname=this->GetName(hname);
+ hpdfdefault->SetName(hname.c_str());
 
  if (debug) {
   std::cout <<cn<<mn<< "After Correction Print hpdfdefault: "<< hpdfdefault->GetName()<< std::endl;
@@ -2635,7 +2672,7 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
  //
 
  for (int ipdf=0; ipdf<h_errors_PDF.size(); ipdf++) {
-  TString hname=h_errors_PDF.at(ipdf)->GetName();
+  std::string hname=h_errors_PDF.at(ipdf)->GetName();
   hname+="_"+corrLabel;
 
   TH1D* htmp=SPXGraphUtilities::MatchandMultiply(hcorr,h_errors_PDF.at(ipdf),false);
@@ -2644,7 +2681,8 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
    hcorr->Print("all");
   }
   h_errors_PDF.at(ipdf)=htmp;
-  h_errors_PDF.at(ipdf)->SetName(hname);
+  hname=this->GetName(hname);
+  h_errors_PDF.at(ipdf)->SetName(hname.c_str());
 
   if (debug) {
     std::cout <<cn<<mn<< "After MatchandMultiply Print h_errors_PDF.at("<<ipdf<<"): "<< h_errors_PDF.at(ipdf)->GetName()<< std::endl;
@@ -2653,42 +2691,46 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
  }
 
  for (int iscale=0; iscale<h_errors_Scale.size(); iscale++) {
-  TString hname=h_errors_Scale.at(iscale)->GetName();
+  std::string hname=h_errors_Scale.at(iscale)->GetName();
   hname+="_"+corrLabel;
 
   TH1D* htmp=SPXGraphUtilities::MatchandMultiply(hcorr,h_errors_Scale.at(iscale),false);
   h_errors_Scale.at(iscale)=htmp;
-  h_errors_Scale.at(iscale)->SetName(hname);
+  hname=this->GetName(hname);
+  h_errors_Scale.at(iscale)->SetName(hname.c_str());
  }
 
  for (int iscale=0; iscale<h_errors_AlternativeScaleChoice.size(); iscale++) {
-  TString hname=h_errors_AlternativeScaleChoice.at(iscale)->GetName();
+  std::string hname=h_errors_AlternativeScaleChoice.at(iscale)->GetName();
   hname+="_"+corrLabel;
 
   TH1D* htmp=SPXGraphUtilities::MatchandMultiply(hcorr,h_errors_AlternativeScaleChoice.at(iscale),false);
   h_errors_AlternativeScaleChoice.at(iscale)=htmp;
-  h_errors_AlternativeScaleChoice.at(iscale)->SetName(hname);
+  hname=this->GetName(hname);
+  h_errors_AlternativeScaleChoice.at(iscale)->SetName(hname.c_str());
  }
 
 
  // read alphas uncertainty components
  for (int ialphas=0; ialphas<h_errors_AlphaS.size(); ialphas++) {
-  TString hname=h_errors_AlphaS.at(ialphas)->GetName();
+  std::string hname=h_errors_AlphaS.at(ialphas)->GetName();
   hname+="_"+corrLabel;
 
   TH1D* htmp=SPXGraphUtilities::MatchandMultiply(hcorr,h_errors_AlphaS.at(ialphas),false);
   h_errors_AlphaS.at(ialphas)=htmp;
-  h_errors_AlphaS.at(ialphas)->SetName(hname);
+  hname=this->GetName(hname);
+  h_errors_AlphaS.at(ialphas)->SetName(hname.c_str());
  }
 
  // read beam uncertainty components
  for (int ibeam=0; ibeam<h_errors_BeamUncertainty.size(); ibeam++) {
-  TString hname=h_errors_BeamUncertainty.at(ibeam)->GetName();
+   std::string hname=h_errors_BeamUncertainty.at(ibeam)->GetName();
   hname+="_"+corrLabel;
 
   TH1D* htmp=SPXGraphUtilities::MatchandMultiply(hcorr,h_errors_BeamUncertainty.at(ibeam),false);
   h_errors_BeamUncertainty.at(ibeam)=htmp;
-  h_errors_BeamUncertainty.at(ibeam)->SetName(hname);
+  hname=this->GetName(hname);
+  h_errors_BeamUncertainty.at(ibeam)->SetName(hname.c_str());
  }
 
 
@@ -2703,7 +2745,9 @@ void SPXPDF::ApplyBandCorrection(TGraphAsymmErrors *gcorr, std::string corrLabel
   throw SPXParseException(oss.str());
  }
 
- gband2->SetName(TString("_corrections_")+TString(corrLabel));
+ std::string name="_corrections_"+corrLabel;
+ name=this->GetName(name);
+ gband2->SetName(name.c_str());
  
  int nbin=gband2->GetN();
  if (debug) std::cout <<cn<<mn<< "nbin= "<<nbin<< std::endl;
@@ -3168,3 +3212,31 @@ void SPXPDF::SetLHAPDFPDFset(std::string pdfname, int id){
 }
 
 
+std::string SPXPDF::GetName(std::string basename) {
+ std::string mn = "GetName: ";	
+
+ std::string name=basename;
+ name.erase(std::remove(name.begin(), name.end(), '{'), name.end());
+ name.erase(std::remove(name.begin(), name.end(), '}'), name.end());
+ name.erase(std::remove(name.begin(), name.end(), '#'), name.end());
+
+ if (this->GetParameterScan()){
+  std::string parname=spxgrid->GetParameterName();
+  // replace from algorithm header
+  //std::replace( parname.begin(), parname.end(), '{', '');
+  //std::replace( parname.begin(), parname.end(), '}', '');
+  parname.erase(std::remove(parname.begin(), parname.end(), '{'), parname.end());
+  parname.erase(std::remove(parname.begin(), parname.end(), '}'), parname.end());
+
+  int parvalue=int(10*spxgrid->GetParameterValue());
+
+  parname+=Form("_%d",parvalue);
+  name+="_"+parname; 
+ }
+
+ if (debug)
+   std::cout<<cn<<mn<<"name= "<<name<<std::endl;
+
+ return name;
+
+}

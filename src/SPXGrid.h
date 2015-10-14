@@ -78,15 +78,21 @@ public:
 	TH1D * CreateGrid(void);
 
         appl::grid *GetGrid(int i){ 
-	 if (i>vgrid.size()) {
-	  std::cout<<"GetGrid:: something is wrong i= "<<i<<" but vector size "<<vgrid.size()<<std::endl;
+	 if (i>=vgrid.size()) {
+          std::ostringstream oss;
+          oss << "SPXGrid::GetGrid:: something is wrong i= "<<i<<" but vector size "<<vgrid.size();
+	  std::cout<<oss.str()<<std::endl;
+          throw SPXGeneralException(oss.str());
 	 }
          return vgrid.at(i);
         };
 
         appl::grid *GetGridAlternativeScaleChoice(int i){ 
-	 if (i>vgridAlternativeScaleChoice.size()) {
-	  std::cout<<"GetGridAlternativeScaleChoice:: something is wrong i= "<<i<<" but vector size "<<vgridAlternativeScaleChoice.size()<<std::endl;
+	 if (i>=vgridAlternativeScaleChoice.size()) {
+          std::ostringstream oss;
+          oss << "SPXGrid::GetGridAlternativeScaleChoice:: something is wrong i= "<<i<<" but vector size "<<vgrid.size();
+	  std::cout<<oss.str()<<std::endl;
+          throw SPXGeneralException(oss.str());
 	 }
          return vgridAlternativeScaleChoice.at(i);
         };
@@ -113,6 +119,31 @@ public:
 	 return pci->gridSteeringFile.GetChangeSqrtS();
 	}
 
+        double GetParameterValue(void) const {
+         return this->parameterValue;
+        }            
+
+	std::string GetParameterName(void) const {
+         return this->parameterName;
+        }            
+
+	std::string GetParameterUnit(void) const {
+         return this->parameterUnit;
+        }            
+
+        void SetParameterValue(double par) {
+         parameterValue=par;
+        }            
+
+	void SetParameterName(std::string name) {
+         parameterName=name;
+        }            
+
+	void SetParameterUnit(std::string name) {
+         parameterUnit=name;
+        }            
+
+
 private:
 	static bool debug;		     // Flag indicating debug mode
 	SPXPlotConfigurationInstance *pci;   // Plot configuration instance
@@ -126,6 +157,9 @@ private:
 	TH1D * referenceHistogram;	     // Reference histogram
 	std::string gridname;                // will give name to root object (graphs, histograms)
 
+        double parameterValue;              // value of paramter of Grid, e.g. top mass
+	std::string parameterName;          // name of parameter 
+	std::string parameterUnit;          // unit of parameter 
 
 };
 

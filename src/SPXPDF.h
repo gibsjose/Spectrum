@@ -19,6 +19,7 @@
 #include <stdlib.h> // exit()
 #include <sstream>  // needed for internal io
 #include <iomanip>
+#include <algorithm>
 
 
 //ROOT
@@ -198,6 +199,9 @@ class SPXPDF {
          return; 
         };
 
+        void SetParameterScan(bool myscan){ ParameterScan=myscan; return;};
+        bool GetParameterScan()           { return ParameterScan;};
+
     private:
         //VARIABLES
         static bool debug;
@@ -285,10 +289,12 @@ class SPXPDF {
         bool do_Escale;
         bool do_Total;
 
+	bool ParameterScan; //flag is grid contains parameter
         //METHODS
 
         TH1D *GetHisto(double renscale=1, double facscale=1); // Get histogram from Grid
-
+        std::string GetName(std::string basename);
+        
 	void SetLHAPDFPDFset(std::string pdfname, int id); // interface to set PDF for LHAPDF5 and LHAPDF6
 
         void SetVariablesDefault();

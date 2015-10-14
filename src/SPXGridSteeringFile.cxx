@@ -77,13 +77,11 @@ void SPXGridSteeringFile::SetDefaults(void) {
 	AlternativeGridChoicegridDividedByDoubleDiffBinWidth = false;
 	if(debug) std::cout << cn << mn << "AlternativeGridChoicegridDividedByDoubleDiffBinWidth set to default: \"false\"" << std::endl;
 
-
 	referenceDividedByBinWidth = false;
 	if(debug) std::cout << cn << mn << "referenceDividedByBinWidth set to default: \"false\"" << std::endl;
 
 	referenceDividedByDoubleDiffBinWidth = false;
 	if(debug) std::cout << cn << mn << "referenceDividedByDoubleDiffBinWidth set to default: \"false\"" << std::endl;
-
 	yScale = 1.0;
 	if(debug) std::cout << cn << mn << "yScale set to default: \"1.0\"" << std::endl;
 
@@ -101,6 +99,16 @@ void SPXGridSteeringFile::SetDefaults(void) {
 
 	changesqrts = 1.;
 	if(debug) std::cout << cn << mn << "changesqrts set to default: 1. " << std::endl;
+
+	ParameterValue = 0.;
+	if(debug) std::cout << cn << mn << "Parameter value set to default: 0. " << std::endl;
+
+	ParameterName = "";
+	if(debug) std::cout << cn << mn << "Parameter value set to default: \" \" " << std::endl;
+
+	ParameterUnit = "";
+	if(debug) std::cout << cn << mn << "Parameter unit set to default: \" \" " << std::endl;
+
 }
 
 //Print the Grid Steering File Data in a nice format
@@ -120,6 +128,7 @@ void SPXGridSteeringFile::Print(void) {
 	std::cout << "\t\t NLO Program Name: " << nloProgramName << std::endl;
 	std::cout << "\t\t Grid Program Name: " << gridProgramName << std::endl;
 	std::cout << "\t\t Observable Definition Link To Code: " << observableDefinitionLinkToCode << std::endl << std::endl;
+
 	std::cout << "\t Graphing Options [GRAPH]" << std::endl;
 	std::cout << "\t\t X Units: " << xUnits << std::endl;
 	std::cout << "\t\t Y Units: " << yUnits << std::endl;
@@ -170,6 +179,8 @@ void SPXGridSteeringFile::Print(void) {
 
 	std::cout << "\t\t Lowest Order: " << lowestOrder << std::endl;
 	std::cout << "\t\t Change cross section by: " << changesqrts<<"%" << std::endl;
+
+	std::cout << "\t\t Parameter: " << ParameterName<<" = " << ParameterValue <<" " << ParameterUnit << std::endl;
 }
 
 void SPXGridSteeringFile::Parse(void) {
@@ -499,12 +510,32 @@ void SPXGridSteeringFile::Parse(void) {
 
 
 	changesqrts = reader->GetReal("GRID", "change_sqrts", changesqrts);
-	if(changesqrts!=0.) {
-	 std::cout << "INFO: Calculate cross section for cms energy changed by  " << changesqrts  << std::endl;
+	if(changesqrts!=1.) {
+	  std::cout << cn << mn << "Calculate cross section for cms energy changed by  " << changesqrts  << std::endl;
 	}
 
 	if(changesqrts<0.) {
 	 std::cerr << "Changed cms energy needs to be positive Escale is relative energy scale (old/new), i.e. one corresponds to the nominal CMS energy " << std::endl;
+	}
+
+
+	ParameterName = reader->Get("GRID", "parameter_name", "EMPTY");
+	if(!ParameterName.compare("EMPTY")) {
+	  std::cout << cn << mn << "Parameter Name not specified  "<< std::endl;
+	} else { 
+	  std::cout << cn <<mn << "ParameterName=  " << ParameterName  << std::endl;
+        }
+
+	ParameterUnit = reader->Get("GRID", "parameter_unit", "EMPTY");
+	if(!ParameterUnit.compare("EMPTY")) {
+	  std::cout << cn << mn << "Parameter Unit not specified  "<< std::endl;
+	} else { 
+	  std::cout << cn <<mn << "ParameterUnit=  " << ParameterUnit  << std::endl;
+        }
+
+	ParameterValue = reader->GetReal("GRID", "parameter_value", ParameterValue);
+	if(ParameterValue!=0.) {
+	  std::cout << cn << mn << "ParameterValue=  " << ParameterValue  << std::endl;
 	}
 
 	delete reader;

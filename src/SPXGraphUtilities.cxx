@@ -397,9 +397,9 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
 
             //Exception if point lies within master bin AND slave bin width is greater than master bin width
             //double eps=std::numeric_limits<double>::epsilon();
-            double eps=1.e-5;
+            //double eps=1.e-5;
             if(((s_x >= m_exl) && (s_x <= m_exh)) && (s_bw > m_bw)) {
-            //if(((s_x >= m_exl) && (s_x <= m_exh)) && fabs(s_bw - m_bw)>eps) {
+	    //if(((s_x >= m_exl) && (s_x <= m_exh)) && fabs(s_bw - m_bw)>eps) {
                 if (debug) std::cout << std::endl;
                 if (debug) std::cout << cn << mn << "Slave bin width greater than master bin width: Printing debug info: " << std::endl;
                 if (debug) {
@@ -446,14 +446,14 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
               printf("\n s_exh= %.15f ",s_exh);
               printf("\n m_exh= %.15f ",m_exh);
 
-              if((s_exl - m_exl)<eps && (s_exh > m_exl)) {
-               printf("\n s_exl-m_exl= %.15f   ",s_exl - m_exl);
-               printf("\n s_exh-m_exh= %.15f \n",s_exh - m_exh);
-	      }
-	      if ((s_exh - m_exh)>eps && (s_exl < m_exh)) {
-               printf("\n s_exh-m_exh= %.15f   ",s_exh - m_exh);
-               printf("\n s_exl-m_exl= %.15f \n",s_exl - m_exl);
-              }
+              //if((s_exl - m_exl)<eps && (s_exh > m_exl)) {
+              // printf("\n s_exl-m_exl= %.15f   ",s_exl - m_exl);
+              // printf("\n s_exh-m_exh= %.15f \n",s_exh - m_exh);
+	      //}
+	      //if ((s_exh - m_exh)>eps && (s_exl < m_exh)) {
+              // printf("\n s_exh-m_exh= %.15f   ",s_exh - m_exh);
+              // printf("\n s_exl-m_exl= %.15f \n",s_exl - m_exl);
+              //}
 	      std::cout<<std::endl;
 
 	      std::cout<<cn<<mn<<" Master: "<<master->GetName()<<std::endl;
@@ -843,7 +843,7 @@ void SPXGraphUtilities::ScaleYErrors(TGraphAsymmErrors * g, double scale) {
 }
 
 void SPXGraphUtilities::SPXCopyGraphProperties(TGraphErrors* g1, TGraphErrors* g2){
- std::string mn = "SPXCopyGraphProperties";
+ std::string mn = "SPXCopyGraphProperties: ";
  // copy properties of graph g1 to g2
 
  if (!g1) throw SPXGraphException(cn + mn + "Graph g1 does not exist ! " );
@@ -865,7 +865,7 @@ void SPXGraphUtilities::SPXCopyGraphProperties(TGraphErrors* g1, TGraphErrors* g
 }
 
 void SPXGraphUtilities::SPXCopyGraphProperties(TGraphErrors* g1, TH1D* h2){
- std::string mn = "SPXCopyGraphProperties";
+ std::string mn = "SPXCopyGraphProperties: ";
  // copy properties of graph g1 to histogram h2
 
  if (!g1) throw SPXGraphException(cn + mn + "Graph g1 does not exist ! " );
@@ -891,7 +891,7 @@ void SPXGraphUtilities::SPXCopyGraphProperties(TGraphErrors* g1, TH1D* h2){
 
 
 void SPXGraphUtilities::SPXPrintGraphProperties(TGraphErrors* g1){
- std::string mn = "SPXPrintGraphProperties";
+ std::string mn = "SPXPrintGraphProperties: ";
  // Print properties of graph g1 
 
  if (!g1) throw SPXGraphException(cn + mn + "Graph g1 does not exist ! " );
@@ -913,22 +913,22 @@ void SPXGraphUtilities::SPXPrintGraphProperties(TGraphErrors* g1){
 
 
 void SPXGraphUtilities::SPXPrintHistoProperties(TH1* h1){
- std::string mn = "SPXPrintHistoProperties";
+ std::string mn = "SPXPrintHistoProperties: ";
  // Print properties of TH1 h1 
 
  if (!h1) throw SPXGraphException(cn + mn + "Histogram h1 does not exist ! " );
 
- std::cout<<cn<<mn<<" Print properties of histogram "<<h1->GetName()<<std::endl;
+ std::cout<<cn<<mn<<"Print properties of histogram "<<h1->GetName()<<std::endl;
 
- std::cout<<cn<<mn<<" MarkerStyle= "<<h1->GetMarkerStyle()<<std::endl;
- std::cout<<cn<<mn<<" MarkerColor= "<<h1->GetMarkerColor()<<std::endl;
+ std::cout<<cn<<mn<<"MarkerStyle= "<<h1->GetMarkerStyle()<<std::endl;
+ std::cout<<cn<<mn<<"MarkerColor= "<<h1->GetMarkerColor()<<std::endl;
 
- std::cout<<cn<<mn<<" LineStyle= "<<h1->GetLineStyle()<<std::endl;
- std::cout<<cn<<mn<<" LineColor= "<<h1->GetLineColor()<<std::endl;
- std::cout<<cn<<mn<<" LineWidth= "<<h1->GetLineWidth()<<std::endl;
+ std::cout<<cn<<mn<<"LineStyle= "<<h1->GetLineStyle()<<std::endl;
+ std::cout<<cn<<mn<<"LineColor= "<<h1->GetLineColor()<<std::endl;
+ std::cout<<cn<<mn<<"LineWidth= "<<h1->GetLineWidth()<<std::endl;
 
- std::cout<<cn<<mn<<" FillStyle= "<<h1->GetFillStyle()<<std::endl;
- std::cout<<cn<<mn<<" FillColor= "<<h1->GetFillColor()<<std::endl;
+ std::cout<<cn<<mn<<"FillStyle= "<<h1->GetFillStyle()<<std::endl;
+ std::cout<<cn<<mn<<"FillColor= "<<h1->GetFillColor()<<std::endl;
 
  return;
 }
@@ -1230,12 +1230,6 @@ double SPXGraphUtilities::GetTotalSigma(TGraphAsymmErrors *g, bool dividedByBinW
         throw SPXGraphException(cn + mn + "Graph is Invalid");
     }
 
-    // std::cout << cn << mn << "Graph is Valid" << std::endl;
-    //
-    // std::cout << cn << mn << "Printing graph" << std::endl;
-    // g->Print();
-    // std::cout << std::endl;
-
     double totalSigma = 0;
 
     double *y = g->GetY();
@@ -1245,16 +1239,16 @@ double SPXGraphUtilities::GetTotalSigma(TGraphAsymmErrors *g, bool dividedByBinW
     for(int i = 0; i < g->GetN(); i++) {
         double binWidth = exh[i] + exl[i];
 
-        // std::cout << cn << mn << "binWidth [" << i << "] = " << binWidth << std::endl;
-        // std::cout << cn << mn << "y [" << i << "] = " << y[i] << std::endl;
+        //std::cout << cn << mn << "y [" << i << "] = " << y[i] << std::endl;
 
         if(dividedByBinWidth) {
+	  //std::cout << cn << mn << " * binWidth [" << i << "] = " << binWidth << std::endl;
             totalSigma += y[i] * binWidth;
         } else {
             totalSigma += y[i];
         }
 
-        // std::cout << cn << mn << "totalSigma = " << totalSigma << std::endl;
+        //std::cout << cn << mn << "totalSigma = " << totalSigma << std::endl;
     }
 
     return totalSigma;

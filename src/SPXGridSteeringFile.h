@@ -83,6 +83,10 @@ private:
 
 	void SetDefaults(void);
 
+	double ParameterValue;
+	std::string ParameterName;
+	std::string ParameterUnit;
+
 public:
 
 	void Print(void);
@@ -290,6 +294,19 @@ public:
 	double GetChangeSqrtS(void) const {
 		return changesqrts;
 	}
+
+	double GetParameterValue(void) const {
+  	        return ParameterValue;
+        }
+
+	std::string GetParameterName(void) const {
+  	        return ParameterName;
+        }
+
+	std::string GetParameterUnit(void) const {
+  	        return ParameterUnit;
+        }
+
 };
 
 #endif

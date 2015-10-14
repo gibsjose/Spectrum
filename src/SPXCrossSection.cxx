@@ -69,68 +69,54 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
   std::cout<<cn<<mn<<"GetBeamUncertainty= "<<(mainsteeringFile->GetBeamUncertainty()? "ON" : "OFF")<<std::endl;
   std::cout<<cn<<mn<<"GetBandTotal= "      <<(mainsteeringFile->GetBandTotal()? "ON" : "OFF")<<std::endl;
 
-  /*
- int bncorr=mainsteeringFile->GetNumberofCorrectionToBand();
-  for (int i=0; i<bncorr; i++) {
-   if (mainsteeringFile->GetGridCorrectionToBand(i))
-    std::cout<<cn<<mn<<"Grid correction i= "<<i<<" is ON -> include to Map "<<std::endl;
-   else
-    std::cout<<cn<<mn<<"Grid correction i= "<<i<<" is OFF  "<<std::endl;
-  }
-  */
  }
-
 
  int ncorr=pci->gridSteeringFile.GetNumberOfCorrectionFiles(); 
  if (debug){                                                      // start counting at 0
-   //std::cout<<cn<<mn<<"Number of corrections from main steering "<<bncorr+1<<std::endl;
   std::cout<<cn<<mn<<"Number of corrections from grid steering "<< ncorr+1<<std::endl;
  }
 
- /*
- if (bncorr>ncorr) {
-  std::cout<<cn<<mn<<"Number of grid correction in Grid file "<<ncorr
-           <<" and main steering file "<<bncorr<<" do not match"<<std::endl;
-  }
-  */
-  // The logic below only works, if we invert the defaults set in
-  // SPXSteering
-  //
+ // The logic below only works, if we invert the defaults set in
+ // SPXSteering
+ //
 
-  if (mainsteeringFile->GetBandwithPDF()==false) 
-   pdf->SetDoPDFBand (mainsteeringFile->GetBandwithPDF()); 
+ if (mainsteeringFile->GetBandwithPDF()==false) 
+  pdf->SetDoPDFBand (mainsteeringFile->GetBandwithPDF()); 
 
-  if (mainsteeringFile->GetBandwithAlphaS()==true) 
-   pdf->SetDoAlphaS  (mainsteeringFile->GetBandwithAlphaS());
+ if (mainsteeringFile->GetBandwithAlphaS()==true) 
+  pdf->SetDoAlphaS  (mainsteeringFile->GetBandwithAlphaS());
 
-  if (mainsteeringFile->GetBandwithScales()==false) 
-   pdf->SetDoScale   (mainsteeringFile->GetBandwithScales());
+ if (mainsteeringFile->GetBandwithScales()==false) 
+  pdf->SetDoScale   (mainsteeringFile->GetBandwithScales());
 
-  if (mainsteeringFile->GetBandwithAlternativeScaleChoice()==true) 
-   pdf->SetDoAlternativeScaleChoice(mainsteeringFile->GetBandwithAlternativeScaleChoice());
+ if (mainsteeringFile->GetBandwithAlternativeScaleChoice()==true) 
+  pdf->SetDoAlternativeScaleChoice(mainsteeringFile->GetBandwithAlternativeScaleChoice());
+
+ if (mainsteeringFile->GetBeamUncertainty()!=1.) 
+  pdf->SetChangeSqrtS (mainsteeringFile->GetBeamUncertainty());
+
+ if (mainsteeringFile->GetBandTotal()==false) 
+  pdf->SetDoTotError(mainsteeringFile->GetBandTotal());
 
 
-  if (mainsteeringFile->GetBeamUncertainty()!=1.) 
-   pdf->SetChangeSqrtS (mainsteeringFile->GetBeamUncertainty());
+ std::vector<double> RenScales=mainsteeringFile->GetRenScales();
+ std::vector<double> FacScales=mainsteeringFile->GetFacScales();
 
-  if (mainsteeringFile->GetBandTotal()==false) 
-   pdf->SetDoTotError(mainsteeringFile->GetBandTotal());
+ if (RenScales.size()!=FacScales.size()) {
+  std::ostringstream oss;
+  oss << cn << mn << "Different number of values given for rennormalisation and factorisation scale";
+  throw SPXParseException(oss.str());
+ }
 
-  std::vector<double> RenScales=mainsteeringFile->GetRenScales();
-  std::vector<double> FacScales=mainsteeringFile->GetFacScales();
+ if (RenScales.size()!=0)
+  pdf->SetScales(RenScales,FacScales);
 
-  if (RenScales.size()!=FacScales.size()) {
-   std::ostringstream oss;
-   oss << cn << mn << "Different number of values given for rennormalisation and factorisation scale";
-   throw SPXParseException(oss.str());
-  }
+ if (mainsteeringFile->GetParameterScan()) 
+  pdf->SetParameterScan(mainsteeringFile->GetParameterScan());
 
-  if (RenScales.size()!=0)
-   pdf->SetScales(RenScales,FacScales);
+ if (debug) std::cout<<cn<<mn<<"Initialize the PDF "<<std::endl;
 
-  if (debug) std::cout<<cn<<mn<<"Initialize the PDF "<<std::endl;
-
-  pdf->Initialize();
+ pdf->Initialize();
 
  //Convert reference and nominal histograms to graphs and save them
  if (!pdf->GetPDFNominal()) {
@@ -148,33 +134,30 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
  nominal->SetName(nomname);
 
  if (debug) {
-  //std::cout<<cn<<mn<<" nominal PDF histogram "<<std::endl;
-  //pdf->GetPDFNominal()->Print("all");
-
-  std::cout<<cn<<mn<<"nominal graph "<<nominal->GetName()<<" Nbins= "<<nominal->GetN()<<std::endl;
+  std::cout<<cn<<mn<<"Nominal graph "<<nominal->GetName()<<" Nbins= "<<nominal->GetN()<<std::endl;
   nominal->Print();
  }
 }
 
 
 void SPXCrossSection::ParseCorrections(void) {
-	std::string mn = "ParseCorrections: ";
-	if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+ std::string mn = "ParseCorrections: ";
+ if (debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
-	//Check if grid contains corrections
-	if(pci->gridSteeringFile.GetNumberOfCorrectionFiles() != 0) {
-	 try {
-	  gridcorrection = new SPXGridCorrections(*pci);
-	  gridcorrection->Parse();
+ //Check if grid contains corrections
+ if (pci->gridSteeringFile.GetNumberOfCorrectionFiles() != 0) {
+  try {
+   gridcorrection = new SPXGridCorrections(*pci);
+   gridcorrection->Parse();
 
-  	  if (debug) {
-           std::cout<<cn<<mn<<"Sucessfully read in corrections: "<<std::endl;
-	   gridcorrection->Print();
-          }
-	 } catch(const SPXException &e) {
-	  throw;
-	 }
-	}
+   if (debug) {
+    std::cout<<cn<<mn<<"Sucessfully read in corrections: "<<std::endl;
+    gridcorrection->Print();
+   }
+  } catch(const SPXException &e) {
+   throw;
+  }
+ }
 }
 
 void SPXCrossSection::PrintTotalCrossSection() {
@@ -224,7 +207,7 @@ void SPXCrossSection::UpdateBand() {
 
 void SPXCrossSection::ApplyCorrections() {
  std::string mn = "ApplyCorrections: ";
- debug=true;
+ //debug=true;
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if(!mainsteeringFile)
@@ -317,12 +300,14 @@ void SPXCrossSection::ApplyCorrections() {
    SPXGraphUtilities::MatchBinning(nominal, gcorr, true);
    SPXGraphUtilities::Multiply(nominal,gcorr,1);
   }
+
   // correct PDF band
   if (debug) std::cout<<cn<<mn<<"Now correct PDF band includeinband="<<(includeinband ? "ON" : "OFF")<<std::endl;
   pdf->ApplyBandCorrection(gcorr,corrLabel,includeinband);
  }
 
  if (debug) std::cout<<cn<<mn<<"finished !"<<std::endl;
+ return;
 }
 
 
@@ -362,7 +347,6 @@ std::vector<std::string> SPXCrossSection::GetCorrectionLabels() {
   }
   
   correctionlabels.push_back(corrLabel);
-
  
  }
 
@@ -409,8 +393,9 @@ void SPXCrossSection::MatchBinning(StringGraphMap_T dataFileGraphMap) {
 
   //
   // Check if data master is divided by bin width
+  //
   bool dividedByBinWidth = false;
-  //TC if(pci.dataSteeringFile.IsDividedByBinWidth() && !pci.gridSteeringFile.IsGridDividedByBinWidth()) {
+  //
   if(pci->dataSteeringFile.IsDividedByBinWidth() && pci->gridSteeringFile.IsGridDividedByBinWidth()) {
    dividedByBinWidth = true;
   }
@@ -428,7 +413,6 @@ void SPXCrossSection::MatchBinning(StringGraphMap_T dataFileGraphMap) {
    }
    if (debug) std::cout << cn <<mn<<"Match binning for slave graph "<<gband->GetName()<<std::endl;
    //if (debug) if (dividedByBinWidth)  std::cout << cn <<mn<<"Divided by binwidth is ON "<<std::endl;
-
 
    SPXGraphUtilities::MatchBinning(master, gband, dividedByBinWidth);
    if (debug) {

@@ -183,8 +183,8 @@ void SPXData::ParseSpectrum(void) {
 
 		std::istringstream iss(line);
 
-
-    	        //if (debug) std::cout<<cn<<mn<<"line= "<<line.c_str()<<std::endl;
+                // trim away whitespace
+                line=SPXStringUtilities::LeftTrim(line);
 
 		//Skip comments
 		if(!line.empty() && (line[0] == ';')) {
@@ -192,6 +192,12 @@ void SPXData::ParseSpectrum(void) {
 		} else if(!line.empty()) {
 
 		  if (debug) std::cout<<cn<<mn<<"find systematics "<<std::endl;
+		  //if (debug) std::cout<<cn<<mn<<"line=XX"<<line<<"XXX"<<std::endl;
+
+		  //std::string test=SPXStringUtilities::LeftTrim(line);
+		  //if (debug) std::cout<<cn<<mn<<"test=XX"<<test<<"XXX"<<std::endl;
+
+		  //throw SPXParseException(cn + mn + "There must be at least 5 data columns (xm, xlow, xhigh, sigma, stat)");
 
 			//Check for systematic errors (line contains 'syst_')
 			if(line.find("syst_") != std::string::npos) {
@@ -207,7 +213,11 @@ void SPXData::ParseSpectrum(void) {
 				formatted_line = SPXStringUtilities::ReplaceAll(formatted_line, "\t", " ");
 				tmp_syst = SPXStringUtilities::ParseStringToDoubleVector(formatted_line, ' ');
 
- 	                        //if (debug) std::cout<<cn<<mn<<"after tmp_syst"<<std::endl;
+ 	                        //if (debug) {
+                                // std::cout<<cn<<mn<<"after tmp_syst"<<std::endl;
+                                // for (int i=0; i<tmp_syst.size(); i++)
+				//   std::cout<<cn<<mn<<" tmp_syst["<<i<<"]= "<<tmp_syst.at(i)<<std::endl;
+				//}
 
 				//Symmetric Error: Create both + and - and add them to map
 				if((name.find("+") == std::string::npos) && (name.find("-") == std::string::npos)) {
@@ -231,6 +241,12 @@ void SPXData::ParseSpectrum(void) {
 
 					//Add to map
 					StringDoubleVectorPair_T p_pair(p_name, tmp_syst);
+                                        //negative error should have negative sign
+                                        std::transform(tmp_syst.begin(), tmp_syst.end(), tmp_syst.begin(), 
+					std::bind1st(std::multiplies<double>(), -1.));
+
+                                        //if (debug) 
+                                         std::cout<<cn<<mn<<"negative systematics multiplied by -1"<<std::endl;
 					StringDoubleVectorPair_T n_pair(n_name, tmp_syst);
 
 
@@ -247,7 +263,7 @@ void SPXData::ParseSpectrum(void) {
 					individualSystematics.insert(p_pair);
 					individualSystematics.insert(n_pair);
 
-					//std::cout<<cn<<mn<<"2 count= "<<individualSystematics.count(p_name)<<std::endl;
+					if (debug) std::cout<<cn<<mn<<p_name<<" in individualSystematics.count= "<<individualSystematics.count(p_name)<<std::endl;
 				}
 
 				//Asymmetric Error: If '-', make sure there was already a '+', else issue warning
@@ -291,9 +307,11 @@ void SPXData::ParseSpectrum(void) {
 			}
 
 			//Not a systematic error: Read as data if it starts with a number (if first non-whitespace character is a digit)
+                        //if (debug) std::cout<<cn<<mn<<"Not a systematic error: Read as data if it starts with a number (if first non-whitespace character is a digit)"<<std::endl;
+
 			else if(isdigit((int)SPXStringUtilities::LeftTrim(line).at(0))) {
 
-			  //if(debug) std::cout << cn << mn << "Line: " << line << std::endl;
+			       if(debug) std::cout << cn << mn << "Read in data table Line: " << line << std::endl;
 
 				//Parse line into data vector
 				//Convert all tabs to spaces
@@ -1052,8 +1070,9 @@ void SPXData::PrintSpectrum(void) {
          std::cout << "Take sign into account when calculating total error, i.e. Total systematics is calculated such that all negative/positive systematics go in negative/positive total uncertainty "<<std::endl;
         else
          std::cout << "Take sign NOT into account when calculating total error, i.e. Total systematics is calculated directly from positive/negative components "<<std::endl;
-        this->PrintSystematics(individualSystematics);
-
+        if (debug) {
+         this->PrintSystematics(individualSystematics);
+        }
 	//Iterate over individual systematic errors
 	//for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
 	//	const std::string &syst_name = it->first;
@@ -1183,7 +1202,7 @@ void SPXData::CreateGraphs(void) {
 		//name.ReplaceAll(TString("\"), TString("_"));
 		statName = name + "_stat";
 		systName = name + "_syst";
-		totName = name + "_tot";
+		totName  = name + "_tot";
 	}
 
 	double exl[numberOfBins];		// = (xm - ((xh + xl) / 2) + ((xh - xl) / 2))
@@ -1206,11 +1225,11 @@ void SPXData::CreateGraphs(void) {
 
 		for(int i = 0; i < numberOfBins; i++) {
 			//Convert stat errors
-			data["stat"][i] *= data["sigma"][i] / 100;
+			data["stat"][i] *= data["sigma"][i] / 100.;
 
 			//Convert syst errors
-			data["syst_p"][i] *= data["sigma"][i] / 100;
-			data["syst_n"][i] *= data["sigma"][i] / 100;
+			data["syst_p"][i] *= data["sigma"][i] / 100.;
+			data["syst_n"][i] *= data["sigma"][i] / 100.;
 		}
 	}
 
@@ -1272,17 +1291,17 @@ void SPXData::ReadCorrelation()
  std::string mn = "ReadCorrelation: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
-
  std::string corrtotalfilename=pci.dataSteeringFile.GetTotalCorrellationFileName();
  if (debug) std::cout <<cn<<mn<<"Read total correlations corrfilename= "<<corrtotalfilename<< std::endl;
  if (corrtotalfilename.empty()) {
-  std::cout <<cn<<mn<<"INFO: Statistical correlation file is empty "<<std::endl;
+  std::cout <<cn<<mn<<"INFO: Total correlation file is empty "<<std::endl;
  }
 
  std::string corrstatfilename=pci.dataSteeringFile.GetStatCorrellationFileName();
- if (debug) std::cout <<cn<<mn<<"Read statistical correlations corrfilename= "<<corrstatfilename<< std::endl;
  if (corrstatfilename.empty()) {
   std::cout <<cn<<mn<<"INFO: Statistical correlation file is empty "<<std::endl;
+ } else {
+  if (debug) std::cout <<cn<<mn<<"Read statistical correlations corrfilename= "<<corrstatfilename<< std::endl;
  }
 
  if (!totalErrorGraph) {
@@ -1319,7 +1338,6 @@ void SPXData::ReadCorrelation()
  if (corrtotalfilename.size()>0) hastotal=true;
  if (corrstatfilename.size()>0) hasstatistical=true;
 
-
  if (hastotal)
   std::cout <<cn<<mn<<"INFO Total correllation matrix provided ! "<< std::endl; 
 
@@ -1328,8 +1346,10 @@ void SPXData::ReadCorrelation()
 
  // create covariance and correlation matrices
  const int nbin=totalErrorGraph->GetN();
+ if (debug) std::cout <<cn<<mn<<"INFO: nbin= "<<nbin<<std::endl;
 
  if (hasstatistical) { 
+  if (debug) std::cout <<cn<<mn<<"Create stat covariance and correlation matrix  "<<std::endl;
   cov_matrixstat = new TMatrixT<double>(nbin, nbin);
   corr_matrixstat= new TMatrixT<double>(nbin, nbin);
 
@@ -1352,11 +1372,13 @@ void SPXData::ReadCorrelation()
   this->ReadCorrelationMatrix(corrtotalfilename);
 
  } else {
+
+  if (debug) std::cout <<cn<<mn<<"Create total covariance and correlation matrix ! "<<std::endl;
   cov_matrixtot  = 0;
   corr_matrixtot = 0;
 
   if (!hasstatistical) {
-   if (debug) std::cout <<cn<<mn<<"INFO Calculate statistical (diagonal) covariance matrix from statistical uncertainties ! "<< std::endl; 
+   if (debug) std::cout <<cn<<mn<<"Calculate statistical (diagonal) covariance matrix from statistical uncertainties"<< std::endl; 
 
    cov_matrixstat   = new TMatrixT<double>(nbin, nbin);
    corr_matrixstat  = new TMatrixT<double>(nbin, nbin);
@@ -1394,15 +1416,32 @@ void SPXData::ReadCorrelation()
    std::cout<<cn<<mn<<"INFO Calculate systematic covariance matrix from systematic components ! "<< std::endl; 
 
   if (individualSystematics.size()==0) {
-   std::cout<<cn<<mn<<"WANRING no systematics components found ! "<< std::endl; 
+   std::cout<<cn<<mn<<"WARNING no systematics components found ! "<< std::endl; 
   } else {
    this->CalculateSystematicCovarianceMatrix();
   }
  
   // add up stat and syst covariance matrice
-  //std::cout <<cn<<mn<<"INFO  add up stat and syst covariance matrices to be implemented ! "<< std::endl; 
+  if (debug) std::cout <<cn<<mn<<"Add up stat and syst covariance matrices "<< std::endl; 
   // calculate total covariance
-  //std::cout <<cn<<mn<<"INFO calculate total covariance  matrix to be implemented ! "<< std::endl; 
+  //cov_matrixtot= cov_matrixstat+cov_matrixsyst;
+  if (!cov_matrixsyst) {
+   std::cout <<cn<<mn<<"WARNING: Systematic covariance matrix not found ! "<< std::endl; 
+  }
+
+  //cov_matrixtot->Plus(*cov_matrixstat,*cov_matrixsyst);
+  cov_matrixtot = new TMatrixT<double>(*cov_matrixstat,TMatrixD::kPlus,*cov_matrixsyst);
+
+  if (!cov_matrixtot) {
+   std::cout <<cn<<mn<<"WARNING: Total covariance matrix not found ! "<< std::endl; 
+   return;
+  }
+ 
+  if (debug) {
+   std::cout<<cn<<mn<<"Print total covariance matrix "<< std::endl; 
+   
+   cov_matrixtot->Print();
+  }   
 
  }
 
@@ -1838,7 +1877,7 @@ StringDoubleVectorMap_T SPXData::SymmetrizeSystemicUncertaintiesMatrix(StringDou
    TString sname=TString(name);
    sname.ReplaceAll("-","");
    if (symsystmap.count(std::string(sname.Data()))) {
-    if (debug2) std::cout<<cn<<mn<<"already averaged sname= "<< sname  << std::endl;
+    if (debug2) std::cout<<cn<<mn<<"Already averaged sname= "<< sname  << std::endl;
    } else {
     std::cout<<cn<<mn<<"WARNING: not yet in map, there is mismatch between +/- errors "<< sname  << std::endl;
    }
@@ -2075,17 +2114,22 @@ void SPXData::OpenDataFile(void) {
 }
 
 void SPXData::CheckVectorSize(const std::vector<double> & vector, const std::string & name, unsigned int masterSize) {
+ std::string mn ="kVectorSize: ";
  if(vector.size() != masterSize) {
   std::ostringstream oss;
+  for (int i=0; i<vector.size(); i++) {
+    std::cout<<cn<<mn<<" vector["<<i<<"]= "<<vector.at(i)<<std::endl;
+  }
   oss << "Size error: \"" << name << "\" vector has different size (" << vector.size() << ") than master size (" << masterSize << ")" << std::endl;
   throw SPXParseException(pci.dataSteeringFile.GetDataFile(), oss.str());
  } else {
-  if (debug) std::cout << "SPXData::" << "CheckVectorSize: " << "\t -->  Success: \"" << name << "\" vector size matches master size" << std::endl;
+   if (debug) std::cout <<cn<<mn<< "SPXData::" << "CheckVectorSize: " << "\t -->  Success: \"" << name << "\" vector size matches master size" << std::endl;
  }
 }
 
 
 bool SPXData::GetSystematicCorrelationType(std::string name) {
+ std::string mn ="GetSystematicCorrelationType: ";
  bool type=true;
  bool found=false;
 

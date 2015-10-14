@@ -13,8 +13,47 @@
 
 const std::string cn = "SPXChi2::";
 
+
+SPXChi2::SPXChi2(std::vector<SPXData*> data, std::vector<SPXCrossSection> crossSections, SPXSteeringFile *steeringFile) {
+ std::string mn = "SPXChi2: ";
+ debug=true;
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn); 
+ 
+ //data=mydata;
+ //crossSections= mycrossSections;
+ // steeringFile=mysteeringFile;
+
+ if (!steeringFile)  std::cout<<cn<<mn<<"Steering file not found "<<std::endl;
+
+ if (data.size()==0) std::cout<<cn<<mn<<"No data object in vector"<<std::endl;
+ else	             std::cout<<cn<<mn<<"Number of data objects= "<<data.size()<<std::endl;
+
+ if (crossSections.size()==0) std::cout<<cn<<mn<< "No cross section object in vector"<<std::endl;
+ else                         std::cout<<cn<<mn<<"Number of CrossSection objects: "<<crossSections.size()<<std::endl;
+
+ if (steeringFile->GetCalculateChi2()==1){         
+  for(int icross = 0; icross < crossSections.size(); icross++) {
+   SPXPDF * pdf=crossSections[icross].GetPDF();
+   if (!pdf) {std::cout<<cn<<mn<<"PDF object not found "<<std::endl; return;}
+
+   if (debug) std::cout<<cn<<mn<<"Calculate simple Chi2"<<std::endl;
+   if (icross>=data.size()) {
+    std::cout<<cn<<mn<<"icross= "<<icross<<" but data.size()= "<<data.size()<<std::endl;
+    return;
+   }
+   SPXData *mydata=data.at(icross);
+   if (!mydata) {
+    std::cout<<cn<<mn<<"Data object not found !"<<std::endl;
+   }
+
+   this->CalculateSimpleChi2(pdf, mydata);       
+
+  }
+ }
+
+}
 double SPXChi2::CalculateSimpleChi2(SPXPDF *pdf, SPXData *data) {
- std::string mn = "CalculateChi2: ";
+ std::string mn = "CalculateSimpleChi2: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if (!pdf) {
@@ -49,9 +88,6 @@ double SPXChi2::CalculateSimpleChi2(SPXPDF *pdf, SPXData *data) {
 
   TGraphAsymmErrors *gband=pdf->GetTotalBand();
   if (!gband) {
-   //std::ostringstream oss;
-   //oss << cn <<mn<<"get bands "<<"Band "<<iband<<" not found at index "<<iband;
-   //throw SPXGeneralException(oss.str());
    throw SPXGeneralException(cn+mn+"Graph not found from PDF class");
   }
 
@@ -72,7 +108,7 @@ double SPXChi2::CalculateSimpleChi2(SPXPDF *pdf, SPXData *data) {
     if ( pi1 != pi2 ) 
      (*theory_cov_matrix) (pi1, pi2) = 0;
     if ( pi1 == pi2 ) {
-     // is this reasonable ? migh introduce special treatment later
+     // is this reasonable ? might introduce special treatment later
      double theory_uncertainty = 0.5*(gband->GetErrorYhigh(pi1) + gband->GetErrorYlow(pi1));
      (*theory_cov_matrix)(pi1, pi2) = theory_uncertainty*theory_uncertainty;
     }
@@ -83,12 +119,12 @@ double SPXChi2::CalculateSimpleChi2(SPXPDF *pdf, SPXData *data) {
    std::cout<<cn<<mn<<"Print theory uncertainty matrix: "<<std::endl;
    theory_cov_matrix->Print();
   }
-
+ //
  // Add theory matrices together
  // TMatrixT<double> *theory_tot_cov_matrix = 0;
  //for (int i=0; i<vtheorycovmatrix.size(): i++) {
  // *theory_tot_cov_matrix += *theory_cov_matrix[i];
-  
+ // 
  // if (debug) { 
  //  std::cout<<cn<<mn<<" i= "<<i<<" Print total theory matrix: "<<std::endl;
  //  theory_tot_cov_matrix->Print();
@@ -113,8 +149,9 @@ double SPXChi2::CalculateSimpleChi2(SPXPDF *pdf, SPXData *data) {
  } 
 
  //TMatrixT<double> *tot_cov_matrix = (*theory_cov_matrix) + (*data_cov_matrix);
- TMatrixT<double> *tot_cov_matrix = theory_cov_matrix;
- tot_cov_matrix->Plus(*theory_cov_matrix,*data_cov_matrix);
+ //
+ //TMatrixT<double> tot_cov_matrix->Plus(*theory_cov_matrix,*data_cov_matrix);
+ TMatrixT<double> *tot_cov_matrix = new TMatrixT<double>(*theory_cov_matrix,TMatrixD::kPlus,*data_cov_matrix);
 
  if (debug) {
   std::cout<<cn<<mn<<"Toal covariance matrix: "<<std::endl;

@@ -55,6 +55,7 @@
 #include "TRandom.h"
 #include "TMatrixTLazy.h"
 #include "TMatrixT.h"
+#include "TMatrixD.h"
 #include "TMinuit.h"
 
 //#include <iostream>

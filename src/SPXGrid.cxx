@@ -14,24 +14,26 @@
 #include "SPXGrid.h"
 #include "SPXUtilities.h"
 
-//Class name for debug statements
 const std::string cn = "SPXGrid::";
 
 //Must define the static debug variable in the implementation
 bool SPXGrid::debug;
 
 TH1D * SPXGrid::CreateGrid(void) {
- debug=true;
+ //debug=true;
  std::string mn = "CreateGrid: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
- //std::string gridFile = pci->gridSteeringFile.GetGridFilepath();
 
  TH1D *referenceHistogramsum;
 
  std::vector <std::string> vgridfiles=pci->gridSteeringFile.GetGridFilepathVector();
 
- if (debug) std::cout<<cn<<mn<<" Number of grids= "<< vgridfiles.size()<<std::endl;
+ if (debug) std::cout<<cn<<mn<<"Number of grids= "<< vgridfiles.size()<<std::endl;
+
+ if (vgridfiles.size()==0) {
+  throw SPXGeneralException(cn+mn+"No grid found...do not know what to do");
+ }
 
  for (int igrid=0; igrid<vgridfiles.size(); igrid++) {
   std::string gridFile= vgridfiles.at(igrid);
@@ -78,24 +80,23 @@ TH1D * SPXGrid::CreateGrid(void) {
   } else {
    SPXGraphUtilities::Add( referenceHistogramsum, referenceHistogram);
   }
-
  }
 
  std::vector <std::string> vgridfilesAlternativeScaleChoice=pci->gridSteeringFile.GetGridFilepathAlternativeScaleChoiceVector();
- std::cout<<cn<<mn<<" Number of alternative scale choice grids= "<< vgridfilesAlternativeScaleChoice.size()<<std::endl;
+ std::cout<<cn<<mn<<"Number of alternative scale choice grids= "<< vgridfilesAlternativeScaleChoice.size()<<std::endl;
 
  for (int igrid=0; igrid<vgridfilesAlternativeScaleChoice.size(); igrid++) {
   std::string gridFileAlternativeScaleChoice= vgridfilesAlternativeScaleChoice.at(igrid);
   
   if (debug) {
-   std::cout <<cn<<mn<<" igrid= "<<igrid<<" gridFileAlternativeScaleChoice "<<gridFileAlternativeScaleChoice.c_str() << std::endl;
+   std::cout <<cn<<mn<<"igrid= "<<igrid<<" gridFileAlternativeScaleChoice "<<gridFileAlternativeScaleChoice.c_str() << std::endl;
   }
 
   if(!SPXFileUtilities::FileExists(gridFileAlternativeScaleChoice)) {
    throw SPXFileIOException(gridFileAlternativeScaleChoice, cn+mn+"Unable to open AlternativeScaleChoice grid file");
   }
 
-  std::cout <<cn<<mn<<"Get alternative scale choice grid igrid= "<< igrid << std::endl;
+  if (debug) std::cout <<cn<<mn<<"Get alternative scale choice grid igrid= "<< igrid << std::endl;
 
   appl::grid * gridAlternativeScaleChoice = new appl::grid(gridFileAlternativeScaleChoice);
   if (!gridAlternativeScaleChoice) {
@@ -103,6 +104,17 @@ TH1D * SPXGrid::CreateGrid(void) {
   }
   vgridAlternativeScaleChoice.push_back(gridAlternativeScaleChoice);
 
+ }
+
+ // Now read parameters
+ parameterValue = pci->gridSteeringFile.GetParameterValue(); 
+ parameterName  = pci->gridSteeringFile.GetParameterName(); 
+ parameterUnit  = pci->gridSteeringFile.GetParameterUnit(); 
+
+ if (debug) {
+  std::cout <<cn<<mn<<"Read in parameterValue= "<< parameterValue << std::endl;
+  std::cout <<cn<<mn<<"Read in parameterName= "<< parameterName << std::endl;
+  std::cout <<cn<<mn<<"Read in parameterUnit= "<< parameterUnit << std::endl;
  }
  
  referenceHistogram=referenceHistogramsum;

@@ -74,6 +74,8 @@ label_journalyear = true                        ;[Optional] Add journal year
 label_informationlegend = ""                    ;[Optional] additional label on information legend
 label_scaleform = true                          ;[Optional] add label of functional form of scale on legend
 label_date = false                              ;[Optional] add date from DataSteering file after label name
+label_chi2 = false                              ;[Optional] add chi2 on label, if calculate_chi2 not set use simple Chi2
+ 
 
 x_legend = 0.9				        ;[Optional] X(Right)-Position of main Legend, based on top right side
 y_legend = 0.9					;[Optional] Y(Top)-Position of main legend, based on top right side
@@ -98,11 +100,13 @@ band_with_gridcorrection = true                 ;[Optional] include grid correct
 ;fac_scales = 0.5, 1.0, 0.5, 2.0, 1.0, 2.0      ;[Optional] factorization scales to be used for band
 
 ;
-calculate_chi2 0 ;[Optional] calculate chi2 0=off [default]
+calculate_chi2 = 0 ;[Optional] calculate chi2 0=off [default]
 ;                                           1 simple chi2 CalculateSimpleChi2                             
 ;
 dump_latex_tables 0 ;[Optional] calculate chi2 0=off [default]
 ;                                              1 dump latex tables  
+;
+grid_paramter_scan = true ; [Optional] Grids contain parameter scan, e.g. top mass variation
 ;
 ;--------------------------------------------------------------
 ; NOTE:

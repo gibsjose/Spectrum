@@ -23,11 +23,6 @@ const std::string cn = "SPXPlot::";
 //Must define the static debug variable in the implementation
 bool SPXPlot::debug;
 
-//SPXPlot::~SPXPlot(){
-// std::cout<<cn<<" destructor delete canvas "<<std::endl;
-//
-// if (canvas) delete canvas;
-//}
 #ifdef TIMER
 class quick_timer { 
 public:
@@ -100,23 +95,22 @@ void SPXPlot::Plot(void) {
 	DrawLegend();
 
 #ifdef DEVELOP
-        //if (debug) {
-	// std::cout<<" "<<std::endl;
-	// std::cout<<cn<<mn<<"Now call pValue calculation "<<std::endl;
-	// std::cout<<cn<<mn<<"Data size "<<data.size()<<std::endl;
-	// std::cout<<cn<<mn<<"CrossSection size "<<crossSections.size()<<std::endl;
-	// std::cout<<cn<<mn<<"id= "<<id<<std::endl;
-        //}
-	//SPXpValue* pvalue= new SPXpValue(data,crossSections, steeringFile);
-        //pvalue->SetPlotNumber(id); 
+        if (steeringFile->GetCalculateChi2()>0){       
 
-        //if (debug) {
-	// std::cout<<" "<<std::endl;
-	// std::cout<<cn<<mn<<"Now call pValue calculation "<<std::endl;
-	// std::cout<<cn<<mn<<"Data size "<<data.size()<<std::endl;
-	// std::cout<<cn<<mn<<"CrossSection size "<<crossSections.size()<<std::endl;
-	// std::cout<<cn<<mn<<"id= "<<id<<std::endl;
-        //}
+         if (debug) {
+ 	  std::cout<<" "<<std::endl;
+	  std::cout<<cn<<mn<<"Now call pValue calculation "<<std::endl;
+	  std::cout<<cn<<mn<<"Data size "<<data.size()<<std::endl;
+	  std::cout<<cn<<mn<<"CrossSection size "<<crossSections.size()<<std::endl;
+	  std::cout<<cn<<mn<<"id= "<<id<<std::endl;
+         }
+
+	 SPXpValue* pvalue= new SPXpValue(data,crossSections, steeringFile);
+         pvalue->SetPlotNumber(id);         
+
+         //std::cout<<cn<<mn<<"Calculate chi2: "<<std::endl;
+	 //SPXChi2* chi2= new SPXChi2(data,crossSections, steeringFile);       
+	} 
 
 	SPXCImodel* pcimodel= new SPXCImodel(data,crossSections, steeringFile);
         pcimodel->SetPlotNumber(id); 
@@ -893,7 +887,7 @@ void SPXPlot::StaggerConvoluteOverlay(void) {
               int nbands=pdf->GetNBands();
               if (debug) std::cout << cn << mn <<"Number of bands= " <<nbands<< std::endl;
               for (int iband=0; iband<nbands; iband++) {
-	       TGraphAsymmErrors * graph   =pdf->GetBand(iband);
+	       TGraphAsymmErrors * graph=pdf->GetBand(iband);
 	       if (!graph) {
                 std::ostringstream oss;
                 oss << cn <<mn<<"get graphs "<<"Band "<<iband<<" not found at index "<<i;
@@ -1217,6 +1211,7 @@ void SPXPlot::DrawLegend(void) {
  SPXPlotConfigurationInstance pci=pc.GetPlotConfigurationInstance(0);
  SPXGridSteeringFile gridsteeringFile=pci.gridSteeringFile;
 
+
  bool overlay=ds.ContainsOverlay();  
  bool ratioonly=ds.ContainsRatio()&&!overlay;
 
@@ -1284,6 +1279,9 @@ void SPXPlot::DrawLegend(void) {
  std::string scaleold="";
 
  debug=true;
+
+ if (steeringFile->GetParameterScan())
+  std::cout<<cn<<mn<<"Grid contain parmater scans= "<< std::endl;
  
  for(int icross = 0; icross < crossSections.size(); icross++) {
 
@@ -1355,7 +1353,7 @@ void SPXPlot::DrawLegend(void) {
   else               std::cout<<cn<<mn<<"Same PDF in cross sections !"<< std::endl;
 
  }
-
+ //
  // Analyse what data are there...
  //
  // eta-scan is when all data have same name, but ymin and y max are all different
@@ -1516,7 +1514,6 @@ void SPXPlot::DrawLegend(void) {
      //double emax=SPXGraphUtilities::GetLargestRelativeError(ratiographs.at(igraph));
      //gname+=Form(" %3.2f",emax*100);
 
-
      double scale=1.0;
      TString gname2=gname;
      if (TString(gname).Sizeof()>16) {
@@ -1660,18 +1657,18 @@ void SPXPlot::DrawLegend(void) {
       if (debug) std::cout<<cn<<mn<<" onlysyst= "<< (onlysyst ? "ON" : "OFF")<<std::endl;
 
       if (!onlysyst) { // for systematics only move Data label to leginfo
-	//double binmin = data.at(idata)->GetDoubleBinValueMin();
-	//double binmax = data.at(idata)->GetDoubleBinValueMax();
-	//TString varname=data.at(idata)->GetDoubleBinVariableName();
-	//TString datalabel;
-	//if (binmin!=0) {
-        //datalabel.Form(" %3.2f ",binmin); 
-	//} else {
-        //varname.ReplaceAll("#leq","");
-        //varname.ReplaceAll("","");
-	// }
-	//datalabel+=varname;
-	//datalabel+=Form(" %3.2f ",binmax);
+       //double binmin = data.at(idata)->GetDoubleBinValueMin();
+       //double binmax = data.at(idata)->GetDoubleBinValueMax();
+       //TString varname=data.at(idata)->GetDoubleBinVariableName();
+       //TString datalabel;
+       //if (binmin!=0) {
+       //datalabel.Form(" %3.2f ",binmin); 
+       //} else {
+       //varname.ReplaceAll("#leq","");
+       //varname.ReplaceAll("","");
+       // }
+       //datalabel+=varname;
+       //datalabel+=Form(" %3.2f ",binmax);
 	datalabel=GetEtaLabel(data.at(idata));
 
        SPXPlotConfigurationInstance mypci=pc.GetPlotConfigurationInstance(idata);
@@ -1937,14 +1934,26 @@ void SPXPlot::DrawLegend(void) {
       label+=GetCorrectionLabel(crossSections[icross]);
      }
      TGraphAsymmErrors * gband=pdf->GetTotalBand();
+
      if (icross==0) {
       label+=" with ";
-      label+=pdf->GetPDFName();
+      label+=pdf->GetPDFtype();
+
+       if (steeringFile->GetLabelChi2()) {
+        if (debug) std::cout<<cn<<mn<<"Add Chi2 to label icross= "<<icross<<std::endl;
+        if (icross>=data.size()) {
+         std::cout<<cn<<mn<<"WARNING: Something is wrong Number of crosssection "<<data.size()<<" but idata= "<<icross<<std::endl; 
+         throw SPXGeneralException(cn+mn+"CrossSection and data do not match !"); 
+        }
+        double chi2= SPXChi2::CalculateSimpleChi2(pdf, data.at(icross));
+        if (debug) std::cout<<cn<<mn<<"Chi2= "<<chi2<<" pdf= "<<pdf->GetPDFtype()<<" Data= "<< data.at(icross)->GetTotalErrorGraph()->GetName()<<std::endl;     
+        label+=Form(" #C^{2}=%3.1f",chi2);
+       }
 
        if (nlouncertainty) {
         if (label.Sizeof()>namesize) namesize=label.Sizeof();
         if (debug) std::cout<<cn<<mn<<"Add in legend gband= "<<gband->GetName()<<" namesize= "<<namesize<<std::endl;
-        if (scalechoicedifferent) 
+        if (scalechoicedifferent || steeringFile->GetParameterScan())
 	 leg->AddEntry((TObject*)0, label, "");
         else 
          leg->AddEntry(gband, label, opt);
@@ -1991,7 +2000,6 @@ void SPXPlot::DrawLegend(void) {
 
         // only plot label once 
         if (labelcount<1) {
-
          TString opt="";
          if (steeringFile->GetPlotMarker()) {
           opt="PE";
@@ -2002,6 +2010,20 @@ void SPXPlot::DrawLegend(void) {
 
 	 if (debug) std::cout<<cn<<mn<<"Add in legend iband= "<<iband
 			     <<" gband= "<<gband->GetName()<<" labelcount= "<<labelcount<<" opt= "<<opt.Data()<<std::endl;
+
+         if (steeringFile->GetLabelChi2()) {
+          if (debug) std::cout<<cn<<mn<<"Add Chi2 to label icross= "<<icross<<std::endl;
+          if (icross>=data.size()) {
+           std::cout<<cn<<mn<<"WARNING: Something is wrong NUmber of crosssection "<<data.size()<<" but idata= "<<icross<<std::endl; 
+           throw SPXGeneralException(cn+mn+"CrossSection and data do not match !"); 
+          }
+          double chi2= SPXChi2::CalculateSimpleChi2(pdf, data.at(icross));
+          if (debug) std::cout<<cn<<mn<<"Chi2= "<<chi2<<" pdf= "<<pdf->GetPDFName()<<" Data= "<< data.at(icross)->GetTotalErrorGraph()->GetName()<<std::endl;     
+         
+          int ndf=data.at(icross)->GetTotalErrorGraph()->GetN();
+          //if (data.at(icross)->IsNormalized()) n-=1; //needs to be implemented in data
+          labelname+=Form(" #chi^{2}=%3.1f/%d",chi2,ndf);
+         }
 
    	 if (debug) std::cout<<cn<<mn<<"Add legend label= "<<labelname.Data()<<std::endl;      
          if (labelname.Sizeof()>namesize) namesize=labelname.Sizeof();
@@ -2057,9 +2079,38 @@ void SPXPlot::DrawLegend(void) {
      }
     }
    }
+
+   if (steeringFile->GetParameterScan()) {
+    if (debug) std::cout<<cn<<mn<<"Draw parameter scan "<<std::endl;
+    SPXGrid * grid=crossSections[icross].GetGrid();
+    if (!grid)  { std::cout<<cn<<mn<<"grid not found ! "<<std::endl; return;}
+
+    // start with empty line such that NLO QCD with PDF label is one single line
+    leg->AddEntry((TObject*)0, "", "");
+    TGraphAsymmErrors * gband   =pdf->GetTotalBand();
+    if (!gband) { std::cout<<cn<<mn<<"gband not found ! "<<std::endl; return;}
+
+    TString opt="";
+    if (steeringFile->GetPlotMarker()) opt="P";
+    if (steeringFile->GetPlotBand()) opt="LF";
+
+    double par=grid->GetParameterValue();
+    if (debug) std::cout<<cn<<mn<<"icross= "<<icross<<" parameter found par= "<<par<<std::endl; 
+    TString parname=TString(grid->GetParameterName());
+    TString parunit=TString(grid->GetParameterUnit());
+    TString label=parname;
+    TString lval=Form("= %3.1f ",par);
+    label+=lval;  
+    label+=parunit;
+    if (label.Sizeof()>namesize) namesize=label.Sizeof();
+    if (debug) std::cout<<cn<<mn<<"Add in legend gband= "<<gband->GetName()<<" label= "<<label.Data()<<" namesize= "<<namesize<<std::endl;
+    leg->AddEntry(gband, TString(label), opt);
+   } else if (debug) std::cout<<cn<<mn<<"Parameter scan is OFF "<<std::endl;
+
   }
   gPad->RedrawAxis();
  }
+
 
  double x1=0., y1=0., x2=0., y2=0.;
  double xlegend=steeringFile->GetXLegend();
@@ -2090,13 +2141,15 @@ void SPXPlot::DrawLegend(void) {
  }
 
  double fac=0.50, xfac=1.0;
- if (nraw>7) {fac*=1.0; xfac*=3.0;}
+ //if (nraw>7) {fac*=1.0; xfac*=3.0;}
+ if (nraw>7) {fac*=1.0; xfac*=3.5;}
  if (debug) std::cout<<cn<<mn<<"fac= "<<fac<<" xfac= "<<xfac<<std::endl;
 
  if (nraw>5)  {
   leg->SetNColumns(2);
   leg->SetFillColor(5);
-  fac*=1.0; xfac*=1.5;
+  fac*=1.0; 
+  if (namesize>30) xfac*=1.5;
   //csize =charactersize*0.5; 
  }
  //leg->SetEntrySeparation(0.1);
@@ -2108,7 +2161,6 @@ void SPXPlot::DrawLegend(void) {
   if (nraw>12) leg->SetNColumns(4);
  }
 
-
  if (onlysyst) {
   if (leg->GetNColumns()>3)      {fac*=1.0; xfac*=1.5;}
   else if (leg->GetNColumns()>2) {fac*=0.9; xfac*=1.4;}
@@ -2118,20 +2170,20 @@ void SPXPlot::DrawLegend(void) {
 
  x1 = xlegend-bwidth; x2=xfac*xlegend;
  double xmin=0.18;
- //if (debug) {
- // std::cout<<cn<<mn<<"fac= "<<fac<<" xfac= "<<xfac<<std::endl;
- // std::cout<<cn<<mn<<"x1= "<<x1<<" y1= "<<y1<<std::endl;
- // std::cout<<cn<<mn<<"x2= "<<x2<<" y2= "<<y2<<std::endl;
- //}
+ if (debug) {
+  std::cout<<cn<<mn<<"fac= "<<fac<<" xfac= "<<xfac<<std::endl;
+  std::cout<<cn<<mn<<"x1= "<<x1<<" y1= "<<y1<<std::endl;
+  std::cout<<cn<<mn<<"x2= "<<x2<<" y2= "<<y2<<std::endl;
+ }
 
  if (x1<xmin) {x1=xmin; x2+=xmin;}
 
  double lsize=nraw;
 
- if (debug) std::cout<<cn<<mn<<"lsize= "<<lsize<<" nraw= "<<nraw<<std::endl;
+ //if (debug) std::cout<<cn<<mn<<"lsize= "<<lsize<<" nraw= "<<nraw<<std::endl;
 
  if (nraw>4)  lsize*=0.6;
- if (debug) std::cout<<cn<<mn<<"2 lsize= "<<lsize<<" nraw= "<<nraw<<std::endl;
+ if (debug) std::cout<<cn<<mn<<"lsize= "<<lsize<<" nraw= "<<nraw<<std::endl;
 
  if (onlysyst) {
    if (leg->GetNRows()>10)     {lsize*=0.15;}
@@ -2177,6 +2229,7 @@ void SPXPlot::DrawLegend(void) {
  for(int idata = 0; idata < data.size(); idata++) {                 
 
   if (etascan&&onedataset && idata>0) break;
+  if (steeringFile->GetParameterScan() && idata>0) break;
   //TString infolabel = "#font[9]{";
   TString infolabel = "";
 
@@ -2310,7 +2363,7 @@ void SPXPlot::DrawLegend(void) {
 
  for (int icross = 0; icross < crossSections.size(); icross++) {
   if (icross>0) {
-    std::cout<<cn<<mn<<"WARNING Labels only implemented for one cross sections"<<std::endl;
+    std::cout<<cn<<mn<<"WARNING Labels only implemented for one cross section"<<std::endl;
    continue;
   }
   SPXGrid *grid=crossSections[icross].GetGrid();
@@ -2423,7 +2476,6 @@ void SPXPlot::CanvasToPNG(void) {
          TString text="_plot_";
          text+=id;
          epsfilename.ReplaceAll(text,"");
-         //epsfilename.ReplaceAll("_plot_1","");
 
          if (debug) {
           std::cout<<cn<<mn<<"Print epsfilename= "<< epsfilename.Data()<<std::endl;
@@ -2493,10 +2545,13 @@ void SPXPlot::InitializeRatios(void) {
    ratioInstance.Parse(ratioString);
 
    bool matchbin=steeringFile->GetMatchBinning();
-   if (matchbin)
-    std::cout<<cn<<mn<<"Set Matchbinning to ON "<<std::endl;
-   else
-    std::cout<<cn<<mn<<"Set Matchbinning to OFF "<<std::endl;
+   if (debug) {
+    if (matchbin)
+     std::cout<<cn<<mn<<"Set Matchbinning to ON "<<std::endl;
+    else
+     std::cout<<cn<<mn<<"Set Matchbinning to OFF "<<std::endl;
+   }
+
    ratioInstance.SetMatchBinning(matchbin);
 
    //if (steeringFile->ShowTotalSystematics()!=0) {
@@ -2541,7 +2596,7 @@ void SPXPlot::InitializeCrossSections(void) {
 		//Don't add the cross section to the cross section vector if there is already a cross section with
 		// the same exact grid and pdf file...
 		std::string keyname=pci.gridSteeringFile.GetFilename();
-                //keyname=SPXUtilities::ReplaceAll(keyame,".txt","");
+                //
 		StringPair_T key = StringPair_T(keyname, pci.pdfSteeringFile.GetFilename());
 
 		if(debug) std::cout << cn << mn << "Checking for prior existence of convolute with key = [" << key.first << \
@@ -2631,7 +2686,7 @@ void SPXPlot::InitializeCrossSections(void) {
                 if (debug) std::cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<std::endl;
 
 		//Update the Convolute File Map
-		//string theoryname=pci.pdfSteeringFile.GetFilename()+gband->GetName();
+		//
 		std::string theoryname=gband->GetName();
        
                 if (gtype.compare(std::string("pdf"))==0){
@@ -2937,6 +2992,7 @@ void SPXPlot::NormalizeCrossSections(void) {
 			  std::cout<<cn<<mn<< "Nominal Total Sigma = " << totalSigmaNom   << std::endl;
 			  std::cout<<cn<<mn<< "Reference Total Sigma = "<< totalSigmaRef  << std::endl;
 			}
+                        //
 			//First divide the cross section by the bin width if it needs to be
 			//
 			if(dataDividedByBinWidth && !gridDividedByBinWidth) {
@@ -2989,7 +3045,9 @@ void SPXPlot::NormalizeCrossSections(void) {
 			  } else {
 			  if (debug) std::cout << cn << mn << "Normalise band " << gband->GetName() << std::endl;  
 
+        		  if (debug) std::cout << cn << mn << "Calculate total sigma  gridDividedByBinWidth= " << (gridDividedByBinWidth ? "ON" : "OFF") << std::endl;  
                           double totalSigma=SPXGraphUtilities::GetTotalSigma(gband, gridDividedByBinWidth);
+        		  if (debug) std::cout << cn << mn << "for gband totalSigma= " << totalSigma << std::endl;  
 
                           if (TString(gband->GetName()).Contains("AlternativeGridChoice")) {
         		   if (debug) std::cout << cn << mn << "Normalise band " << gband->GetName() << std::endl;  
@@ -3019,6 +3077,10 @@ void SPXPlot::NormalizeCrossSections(void) {
 			    if(totalSigma== 0) throw SPXGeneralException(cn + mn + "Divide by zero error: Total Sigma is zero");
 			    if(debug) std::cout << cn << mn << "Scaling by 1 / total sigma: " << std::scientific << (1.0 / totalSigma) << std::endl;
 			    SPXGraphUtilities::Scale(gband, 1.0, (1.0 / totalSigma));
+                            if (debug) {
+			     std::cout << cn << mn << "Scaled cross-section " << gband->GetName() << std::endl;
+                             gband->Print();
+                            }
                            }
                           }
                          }
@@ -3763,7 +3825,7 @@ void SPXPlot::WriteRootFile(TString rootfilename){
    if (debug) std::cout<<cn<<mn<<"Write out "<<pdf->GetBandType(iband)<<std::endl;
    gband->Write();
 
-   std::string         gtype   =pdf->GetBandType(iband);
+   std::string gtype   =pdf->GetBandType(iband);
    //if (debug) {
    // std::cout<<cn<<mn<<"Type "<<gtype.c_str()<<" name= "<<gband->GetName() << std::endl;
    //gband->Print();
@@ -3851,7 +3913,7 @@ void SPXPlot::WriteRootFile(TString rootfilename){
   if (!statGraph) throw SPXGeneralException(cn+mn+"Can not open statistical uncertainty for"+datalabel.Data());
   else {
    TString filename=statGraph->GetName();
-   filename+=datalabel.Data();
+   //filename+=datalabel.Data();
    if (debug) std::cout<<cn<<mn<<"Write " << filename.Data() <<std::endl;
    statGraph->Write(filename);
   }
@@ -3860,7 +3922,7 @@ void SPXPlot::WriteRootFile(TString rootfilename){
   if (!systGraph) throw SPXGeneralException(cn+mn+"Can not open systematic uncertainty for"+datalabel.Data());
   else {
    TString filename=systGraph->GetName();
-   filename+=datalabel.Data();
+   //filename+=datalabel.Data();
    if (debug) std::cout<<cn<<mn<<"Write " << filename.Data() <<std::endl;
    systGraph->Write(filename);  
   }
@@ -3869,7 +3931,7 @@ void SPXPlot::WriteRootFile(TString rootfilename){
   if (!totGraph) throw SPXGeneralException(cn+mn+"Can not open statistical total for"+datalabel.Data());
   else {
    TString filename=totGraph->GetName();
-   filename+=datalabel.Data();
+   //filename+=datalabel.Data();
    if (debug) std::cout<<cn<<mn<<"Write " << filename.Data() <<std::endl;
    totGraph->Write(filename);  
   }
@@ -3932,7 +3994,6 @@ void SPXPlot::WriteRootFile(TString rootfilename){
   std::cout<<cn<<mn<<"Writing out routfile: "<<std::endl;
   rootfile->Print();
  }
-
 
  std::cout<<cn<<mn<<"Write file "<<rootfilename.Data()<<std::endl;
  rootfile->Write();

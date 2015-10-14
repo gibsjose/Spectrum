@@ -400,7 +400,7 @@ void SPXRatio::Divide(void) {
   //Match the convolute binning to the data binning
   if(ratioStyle.IsConvoluteOverData()) {
 
-   if (debug) std::cout<<cn<<mn<<" ratioStyle.IsConvoluteOverData "<<std::endl;
+   if (debug) std::cout<<cn<<mn<<"ratioStyle.IsConvoluteOverData "<<std::endl;
 
    if (numeratorGraph.size()==0)
     throw SPXGraphException(cn + mn + "No numeratorGraph found !");

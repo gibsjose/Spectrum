@@ -121,6 +121,9 @@ void SPXSteeringFile::SetDefaults(void) {
 	labelDate = false;
 	if(debug) std::cout << cn << mn << "labelDate set to default: \"false\"" << std::endl;
 
+	labelChi2 = false;
+	if(debug) std::cout << cn << mn << "labelChi2 set to default: \"false\"" << std::endl;
+
 	xLegend = 0.8;
 	if(debug) std::cout << cn << mn << "xLegend set to default: "<< xLegend << std::endl;
 
@@ -198,6 +201,9 @@ void SPXSteeringFile::SetDefaults(void) {
 
 	yRatioMaxPlot = MAX_EMPTY;
 	if(debug) std::cout << cn << mn << "yRatioMaxPlot set to default: \"" << MAX_EMPTY << "\"" << std::endl;
+
+        ParameterScan = false;
+	if(debug) std::cout << cn << mn << "Parameter scan set to default: OFF" << std::endl;
 
 	CalculateChi2 = 0;
 	if(debug) std::cout << cn << mn << "CalculateChi2 set to default: OFF" << std::endl;
@@ -385,6 +391,8 @@ void SPXSteeringFile::Print(void) {
         if (CalculateChi2==0) std::cout << "\t\t Calculate Chi2: OFF" << std::endl;
         if (CalculateChi2==1) std::cout << "\t\t Calculate Simple Chi2" << std::endl;
 
+        if (ParameterScan) std::cout << "\t\t Parameter Scan is ON " << std::endl;
+
         if (DumpTables==0) std::cout << "\t\t Dump Latex tables ON" << std::endl;
 
 	if (printTotalSigma) std::cout << "\t\t Print total cross section "  << std::endl;
@@ -392,8 +400,9 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Grid Corrections are: " << (gridCorr ? "ON" : "OFF") << std::endl;
 	std::cout << "\t\t Take sign when adding total error: " << (TakeSignforTotalError? "ON" : "OFF") << std::endl;
 
-	std::cout << "\t\t Label Sqrt(s) on Legend: " << (labelSqrtS ? "YES" : "NO") << std::endl;
-	std::cout << "\t\t Add Date after name on Legend: " << (labelDate ? "YES" : "NO") << std::endl;
+	std::cout << "\t\t Add Sqrt(s) label on Legend: " << (labelSqrtS ? "YES" : "NO") << std::endl;
+	std::cout << "\t\t Add Chi2 on Legend: " << (labelChi2 ? "YES" : "NO") << std::endl;
+	std::cout << "\t\t Add Date label after name on Legend: " << (labelDate ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Add luminosity label on Legend: " << (AddLumi ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Add journal label on Legend: " << (AddJournal ? "YES" : "NO") << std::endl;
 	std::cout << "\t\t Add journal year on Legend: " << (AddJournalYear ? "YES" : "NO") << std::endl;
@@ -1606,7 +1615,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
                 if (tmpVector.size()!=0) {
 		 configurations.insert(std::pair<std::string, std::vector<std::string> >("alternative_scale_choice_edge_style", tmpVector));
 		 if(debug) std::cout << cn << mn << "configurations[alternative_scale_choice_edge_style] = " << SPXStringUtilities::VectorToCommaSeparatedList(configurations["alternative_scale_choice_edge_style"]) << std::endl;
-                } else std::cout<<cn<<mn<<"alternative_scale_choice_edge_style not filled in configuration"<<std::endl;
+                }// else std::cout<<cn<<mn<<"alternative_scale_choice_edge_style not filled in configuration"<<std::endl;
 
 		//Get the alternative_scale_choice_fill_color
        	        if(debug) std::cout << cn << mn << "Start parsing alternative_scale_choice_fill_color" << std::endl;
@@ -2512,10 +2521,9 @@ void SPXSteeringFile::Parse(void) {
 
 	OutputRootfile= reader->GetBoolean("GEN", "output_rootfile", OutputRootfile);
         if (OutputRootfile) std::cout << cn << mn << "OutputRootfile is ON" << std::endl;
-        if (debug) std::cout << cn << mn << "OutputRootfile= "<< OutputRootfile << std::endl;
 
 	OutputGraphicFormat = reader->Get("GEN", "output_graphicformat", OutputGraphicFormat);
-        if (debug) std::cout << cn << mn << "OutputGraphicFormat= "<< OutputGraphicFormat << std::endl;
+        if (debug) std::cout << cn << mn << "OutputGraphicFormat= "<< OutputGraphicFormat  << std::endl;
 
 	//Set Defaults
         if (debug) std::cout << cn << mn << "SetDefaults " << std::endl;
@@ -2535,6 +2543,10 @@ void SPXSteeringFile::Parse(void) {
 	}
 
 	//Graphing configurations [GRAPH]
+
+        ParameterScan= reader->GetBoolean("GRAPH", "grid_parameter_scan",ParameterScan );
+        if (debug) std::cout << cn << mn << "ParameterScan= "<< (ParameterScan ? "ON" : "OFF" ) << std::endl;
+
 	plotBand = reader->GetBoolean("GRAPH", "plot_band", plotBand);
 
 	BandwithPDF    = reader->GetBoolean("GRAPH", "band_with_pdf", BandwithPDF);
@@ -2673,6 +2685,17 @@ void SPXSteeringFile::Parse(void) {
 	yRatioMax   = reader->GetReal("GRAPH", "y_ratio_max", yRatioMax);
 
 	CalculateChi2 = reader->GetInteger("GRAPH", "calculate_chi2", CalculateChi2);
+	if (debug) std::cout<<cn<<mn<<"Read in CalculateChi2= "<<CalculateChi2<<std::endl;
+
+	labelChi2     = reader->GetBoolean("GRAPH", "label_chi2", labelChi2);
+        if (labelChi2) {
+	 if (debug) std::cout<<cn<<mn<<"Calculate chi2 and add to label "<<std::endl;
+         if (CalculateChi2<1) {
+	  std::cout<<cn<<mn<<"INFO label_chi2 was ON, i.e. calculate chi2 and add to label "<<std::endl;
+	  std::cout<<cn<<mn<<"INFO However, calculate_chi2 was not set, will set to 1 (SimpleChi2calculation) "<<std::endl;
+          CalculateChi2 = 1;
+         } 
+        } 
 
 	DumpTables = reader->GetInteger("GRAPH", "dump_latex_tables", DumpTables);
 
@@ -3109,10 +3132,19 @@ bool SPXSteeringFile::GetDataRemoveXbinsFlag(int i) {
  if (debug) std::cout<<cn<<mn<<" i= "<<i<<std::endl;
 
  if (RemoveXbins.size()==0) {
-   if (debug) std::cout<<cn<<mn<<"RemoveXbins.size()==0 return false "<<std::endl;
+  if (debug) std::cout<<cn<<mn<<"RemoveXbins.size()==0 return false "<<std::endl;
   return false;
-  }
+ }
 
- if (i>RemoveXbins.size()) std::cout<<cn<<mn<<"Something is wrong i= "<<i<<" size= "<<RemoveXbins.size()<<std::endl;
-  return RemoveXbins.at(i);
+ if (debug)
+  std::cout<<cn<<mn<<" i= "<<i<<" size= "<<RemoveXbins.size()<<std::endl;
+
+ if (i>=RemoveXbins.size()) {
+   std::ostringstream oss;
+   oss << cn << mn<<"Something is wrong i= "<<i<<" size= "<<RemoveXbins.size()<<std::endl;
+   std::cout<<oss.str()<<std::endl;
+   throw SPXGeneralException(oss.str());
+
+ }
+ return RemoveXbins.at(i);
 }

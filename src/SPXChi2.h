@@ -20,6 +20,7 @@
 //#include "SPXUtilities.h"
 
 #include "SPXData.h"
+#include "SPXCrossSection.h"
 #include "SPXPDF.h"
 
 static bool debug=false;
@@ -28,7 +29,10 @@ class SPXChi2 {
 
 public:
 
+ SPXChi2(std::vector<SPXData*> mydata, std::vector<SPXCrossSection> mycrossSections, SPXSteeringFile *mysteeringFile);
+
  static double CalculateSimpleChi2(SPXPDF *pdf, SPXData *data);
+
 
 private:
 //	static bool debug;		       // Flag indicating debug mode

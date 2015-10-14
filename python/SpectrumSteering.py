@@ -3,6 +3,32 @@
 from subprocess import call
 from collections import OrderedDict
 
+def CreateStringfromList(mylist):
+
+ mystring=''
+ for i in mylist:
+  #print 'i= ',i
+  mystring=mystring+i+','
+
+ mystring=mystring[:-1]
+ return mystring
+
+def RepeatString(myname,n):
+ mystring=''
+ for i in range(0,n):
+  #print 'i= ',i
+  mystring=mystring+myname+','
+
+ mystring=mystring[:-1]
+ return mystring
+
+
+def counted(f):
+    def wrapped(*args, **kwargs):
+        wrapped.calls += 1
+        return f(*args, **kwargs)
+    wrapped.calls = 0
+    return wrapped
 class SpectrumSteering(object):
  
   name='SpectrumSteering'
@@ -20,6 +46,102 @@ class SpectrumSteering(object):
 
      call(["ls","-l", "test.txt"])
      #call(["./Spectrum", "test.txt"])
+
+  @counted
+  def SetRatio(self,mystring):
+   name='SetRatio'
+   print name,' mystring= ',mystring
+
+#   print 'Number of calls ',self.SetRatio.calls
+ 
+   # The below is a bit ugly. Is there a better way to program this ?
+   for i in range(0,9):
+    if not self.ratio_0:
+     self.ratio_0=mystring
+     break
+
+    if not self.ratio_1:
+     self.ratio_1=mystring
+     break
+
+    if not self.ratio_2:
+     self.ratio_2=mystring
+     break
+
+    if not self.ratio_3:
+     self.ratio_3=mystring
+     break
+
+    if not self.ratio_4:
+     self.ratio_4=mystring
+     break
+
+    if not self.ratio_5:
+     self.ratio_5=mystring
+     break
+
+    if not self.ratio_6:
+     self.ratio_6=mystring
+     break
+
+    if not self.ratio_7:
+     self.ratio_7=mystring
+     break
+
+    if not self.ratio_8:
+     self.ratio_8=mystring
+     break
+
+    if not self.ratio_9:
+     self.ratio_9=mystring
+     break
+
+  def SetRatioStyle(self,mystring):
+   name='SetRatioStyle'
+   print name,' mystring= ',mystring
+ 
+   # The below is a bit ugly. Is there a better way to program this ?
+   for i in range(0,9):
+    if not self.ratio_0:
+     self.ratio_style_0=mystring
+     break
+
+    if not self.ratio_1:
+     self.ratio_style_1=mystring
+     break
+
+    if not self.ratio_2:
+     self.ratio_style_2=mystring
+     break
+
+    if not self.ratio_3:
+     self.ratio_style_3=mystring
+     break
+
+    if not self.ratio_4:
+     self.ratio_style_4=mystring
+     break
+
+    if not self.ratio_5:
+     self.ratio_style_5=mystring
+     break
+
+    if not self.ratio_6:
+     self.ratio_style_6=mystring
+     break
+
+    if not self.ratio_7:
+     self.ratio_style_7=mystring
+     break
+
+    if not self.ratio_8:
+     self.ratio_style_8=mystring
+     break
+
+    if not self.ratio_9:
+     self.ratio_style_9=mystring
+     break
+
 
   def CreateSteering(self):
      name='CreateSteering:'
@@ -110,6 +232,11 @@ class Graph(SpectrumSteering):
     self.label_scaleform = True
     self.label_scaleform_alternative_scale_choice= True
     self.label_informationlegend =""
+
+    self.alternative_grid_divided_by_bin_width=True
+    self.alternative_grid_divided_by_doublediff_bin_width=True
+
+    self.grid_parameter_scan = True
 
     self.band_with_pdf= True 
     self.band_with_alphas= True 
