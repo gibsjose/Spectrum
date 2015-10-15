@@ -263,6 +263,7 @@ class Graph(SpectrumSteering):
     self.y_info_legend = 0.
 
     self.calculate_chi2=0.
+    self.label_chi2= True
 
 
 class Plot(SpectrumSteering):

@@ -521,21 +521,21 @@ void SPXGridSteeringFile::Parse(void) {
 
 	ParameterName = reader->Get("GRID", "parameter_name", "EMPTY");
 	if(!ParameterName.compare("EMPTY")) {
-	  std::cout << cn << mn << "Parameter Name not specified  "<< std::endl;
+	 if (debug) std::cout << cn << mn << "Parameter Name not specified  "<< std::endl;
 	} else { 
 	  std::cout << cn <<mn << "ParameterName=  " << ParameterName  << std::endl;
         }
 
 	ParameterUnit = reader->Get("GRID", "parameter_unit", "EMPTY");
 	if(!ParameterUnit.compare("EMPTY")) {
-	  std::cout << cn << mn << "Parameter Unit not specified  "<< std::endl;
+	 if (debug) std::cout << cn << mn << "Parameter Unit not specified  "<< std::endl;
 	} else { 
 	  std::cout << cn <<mn << "ParameterUnit=  " << ParameterUnit  << std::endl;
         }
 
 	ParameterValue = reader->GetReal("GRID", "parameter_value", ParameterValue);
 	if(ParameterValue!=0.) {
-	  std::cout << cn << mn << "ParameterValue=  " << ParameterValue  << std::endl;
+	 if (debug) std::cout << cn << mn << "ParameterValue=  " << ParameterValue  << std::endl;
 	}
 
 	delete reader;

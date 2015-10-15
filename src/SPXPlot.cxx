@@ -1281,7 +1281,7 @@ void SPXPlot::DrawLegend(void) {
  debug=true;
 
  if (steeringFile->GetParameterScan())
-  std::cout<<cn<<mn<<"Grid contain parmater scans= "<< std::endl;
+  std::cout<<cn<<mn<<"Grid contain parameter scan= "<< std::endl;
  
  for(int icross = 0; icross < crossSections.size(); icross++) {
 
