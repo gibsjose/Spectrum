@@ -1418,15 +1418,19 @@ void SPXData::ReadCorrelation()
   if (individualSystematics.size()==0) {
    std::cout<<cn<<mn<<"WARNING no systematics components found ! "<< std::endl; 
   } else {
+
    this->CalculateSystematicCovarianceMatrix();
   }
  
   // add up stat and syst covariance matrice
   if (debug) std::cout <<cn<<mn<<"Add up stat and syst covariance matrices "<< std::endl; 
   // calculate total covariance
-  //cov_matrixtot= cov_matrixstat+cov_matrixsyst;
+  //
   if (!cov_matrixsyst) {
    std::cout <<cn<<mn<<"WARNING: Systematic covariance matrix not found ! "<< std::endl; 
+   std::cerr <<cn<<mn<<"WARNING: Systematic covariance matrix not found ! "<< std::endl; 
+   //throw SPXParseException(cn+mn+"WARNING: Systematic covariance matrix not found ! ");
+   return;
   }
 
   //cov_matrixtot->Plus(*cov_matrixstat,*cov_matrixsyst);
@@ -1434,6 +1438,7 @@ void SPXData::ReadCorrelation()
 
   if (!cov_matrixtot) {
    std::cout <<cn<<mn<<"WARNING: Total covariance matrix not found ! "<< std::endl; 
+   std::cerr <<cn<<mn<<"WARNING: Total covariance matrix not found ! "<< std::endl; 
    return;
   }
  

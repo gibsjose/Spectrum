@@ -6,6 +6,8 @@
 
 ## Change Log
 
+  --SPXRatio: include Convolue / Convolute
+
   -SPXData: fixed problem for data tables with line with one whitespace
 
   -SPXSteering: Add possibility to overload min/max overlay/ratio legend parameter from Plot field

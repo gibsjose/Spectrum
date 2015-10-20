@@ -187,13 +187,13 @@ void SPXRatioStyle::Parse(std::string &s) {
 		}
 	}
 
-	if(numerator == RS_CONVOLUTE) {
-		if(denominator == RS_CONVOLUTE) {
-			numerator = RS_INVALID;
-			denominator = RS_INVALID;
-			throw SPXINIParseException(plotNumber, ratioStyleNumber, "Invalid ratio combination: convolute / convolute is not supported");
-		}
-	}
+	//	if(numerator == RS_CONVOLUTE) {
+	//	if(denominator == RS_CONVOLUTE) {
+	//		numerator = RS_INVALID;
+	//		denominator = RS_INVALID;
+	//		throw SPXINIParseException(plotNumber, ratioStyleNumber, "Invalid ratio combination: convolute / convolute is not supported");
+	//	}
+	//}
 
 	if(debug) std::cout << cn << mn << plotNumber << " " << ratioStyleNumber << ": Denominator = " << den << "(" << denominator << ")" << std::endl;
 	if(debug) std::cout << cn << mn << plotNumber << " " << ratioStyleNumber << ": Numerator = " << num << "(" << numerator << ")" << std::endl;

@@ -97,6 +97,14 @@ public:
 		}
 	}
 
+	bool IsConvoluteOverConvolute(void) {
+		if(NumeratorIsConvolute() && DenominatorIsConvolute()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	bool IsDataOverConvolute(void) {
 		if(NumeratorIsData() && DenominatorIsConvolute()) {
 			return true;

@@ -108,8 +108,6 @@ void SPXPlot::Plot(void) {
 	 SPXpValue* pvalue= new SPXpValue(data,crossSections, steeringFile);
          pvalue->SetPlotNumber(id);         
 
-         //std::cout<<cn<<mn<<"Calculate chi2: "<<std::endl;
-	 //SPXChi2* chi2= new SPXChi2(data,crossSections, steeringFile);       
 	} 
 
 	SPXCImodel* pcimodel= new SPXCImodel(data,crossSections, steeringFile);
@@ -1939,20 +1937,22 @@ void SPXPlot::DrawLegend(void) {
       label+=" with ";
       label+=pdf->GetPDFtype();
 
-       if (steeringFile->GetLabelChi2()) {
+       if (steeringFile->GetLabelChi2() && !pdfsdifferent &&!steeringFile->GetParameterScan() && !scalechoicedifferent) {
         if (debug) std::cout<<cn<<mn<<"Add Chi2 to label icross= "<<icross<<std::endl;
         if (icross>=data.size()) {
          std::cout<<cn<<mn<<"WARNING: Something is wrong Number of crosssection "<<data.size()<<" but idata= "<<icross<<std::endl; 
          throw SPXGeneralException(cn+mn+"CrossSection and data do not match !"); 
         }
         double chi2= SPXChi2::CalculateSimpleChi2(pdf, data.at(icross));
-        if (debug) std::cout<<cn<<mn<<"Chi2= "<<chi2<<" pdf= "<<pdf->GetPDFtype()<<" Data= "<< data.at(icross)->GetTotalErrorGraph()->GetName()<<std::endl;     
-        label+=Form(" #C^{2}=%3.1f",chi2);
+        if (debug) std::cout<<cn<<mn<<"Chi2= "<<chi2<<" pdf= "<<pdf->GetPDFtype()<<" Data= "<< data.at(icross)->GetTotalErrorGraph()->GetName()<<std::endl;   
+         int ndf=data.at(icross)->GetTotalErrorGraph()->GetN();
+         //if (data.at(icross)->IsNormalized()) n-=1; //needs to be implemented in data
+         label+=Form(" #chi^{2}=%3.1f/%d",chi2,ndf);  
        }
 
        if (nlouncertainty) {
         if (label.Sizeof()>namesize) namesize=label.Sizeof();
-        if (debug) std::cout<<cn<<mn<<"Add in legend gband= "<<gband->GetName()<<" namesize= "<<namesize<<std::endl;
+        if (debug) std::cout<<cn<<mn<<"Add in legend nlouncertainty gband= "<<gband->GetName()<<" namesize= "<<namesize<<std::endl;
         if (scalechoicedifferent || steeringFile->GetParameterScan())
 	 leg->AddEntry((TObject*)0, label, "");
         else 
@@ -1965,7 +1965,7 @@ void SPXPlot::DrawLegend(void) {
       label+=grid->GetScaleFunctionalForm();
       if (nlouncertainty) {
        if (label.Sizeof()>namesize) namesize=label.Sizeof();
-       if (debug) std::cout<<cn<<mn<<"Add in legend gband= "<<gband->GetName()<<" namesize= "<<namesize<<std::endl;
+       if (debug) std::cout<<cn<<mn<<"Add in legend scalechoicedifferent gband= "<<gband->GetName()<<" namesize= "<<namesize<<std::endl;
        leg->AddEntry(gband,label, opt);
       }
      }
@@ -2008,27 +2008,29 @@ void SPXPlot::DrawLegend(void) {
           opt="LF";
          } else std::cout << cn << mn <<"WARNING: do not know what to do not plotMarker, not plotBand"<< std::endl;
 
-	 if (debug) std::cout<<cn<<mn<<"Add in legend iband= "<<iband
-			     <<" gband= "<<gband->GetName()<<" labelcount= "<<labelcount<<" opt= "<<opt.Data()<<std::endl;
+         if (!(steeringFile->GetParameterScan() && ratioonly)) { 
+	  if (debug) std::cout<<cn<<mn<<"Add in legend iband= "<<iband
+	 		     <<" gband= "<<gband->GetName()<<" labelcount= "<<labelcount<<" opt= "<<opt.Data()<<std::endl;
 
-         if (steeringFile->GetLabelChi2()) {
-          if (debug) std::cout<<cn<<mn<<"Add Chi2 to label icross= "<<icross<<std::endl;
-          if (icross>=data.size()) {
-           std::cout<<cn<<mn<<"WARNING: Something is wrong NUmber of crosssection "<<data.size()<<" but idata= "<<icross<<std::endl; 
-           throw SPXGeneralException(cn+mn+"CrossSection and data do not match !"); 
-          }
-          double chi2= SPXChi2::CalculateSimpleChi2(pdf, data.at(icross));
-          if (debug) std::cout<<cn<<mn<<"Chi2= "<<chi2<<" pdf= "<<pdf->GetPDFName()<<" Data= "<< data.at(icross)->GetTotalErrorGraph()->GetName()<<std::endl;     
+          if (steeringFile->GetLabelChi2()) {
+           if (debug) std::cout<<cn<<mn<<"Add Chi2 to label icross= "<<icross<<std::endl;
+           if (icross>=data.size()) {
+            std::cout<<cn<<mn<<"WARNING: Something is wrong NUmber of crosssection "<<data.size()<<" but idata= "<<icross<<std::endl; 
+            throw SPXGeneralException(cn+mn+"CrossSection and data do not match !"); 
+           }
+           double chi2= SPXChi2::CalculateSimpleChi2(pdf, data.at(icross));
+           if (debug) std::cout<<cn<<mn<<"Chi2= "<<chi2<<" pdf= "<<pdf->GetPDFName()<<" Data= "<< data.at(icross)->GetTotalErrorGraph()->GetName()<<std::endl;     
          
-          int ndf=data.at(icross)->GetTotalErrorGraph()->GetN();
-          //if (data.at(icross)->IsNormalized()) n-=1; //needs to be implemented in data
-          labelname+=Form(" #chi^{2}=%3.1f/%d",chi2,ndf);
-         }
+           int ndf=data.at(icross)->GetTotalErrorGraph()->GetN();
+           //if (data.at(icross)->IsNormalized()) n-=1; //needs to be implemented in data
+           labelname+=Form(" #chi^{2}=%3.1f/%d",chi2,ndf);
+          }
 
-   	 if (debug) std::cout<<cn<<mn<<"Add legend label= "<<labelname.Data()<<std::endl;      
-         if (labelname.Sizeof()>namesize) namesize=labelname.Sizeof();
-         leg->AddEntry(gband, labelname, opt);
-         vlabel.push_back(labelname);
+   	  if (debug) std::cout<<cn<<mn<<"Add legend label= "<<labelname.Data()<<std::endl;      
+          if (labelname.Sizeof()>namesize) namesize=labelname.Sizeof();
+          leg->AddEntry(gband, labelname, opt);
+          vlabel.push_back(labelname);
+         }
         }
        }
       }
@@ -2042,7 +2044,7 @@ void SPXPlot::DrawLegend(void) {
          leg->AddEntry(gband, TString(text), "LF");
         }
        } else {
-	//	std::cout<<" HUHU etascan "<<std::endl;
+
 	std::cout<<cn<<mn<<"etascan is ON "<<std::endl;
 	TString label="";
 	//if (TString(gtype).Contains("ew")) label="ew correction";
@@ -2081,7 +2083,7 @@ void SPXPlot::DrawLegend(void) {
    }
 
    if (steeringFile->GetParameterScan()) {
-    if (debug) std::cout<<cn<<mn<<"Draw parameter scan "<<std::endl;
+    if (debug) std::cout<<cn<<mn<<"Parameter scan "<<std::endl;
     SPXGrid * grid=crossSections[icross].GetGrid();
     if (!grid)  { std::cout<<cn<<mn<<"grid not found ! "<<std::endl; return;}
 
@@ -2102,6 +2104,15 @@ void SPXPlot::DrawLegend(void) {
     TString lval=Form("= %3.1f ",par);
     label+=lval;  
     label+=parunit;
+    
+    if (debug) std::cout<<cn<<mn<<"label= "<<label<<std::endl; 
+
+    if (data.size()>1) std::cout<<cn<<mn<<"WARNING for parameter scan Number of data should be 1 ! data.size()= "<<data.size()<<std::endl;      
+    double chi2= SPXChi2::CalculateSimpleChi2(pdf, data.at(0)); //parameter scan has only one data set
+    if (debug) std::cout<<cn<<mn<<"Chi2= "<<chi2<<" pdf= "<<pdf->GetPDFtype()<<" Data= "<< data.at(0)->GetTotalErrorGraph()->GetName()<<std::endl;   
+    int ndf=data.at(0)->GetTotalErrorGraph()->GetN();
+    label+=Form(" #chi^{2}=%3.1f/%d",chi2,ndf);  
+
     if (label.Sizeof()>namesize) namesize=label.Sizeof();
     if (debug) std::cout<<cn<<mn<<"Add in legend gband= "<<gband->GetName()<<" label= "<<label.Data()<<" namesize= "<<namesize<<std::endl;
     leg->AddEntry(gband, TString(label), opt);
@@ -2240,7 +2251,7 @@ void SPXPlot::DrawLegend(void) {
 
   //if (!etascan&&steeringFile->GetInfoLegendLabel().size()>0) {
   if (steeringFile->GetInfoLegendLabel().size()>0) {
-   if (idata==0) { // Draw info lable only once
+   if (idata==0) { // Draw info label only once
     TString label=steeringFile->GetInfoLegendLabel();
     if (debug) std::cout<<cn<<mn<<"Add to info legend idata= "<<idata<<" add info legend label "<<label.Data()<<std::endl;
     if (label.Sizeof()>leginfomax) leginfomax=label.Sizeof();
@@ -2363,7 +2374,7 @@ void SPXPlot::DrawLegend(void) {
 
  for (int icross = 0; icross < crossSections.size(); icross++) {
   if (icross>0) {
-    std::cout<<cn<<mn<<"WARNING Labels only implemented for one cross section"<<std::endl;
+   std::cout<<cn<<mn<<"WARNING Labels only implemented for one cross section icross= "<<icross<<std::endl;
    continue;
   }
   SPXGrid *grid=crossSections[icross].GetGrid();
@@ -2382,6 +2393,15 @@ void SPXPlot::DrawLegend(void) {
   // if (label.Sizeof()>leginfomax) leginfomax=label.Sizeof();
   // leginfo->AddEntry((TObject*)0, label,"");
   //}
+
+  if ((steeringFile->GetParameterScan() && ratioonly)) { 
+   TString label="NLO QCD with ";
+   SPXPDF * pdf=crossSections[icross].GetPDF();
+   if (!grid) {std::cout<<cn<<mn<<"pdf not found ! "<<std::endl; continue;}
+   label+=pdf->GetPDFName();
+   if (label.Sizeof()>leginfomax) leginfomax=label.Sizeof();
+   leginfo->AddEntry((TObject*)0, label,"");
+  }
 
   if (steeringFile->GetScaleFunctionalFormLabel() ) {
    if (!scalechoicedifferent) {
@@ -2607,7 +2627,7 @@ void SPXPlot::InitializeCrossSections(void) {
 		  //		<< key.second << "\" has already been processed: Will not process duplicate" << std::endl;
 
 		  //				continue;
-                  std::cout<<cn<<mn<<" is ok to process duplicates -> to be checked "<<std::endl;
+                  std::cout<<cn<<mn<<"is ok to process duplicates -> to be checked "<<std::endl;
  
                   std::stringstream newname;
                   newname << keyname<<"_"<< i;

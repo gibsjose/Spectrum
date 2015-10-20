@@ -301,6 +301,82 @@ void SPXRatio::Parse(std::string &s) {
         }
     }
 
+    //
+    else if(ratioStyle.IsConvoluteOverConvolute()) {
+        if(debug) std::cout << cn << mn << "Convolute over Convolute" << std::endl;
+
+        //Error if numBlob does NOT match a convolute string
+        if(!MatchesConvoluteString(numBlob)) {
+            throw SPXParseException(cn + mn + "Numerator blob should have a \"convolute\" style, but does not");
+        }
+
+        //Error if numBlob does NOT match a convolute string
+        if(!MatchesConvoluteString(denBlob)) {
+            throw SPXParseException(cn + mn + "Denominator blob should have a \"convolute\" style, but does not");
+        }
+
+        //Get the grid/pdf steering files from the numerator
+        numBlob = SPXStringUtilities::RemoveCharacters(numBlob, "()");
+        numBlob = SPXStringUtilities::RemoveCharacters(numBlob, "[]");
+        std::vector<std::string> v_num = SPXStringUtilities::CommaSeparatedListToVector(numBlob);
+        if(v_num.size() != 2) {
+            throw SPXParseException(cn + mn + "Numerator blob is NOT of the form \"[grid_file, pdf_file]\"");
+        }
+
+        numeratorConvoluteGridFile = v_num.at(0);
+        numeratorConvolutePDFFile  = v_num.at(1);
+
+        //Get the grid/pdf steering files from the denominator
+        denBlob = SPXStringUtilities::RemoveCharacters(denBlob, "()");
+        denBlob = SPXStringUtilities::RemoveCharacters(denBlob, "[]");
+        std::vector<std::string> v_den = SPXStringUtilities::CommaSeparatedListToVector(denBlob);
+        if(v_den.size() != 2) {
+            throw SPXParseException(cn + mn + "Denominator blob is NOT of the form \"[grid_file, pdf_file]\"");
+        }
+
+        denominatorConvoluteGridFile = v_den.at(0);
+        denominatorConvolutePDFFile = v_den.at(1);
+
+        //Check for alias
+        std::string numeratorGridAlias   = CheckForAlias(numeratorConvoluteGridFile, "grid");
+        std::string numeratorPDFAlias    = CheckForAlias(numeratorConvolutePDFFile, "pdf");
+
+        std::string denominatorGridAlias = CheckForAlias(denominatorConvoluteGridFile, "grid");
+        std::string denominatorPDFAlias  = CheckForAlias(denominatorConvolutePDFFile, "pdf");
+
+
+        //Use alias, if there is one, otherwise prepend directories
+        if(!numeratorConvoluteGridFile.compare(numeratorGridAlias)) {
+            numeratorConvoluteGridFile = gridDirectory + "/" + numeratorConvoluteGridFile;
+        } else {
+            numeratorConvoluteGridFile = numeratorGridAlias;
+        }
+        if(!numeratorConvolutePDFFile.compare(numeratorPDFAlias)) {
+            numeratorConvolutePDFFile = pdfDirectory + "/" + numeratorConvolutePDFFile;
+        } else {
+            numeratorConvolutePDFFile = numeratorPDFAlias;
+        }
+        if(!denominatorConvoluteGridFile.compare(denominatorGridAlias)) {
+            denominatorConvoluteGridFile = gridDirectory + "/" + denominatorConvoluteGridFile;
+        } else {
+            denominatorConvoluteGridFile = denominatorGridAlias;
+        }
+        if(!denominatorConvolutePDFFile.compare(denominatorPDFAlias)) {
+            denominatorConvolutePDFFile = pdfDirectory + "/" + denominatorConvolutePDFFile;
+        } else {
+            denominatorConvolutePDFFile = denominatorPDFAlias;
+        }
+
+        if(debug) {
+            std::cout << cn << mn << "Successfully parsed convolute / convolute string: " << std::endl;
+            std::ostringstream oss;
+            oss << "[" << numeratorConvoluteGridFile << ", " << numeratorConvolutePDFFile << "]" << " / " << denominatorConvoluteGridFile;
+            ratioString = oss.str();
+            std::cout << "\t " << ratioString << std::endl;
+        }
+    }
+
+    //
     else if(ratioStyle.IsDataOverData()) {
         if(debug) std::cout << cn << mn << "Data Over Data" << std::endl;
 
@@ -570,7 +646,36 @@ void SPXRatio::Divide(void) {
   if (debug) std::cout<<cn<<mn<<" ratioStyle.IsConvoluteOverNominal "<<std::endl;
 
   std::cout<<cn<<mn<<" ratioStyle.IsConvoluteOverNominal() nothing implemented yet "<<std::endl;
- 
+  throw SPXGraphException(cn + mn + "ratioStyle.IsConvoluteOverNominal() nothing implemented yet");
+
+ } else if(ratioStyle.IsConvoluteOverConvolute()) { 
+  if (debug) std::cout<<cn<<mn<<"HUHU ratiostyle is convolute / convolute  "<<std::endl;
+
+  if (numeratorGraph.size()==0)
+   throw SPXGraphException(cn + mn + "No numeratorGraph found !");
+  
+  //Match the convolute binning to the denominator binning
+  if (MatchBinning) {
+   try {
+    for (int i=0; i<numeratorGraph.size(); i++){
+     SPXGraphUtilities::MatchBinning(numeratorGraph[i], denominatorGraph, true);
+    }
+   } catch(const SPXException &e) {
+    std::cerr << e.what() << std::endl;
+    throw SPXGraphException(cn + mn + "Unable to match convolute binning to data binning");
+   }
+
+   //Match the convolute binning to the denominator binning
+   try {
+    for (int i=0; i<numeratorGraphstatonly.size(); i++){
+     SPXGraphUtilities::MatchBinning(numeratorGraphstatonly[i], denominatorGraph, true);
+    }
+   } catch(const SPXException &e) {
+    std::cerr << e.what() << std::endl;
+    throw SPXGraphException(cn + mn + "Unable to match convolute binning to data binning");
+   }
+  }
+
  } else {
   if (debug) std::cout<<cn<<mn<<"No special ratiostyle  "<<std::endl;
  }
@@ -601,10 +706,18 @@ void SPXRatio::Divide(void) {
 
   if (debug) std::cout <<cn<<mn<<"Number of numeratorGraphs= "<<numeratorGraph.size()<<std::endl;
 
+  if (!denominatorGraph)
+   throw SPXGraphException(cn + mn + "No denominator Graph found !");
+
   for (int i=0; i<numeratorGraph.size(); i++){
 
+   if (!numeratorGraph.at(i)) {
+    std::cout <<cn<<mn<<"Number of numeratorGraph["<<i<<"] not found "<<std::endl;
+    throw SPXGraphException(cn + mn + "numeratorGraph not found ! ");
+   }
+
    if (debug) {
-     std::cout <<cn<<mn<<"numeratorGraph["<<i<<"]= "<<numeratorGraph[i]->GetName()
+     std::cout <<cn<<mn<<"numeratorGraph["<<i<<"]= "<<numeratorGraph.at(i)->GetName()
                <<" nbin= "<<numeratorGraph[i]->GetN()
                <<" denominatorGraph= "<<denominatorGraph->GetName()
                <<" nbin= "<<denominatorGraph->GetN()
@@ -1161,7 +1274,6 @@ void SPXRatio::GetGraphs(void) {
   } else
    if(debug) std::cout << cn << mn << "Found denominatorGraph= " << denominatorGraph->GetName() << std::endl;
 
-
   if( convoluteFilePDFMap->count(convoluteKey) == 0) {
    PrintConvoluteFilePDFMapKeys(std::cerr);
 
@@ -1170,19 +1282,9 @@ void SPXRatio::GetGraphs(void) {
    throw SPXGraphException(cn + mn + oss.str());
   } 
 
-  // for(StringPairGraphMap_T::const_iterator it = convoluteFileGraphMap->begin(); it !=  convoluteFileGraphMap->end(); ++it) 
-  //{
-
-  // StringPair_T convoluteKeytmp =it->first;
-  //if(debug) std::cout << cn << mn << "convoluteFileGraphMap["<<convoluteKeytmp.first << ", " << convoluteKeytmp.second << "]"<<std::endl; 
-  //numeratorGraph.push_back((*convoluteFileGraphMap)[convoluteKey]);
-  //numeratorGraph.push_back(it->second);
-
   if (debug) {
    std::cout<<cn<<mn<<"Look for convolute key [" <<convoluteKey.first.c_str()<<", "<< convoluteKey.second.c_str()<<"]"<< std::endl;
   }
-
- 
 
   SPXPDF *pdf= (*convoluteFilePDFMap)[convoluteKey];
   if (!pdf) throw SPXGraphException(cn + mn + "PDF not found ");
@@ -1341,6 +1443,117 @@ void SPXRatio::GetGraphs(void) {
   //}
   //  
  }
+
+ if(ratioStyle.IsConvoluteOverConvolute()) {
+  if (debug) std::cout<<cn<<mn<<"IsConvoluteOverConvolute "<<std::endl;
+  if(!os.ContainsConvolute()) {
+   throw SPXGraphException(cn + mn + "Overlay Style does NOT contain \"convolute\", yet a ratio with convolute is specified: " + ratioStyle.ToString());
+  }
+
+  //if(debug) {
+  // std::cout << cn << mn << "numeratorConvoluteGridFile= " << numeratorConvoluteGridFile<< std::endl;
+  // std::cout << cn << mn << "denominatorConvoluteGridFile= " << denominatorConvoluteGridFile<< std::endl;
+  // std::cout << cn << mn << "numeratorConvolutePDFFile= " << numeratorConvolutePDFFile<< std::endl;
+  // std::cout << cn << mn << "denominatorConvolutePDFFile= " << denominatorConvolutePDFFile<< std::endl;
+  //}
+
+  StringPair_T numeratorconvoluteKey   = StringPair_T(numeratorConvoluteGridFile, numeratorConvolutePDFFile);
+  StringPair_T denominatorconvoluteKey = StringPair_T(denominatorConvoluteGridFile, denominatorConvolutePDFFile);
+
+  if(debug) {
+   std::cout << cn << mn << "numerator Convolute Key = [" << numeratorconvoluteKey.first << ", " << numeratorconvoluteKey.second << "]" << std::endl;
+   std::cout << cn << mn << "denominator Convolute Key = [" << denominatorconvoluteKey.first << ", " << denominatorconvoluteKey.second << "]" << std::endl;
+  }
+
+  if( convoluteFilePDFMap->count(denominatorconvoluteKey) == 0) {
+   PrintConvoluteFilePDFMapKeys(std::cerr);
+
+   std::ostringstream oss;
+   oss << "convoluteFilePDFMap[" << denominatorconvoluteKey.first<<","<<denominatorconvoluteKey.second << "] was not found: Invalid key";
+   throw SPXGraphException(cn + mn + oss.str());
+  } 
+
+  if( convoluteFilePDFMap->count(numeratorconvoluteKey) == 0) {
+   PrintConvoluteFilePDFMapKeys(std::cerr);
+
+   std::ostringstream oss;
+   oss << "convoluteFilePDFMap[" << numeratorconvoluteKey.first<<","<<numeratorconvoluteKey.second << "] was not found: Invalid key";
+   throw SPXGraphException(cn + mn + oss.str());
+  } 
+
+  if (debug) {
+   std::cout<<cn<<mn<<"Look for numerator convolute key [" <<numeratorconvoluteKey.first.c_str()<<", "<< numeratorconvoluteKey.second.c_str()<<"]"<< std::endl;
+   std::cout<<cn<<mn<<"Look for denominator convolute key [" <<denominatorconvoluteKey.first.c_str()<<", "<< denominatorconvoluteKey.second.c_str()<<"]"<< std::endl;
+  }
+
+  //
+
+  if (convoluteFilePDFMap->count(denominatorconvoluteKey) == 0) {
+   std::cout<<cn<<mn<<"ConvoluteOverConvolute key [" <<denominatorconvoluteKey.first.c_str()<<", "<< denominatorconvoluteKey.second.c_str()<<"] not found !"<< std::endl;   
+
+   PrintConvoluteFilePDFMapKeys(std::cout);
+  } else if (debug) {
+   std::cout<<cn<<mn<<"ConvoluteOverConvolute key [" <<denominatorconvoluteKey.first.c_str()<<", "<< denominatorconvoluteKey.second.c_str()<<"] found !"<< std::endl;   
+  }
+
+  SPXPDF *denominatorpdf= (*convoluteFilePDFMap)[denominatorconvoluteKey];
+  if (!denominatorpdf) {
+   std::cout<<cn<<mn<<"ConvoluteOverConvolute PDF not found !"<< std::endl;      
+   PrintConvoluteFilePDFMapKeys(std::cout);
+   throw SPXGraphException(cn + mn + "denominator PDF object not found ! ");
+  }
+  else 
+   std::cout << cn << mn << "Found pdf= " << denominatorpdf->GetPDFName() << std::endl;
+
+  int denominatornbands=denominatorpdf->GetNBands();
+  if (denominatornbands==0)  std::cout << cn << mn << "No denominator bands found " << std::endl;   
+  else std::cout << cn << mn << "Number of denominator band nbands= " << denominatornbands << std::endl;   
+
+  TGraphAsymmErrors * mygband=0;
+  for (int iband=0; iband<denominatornbands; iband++) {
+   TGraphAsymmErrors * gband   =denominatorpdf->GetBand(iband);
+   std::string         gtype   =denominatorpdf->GetBandType(iband);
+   if (!gband) throw SPXParseException(cn+mn+"denomaintor gband not found !");
+   if (debug) std::cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<std::endl;
+   TString gname=gband->GetName();
+   if (gname.Contains("_total_")) mygband=gband; 
+  }
+  if (!mygband) {
+   if (!denominatorpdf->GetBand(0)) throw SPXParseException(cn+mn+"no denominator band found in PDF !");
+   mygband=denominatorpdf->GetBand(0);
+  }
+
+  if (debug) std::cout << cn << mn << "use as denominator graph " << mygband->GetName() << std::endl;
+
+  denominatorGraph=mygband;
+  //
+
+   
+  SPXPDF *numeratorpdf= (*convoluteFilePDFMap)[numeratorconvoluteKey];
+  if (!numeratorpdf) throw SPXGraphException(cn + mn + "numerator PDF not found ");
+  else 
+   std::cout << cn << mn << "Found numerator pdf= " << numeratorpdf->GetPDFName() << std::endl;
+
+  int numeratornbands=numeratorpdf->GetNBands();
+   
+  for (int iband=0; iband<numeratornbands; iband++) {
+   TGraphAsymmErrors * gband   =numeratorpdf->GetBand(iband);
+   std::string         gtype   =numeratorpdf->GetBandType(iband);
+   if (!gband) throw SPXParseException(cn+mn+"numerator gband not found !");
+   if (debug) std::cout << cn <<mn<<"Band "<<gband->GetName()<<" type= "<<gtype.c_str()<<std::endl;
+   numeratorGraph.push_back(gband);
+  }
+   
+  //Make sure graphs are valid
+  if(numeratorGraph.size()==0) {
+   std::ostringstream oss;
+   oss <<cn<<mn<<"TGraph numeratorGraph has zero size at convoluteFileGraphMap[" << numeratorconvoluteKey.first.c_str() << "]";
+   throw SPXGraphException(cn + mn + oss.str());
+  }
+
+ }
+
+ return;
 }
 
 bool SPXRatio::MatchesConvoluteString(std::string &s) {
@@ -1446,7 +1659,6 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
      hedgelow ->SetLineWidth(linewidth);
 
      if (debug) {
-     //std::cout<<cn<<mn<<"HUHU HistoProperties "<<std::endl;
       SPXGraphUtilities::SPXPrintHistoProperties(hedgehigh);
       SPXGraphUtilities::SPXPrintHistoProperties(hedgelow);
      } 

@@ -678,7 +678,7 @@ void SPXPDF::Initialize()
    //gridNameAlternativeScaleChoice+=gridName;
    name+="_"+gridNameAlternativeScaleChoice;
   }
-  //std::cout<<cn<<mn<<"HUHU set h_AlternativeScaleChoice_results to name= "<<name<<std::endl;
+
   name=GetName(name);
   if (h_AlternativeScaleChoice_results) h_AlternativeScaleChoice_results->SetName(name.c_str());
  }
@@ -686,7 +686,6 @@ void SPXPDF::Initialize()
  if (do_PDFBand) {
   h_PDF_results=SPXGraphUtilities::TH1TOTGraphAsymm(temp_hist);
   std::string name="xsec_pdf_"+default_pdf_set_name;
-  //if (spxgrid) name+="_"+gridName;
   name=GetName(name);
   if (h_PDF_results) h_PDF_results->SetName(name.c_str());
  }
@@ -3223,8 +3222,6 @@ std::string SPXPDF::GetName(std::string basename) {
  if (this->GetParameterScan()){
   std::string parname=spxgrid->GetParameterName();
   // replace from algorithm header
-  //std::replace( parname.begin(), parname.end(), '{', '');
-  //std::replace( parname.begin(), parname.end(), '}', '');
   parname.erase(std::remove(parname.begin(), parname.end(), '{'), parname.end());
   parname.erase(std::remove(parname.begin(), parname.end(), '}'), parname.end());
 
@@ -3232,6 +3229,13 @@ std::string SPXPDF::GetName(std::string basename) {
 
   parname+=Form("_%d",parvalue);
   name+="_"+parname; 
+ } else {
+
+  if (spxgrid) {
+   std::string gridname=gridName;
+   gridname.erase(std::remove(gridname.begin(), gridname.end(), '/'), gridname.end());
+   name+="_"+gridname;
+  }
  }
 
  if (debug)
