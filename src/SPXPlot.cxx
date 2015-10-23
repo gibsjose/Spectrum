@@ -108,7 +108,19 @@ void SPXPlot::Plot(void) {
 	 SPXpValue* pvalue= new SPXpValue(data,crossSections, steeringFile);
          pvalue->SetPlotNumber(id);         
 
-	} 
+         pvalue->GetDataTheoryAndUncertainties();         
+         
+	 //std::cout<<cn<<mn<<"id= "<<id<<std::endl;
+	 //std::cout<<cn<<mn<<"Number of plots= "<<steeringFile->GetNumberOfPlotConfigurations()<<std::endl;
+
+         if (id==steeringFile->GetNumberOfPlotConfigurations()-1) {
+	   //std::cout<<cn<<mn<<"calling SPXpValue finalize method "<<std::endl;
+          pvalue->Finalize();         
+         }
+
+	} else {
+	 std::cout<<cn<<mn<<"calculate_chi2 option not ON SPXpValue not called "<<id<<std::endl;
+        } 
 
 	SPXCImodel* pcimodel= new SPXCImodel(data,crossSections, steeringFile);
         pcimodel->SetPlotNumber(id); 
@@ -1922,7 +1934,8 @@ void SPXPlot::DrawLegend(void) {
 
     if (debug) std::cout<<cn<<mn<<"All bands have same properties !"<< std::endl;
 
-    if (!pdfsdifferent&&!ratioonly) {
+    //if (!pdfsdifferent&&!ratioonly) {
+    if (!pdfsdifferent) {
      TString opt="";
      if (steeringFile->GetPlotMarker()) opt="P";
      if (steeringFile->GetPlotBand()) opt="LF";

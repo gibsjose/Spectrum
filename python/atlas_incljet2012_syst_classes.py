@@ -44,6 +44,10 @@ if __name__ == "__main__":
  graph.order_systematic_colorbyalphabeth=True
  #graph.calculate_chi2 = 1
 
+ graph.label_chi2=False
+ graph.grid_parameter_scan=False
+ graph.alternative_grid_divided_by_doublediff_bin_width=False
+
  graph.label_sqrt_s=True 
 
  graph.x_legend=0.45
