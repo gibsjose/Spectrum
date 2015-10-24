@@ -20,6 +20,10 @@
 #include "SPXSteeringFile.h"
 #include "SPXException.h"
 
+#ifdef DEVELOP
+#include "SPXpValue.h"
+#endif      
+
 class SPXAnalysis {
 
 public:

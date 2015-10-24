@@ -33,6 +33,8 @@ SPXData::SPXData(const SPXPlotConfigurationInstance &pci) {
  RemoveXbins=this->pci.dataSteeringFile.GetDataRemoveXbinsFlag();
  if (debug) std::cout<<cn<<mn<<"RemoveXbins "<< ( RemoveXbins ? "ON" : "OFF")<< std::endl;
 
+ datafilename=this->pci.dataSteeringFile.GetFilename();
+
 
  if (RemoveXbins) {
   DataCutXmin=this->pci.dataSteeringFile.GetDataCutXmin();
@@ -2039,7 +2041,7 @@ std::vector <TGraphAsymmErrors *>  SPXData::GetSystematicsErrorGraphs(void){
   
     if ((eyh<0 && eyl<0) || (eyh>0 && eyl>0) ) {
      std::ostringstream oss;
-     oss << cn<<mn<<"WARNING: in "<<sname<<" ibin= "<<ibin<<" errors have same sign:  eyh= "<<eyh<<" eyl= "<<eyl;  
+     oss << cn<<mn<<"INFO: in "<<sname<<" ibin= "<<ibin<<" errors have same sign:  eyh= "<<eyh<<" eyl= "<<eyl;  
      std::cout<<oss.str()<<std::endl;
      std::cerr<<oss.str()<<std::endl;
     }

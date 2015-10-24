@@ -23,6 +23,10 @@ const std::string cn = "SPXPlot::";
 //Must define the static debug variable in the implementation
 bool SPXPlot::debug;
 
+#ifdef DEVELOP
+SPXpValue* pvalue;
+#endif
+
 #ifdef TIMER
 class quick_timer { 
 public:
@@ -97,20 +101,25 @@ void SPXPlot::Plot(void) {
 #ifdef DEVELOP
         if (steeringFile->GetCalculateChi2()>0){       
 
-         if (debug) {
- 	  std::cout<<" "<<std::endl;
-	  std::cout<<cn<<mn<<"Now call pValue calculation "<<std::endl;
-	  std::cout<<cn<<mn<<"Data size "<<data.size()<<std::endl;
-	  std::cout<<cn<<mn<<"CrossSection size "<<crossSections.size()<<std::endl;
-	  std::cout<<cn<<mn<<"id= "<<id<<std::endl;
+	  //if (debug) {
+ 	  //std::cout<<" "<<std::endl;
+	  //std::cout<<cn<<mn<<"Now call pValue calculation "<<std::endl;
+	  //std::cout<<cn<<mn<<"Data size "<<data.size()<<std::endl;
+	  //std::cout<<cn<<mn<<"CrossSection size "<<crossSections.size()<<std::endl;
+	  //std::cout<<cn<<mn<<"id= "<<id<<std::endl;
+	  //}
+
+	 //SPXpValue* pvalue= new SPXpValue(data,crossSections, steeringFile);
+         if (id==0) {
+          pvalue = new SPXpValue(); //class to analyze data and theory agreement
+          pvalue->SetSteeringFile(steeringFile); 
          }
 
-	 SPXpValue* pvalue= new SPXpValue(data,crossSections, steeringFile);
          pvalue->SetPlotNumber(id);         
+         pvalue->SetDataandTheory(data,crossSections);
+         //pvalue->GetDataTheoryAndUncertainties();         
 
-         pvalue->GetDataTheoryAndUncertainties();         
-         
-	 //std::cout<<cn<<mn<<"id= "<<id<<std::endl;
+         //std::cout<<cn<<mn<<"id= "<<id<<std::endl;
 	 //std::cout<<cn<<mn<<"Number of plots= "<<steeringFile->GetNumberOfPlotConfigurations()<<std::endl;
 
          if (id==steeringFile->GetNumberOfPlotConfigurations()-1) {

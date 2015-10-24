@@ -85,6 +85,10 @@ public:
          TakeSignforTotalError=mybool; 
         }
 
+        const std::string & GetDataFileName(void) {
+	 return datafilename;          
+        }
+
 	const SPXDataFormat & GetDataFormat(void) {
 		return pci.dataSteeringFile.GetDataFormat();
 	}
@@ -242,6 +246,8 @@ public:
 private:
 	static bool debug;		   //Flag indicating debug mode
 	std::ifstream *dataFile;	   //Must declare as pointer... ifstream's copy constructor is private
+
+	std::string datafilename;          // Name of data file 
 	SPXPlotConfigurationInstance pci;  //Frame options instance which contains the data steering file as well as the plot options
 	SPXDataFormat dataFormat;	   //Format of this data: Included directly simply to cut down on syntax in implementation
 	bool dividedByBinWidth;		   //Flag indicating whether the initial data was already divided by the bin width
