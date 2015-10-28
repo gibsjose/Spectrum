@@ -427,7 +427,7 @@ void SPXData::ParseSpectrum(void) {
 
         if (debug&&RemoveXbins) {
 	 std::cout<<cn<<mn<<"After looping over data: The following bins will be kept: " << std::endl;
-	 std::cout<<cn<<mn<<"INFO keepbin[ keptbinindex ]= newbinindex " <<std::endl;
+	 std::cout<<cn<<mn<<"INFO: keepbin[ keptbinindex ]= newbinindex " <<std::endl;
 	 for(std::map<int,int>::iterator it = keepbin.begin(); it != keepbin.end(); it++)
 	   std::cout<<cn<<mn <<"keepbin["<<it->first<<"]= " <<  it->second<<std::endl;
 
@@ -582,7 +582,7 @@ void SPXData::ParseSpectrum(void) {
         /*
         if (debug&&RemoveXbins) {
 	 std::cout<<cn<<mn << "The following bins will be kept: " << std::endl;
-	 std::cout<<cn<<mn << "INFO keepbin[ keptbinindex ]= newbinindex " <<std::endl;
+	 std::cout<<cn<<mn << "INFO: keepbin[ keptbinindex ]= newbinindex " <<std::endl;
 	 for(std::map<int,int>::iterator it = keepbin.begin(); it != keepbin.end(); it++)
 	  std::cout<<cn<<mn << " keepbin["<<it->first<<"]= " <<  it->second <<std::endl;
 
@@ -1341,10 +1341,10 @@ void SPXData::ReadCorrelation()
  if (corrstatfilename.size()>0) hasstatistical=true;
 
  if (hastotal)
-  std::cout <<cn<<mn<<"INFO Total correllation matrix provided ! "<< std::endl; 
+  std::cout <<cn<<mn<<"INFO: Total correllation matrix provided ! "<< std::endl; 
 
  if (hasstatistical)
-  std::cout <<cn<<mn<<"INFO Statistical correllation matrix provided ! "<< std::endl; 
+  std::cout <<cn<<mn<<"INFO: Statistical correllation matrix provided ! "<< std::endl; 
 
  // create covariance and correlation matrices
  const int nbin=totalErrorGraph->GetN();
@@ -1386,7 +1386,7 @@ void SPXData::ReadCorrelation()
    corr_matrixstat  = new TMatrixT<double>(nbin, nbin);
    corr_matrixstat->UnitMatrix();
 
-   if (debug) std::cout <<cn<<mn<<"INFO correlation matrix is unity ! "<< std::endl; 
+   if (debug) std::cout <<cn<<mn<<"INFO: correlation matrix is unity ! "<< std::endl; 
 
    for (int ibin=0; ibin<nbin; ibin++){
     double eystath=statisticalErrorGraph->GetErrorYhigh(ibin);
@@ -1415,7 +1415,7 @@ void SPXData::ReadCorrelation()
   }
 
   if (debug) 
-   std::cout<<cn<<mn<<"INFO Calculate systematic covariance matrix from systematic components ! "<< std::endl; 
+   std::cout<<cn<<mn<<"INFO: Calculate systematic covariance matrix from systematic components ! "<< std::endl; 
 
   if (individualSystematics.size()==0) {
    std::cout<<cn<<mn<<"WARNING no systematics components found ! "<< std::endl; 
@@ -1477,9 +1477,9 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
  }
 
  //Bin count to make sure that always the same number of bins is read
- unsigned int bin_count = 0;
+ unsigned int bin_count = -1; //first index is zero
  // Line count
- unsigned int line_count = 0;
+ unsigned int line_count = -1; //first index is zero
 
  //Number of columns (used to determine symmetric, asymmetric, or no total systematic error)
  unsigned int numberOfColumns = 0;
@@ -1522,7 +1522,10 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
    if (TString(line).Contains("is_totalerror"))       istotal=true;
    if (TString(line).Contains("is_statisticserror"))  isstat=true;
 
-   if (isdigit((int)SPXStringUtilities::LeftTrim(line).at(0)) || line.at(0)=='-') {
+   if (isdigit((int)SPXStringUtilities::LeftTrim(line).at(0))) std::cout<<cn<<mn<<"is digit "<<std::endl;
+   if (line.at(0)=='-') std::cout<<cn<<mn<<"starts with minus sign "<<std::endl;
+
+   if (isdigit((int)SPXStringUtilities::LeftTrim(line).at(0)) || SPXStringUtilities::LeftTrim(line).at(0)=='-') {
     //if(debug) std::cout << cn << mn << bin_count<<" Line: " << line << std::endl;
 
     //Convert all tabs to spaces
@@ -1548,7 +1551,7 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
       std::cout<<cn<<mn<<"Remove bins with values < "<<DataCutXmin<<" and > "<<DataCutXmax<<std::endl;
 
       std::cout<<cn<<mn<<"After looping over data: The following bins will be kept: " << std::endl;
-      std::cout<<cn<<mn<<"INFO keepbin[ keptbinindex ]= newbinindex " <<std::endl;
+      std::cout<<cn<<mn<<"INFO: keepbin[ keptbinindex ]= newbinindex " <<std::endl;
       for (std::map<int,int>::iterator it = keepbin.begin(); it != keepbin.end(); it++) {
        std::cout<<cn<<mn <<"keepbin["<<it->first<<"]= " <<  it->second<<std::endl;
       }
@@ -1558,7 +1561,7 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
 
      std::vector<double> vrowtmp;
      for (int i=0; i<vrow.size(); i++) {
-      if (debug) std::cout<<cn<<mn<<"vrow[ "<<i<<"]= "<<vrow.at(i)<<std::endl;
+      if (debug) std::cout<<cn<<mn<<"line= "<<line_count<<" vrow[ "<<i<<"]= "<<vrow.at(i)<<std::endl;
       if (keepbin.count(i)>0) {
        vrowtmp.push_back(vrow.at(i));
       } else {
@@ -1572,7 +1575,6 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
      }
      // replace vrow vector
      vrow=vrowtmp;
-
     }
 
     //
@@ -1591,16 +1593,19 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
       if (debug) std::cout<<cn<<mn<<"vmatrix are bin_count= "<<bin_count<<" is filled with vrow["<<line_count<<"]"<<std::endl;
       vmatrix.push_back(vrow);
      } else {
-      if (debug) std::cout<<cn<<mn<<"bin is removed from vmatrix "<<std::endl;
+      if (debug) std::cout<<cn<<mn<<"bin "<<bin_count<<" is removed from vmatrix "<<std::endl;
      }
     } else {
      bin_count++;
      vmatrix.push_back(vrow);
     }
-    //if (debug) std::cout<<cn<<mn<<"pushed vrow to matrix bin_count= " << bin_count << std::endl;
+
+    if (debug) std::cout<<cn<<mn<<"pushed vrow to matrix bin_count= " << bin_count << std::endl;
+
    } //else if (debug) std::cout<<cn<<mn<<"Line does not start with a digit " << line.c_str() << std::endl;
   } //else if (debug)  std::cout<<cn<<mn<<"Line  " << line.c_str() << std::endl;
  }
+
 
  /*
  if (debug) {
@@ -1616,21 +1621,26 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
 
  if (debug) {
   std::cout<<cn<<mn<<"  " << std::endl;
-  if (isstat)  std::cout<<cn<<mn<<"Matrix " << filename<<" has statistical correllation " << std::endl;
-  if (istotal) std::cout<<cn<<mn<<"Matrix " << filename<<" has total correlation " << std::endl;
+  if (isstat)  std::cout<<cn<<mn<<"Matrix " << filename<<" has statistical covariance/correllation matrix " << std::endl;
+  if (istotal) std::cout<<cn<<mn<<"Matrix " << filename<<" has total covariance/correlation matrix" << std::endl;
  }
+
 
  if (isstat&&istotal) {
   std::ostringstream oss;
   oss <<cn<<mn<< "Matrix " << filename<<" can either have statistical or total correllation; do not know what to do !";
+  std::cout<<oss.str()<<std::endl;
   throw SPXParseException(oss.str());
  }
+
 
  if (!isstat&&!istotal) {
   std::ostringstream oss;
   oss <<cn<<mn<< "Matrix " << filename<<" has to have either statistical or total correlation; do not know what to do !";
+  std::cout<<oss.str()<<std::endl;
   throw SPXParseException(oss.str());
  }
+
 
  if (debug) {
   std::cout<<cn<<mn<<"  " << std::endl;
@@ -1639,78 +1649,84 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
   std::cout<<cn<<mn<<"  " << std::endl;
  }
 
+
  if (iscorrelationmatrix&&iscovariancematrix) {
   std::ostringstream oss;
   oss <<cn<<mn<< "Matrix " << filename<<" can either be correlation or covariance matrix; do not know what to do !";
+  std::cout<<oss.str()<<std::endl;
   throw SPXParseException(oss.str());
  }
+
 
  if (!iscorrelationmatrix&&!iscovariancematrix) {
   std::ostringstream oss;
   oss <<cn<<mn<< "Matrix " << filename<<" has to be either correlation or covariance matrix; do not know what to do !";
+  std::cout<<oss.str()<<std::endl;
   throw SPXParseException(oss.str());
  }
+
 
  if (isstat&&cov_matrixstat==0) {
   std::ostringstream oss;
   oss <<cn<<mn<< "Matrix " << filename<<" is statistical, but matrix is not provided !";
+  std::cout<<oss.str()<<std::endl;
   throw SPXParseException(oss.str());
  } 
 
  if (istotal&&cov_matrixtot==0) {
   std::ostringstream oss;
   oss <<cn<<mn<< "Matrix " << filename<<" is total, but matrix is not provided !";
+  std::cout<<oss.str()<<std::endl;
+  throw SPXParseException(oss.str());
+ } 
+
+ if (totalErrorGraph->GetN()!=vmatrix.size()) {
+  std::ostringstream oss;
+  oss <<cn<<mn<< "Mismatch in number of bins is total from cross-section table= "
+              <<totalErrorGraph->GetN()<<" from covariance matrix= "<<vmatrix.size();
+  std::cout<<oss.str()<<std::endl;
   throw SPXParseException(oss.str());
  } 
 
  //
  // now fill correlation and covariance matrix
  //
- for (int row_num=0; row_num<vmatrix.size(); row_num++) {
- 
-  double row_data_err=0., col_data_err=0.;
 
-  if (istotal) {
-  row_data_err = 0.5*(totalErrorGraph->GetErrorYhigh(row_num) + totalErrorGraph->GetErrorYlow(row_num));
-  }
-  if (isstat) {
-  row_data_err = 0.5*(statisticalErrorGraph->GetErrorYhigh(row_num) + statisticalErrorGraph->GetErrorYlow(row_num));
-  }
+ for (int row_num=0; row_num<vmatrix.size(); row_num++) { 
+  for (int col_num=0; col_num<vmatrix[row_num].size(); col_num++) {
+   double  val=vmatrix[row_num][col_num];
+   double cval=vmatrix[row_num][row_num]*vmatrix[col_num][col_num];
 
-  vrow=vmatrix[row_num];
-
-  for (int col_num=0; col_num<vrow.size(); col_num++) {
-   if (istotal) {
-    col_data_err = 0.5*(totalErrorGraph->GetErrorYhigh(col_num) + totalErrorGraph->GetErrorYlow(col_num));
-   }
-   if (isstat) {
-    col_data_err = 0.5*(statisticalErrorGraph->GetErrorYhigh(col_num) + statisticalErrorGraph->GetErrorYlow(col_num));
+   if (cval<0) {
+    std::cout<<cn<<mn<<"WARNING value can not be negative col_num="<<col_num
+                        <<" row_num= "<<row_num<<std::endl;
+    std::cerr<<cn<<mn<<"WARNING value can not be negative "<<std::endl;
+    cval=0.; 
+   } else {
+    cval=sqrt(cval);
    }
 
-   double val=vrow[col_num];
-
-   if (row_num==col_num) { 
-    if (iscovariancematrix) {
-     col_data_err=sqrt(val);
-     row_data_err=sqrt(val);
-    }
-   }
-
-  //if (debug) {
-  // std::cout <<cn<< " row_num= "<<row_num<< " col_num "<<col_num<<" val= "<<val<<std::endl;
-  // std::cout <<cn<< " row_data_err= "<<row_data_err<< " col_data_err= "<<col_data_err<<std::endl;
-  //}
+   //if (debug) {
+   //std::cout<<cn<<mn<<"row_num= "<<row_num<< " col_num "<<col_num<<" val= "<<val<<std::endl;
+   //}
 
    // correlation matrix divided by total error in row/col
    double cov_val = 0., corr_val=0.;
    if (iscovariancematrix) {
     cov_val =val;
-    corr_val=val/(row_data_err*col_data_err);
+    //corr_val=val/(row_data_err*col_data_err);
+    corr_val=val/(cval);
    }
    if (iscorrelationmatrix) {
-    cov_val =corr_val*row_data_err*col_data_err;
+    //cov_val =corr_val*row_data_err*col_data_err;
+    cov_val =corr_val*cval;
     corr_val=val;
    } 
+   if (debug) {
+    std::cout<<cn<<mn<<"row_num= "<<row_num<< " col_num "<<col_num<<" val= "<<val
+	             <<" cov_val= "<<cov_val<< " corr_val= "<<corr_val<<std::endl;
+   }
+
    if (istotal) {
     (*cov_matrixtot )(row_num, col_num) = cov_val;
     (*corr_matrixtot)(row_num, col_num)= corr_val;
@@ -1878,7 +1894,7 @@ StringDoubleVectorMap_T SPXData::SymmetrizeSystemicUncertaintiesMatrix(StringDou
     sname.ReplaceAll("-","");
     symsystmap[std::string(sname.Data())]=vtmp;
    } else {
-    std::cout<<cn<<mn<<"INFO Corresponding negative systematic sname= "<< sname <<" not found !" << std::endl;
+    std::cout<<cn<<mn<<"INFO: Corresponding negative systematic sname= "<< sname <<" not found !" << std::endl;
    } 
   } else if (name.find("-") != std::string::npos) {
    TString sname=TString(name);

@@ -6,7 +6,11 @@
 
 ## Change Log
 
-  --SPXRatio: include Convolue / Convolute
+  -SPXDATA: Removed bug in reading in covariance matrix starting with negative value
+            Removed bug reading in last line of covariance matrix 
+            corrected trasformation from covariance to correlation matrix
+
+  -SPXRatio: include Convolue / Convolute
 
   -SPXData: fixed problem for data tables with line with one whitespace
 
