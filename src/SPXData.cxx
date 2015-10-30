@@ -1522,8 +1522,8 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
    if (TString(line).Contains("is_totalerror"))       istotal=true;
    if (TString(line).Contains("is_statisticserror"))  isstat=true;
 
-   if (isdigit((int)SPXStringUtilities::LeftTrim(line).at(0))) std::cout<<cn<<mn<<"is digit "<<std::endl;
-   if (line.at(0)=='-') std::cout<<cn<<mn<<"starts with minus sign "<<std::endl;
+   //if (isdigit((int)SPXStringUtilities::LeftTrim(line).at(0))) std::cout<<cn<<mn<<"is digit "<<std::endl;
+   //if (line.at(0)=='-') std::cout<<cn<<mn<<"starts with minus sign "<<std::endl;
 
    if (isdigit((int)SPXStringUtilities::LeftTrim(line).at(0)) || SPXStringUtilities::LeftTrim(line).at(0)=='-') {
     //if(debug) std::cout << cn << mn << bin_count<<" Line: " << line << std::endl;
@@ -1532,9 +1532,9 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
     std::string formatted_line = SPXStringUtilities::ReplaceAll(line, "\t", " ");
     std::vector<double> vrow = SPXStringUtilities::ParseStringToDoubleVector(formatted_line, ' ');
 
-    if (debug) std::cout<<cn<<mn<<"Number of columns read: "<<vrow.size()<<" number of bins= "<<nbin<<std::endl;
-
     line_count++;
+
+    if (debug) std::cout<<cn<<mn<<line_count<<" Number of columns read: "<<vrow.size()<<" number of bins= "<<nbin<<std::endl;
 
     /*
     if (debug) {
@@ -1547,6 +1547,7 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
     */
 
     if (RemoveXbins) {
+     /*
      if (debug) {
       std::cout<<cn<<mn<<"Remove bins with values < "<<DataCutXmin<<" and > "<<DataCutXmax<<std::endl;
 
@@ -1556,23 +1557,23 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
        std::cout<<cn<<mn <<"keepbin["<<it->first<<"]= " <<  it->second<<std::endl;
       }
       std::cout<<cn<<mn <<" " <<std::endl;
-
      }
+     */
 
      std::vector<double> vrowtmp;
      for (int i=0; i<vrow.size(); i++) {
-      if (debug) std::cout<<cn<<mn<<"line= "<<line_count<<" vrow[ "<<i<<"]= "<<vrow.at(i)<<std::endl;
+       //if (debug) std::cout<<cn<<mn<<"line= "<<line_count<<" vrow[ "<<i<<"]= "<<vrow.at(i)<<std::endl;
       if (keepbin.count(i)>0) {
        vrowtmp.push_back(vrow.at(i));
       } else {
-       if (debug) std::cout<<cn<<mn<<"-----> Bin i= "<<i<<" is removed ! "<<std::endl;
+	if (debug) std::cout<<cn<<mn<<"-----> Bin i= "<<i<<" is removed ! "<<std::endl;
       }
      }
-     if (debug) {
-      for (int i=0; i<vrowtmp.size(); i++) {
-       if (debug) std::cout<<cn<<mn<<"vrowtmp[ "<<i<<"]= "<<vrowtmp.at(i)<<std::endl;
-      }
-     }
+     //if (debug) {
+     // for (int i=0; i<vrowtmp.size(); i++) {
+     //  if (debug) std::cout<<cn<<mn<<"vrowtmp[ "<<i<<"]= "<<vrowtmp.at(i)<<std::endl;
+     // }
+     //}
      // replace vrow vector
      vrow=vrowtmp;
     }
@@ -1590,7 +1591,7 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
     if (RemoveXbins) {
      if (keepbin.count(line_count)>0) {
       bin_count++;
-      if (debug) std::cout<<cn<<mn<<"vmatrix are bin_count= "<<bin_count<<" is filled with vrow["<<line_count<<"]"<<std::endl;
+      //if (debug) std::cout<<cn<<mn<<"vmatrix are bin_count= "<<bin_count<<" is filled with vrow["<<line_count<<"]"<<std::endl;
       vmatrix.push_back(vrow);
      } else {
       if (debug) std::cout<<cn<<mn<<"bin "<<bin_count<<" is removed from vmatrix "<<std::endl;
@@ -1600,7 +1601,7 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
      vmatrix.push_back(vrow);
     }
 
-    if (debug) std::cout<<cn<<mn<<"pushed vrow to matrix bin_count= " << bin_count << std::endl;
+    //if (debug) std::cout<<cn<<mn<<"pushed vrow to matrix bin_count= " << bin_count << std::endl;
 
    } //else if (debug) std::cout<<cn<<mn<<"Line does not start with a digit " << line.c_str() << std::endl;
   } //else if (debug)  std::cout<<cn<<mn<<"Line  " << line.c_str() << std::endl;
@@ -1722,10 +1723,13 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
     cov_val =corr_val*cval;
     corr_val=val;
    } 
+
+   /*
    if (debug) {
     std::cout<<cn<<mn<<"row_num= "<<row_num<< " col_num "<<col_num<<" val= "<<val
 	             <<" cov_val= "<<cov_val<< " corr_val= "<<corr_val<<std::endl;
    }
+   */
 
    if (istotal) {
     (*cov_matrixtot )(row_num, col_num) = cov_val;
@@ -1803,7 +1807,7 @@ void SPXData::CalculateSystematicCovarianceMatrix() {
 
   if (Nbin!=syst.size()) {
    std::ostringstream oss;
-   oss <<cn<<mn<< "Nbin= " << Nbin <<" not consistent with syst compenents vector size= "<<syst.size();
+   oss <<cn<<mn<<"Nbin= " << Nbin <<" not consistent with syst compenents vector size= "<<syst.size();
    throw SPXParseException(oss.str());
   }
 
@@ -1820,12 +1824,14 @@ void SPXData::CalculateSystematicCovarianceMatrix() {
     if (systtype) {   
      covmatrixsyst[ibin][jbin]+=syst.at(ibin)*syst.at(jbin);          
     } else { 
-     covmatrixuncorrsyst[ibin][jbin]+=syst.at(ibin)*syst.at(ibin);          
+     if (ibin==jbin) // uncorrelated systematic are in a diagonal matrix
+      covmatrixuncorrsyst[ibin][jbin]+=syst.at(ibin)*syst.at(jbin);          
     }
    }
   }
  }
 
+ // add up matrices of correlated and uncorrelated systematics
  for ( int ibin=0; ibin<Nbin; ibin++ ){
   for ( int jbin=0; jbin<Nbin; jbin++ ){
    covmatrixsyst[ibin][jbin]+=covmatrixuncorrsyst[ibin][jbin];          
@@ -1835,11 +1841,17 @@ void SPXData::CalculateSystematicCovarianceMatrix() {
  // Fill covariance matrix
  for (int ibin=0; ibin<Nbin; ibin++) {
   for (int jbin=0; jbin<Nbin; jbin++) {
-   //(*cov_matrixsyst)(ibin,jbin)=covmatrixsyst[ibin][jbin];
    (*cov_matrixsyst)(ibin,jbin)=covmatrixsyst[ibin][jbin];
-   double err=covmatrixsyst[ibin][ibin]*covmatrixsyst[jbin][jbin];
-   if (err>0) err=sqrt(err);
-   (*corr_matrixsyst)(ibin,jbin)=covmatrixsyst[ibin][jbin]/err;
+   double dia=covmatrixsyst[ibin][ibin]*covmatrixsyst[jbin][jbin];
+   if (dia>0.) {
+    dia=sqrt(dia);
+    (*corr_matrixsyst)(ibin,jbin)=covmatrixsyst[ibin][jbin]/dia;   
+   } else {    
+    std::cout<<cn<<mn<<"WARNING Diagonal element should not be negative !"<<std::endl;
+    std::cerr<<cn<<mn<<"WARNING Diagonal element should not be negative !"<<std::endl;
+    (*corr_matrixsyst)(ibin,jbin)=0.;
+   }
+
   }
  }
  

@@ -16,19 +16,14 @@ const std::string cn = "SPXChi2::";
 
 SPXChi2::SPXChi2(std::vector<SPXData*> data, std::vector<SPXCrossSection> crossSections, SPXSteeringFile *steeringFile) {
  std::string mn = "SPXChi2: ";
- debug=true;
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn); 
  
- //data=mydata;
- //crossSections= mycrossSections;
- // steeringFile=mysteeringFile;
-
  if (!steeringFile)  std::cout<<cn<<mn<<"Steering file not found "<<std::endl;
 
  if (data.size()==0) std::cout<<cn<<mn<<"No data object in vector"<<std::endl;
  else	             std::cout<<cn<<mn<<"Number of data objects= "<<data.size()<<std::endl;
 
- if (crossSections.size()==0) std::cout<<cn<<mn<< "No cross section object in vector"<<std::endl;
+ if (crossSections.size()==0) std::cout<<cn<<mn<<"No cross section object in vector"<<std::endl;
  else                         std::cout<<cn<<mn<<"Number of CrossSection objects: "<<crossSections.size()<<std::endl;
 
  if (steeringFile->GetCalculateChi2()==1){         
@@ -97,12 +92,15 @@ double SPXChi2::CalculateSimpleChi2(SPXPDF *pdf, SPXData *data) {
    throw SPXGeneralException(oss.str());
   }
 
-  // think if we need detailed uncertainty bands
-  // may be when calculating covariance matrix with pseudo-experiments
+  // Below needs to be replaced
   //
-  //TMatrixT<double> theory_cov_matrix(nbin, nbin);
   TMatrixT<double> *theory_cov_matrix = new TMatrixT<double>(nbin, nbin);
-
+  //
+  // This should be replaced by a loop over the individual components
+  // and could be moved to the cross section class
+  //
+  // for the moment we just have a diagonal matrix
+  //
   for (int pi1 = 0; pi1 < nbin; pi1++) {
    for (int pi2 = 0; pi2 < nbin; pi2++) {
     if ( pi1 != pi2 ) 
@@ -136,7 +134,7 @@ double SPXChi2::CalculateSimpleChi2(SPXPDF *pdf, SPXData *data) {
  // theory_tot_cov_matrix->Print();
  //}
 
- TMatrixT<double> *data_cov_matrix =data->GetDataTotalCovarianceMatrix();
+ TMatrixT<double> *data_cov_matrix=data->GetDataTotalCovarianceMatrix();
  if (!data_cov_matrix) {
   std::ostringstream oss;
   oss << cn <<mn<<"Data covariance matrix not found !";
@@ -154,15 +152,15 @@ double SPXChi2::CalculateSimpleChi2(SPXPDF *pdf, SPXData *data) {
  TMatrixT<double> *tot_cov_matrix = new TMatrixT<double>(*theory_cov_matrix,TMatrixD::kPlus,*data_cov_matrix);
 
  if (debug) {
-  std::cout<<cn<<mn<<"Toal covariance matrix: "<<std::endl;
+  std::cout<<cn<<mn<<"Total covariance matrix: "<<std::endl;
   tot_cov_matrix->Print();
  } 
 
- TMatrixT<double> invertex_cov_matrix = tot_cov_matrix->Invert(); //includes theory errors in diagonal elements
+ TMatrixT<double> inverted_cov_matrix = tot_cov_matrix->Invert(); //includes theory errors in diagonal elements
 
  if (debug) {
   std::cout<<cn<<mn<<"Inverted total covariance matrix: "<<std::endl;
-  invertex_cov_matrix.Print();
+  inverted_cov_matrix.Print();
  }
 
 
@@ -190,7 +188,7 @@ double SPXChi2::CalculateSimpleChi2(SPXPDF *pdf, SPXData *data) {
   //              <<" theory = "<<theory_val<<", content = "<<row_data_minus_theory(0,pi)<<std::endl;
   }  
 
-  TMatrixT<double> cov_times_col = invertex_cov_matrix*col_data_minus_theory;
+  TMatrixT<double> cov_times_col = inverted_cov_matrix*col_data_minus_theory;
   if (debug) {
    std::cout<<cn<<mn<<"After first multiplication matrix is: \n"<<std::endl;
    cov_times_col.Print();

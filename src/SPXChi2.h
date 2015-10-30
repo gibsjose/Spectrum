@@ -23,7 +23,7 @@
 #include "SPXCrossSection.h"
 #include "SPXPDF.h"
 
-static bool debug=false;
+static bool debug=true;
 
 class SPXChi2 {
 
