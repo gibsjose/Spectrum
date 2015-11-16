@@ -1,56 +1,32 @@
 ;==============================================================
 ;
 ; Description:
-;	Example PDF Steering File
 ;
-; Authors:
-;	Jon Doe
-;	Jean Pierre Larousse
-;	...
-;
-; Date:
-;	17.09.2014
-;
-; Other:
-;	Other information...
-;
-;==============================================================
-
-;--------------------------------------------------------------
-; NOTE:
-;
-; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
-;
-;	"  some_thing = "  <--- BAD
-;	"; some_thing = "  <--- OKAY
-;
-; If you forget to do this, some trailing comments could
-; be included in the option's value
 ;--------------------------------------------------------------
 
 ;==============================================================
 ; General Options
 ;==============================================================
 [GEN]
-debug = false
-
+debug = true
 ;==============================================================
 ; Description
 ;==============================================================
 [DESC]
-name = NNPDF23_nlo_as_0118 
-type = NNPDF23 ; general name used for printing etc
-order = 1
-num_members = 101
+name = HERAPDF20_HiQ2_NLO_EIG
+name_var = HERAPDF20_HiQ2_NLO_VAR
+type = HERAPDF20HiQ2
+order = NLO
+num_members = 42
 ; pdf_set_path =
 
 ;==============================================================
 ; Style Options
 ;==============================================================
 [STYLE]
-fill_style = 3003
-fill_color = 591
-marker_style = 21
+fill_style = 3004
+fill_color = 873
+marker_style = 23
 
 ;==============================================================
 ; PDF Options
@@ -58,18 +34,20 @@ marker_style = 21
 [PDF]
 default_id = 0
 default_id_var = 0
+first_eig = 1
+last_eig = 28
+first_quad = 1
+last_quad = 10
+first_max = 11
+last_max = 13
+include_eig = true
+include_quad = true
+include_max = true
 band_type = use_error_band
-;
-ErrorPropagationType = 3
-;error_type = scale_band
+ErrorPropagationType = 2
 error_type = pdf_band
-;error_type = alphas_band
-;
 error_size = one_sigma
-; PDF set member number
 alpha_s_error_number_up = 0
 alpha_s_error_number_down = 0
-alpha_s_pdf_name_up =  NNPDF23_nlo_as_0120
-alpha_s_pdf_name_down= NNPDF23_nlo_as_0116
-
-
+alpha_s_pdf_name_up = 
+alpha_s_pdf_name_down = 

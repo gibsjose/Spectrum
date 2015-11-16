@@ -1290,6 +1290,7 @@ void SPXPlot::DrawLegend(void) {
  int old_marker_style=-999, old_marker_color=-999;
  bool bandsdifferent=false;
  bool hadcorronly=false;
+ bool bandcontainscorr=false;
  
  bool scalechoicedifferent=false;
  bool pdfsdifferent=false;
@@ -1332,10 +1333,10 @@ void SPXPlot::DrawLegend(void) {
   bool bpdf    =pdf->HasBandofType("_pdf_");
   bool balphas =pdf->HasBandofType("_alphas_");
   bool bbeam   =pdf->HasBandofType("_BeamUncertainty_");
-  bool bhadcorr=pdf->HasBandofType("_corrections_");
-
-  // if (bhadcorr && !(bscale&&bpdf&&balphas&&bAlternativeScaleChoice)) hadcorronly=true;
-  if (bhadcorr && !(bscale||bpdf||balphas||bAlternativeScaleChoice)) hadcorronly=true;
+  bool bcorr=pdf->HasBandofType("_corrections_");
+  bandcontainscorr=bcorr;
+  // if (bcorr && !(bscale&&bpdf&&balphas&&bAlternativeScaleChoice)) hadcorronly=true;
+  if (bcorr && !(bscale||bpdf||balphas||bAlternativeScaleChoice)) hadcorronly=true;
 
   bandsdifferent=pdf->BandsHaveDifferentProperties();
   if (debug) {
@@ -1348,7 +1349,7 @@ void SPXPlot::DrawLegend(void) {
    if (bpdf)       std::cout<<cn<<mn<<"Bands contains PDF uncertainty"<< std::endl;
    if (balphas)    std::cout<<cn<<mn<<"Bands contains AlphaS uncertainty"<< std::endl;
    if (bbeam)      std::cout<<cn<<mn<<"Bands contains Beam uncertainty"<< std::endl;
-   if (bhadcorr)   std::cout<<cn<<mn<<"Bands contains corrections uncertainty"<< std::endl;
+   if (bcorr)   std::cout<<cn<<mn<<"Bands contains corrections uncertainty"<< std::endl;
    if (hadcorronly)std::cout<<cn<<mn<<"Bands contains ONLY corrections uncertainty"<< std::endl;
   }
 
@@ -1557,16 +1558,22 @@ void SPXPlot::DrawLegend(void) {
 
      if (gname.Contains("total")) {
       std::cout<<"Total uncertainty"<<std::endl;
+      gname.ReplaceAll("total","Total");
       //continue;
      };
 
-     SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors*)ratiographsordered.at(igraph));      
+     //if (debug) SPXGraphUtilities::SPXPrintGraphProperties((TGraphErrors*)ratiographsordered.at(igraph));      
 
      if (debug) std::cout<<cn<<mn<<"Add in legend gname= "<<gname.Data()
                          <<" linecolor= "<<ratiographsordered.at(igraph)->GetLineColor()
                          <<" fillcolor= "<<ratiographsordered.at(igraph)->GetFillColor()
                          <<" size= "<<TString(gname).Sizeof()<<" opt= "<<opt.Data()<<std::endl;
+     
      leg->AddEntry(ratiographsordered.at(igraph), gname,opt);
+    }
+    if (debug) {
+     std::cout<<cn<<mn<<"Final legend "<<std::endl;
+     leg->Print(); 
     }
    }
   }
@@ -1815,8 +1822,9 @@ void SPXPlot::DrawLegend(void) {
     else                     std::cout << cn << mn <<"No NLO labels "<< std::endl;
    }
 
-   TString labelnlo="NLO QCD Uncertainties";
-   if(steeringFile->ApplyGridCorr()) {
+   //TString labelnlo="NLO QCD Uncertainties";
+   TString labelnlo="NLO QCD";
+   if(steeringFile->ApplyGridCorr() && !(bandsdifferent&&bandcontainscorr)) {
     labelnlo+=" #otimes ";
     labelnlo+=GetCorrectionLabel(crossSections[icross]);
    }
@@ -1975,10 +1983,14 @@ void SPXPlot::DrawLegend(void) {
        if (nlouncertainty) {
         if (label.Sizeof()>namesize) namesize=label.Sizeof();
         if (debug) std::cout<<cn<<mn<<"Add in legend nlouncertainty gband= "<<gband->GetName()<<" namesize= "<<namesize<<std::endl;
-        if (scalechoicedifferent || steeringFile->GetParameterScan())
+        if (scalechoicedifferent || steeringFile->GetParameterScan()) {
+	 if (debug) std::cout<<cn<<mn<<"empty option "<<""<<std::endl;
 	 leg->AddEntry((TObject*)0, label, "");
-        else 
+        } else { 
+	 if (ratioonly&&icross==0) opt.ReplaceAll("P","");
+	 if (debug) std::cout<<cn<<mn<<"label= "<<label.Data()<<" opt= "<<opt.Data()<<std::endl;
          leg->AddEntry(gband, label, opt);
+        }
        }
      } 
      if (scalechoicedifferent) {
@@ -2175,16 +2187,19 @@ void SPXPlot::DrawLegend(void) {
 
  double fac=0.50, xfac=1.0;
  //if (nraw>7) {fac*=1.0; xfac*=3.0;}
- if (nraw>7) {fac*=1.0; xfac*=3.5;}
+ if (nraw>7&&!onlysyst) {fac*=1.0; xfac*=3.5;}
  if (debug) std::cout<<cn<<mn<<"fac= "<<fac<<" xfac= "<<xfac<<std::endl;
 
+ /*
  if (nraw>5)  {
+  if (debug) std::cout<<cn<<mn<<"set Legend to two columns "<<std::endl;
   leg->SetNColumns(2);
   leg->SetFillColor(5);
   fac*=1.0; 
   if (namesize>30) xfac*=1.5;
   //csize =charactersize*0.5; 
  }
+ */
  //leg->SetEntrySeparation(0.1);
  leg->SetTextSize(csize); 
 
@@ -2192,21 +2207,24 @@ void SPXPlot::DrawLegend(void) {
   if (nraw>5)  leg->SetNColumns(2);
   if (nraw>8)  leg->SetNColumns(3);
   if (nraw>12) leg->SetNColumns(4);
+  if (debug) std::cout<<cn<<mn<<"Legend now has "<<leg->GetNColumns()<<" columns "<<std::endl;
  }
 
  if (onlysyst) {
-  if (leg->GetNColumns()>3)      {fac*=1.0; xfac*=1.5;}
+  if (leg->GetNColumns()<3)      {fac*=1.0; xfac*=1.5;}
   else if (leg->GetNColumns()>2) {fac*=0.9; xfac*=1.4;}
+  else if (leg->GetNColumns()>3) {fac*=0.9; xfac*=1.4;}
  }
 
  double bwidth=fac*namesize*charactersize; 
 
  x1 = xlegend-bwidth; x2=xfac*xlegend;
  double xmin=0.18;
+
  if (debug) {
+  std::cout<<cn<<mn<<"Number of Legend columns= "<<leg->GetNColumns()<<std::endl;
   std::cout<<cn<<mn<<"fac= "<<fac<<" xfac= "<<xfac<<std::endl;
-  std::cout<<cn<<mn<<"x1= "<<x1<<" y1= "<<y1<<std::endl;
-  std::cout<<cn<<mn<<"x2= "<<x2<<" y2= "<<y2<<std::endl;
+  std::cout<<cn<<mn<<"x1= "<<x1<<" x2= "<<x2<<std::endl;
  }
 
  if (x1<xmin) {x1=xmin; x2+=xmin;}
@@ -2219,10 +2237,11 @@ void SPXPlot::DrawLegend(void) {
  if (debug) std::cout<<cn<<mn<<"lsize= "<<lsize<<" nraw= "<<nraw<<std::endl;
 
  if (onlysyst) {
-   if (leg->GetNRows()>10)     {lsize*=0.15;}
-   else if (leg->GetNRows()>6) {lsize*=0.2;}
-   else if (leg->GetNRows()>4) {lsize*=0.3;}
-   else if (leg->GetNRows()>3) {lsize*=0.4;}
+  if (leg->GetNColumns()==1)  {lsize*=1.5;}
+  if (leg->GetNRows()>10)     {lsize*=0.15;}
+  else if (leg->GetNRows()>6) {lsize*=0.2;}
+  else if (leg->GetNRows()>4) {lsize*=0.3;}
+  else if (leg->GetNRows()>3) {lsize*=0.4;}
  } 
 
  if (debug) std::cout<<cn<<mn<<"lsize= "<<lsize<<" linesize= "<<linesize<<std::endl;
@@ -2420,7 +2439,8 @@ void SPXPlot::DrawLegend(void) {
    TString label="NLO QCD with ";
    SPXPDF * pdf=crossSections[icross].GetPDF();
    if (!grid) {std::cout<<cn<<mn<<"pdf not found ! "<<std::endl; continue;}
-   label+=pdf->GetPDFName();
+   //label+=pdf->GetPDFName();
+   label+=pdf->GetPDFtype();
    if (label.Sizeof()>leginfomax) leginfomax=label.Sizeof();
    leginfo->AddEntry((TObject*)0, label,"");
   }
@@ -3392,8 +3412,8 @@ void SPXPlot::InitializeData(void) {
 		  TString systname=vsyst.at(isyst)->GetName();
                   bool ingroup=false; 
                   for (int igroup=0; igroup<systematicsgroups.size(); igroup++) {
-		    //if (debug) std::cout<<cn<<mn<<"Test if isyst= "<<isyst<<" contains "<<systematicsgroups.at(igroup)
-                    //         <<" igroup= "<<igroup<<" systname= "<<systname.Data()<<std::endl;
+
+		    //if (debug) std::cout<<cn<<mn<<"Test if isyst= "<<isyst<<" contains "<<systematicsgroups.at(igroup)<<" igroup= "<<igroup<<" systname= "<<systname.Data()<<std::endl;
 		    //if (debug) {
                     //for(std::map<std::string,int>::const_iterator it = systmap.begin(); it != systmap.end(); ++it) {
                     // std::cout <<cn<<mn<< "systmap["<<it->first<<"]="<< " index " << it->second << std::endl;
@@ -3451,10 +3471,13 @@ void SPXPlot::InitializeData(void) {
                   if (!ingroup) {
                    TString systname=vsyst.at(isyst)->GetName();
                    bool others=false;
+                   if (debug) std::cout<<cn<<mn<<"Check if in others Number of groups="<<systematicsgroups.size()<<std::endl;                   
                    for (int igroup=0; igroup<systematicsgroups.size(); igroup++) {
-		    if (systematicsgroups.at(igroup)=="Others" || systematicsgroups.at(igroup)=="others" ) {
+		    if (debug) std::cout<<cn<<mn<<"Check systematicgroup["<<igroup<<"]="<<systematicsgroups.at(igroup)<<std::endl;                   
+		    if (systematicsgroups.at(igroup)=="Others" || systematicsgroups.at(igroup)=="others" ||
+                        systematicsgroups.at(igroup)=="Other"  || systematicsgroups.at(igroup)=="other" ) {
                      others=true;
-                     //if (debug) std::cout<<cn<<mn<<"Systematic group others found"<<std::endl;                   
+                     if (debug) std::cout<<cn<<mn<<"Systematic group others found"<<std::endl;                   
 		     if (systmap.count(systematicsgroups.at(igroup))==0) { 
 		      vsystgroups.push_back(vsyst.at(isyst));
                       TString sname="syst_";
@@ -3524,7 +3547,7 @@ void SPXPlot::InitializeData(void) {
 
                  // at the end at total uncertainty
                  if (steeringFile->ShowTotalSystematics()!=0) {
-                  if (debug) std::cout<<cn<<mn<<"ShowTotalSystematics"<<std::endl;
+                  if (debug) std::cout<<cn<<mn<<"ShowTotalSystematics option is ON "<<std::endl;
 
 		  TGraphAsymmErrors *gsystot=data[i]->GetSystematicErrorGraph();
                   if (!gsystot) {

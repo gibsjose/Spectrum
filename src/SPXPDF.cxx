@@ -154,6 +154,8 @@ void SPXPDF::SetUpParameters(SPXPDFSteeringFile *psf) {
  h_BeamUncertainty_results=0;
  h_Total_results=0;
 
+ cov_matrix=0;
+
 }
 
 //This function replaces the ::ReadSteering(), since the PDF Steering file has already been parsed by the
@@ -627,7 +629,7 @@ void SPXPDF::Initialize()
 
   temp_hist=this->GetHisto(); // default renscale=1 facscale=1
   if (!temp_hist) {
-   std::cout<<cn<<mn<<"WARNING temp_hist not found ! "<<std::endl;
+   std::cout<<cn<<mn<<"WARNING: temp_hist not found ! "<<std::endl;
   }
 
 #ifdef TIMER
@@ -797,7 +799,7 @@ void SPXPDF::Initialize()
   //check for necessary names before continuing
   if(AlphaSmemberNumDown==DEFAULT) {
    std::ostringstream oss;
-   oss << cn << mn << "WARNING 'AlphaSmemberNumDown' not provided in steer file: "<<steeringFileName<<" switching off alphas uncertainty calculation";
+   oss << cn << mn << "WARNING: 'AlphaSmemberNumDown' not provided in steer file: "<<steeringFileName<<" switching off alphas uncertainty calculation";
    //throw SPXParseException(oss.str());
    std::cerr<<oss.str()<<std::endl;
    std::cout<<oss.str()<<std::endl;
@@ -806,7 +808,7 @@ void SPXPDF::Initialize()
 
   if (AlphaSmemberNumUp==DEFAULT) {
    std::ostringstream oss;
-   oss << cn << mn << "WARNING 'AlphaSmemberNumUp' not provided in steer file: "<<steeringFileName<<" switching off alphas uncertainty calculation";
+   oss << cn << mn << "WARNING: 'AlphaSmemberNumUp' not provided in steer file: "<<steeringFileName<<" switching off alphas uncertainty calculation";
    //throw SPXParseException(oss.str());
    std::cerr<<oss.str()<<std::endl;
    std::cout<<oss.str()<<std::endl;
@@ -815,7 +817,7 @@ void SPXPDF::Initialize()
 
   if (AlphaSPDFSetNameUp.compare("")==0) {
    std::ostringstream oss;
-   oss << cn << mn << "WARNING 'AlphaSPDFSetNameUp' not provided in steer file: "<<steeringFileName<<" switching off alphas uncertainty calculation";
+   oss << cn << mn << "WARNING: 'AlphaSPDFSetNameUp' not provided in steer file: "<<steeringFileName<<" switching off alphas uncertainty calculation";
    //throw SPXParseException(oss.str());
    std::cerr<<oss.str()<<std::endl;
    std::cout<<oss.str()<<std::endl;
@@ -824,7 +826,7 @@ void SPXPDF::Initialize()
 
   if (AlphaSPDFSetNameDown.compare("")==0) {
    std::ostringstream oss;
-   oss << cn << mn << "WARNING 'AlphaSPDFSetNameDown' not provided in steer file: "<<steeringFileName<<" switching off alphas uncertainty calculation";
+   oss << cn << mn << "WARNING: 'AlphaSPDFSetNameDown' not provided in steer file: "<<steeringFileName<<" switching off alphas uncertainty calculation";
    //throw SPXParseException(oss.str());
    std::cerr<<oss.str()<<std::endl;
    std::cout<<oss.str()<<std::endl;
@@ -938,8 +940,8 @@ void SPXPDF::Initialize()
     value_alphaS_up=0.119;
     std::ostringstream oss;
     oss << cn << mn << "INFO: Set "<<AlphaSPDFSetNameUp<<" alphas value value by hand to "<<value_alphaS_up<<std::endl;
-    std::cerr<<cn<<mn<<oss.str()<<std::endl;
-    std::cout<<cn<<mn<<oss.str()<<std::endl;
+    std::cerr<<oss.str()<<std::endl;
+    std::cout<<oss.str()<<std::endl;
    }
 
    std::string AlphaSPDFSetHistNameUp=AlphaSPDFSetNameUp+"_value_alphas= ";
@@ -1543,9 +1545,9 @@ void SPXPDF::CalcPDFBandErrors()
      this_err_up += pow( 0.5*(h_errors_PDF.at(pdferri+1)->GetBinContent(bi)
                             - h_errors_PDF.at(pdferri)  ->GetBinContent(bi)), 2.);
 
-     if (debug) std::cout<<cn<<mn<<" "<<PDFtype.c_str()
-		    <<"pdferri= "<<pdferri<<" , "<<pdferri+1<<" EIG "
-		    <<" this_err_up= "<<this_err_up
+     if (debug) std::cout<<cn<<mn<<PDFtype.c_str()
+		    <<"pdferri= "<<pdferri<<" , "<<pdferri+1<<" EIG "<<pdferri/2
+		  //<<" this_err_up= "<<this_err_up
 		    <<" diff/nom= "<<(h_errors_PDF.at(pdferri+1)->GetBinContent(bi)-h_errors_PDF.at(pdferri)  ->GetBinContent(bi))/central_val
 		    <<" (var+1)/nom= "<<h_errors_PDF.at(pdferri+1)->GetBinContent(bi)/central_val
 		    <<" (var)/nom= "  <<h_errors_PDF.at(pdferri)  ->GetBinContent(bi)/central_val
@@ -1553,14 +1555,24 @@ void SPXPDF::CalcPDFBandErrors()
     }
    }
  
-   if (debug) std::cout<<cn<<mn<<" finished includeEIG "<<std::endl;
+   if (debug) std::cout<<cn<<mn<<"finished includeEIG "<<std::endl;
 
    this_err_down = this_err_up;
 
-   int firstvar=lasteig+1; // uncertainties start at last eigenvector previous set + default of variation samle
+   int firstvar=lasteig+1; // uncertainties start at last eigenvector previous set + default of variation sample
 
-   central_val = h_errors_PDF.at(firstvar+defaultpdfidvar)->GetBinContent(bi);
-   if (debug) std::cout<<cn<<mn<<" variation sample id= "<<firstvar+defaultpdfidvar<<" "<<" central_val= "<<central_val<<std::endl;
+   if (includeQUAD || includeMAX) {
+    if (debug) std::cout<<cn<<mn<<"Now access h_errors_PDF at= "<<firstvar+defaultpdfidvar<<std::endl;
+    if (firstvar+defaultpdfidvar>=h_errors_PDF.size()) {
+     std::ostringstream oss;
+     oss << cn << mn << "ERROR: h_error_PDF is too small "<<h_errors_PDF.size()<<" but firstvar+defaultpdfidvar= "<<firstvar+defaultpdfidvar<<std::endl; 
+     throw SPXParseException(oss.str());
+    }
+
+    central_val = h_errors_PDF.at(firstvar+defaultpdfidvar)->GetBinContent(bi);
+    if (debug) std::cout<<cn<<mn<<" variation sample id= "<<firstvar+defaultpdfidvar<<" "<<" central_val= "<<central_val<<std::endl;
+   }
+
    if (includeQUAD) {
     for (int pdferri = firstvar+firstquadvar; pdferri < firstvar+lastquadvar; pdferri++) {// parameterisation errors
      if (h_errors_PDF.at(pdferri)->GetBinContent(bi) > central_val ) {
@@ -1875,7 +1887,7 @@ void SPXPDF::CalcScaleErrors()
  if (debug) std::cout<<cn<<mn<<" Starting calculation of ScaleErrors for: "<<PDFtype<<std::endl;
 
  if (h_errors_Scale.size()==0){
-  std::cout<<cn<<mn<<"Warning: h_errors_Scale not filled ! Not computing scale uncertainty. "<<std::endl; 
+  std::cout<<cn<<mn<<"WARNING: h_errors_Scale not filled ! Not computing scale uncertainty. "<<std::endl; 
   return;
  }
 
@@ -1931,8 +1943,8 @@ void SPXPDF::CalcAlternativeScaleChoiceErrors()
  
  my_gridAlternativeScaleChoice=spxgrid->GetGridAlternativeScaleChoice(0);
  if (!my_gridAlternativeScaleChoice) {
-  std::cout<<cn<<mn<<"Warning: no alternative scale choice grid found ! "<<std::endl; 
-  std::cerr<<cn<<mn<<"Warning: no alternative scale choice grid found ! "<<std::endl; 
+  std::cout<<cn<<mn<<"WARNING: No alternative scale choice grid found ! "<<std::endl; 
+  std::cerr<<cn<<mn<<"WARNING: No alternative scale choice grid found ! "<<std::endl; 
   return;
  }
 
@@ -2493,7 +2505,7 @@ void SPXPDF::PrintMap(BandMap_T &m) {
  std::string mn = "PrintMap: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
- if (debug) std::cout<<cn<<mn<<"Map size= "<<Mapallbands.size()<<std::endl;
+ if (debug) std::cout<<cn<<mn<<"Map size= "<<m.size()<<std::endl;
 
  for(BandMap_T::const_iterator it = m.begin(); it != m.end(); ++it) {
   std::cout <<cn<<mn<<" " << std::endl;
@@ -3125,7 +3137,7 @@ void SPXPDF::SetIndividualScaleVariation(int iscale, TH1D *h){
   throw SPXParseException(oss.str());
  }
 
- if (!h) std::cout<<cn<<mn<<"WARNING histogram not found !"<<std::endl;
+ if (!h) std::cout<<cn<<mn<<"WARNING: histogram not found !"<<std::endl;
 
  h_errors_Scale.at(iscale)=h; 
  return;
@@ -3140,7 +3152,7 @@ void SPXPDF::SetIndividualAlternativeScaleChoiceVariation(int iscale, TH1D *h){
   throw SPXParseException(oss.str());
  }
 
- if (!h) std::cout<<cn<<mn<<"WARNING histogram not found !"<<std::endl;
+ if (!h) std::cout<<cn<<mn<<"WARNING: histogram not found !"<<std::endl;
 
  h_errors_AlternativeScaleChoice.at(iscale)=h; 
  return;
@@ -3175,7 +3187,7 @@ void SPXPDF::SetIndividualAlphaSVariation(int ialphas, TH1D *h){
   throw SPXParseException(oss.str());
  }
 
- if (!h) std::cout<<cn<<mn<<"WARNING histogram not found !"<<std::endl;
+ if (!h) std::cout<<cn<<mn<<"WARNING: histogram not found !"<<std::endl;
 
  h_errors_AlphaS.at(ialphas)=h; 
 
@@ -3243,4 +3255,489 @@ std::string SPXPDF::GetName(std::string basename) {
 
  return name;
 
+}
+
+TMatrixT<double> * SPXPDF::GetTheoryCovarianceMatrix() { 
+ std::string mn = "GetTheoryCovarianceMatrix: ";	
+
+ if (!cov_matrix) {
+  std::cout<<cn<<mn<<"TheoryUncertaintyCovarianceMatrix not found --> try to calculate"<<std::endl;
+  this->CalculateTheoryCovarianceMatrix();
+  if (!cov_matrix) {
+   throw SPXGeneralException(cn+mn+"Covariance matrix of theory uncertainties can not be calculated. Stop.");
+  } else {
+   if (debug) std::cout<<cn<<mn<<"Covariance matrix of theory uncertainties calculated ! "<<std::endl;
+  }
+ } 
+
+ return cov_matrix;
+};
+
+
+void SPXPDF::CalculateTheoryCovarianceMatrix(){
+ std::string mn = "CalculateTheoryCovarianceMatrix: ";	
+ //
+ // Get theory values and uncertainties
+ //
+ if(debug) {
+  std::cout<<cn<<mn<<" "<<std::endl;
+  std::cout<<cn<<mn<<"Calculate the covariance matrix of the theory systematics "<<std::endl;
+ }
+
+ std::vector<TH1D*> posRelSyst;
+ std::vector<TH1D*> negRelSyst;
+ //
+ // read PDF uncertainty components
+ //
+ if (h_errors_PDF.size()==0) {
+  if (debug) std::cout<<cn<<mn<<"h_errors_PDF.size()==0 can not calculate covariance matrix "<<std::endl;
+  std::cerr<<cn<<mn<<"h_errors_PDF.size()==0 can not calculate covariance matrix "<<std::endl;
+  return;
+ }
+
+ if (h_errors_PDF.size()<=defaultpdfid) {
+  std::cout<<cn<<mn<<"h_errors_PDF.size()= "<< h_errors_PDF.size() <<" < smallerdefaultpdfid= "<<defaultpdfid<<std::endl;
+  return;
+ }
+
+ TH1D *hdef=h_errors_PDF.at(defaultpdfid);   
+ if (!hdef) {
+  std::cout<<cn<<mn<<"Can not find default histogram at defaultpdfid= "<< defaultpdfid <<std::endl; 
+  return;
+ }
+
+ // Do something special for NNPDF here, i.e. calculate average
+ if (do_PDFBand) {
+  for (int ipdf=1; ipdf<h_errors_PDF.size(); ipdf++) {
+
+   if (ipdf==defaultpdfid){
+    std::cout<<cn<<mn<<"Default pdf can not be a eigenvector ipdf= "<<ipdf <<std::endl; 
+    throw SPXGeneralException(cn+mn+"Default pdf can not be a eigenvector !");
+   }    
+
+   TString hname="h";
+   hname+=h_errors_PDF.at(ipdf)->GetName();
+   TH1D *hcomp=(TH1D*)h_errors_PDF.at(ipdf)->Clone(hname);
+   if (!hcomp) {std::cout<<cn<<mn<<"Histogram for component ipdf= "<<ipdf<<" not found "<<std::endl; continue;}
+
+   //if (debug) {
+   // std::cout<<cn<<mn<<"Print PDF component "<<hcomp->GetName()<<std::endl;
+   // hcomp->Print("all");
+   //}
+
+   hcomp=SPXGraphUtilities::CalculateRelativeUncertainty(hcomp,hdef);
+   if (!hcomp) {
+    std::cout<<cn<<mn<<"Can not find scale histogram at " <<std::endl; 
+    return;
+   }
+   // Do this only for HessianAssymetric
+   if( (ipdf % 2) == 1 ){
+    posRelSyst.push_back( hcomp);
+    if (debug) {
+     std::cout<<cn<<mn<<"Positive PDF syst: " << std::endl;
+     hcomp->Print("all");
+    }
+   } else{
+    negRelSyst.push_back( hcomp);
+    if (debug) {
+     std::cout<<cn<<mn<< "Negative PDF syst: " << std::endl;
+     hcomp->Print("all");
+    }
+   }
+  }
+ }
+
+ if (do_Scale) {
+  // Here we take the envelop, can use Band from CalcScale
+  if (!h_Scale_results) {
+   std::cout<<cn<<mn<<"Scale uncertainty band not found --> try to calculate " << std::endl;
+   this->CalcScaleErrors();
+   if (!h_Scale_results) {
+    throw SPXGeneralException(cn+mn+"Scale uncertainty band not found !");
+   }
+  } 
+
+  //if (debug) {
+  // std::cout<<cn<<mn<<"Number of individual scale variations:  " << h_errors_Scale.size() << std::endl;
+  //}
+
+  //std::cout<<cn<<mn<<"Print h_Scale_results  " << std::endl;
+  //h_Scale_results->Print();  
+
+
+  TH1D* hcomp=SPXGraphUtilities::GraphToHistogram(h_Scale_results);
+  if (!hcomp) {
+   std::cout<<cn<<mn<<"Scale histogram hcomp not found ! " << std::endl;
+  }
+
+  if (!SPXGraphUtilities::SPXHistosHaveSameMean(hcomp,hdef)) { 
+   std::cout<<cn<<mn<<"Something is wrong ! Histogram are not equal h_Scale_results= "<< hcomp->GetName()<<" hdef= "<< hdef->GetName() << std::endl;
+   std::cerr<<cn<<mn<<"Something is wrong ! Histogram are not equal h_Scale_results= "<< hcomp->GetName()<<" hdef= "<< hdef->GetName() << std::endl;
+   std::cout<<cn<<mn<<" hcomp ="<<hcomp->GetName()<<std::endl;
+   hcomp->Print("all");
+
+   std::cout<<cn<<mn<<" hdef ="<<hdef->GetName()<<std::endl;
+   hdef->Print("all");
+
+   return;
+  }
+
+  /* test
+  hcomp=SPXGraphUtilities::CalculateRelativeUncertainty(hcomp,hdef);
+  std::cout<<cn<<mn<<"Print ratio h_scale/hdef: "<<std::endl;
+  hcomp->Print("all");
+  */
+
+  TH1D* hcompup=SPXGraphUtilities::GraphToHistogramUpError(h_Scale_results);
+  if (!hcompup) {
+   std::cout<<cn<<mn<<"Histogram hcompup not found ! " << std::endl;
+  }
+  //
+  //std::cout<<cn<<mn<<"Print hcompup  " << std::endl;
+  //hcompup->Print("all");  
+
+  /*
+  TH1D *htest=(TH1D*) hcompup->Clone("testup");
+  htest->Divide(hcomp);
+  std::cout<<cn<<mn<<"Print htest up  " << std::endl;
+  htest->Print("all");
+
+  htest=(TH1D*) hcompdn->Clone("testdn");
+  htest->Divide(hcomp);
+  std::cout<<cn<<mn<<"Print htest dn " << std::endl;
+  htest->Print("all");
+  */
+
+  if (debug) {
+   TGraphAsymmErrors *gtest=SPXGraphUtilities::Divide(h_Scale_results,h_Scale_results, ZeroDenGraphErrors);
+   std::cout<<cn<<mn<<"Print gtest  " << std::endl;
+   gtest->Print();
+  }
+
+  hcompup=SPXGraphUtilities::CalculateRelativeUncertainty(hcompup,hdef);
+  if (!hcompup) {
+   std::cout<<cn<<mn<<"Can not find relative uncertainty histogram up" <<std::endl; 
+   return;
+  }
+
+
+  if (debug) { 
+   std::cout<<cn<<mn<<"Print hcompup  " << std::endl;
+   hcompup->Print("all");  
+  }
+
+  TH1D* hcompdn=SPXGraphUtilities::GraphToHistogramDownError(h_Scale_results);
+  if (!hcompdn) {
+   std::cout<<cn<<mn<<"Histogram hcompdn not found ! " << std::endl;
+  }
+
+  hcompdn=SPXGraphUtilities::CalculateRelativeUncertainty(hcompdn,hdef);
+  if (!hcompdn) {
+   std::cout<<cn<<mn<<"Can not find relative uncertainty histogram down " <<std::endl; 
+   return;
+  }
+
+  if (debug) {
+   std::cout<<cn<<mn<<"Print hcompdn  " << std::endl;
+   hcompdn->Print("all");  
+  }
+
+  posRelSyst.push_back( hcompup );
+  negRelSyst.push_back( hcompdn );
+ }
+
+ if (do_AlphaS) {
+  // read alphas uncertainty components
+  if(debug) {
+   std::cout<<cn<<mn<<"Number of individual alphas variations "<<h_errors_AlphaS.size()<< std::endl;
+  }
+
+  /*
+  int ialphasreference=-1;
+  for (int ialphas=0; ialphas< h_errors_AlphaS.size(); ialphas++) {
+   TH1D *hcomp = h_errors_AlphaS.at(ialphas);
+   if (!hcomp) {std::cout<<cn<<mn<<"Histogram for component ialphas= "<<ialphas<<" not found ! "<<std::endl; continue;}
+
+   if (SPXGraphUtilities::SPXHistosHaveSameMean(hcomp,hdef)) {
+    ialphasreference=ialphas;
+   }
+  }
+ 
+  if (ialphasreference==-1){
+   std::cout<<cn<<mn<<"Something is wrong. Can not find reference in alphas variations " << std::endl;
+    throw SPXGeneralException(cn+mn+"Default histogram not found in alphas variation !");
+  }
+  */
+
+  TH1D *hcomp = h_errors_AlphaS.at(0); // first entry should be the default
+  if (!SPXGraphUtilities::SPXHistosHaveSameMean(hcomp,hdef)) { 
+   std::cout<<cn<<mn<<"Something is wrong. Can not find reference in alphas variations " << std::endl;
+   throw SPXGeneralException(cn+mn+"Default histogram not found in alphas variation !");
+  }
+
+  if( h_errors_AlphaS.size() != 3 ){
+   std::cout<<cn<<mn<<"Problem in the number of individual alphas variations !!! " <<  h_errors_AlphaS.size()  << std::endl;
+   std::cerr<<cn<<mn<<"Problem in the number of individual alphas variations !!! " <<  h_errors_AlphaS.size()  << std::endl;
+   return;
+  }
+
+  for (int ialphas=1; ialphas< h_errors_AlphaS.size(); ialphas++) { // starts at 1, since 0 is default
+   TH1D *hcomp = h_errors_AlphaS.at(ialphas);
+   if (!hcomp) {std::cout<<cn<<mn<<"Histogram for component ialphas= "<<ialphas<<" not found ! "<<std::endl; continue;}
+
+   hcomp=SPXGraphUtilities::CalculateRelativeUncertainty(hcomp,hdef);
+   if (!hcomp) {
+    std::cout<<cn<<mn<<"Can not calculate relative alphas uncertainty  " <<std::endl; 
+    return;
+   }
+
+   if (debug) {
+    std::cout<<cn<<mn<<"Print AlphaS component "<<hcomp->GetName()<<std::endl;
+    hcomp->Print("all");
+   }
+
+   if (ialphas==1 ) negRelSyst.push_back( hcomp );
+   if (ialphas==2 ) posRelSyst.push_back( hcomp );
+  }
+ }
+
+
+ if (do_AlternativeScaleChoice) {
+  // Loop over alternative scale uncertainty
+
+  if (!h_AlternativeScaleChoice_results) {
+   std::cout<<cn<<mn<<"Alternative Scale uncertainty band not found --> try to calculate " << std::endl;
+   this->CalcAlternativeScaleChoiceErrors();
+   if (!h_AlternativeScaleChoice_results) {
+    throw SPXGeneralException(cn+mn+"Alternative scale uncertainty band not found !");
+   }
+  }
+ 
+  //TVectorD *systAlternativeScaleChoiceUp = new TVectorD(*thRefV);
+  //TVectorD *systAlternativeScaleChoiceDown = new TVectorD(*thRefV);
+  if(debug) {
+   std::cout<<cn<<mn<<"Number of individual alternative scale choice variations "<< h_errors_AlternativeScaleChoice.size()<< std::endl;
+  }
+
+  for (int iscale=0; iscale<h_errors_AlternativeScaleChoice.size(); iscale++) {
+   TH1D *hcomp=h_errors_AlternativeScaleChoice.at(iscale);
+   if (!hcomp) {std::cout<<cn<<mn<<"Histogram for component alternative scale iscale= "<<iscale<<" not found "<<std::endl; continue;}
+
+   if (debug) {
+    std::cout<<cn<<mn<<"Print scale component "<<hcomp->GetName()<<std::endl;
+    hcomp->Print("all");
+   }
+
+   //TH1D* hcomp=SPXGraphUtilities::GraphToHistogram(h_AlternativeScale_results);
+   //if (!hcomp) {
+   // std::cout<<cn<<mn<<"AlternativeScale choice Histogram hcomp not found ! " << std::endl;
+   //}
+
+   TH1D *hcompalt=SPXGraphUtilities::CalculateRelativeUncertainty(hcomp,hdef);
+   if (!hcompalt) {
+    std::cout<<cn<<mn<<"Can not find relative uncertainty histogram for alternative scale choice " <<std::endl; 
+    return;
+   }
+
+   if (debug) { 
+    std::cout<<cn<<mn<<"Print hcompalt  " << std::endl;
+   hcompalt->Print("all");  
+   }
+
+   posRelSyst.push_back( hcompalt); //really fill in both ??
+   negRelSyst.push_back( hcompalt);
+  }
+ }
+ /*
+ if (do_Escale) {
+  // Loop over beam uncertainty
+
+  if(debug) {
+   std::cout<<cn<<mn<<"Number of individual beam uncertainty variations "<<   h_errors_BeamUncertainty.size()<< std::endl;
+  }
+
+  for (int ibeam=0; ibeam<h_errors_BeamUncertainty.size(); ibeam++) {
+   TH1D *hcomp=h_errors_BeamUncertainty.at(ibeam);
+   if (!hcomp) {std::cout<<cn<<mn<<"Histogram for component beam uncertainty ibeam= "<<ibeam<<" not found "<<std::endl; continue;}
+
+   if (debug) {
+    std::cout<<cn<<mn<<"Print beam uncertainty component "<<hcomp->GetName()<<std::endl;
+    hcomp->Print("all");
+   }
+
+  if (debug) {
+   std::cout<<cn<<mn<<"Beam uncertainty uncertainties: "<<std::endl;
+   systBeamUp->Print();
+   systBeamDown->Print();
+  }
+
+  posRelSyst.push_back( systBeamUp );
+  negRelSyst.push_back( systBeamDown);
+ }
+*/
+ //
+ // Look for grid corrections
+ //
+ int nbands=this->GetNBands();
+ if (debug) {
+  std::cout<<cn<<mn<<"Look for grid correction: Number of theory uncertainty bands: "<< nbands << std::endl;
+ }
+
+ for (int iband=0; iband<nbands; iband++) {
+  TGraphAsymmErrors * gband   =this->GetBand(iband);
+  if (!gband) {std::cout<<cn<<mn<<" gband not found ! iband= "<<iband<<std::endl; continue;}
+  std::string         gtype   =this->GetBandType(iband);
+  if (debug) {
+   std::cout<<cn<<mn<<"Type "<<gtype.c_str()<<" name= "<<gband->GetName() << std::endl;
+   //gband->Print();
+  }
+
+  if (TString(gtype).Contains("k_")) {
+   if (debug) std::cout << cn << mn <<"Grid correction: "<<gtype.c_str() << std::endl;
+
+   TH1D* hcompup=SPXGraphUtilities::GraphToHistogramUpError(gband);
+   if (!hcompup) {
+    std::cout<<cn<<mn<<"Grid correction histogram hcompup not found ! " << std::endl;
+   }
+ 
+   hcompup=SPXGraphUtilities::CalculateRelativeUncertainty(hcompup,hdef);
+   if (!hcompup) {
+    std::cout<<cn<<mn<<"Can not find relative uncertainty histogram for grid correction " <<std::endl; 
+    return;
+   }
+
+   if (debug) {
+    std::cout<<cn<<mn<<"grid correction hcomp "<<hcompup->GetName()<<std::endl;
+    hcompup->Print("all");
+   }
+
+   TH1D* hcompdn=SPXGraphUtilities::GraphToHistogramDownError(gband);
+   if (!hcompup) {
+    std::cout<<cn<<mn<<"Grid correction histogram hcompdn not found ! " << std::endl;
+   }
+ 
+   hcompdn=SPXGraphUtilities::CalculateRelativeUncertainty(hcompdn,hdef);
+   if (!hcompdn) {
+    std::cout<<cn<<mn<<"Can not find relative uncertainty histogram for grid correction " <<std::endl; 
+    return;
+   }
+
+   //std::cout<<cn<<mn<<"grid correction hcompdn "<<hcompdn->GetName()<<std::endl;
+   //hcompdn->Print("all");
+
+   // ?? We consider the absolute error (otherwise non-perturbative down-shift will have negative error)
+   // ?? hcompdn=SPXGraphUtilities::HistogramSwitchSign(hcompdn);
+
+   if (debug) {
+     //std::cout<<cn<<mn<<"after sign switch grid correction hcompdn "<<hcompdn->GetName()<<std::endl;
+    std::cout<<cn<<mn<<"grid correction hcompdn "<<hcompdn->GetName()<<std::endl;
+    hcompdn->Print("all");
+   }
+
+   posRelSyst.push_back( hcompup);
+   negRelSyst.push_back( hcompdn);
+
+  }
+ } 
+  //
+  // Look over non-perturbative corrections
+  //
+  /*
+    std::cout << cn << mn <<"Print grid correction vector"<< std::endl; 
+    for (int ivgrid=0; ivgrid< vgridcorrections.size(); ivgrid++) {
+      TGraphAsymmErrors * gridcorr=  vgridcorrections.at(ivgrid);
+      if (!gridcorr) {std::cout << cn << mn <<"Grid correction graph not found "<< std::endl; continue;}
+      std::cout << cn << mn <<"Print grid correction "<<gridcorr->GetName()<< std::endl; 
+      gridcorr->Print();
+      TVectorD *systNPUp = new TVectorD(*thRefV), *systNPDown = new TVectorD(*thRefV);
+      for (int ibin=0; ibin < gridcorr->GetN(); ibin++) {
+	(*systNPUp)[ibin] = gridcorr->GetErrorYhigh(ibin) / (*thRefV)[ibin];
+	(*systNPDown)[ibin] = - gridcorr->GetErrorYlow(ibin) / (*thRefV)[ibin];
+      }
+      std::cout<<cn<<mn<<"Correction ( " << gridcorr->GetName() << " ) uncertainties: "<<std::endl;
+      systNPUp->Print();
+      systNPDown->Print();
+      posRelSyst_etaV.at( icross ).push_back( systNPUp );
+      negRelSyst_etaV.at( icross ).push_back( systNPDown );
+      relSystNamesAysVector.push_back( new TString(gridcorr->GetName()) );
+    }
+  */
+
+
+  int nptot = posRelSyst.size();
+  if (debug) std::cout<<cn<<mn<<"Number of theoretical systematics: posRelSyst= " << posRelSyst.size() << " negRelSyst=  " << negRelSyst.size() << std::endl;
+
+  if (posRelSyst.size() !=  negRelSyst.size()) {
+   std::cout<<cn<<mn<<"Number of theoretical systematics: " << posRelSyst.size() << "  " << negRelSyst.size()
+            <<" not the same ! " << std::endl;
+   return; 
+  }
+ 
+  int nptp=posRelSyst.at(0)->GetNbinsX();
+  int nptn=negRelSyst.at(0)->GetNbinsX();
+  if (nptp !=  nptn) {
+   std::cout<<cn<<mn<<"Number of pt bins: neg: " << nptn << " pos:  " << nptp <<" not the same ! " << std::endl;
+   return; 
+  }
+
+  //
+  // now calculate covariance matrix
+  //
+  if (debug) {
+   std::cout<<cn<<mn<<"Theory hdefault cross-section" << std::endl;
+   hdef->Print("all");
+  }
+
+  cov_matrix = new TMatrixT <double>(nptp,nptp); 
+  if (!cov_matrix) {
+   throw SPXParseException(cn+mn+"Can not create covariance matrix !");
+  }
+
+
+  std::vector <TH1D*> abssyst;
+  for ( int isyst=0; isyst< nptot; isyst++ ){
+   if (!posRelSyst.at(isyst)) {
+    std::cout<<cn<<mn<<"Can not find positive systematic component ! isyst= "<<isyst<<std::endl;
+   } 
+   if (!negRelSyst.at(isyst)) {
+    std::cout<<cn<<mn<<"Can not find negative systematic component ! isyst= "<<isyst<<std::endl;
+   }
+
+   TH1D *htmp=(TH1D*) posRelSyst.at(isyst)->Clone("htmp");
+   htmp->Reset();
+   htmp->SetName(posRelSyst.at(isyst)->GetName());
+
+   for( int i=0; i<nptp; i++ ){
+    double posi=posRelSyst.at(isyst)->GetBinContent(i+1);
+    double negi=negRelSyst.at(isyst)->GetBinContent(i+1);
+    double vali=((posi-negi)/2.)*hdef->GetBinContent(i+1);
+    if (posi*negi>0.) {
+     vali=(fabs(posi)+fabs(negi))/2.*hdef->GetBinContent(i+1);
+    }
+    htmp->SetBinContent(i,vali);
+   }
+   abssyst.push_back(htmp);
+  }
+
+  for ( int isyst=0; isyst< nptot; isyst++ ){
+   if (!abssyst.at(isyst)) {
+    std::cout<<cn<<mn<<"Can not find absolute systematic component ! isyst= "<<isyst<<std::endl;
+   }    
+   if (debug) std::cout<<cn<<mn<<"isyst= "<<isyst<<"  "<<abssyst.at(isyst)->GetName()<<std::endl;
+   abssyst.at(isyst)->Print("all"); 
+
+   for( int i=0; i<nptp; i++ ){
+    for( int j=0; j<nptp; j++ ){
+
+      (*cov_matrix)[i][j] += abssyst.at(isyst)->GetBinContent(i)*abssyst.at(isyst)->GetBinContent(j);
+
+    }
+   }
+  }
+
+  if (debug) {
+   std::cout<<cn<<mn<<"Covariance matrix "<<std::endl;
+   cov_matrix->Print();
+  }
+  return;
 }

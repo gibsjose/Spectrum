@@ -1419,13 +1419,14 @@ void SPXData::ReadCorrelation()
 
   if (individualSystematics.size()==0) {
    std::cout<<cn<<mn<<"WARNING no systematics components found ! "<< std::endl; 
+   std::cerr<<cn<<mn<<"WARNING no systematics components found ! "<< std::endl; 
   } else {
-
    this->CalculateSystematicCovarianceMatrix();
   }
  
   // add up stat and syst covariance matrice
   if (debug) std::cout <<cn<<mn<<"Add up stat and syst covariance matrices "<< std::endl; 
+  //
   // calculate total covariance
   //
   if (!cov_matrixsyst) {
@@ -1743,7 +1744,7 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
   }
  }
 
- if (debug) {
+ // if (debug) {
   if (istotal) {
    std::cout<<"  " << std::endl;
    std::cout<<cn<<mn<<"Print total correlation matrix: " << std::endl;
@@ -1761,7 +1762,7 @@ void SPXData::ReadCorrelationMatrix(std::string filename) {
    std::cout<<cn<<mn<<"Print statistical covariance matrix: " << std::endl;
    cov_matrixstat->Print();
   }
- }
+// }
 
  return;
 }
@@ -1789,18 +1790,25 @@ void SPXData::CalculateSystematicCovarianceMatrix() {
   }
  }
 
- StringDoubleVectorMap_T symsystmap=SPXData::SymmetrizeSystemicUncertaintiesMatrix(individualSystematics);
+ //std::cout<<cn<<mn<<" Print individualSystematics "<<std::endl;
+ //this->PrintMap(individualSystematics);
 
+ StringDoubleVectorMap_T symsystmap=SPXData::SymmetrizeSystematicUncertaintyMatrix(individualSystematics);
+
+ if (debug) {
+  std::cout<<cn<<mn<<"Print symsystmap"<<std::endl;
+  this->PrintMap(symsystmap);
+ }
 
  for(StringDoubleVectorMap_T::iterator it = symsystmap.begin(); it != symsystmap.end(); ++it) {
 
   const std::string   &name = it->first;
   std::vector<double> &syst = it->second;
 
-  //std::cout<<cn<<mn<<"Number of bins in systematics vector: "<<syst.size()  << std::endl;
-  //for (int i=0; i<syst.size(); i++) {
-  // std::cout<<cn<<mn<<" syst["<<i<<"]= "<<syst.at(i)  << std::endl;
-  //}
+  std::cout<<cn<<mn<<"Number of bins in systematics vector: "<<syst.size()  << std::endl;
+  for (int i=0; i<syst.size(); i++) {
+   std::cout<<cn<<mn<<" syst["<<i<<"]= "<<syst.at(i)  << std::endl;
+  }
 
   if (syst.size()==0)
    std::cout<<cn<<mn<<"WARNING: no systematic components founds ! "<< std::endl;
@@ -1867,9 +1875,15 @@ void SPXData::CalculateSystematicCovarianceMatrix() {
  return;
 }
 
-StringDoubleVectorMap_T SPXData::SymmetrizeSystemicUncertaintiesMatrix(StringDoubleVectorMap_T systmap) {
- std::string mn = "SymmetrizeSystemicUncertaintiesMatrix: ";
+StringDoubleVectorMap_T SPXData::SymmetrizeSystematicUncertaintyMatrix(StringDoubleVectorMap_T systmap) {
+ std::string mn = "SymmetrizeSystematicUncertaintyMatrix: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+ //
+ // prepares map for calculation of covariance matrix
+ //
+ // - multiplies by total, i.e. converts relative to absolute error
+ // - does symmetrization (see SPXpValue)
+ //      
 
  bool debug2=false;
 
@@ -1900,8 +1914,19 @@ StringDoubleVectorMap_T SPXData::SymmetrizeSystemicUncertaintiesMatrix(StringDou
     if (debug2) std::cout<<cn<<mn<<"Corresponding negative systematic found sname= "<< sname  << std::endl;
     std::vector <double> vtmp;
     for (int i=0; i<syst.size(); i++) {
-      double err=0.5*(systmap[std::string(sname.Data())].at(i) + syst.at(i));
-      vtmp.push_back(err);
+     double sig=GetSigmaVector().at(i);
+     //double err=0.5*(systmap[std::string(sname.Data())].at(i) + syst.at(i));
+     double negi=systmap[std::string(sname.Data())].at(i);
+     double posi= syst.at(i);
+     double err=((posi-negi)/2.)*sig;
+
+     if (posi*negi>0.) {
+      err=(fabs(posi)+fabs(negi))/2.*sig;
+     }
+
+     std::cout<<cn<<mn<<i<<" name= "<<sname<<" sig= "<<sig<<" posi= "<<posi<<" negi= "<<negi<<" err= "<<err<<std::endl;
+     
+     vtmp.push_back(err);
     } 
     sname.ReplaceAll("-","");
     symsystmap[std::string(sname.Data())]=vtmp;
@@ -2232,6 +2257,11 @@ void  SPXData::RemoveSystematicthatContains(std::string systclassname){
 
  UpdateSystematics();
  
+ if (debug) {
+  if (debug) std::cout<<cn<<mn<<"After UpdateSystematics PrintSpectrum "<<std::endl;
+  PrintSpectrum();
+ }
+
  return;
 };
 
@@ -2250,10 +2280,11 @@ void  SPXData::KeepSystematicthatContains(std::string systclassname){
   //if (debug) std::cout <<cn<<mn<<"Check if systematics= "<<mapname.Data()<< " contains= "<<systclassname<<std::endl;
 
   if (!mapname.Contains(systclassname,TString::kIgnoreCase)) {
-   if (debug) std::cout<<cn<<mn<<"Systematics name class "<<systclassname<<" is in map with systname= "<<mapname.Data()<<std::endl;
+   if (debug) std::cout<<cn<<mn<<"Systematics name class "<<systclassname<<" does not contain systname= "<<mapname.Data()<<std::endl;
    individualSystematics.erase(itr++);
    nremoved++;
   } else {
+   if (debug) std::cout<<cn<<mn<<"Systematics name kept in class "<<systclassname<<" systname= "<<mapname.Data()<<std::endl;
    nkeep++;
    ++itr;
   }
@@ -2274,7 +2305,7 @@ void  SPXData::KeepSystematicthatContains(std::string systclassname){
 };
 
 
-void  SPXData::UpdateSystematics(void){
+void SPXData::UpdateSystematics(void){
  std::string mn ="UpdateSystematics: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
  //
@@ -2294,30 +2325,42 @@ void  SPXData::UpdateSystematics(void){
   return;
  }
 
+ if (debug) std::cout<<cn<<mn<<"Recalculate total uncertainty: "<<std::endl;
+ if (debug) if (TakeSignforTotalError) std::cout<<cn<<mn<<"Take sign into account for adding in quadrature "<<std::endl;  
+
  for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
   const std::string   &syst_name  = it->first;
   std::vector<double> &systematic = it->second;
 
   //if (debug) std::cout<<cn<<mn<<"syst_name= "<<syst_name<<std::endl;
-  //if (debug) if (TakeSignforTotalError) std::cout<<cn<<mn<<"Take sign into account for adding in quadrature "<<std::endl;  
+
 
   for (int ibin=0; ibin<nbin; ibin++) {
    if(syst_name.find("+") != std::string::npos) {
+
     if (TakeSignforTotalError) {
      if (systematic.at(ibin)>0) vsysttotp.at(ibin)+=pow(systematic.at(ibin),2);
      else                       vsysttotn.at(ibin)+=pow(systematic.at(ibin),2);
     } else                      vsysttotp.at(ibin)+=pow(systematic.at(ibin),2);
+
+    //std::cout<<cn<<mn<<"bin= "<<ibin<<" "<<syst_name<<" up "<<systematic.at(ibin)
+    //         <<" vsysttotp= "<<vsysttotp.at(ibin)<<" vsysttotn= "<<vsysttotn.at(ibin)<<std::endl;
+
    } else {
     if (TakeSignforTotalError) {
      if (systematic.at(ibin)>0) vsysttotp.at(ibin)+=pow(systematic.at(ibin),2);
      else                       vsysttotn.at(ibin)+=pow(systematic.at(ibin),2);
     } else                      vsysttotn.at(ibin)+=pow(systematic.at(ibin),2);
 
+    //std::cout<<cn<<mn<<"bin= "<<ibin<<" "<<syst_name<<" dn "<<systematic.at(ibin)
+    //         <<" vsysttotp= "<<vsysttotp.at(ibin)<<" vsysttotn= "<<vsysttotn.at(ibin)<<std::endl;
    }
-   //if (debug) {
-   // std::cout<<cn<<mn<<ibin<<" "<<syst_name<<" up "<<systematic.at(ibin)<<" sum "<<vsysttotp.at(ibin)<<" sqrt= "<<sqrt(vsysttotp.at(ibin))<<std::endl;
-   // std::cout<<cn<<mn<<ibin<<" "<<syst_name<<" dn "<<systematic.at(ibin)<<" sum "<<vsysttotn.at(ibin)<<" sqrt= "<<sqrt(vsysttotn.at(ibin))<<std::endl;
-   //}
+
+   if (debug) {
+    std::cout<<cn<<mn<<"bin= "<<ibin<<" "<<syst_name<<" up "<<systematic.at(ibin)<<" sum "<<vsysttotp.at(ibin)<<" sqrt= "<<sqrt(vsysttotp.at(ibin))<<std::endl;
+    std::cout<<cn<<mn<<"bin= "<<ibin<<" "<<syst_name<<" dn "<<systematic.at(ibin)<<" sum "<<vsysttotn.at(ibin)<<" sqrt= "<<sqrt(vsysttotn.at(ibin))<<std::endl;
+   }
+
   }
  }
 
@@ -2332,15 +2375,13 @@ void  SPXData::UpdateSystematics(void){
  if (debug) { 
   for (int ibin=0; ibin<nbin; ibin++) {
    if (data["syst_p"][ibin]!=vsysttotp.at(ibin)) {
-    std::cout<<cn<<mn<<ibin<<" up old data "<<data["syst_p"][ibin]<<" new systtotp "<<vsysttotp.at(ibin)<<std::endl;
-    std::cerr<<cn<<mn<<ibin<<" up old data "<<data["syst_p"][ibin]<<" new systtotp "<<vsysttotp.at(ibin)<<std::endl;
+    std::cout<<cn<<mn<<"INFO: bin= "<<ibin<<"up old data[syst_p] "<<data["syst_p"][ibin]<<" new systtotp "<<vsysttotp.at(ibin)<<std::endl;
    }
   }
 
   for (int ibin=0; ibin<nbin; ibin++) { 
    if (data["syst_n"][ibin]!=vsysttotn.at(ibin)) {
-    std::cout<<cn<<mn<<ibin<<" down old data "<<data["syst_n"][ibin]<<" new systtotn "<<vsysttotn.at(ibin)<<std::endl;
-    std::cerr<<cn<<mn<<ibin<<" down old data "<<data["syst_n"][ibin]<<" new systtotn "<<vsysttotn.at(ibin)<<std::endl;
+    std::cout<<cn<<mn<<ibin<<"INFO: down old data[syst_n] "<<data["syst_n"][ibin]<<" new systtotn "<<vsysttotn.at(ibin)<<std::endl;
    }
   }
  }
@@ -2353,4 +2394,21 @@ void  SPXData::UpdateSystematics(void){
  return;
 };
 
+
+void SPXData::PrintMap(StringDoubleVectorMap_T &m) {
+ std::string mn = "PrintMap: ";
+ SPXUtilities::PrintMethodHeader(cn, mn);
+
+ std::cout<<cn<<mn<<"Map size= "<<m.size()<<std::endl;
+
+ for(StringDoubleVectorMap_T::const_iterator it = m.begin(); it != m.end(); ++it) {
+  std::cout<<" "<<it->first<<": ";
+  for (int i=0; i<it->second.size();i++){
+    std::cout << std::scientific << it->second.at(i) << " ";
+  }
+  std::cout<<std::endl;
+ }
+ return;
+
+}
 

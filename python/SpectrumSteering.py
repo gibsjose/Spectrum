@@ -233,6 +233,8 @@ class Graph(SpectrumSteering):
     self.label_scaleform_alternative_scale_choice= True
     self.label_informationlegend =""
 
+    self.take_sign_intoaccount_for_total_error = True
+
     self.alternative_grid_divided_by_bin_width=True
     self.alternative_grid_divided_by_doublediff_bin_width=True
 
@@ -299,11 +301,13 @@ class Plot(SpectrumSteering):
 
      self.data_cut_xmax = 0.
      self.data_cut_xmin = 0.
+     self.contain_systematic_group = ''
+     self.remove_systematic_group = ''
      self.display_systematic_group = ''
-     self.display_systematic_group_fill_color = 0
-     self.display_systematic_group_edge_color = 0
-     self.display_systematic_group_edge_style = 0
-     self.display_systematic_group_edge_width = 0
+     self.display_systematic_group_fill_color = ''
+     self.display_systematic_group_edge_color = ''
+     self.display_systematic_group_edge_style = ''
+     self.display_systematic_group_edge_width = ''
      self.x_log=True
      self.y_log=True
 

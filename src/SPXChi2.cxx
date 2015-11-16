@@ -92,46 +92,49 @@ double SPXChi2::CalculateSimpleChi2(SPXPDF *pdf, SPXData *data) {
    throw SPXGeneralException(oss.str());
   }
 
-  // Below needs to be replaced
   //
-  TMatrixT<double> *theory_cov_matrix = new TMatrixT<double>(nbin, nbin);
   //
-  // This should be replaced by a loop over the individual components
-  // and could be moved to the cross section class
-  //
-  // for the moment we just have a diagonal matrix
-  //
-  for (int pi1 = 0; pi1 < nbin; pi1++) {
-   for (int pi2 = 0; pi2 < nbin; pi2++) {
-    if ( pi1 != pi2 ) 
-     (*theory_cov_matrix) (pi1, pi2) = 0;
-    if ( pi1 == pi2 ) {
-     // is this reasonable ? might introduce special treatment later
-     double theory_uncertainty = 0.5*(gband->GetErrorYhigh(pi1) + gband->GetErrorYlow(pi1));
-     (*theory_cov_matrix)(pi1, pi2) = theory_uncertainty*theory_uncertainty;
-    }
-   }
+  TMatrixT<double> *theory_cov_matrix = pdf->GetTheoryCovarianceMatrix();
+  if (!theory_cov_matrix) {
+   std::ostringstream oss;
+   oss << cn <<mn<<"Theory covariance matrix not found !";
+   throw SPXGeneralException(oss.str());
   }
- 
+
   if (debug) {
    std::cout<<cn<<mn<<"Print theory uncertainty matrix: "<<std::endl;
    theory_cov_matrix->Print();
   }
- //
- // Add theory matrices together
- // TMatrixT<double> *theory_tot_cov_matrix = 0;
- //for (int i=0; i<vtheorycovmatrix.size(): i++) {
- // *theory_tot_cov_matrix += *theory_cov_matrix[i];
- // 
- // if (debug) { 
- //  std::cout<<cn<<mn<<" i= "<<i<<" Print total theory matrix: "<<std::endl;
- //  theory_tot_cov_matrix->Print();
- // }
- //}
 
  //if (debug) { 
  // std::cout<<cn<<mn<<"Print total theory matrix: "<<std::endl;
  // theory_tot_cov_matrix->Print();
+ //}
+
+ // stat and syst covariance matrix, only for debugging
+ TMatrixT<double> *data_cov_stat_matrix=data->GetDataStatCovarianceMatrix();
+ if (!data_cov_stat_matrix) {
+  std::ostringstream oss;
+  oss << cn <<mn<<"Statistical Data covariance matrix not found !";
+  throw SPXGeneralException(oss.str());
+ }
+
+ //if (debug) { 
+  std::cout<<cn<<mn<<"Print statistical covariance matrix: "<<std::endl;
+  data_cov_stat_matrix->Print();
+ //}
+
+
+ TMatrixT<double> *data_cov_syst_matrix=data->GetDataStatCovarianceMatrix();
+ if (!data_cov_syst_matrix) {
+  std::ostringstream oss;
+  oss << cn <<mn<<"Systematics Data covariance matrix not found !";
+  throw SPXGeneralException(oss.str());
+ }
+
+ //if (debug) { 
+  std::cout<<cn<<mn<<"Print systematics covariance matrix: "<<std::endl;
+  data_cov_syst_matrix->Print();
  //}
 
  TMatrixT<double> *data_cov_matrix=data->GetDataTotalCovarianceMatrix();

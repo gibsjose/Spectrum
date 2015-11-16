@@ -737,7 +737,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
        	        if(debug) std::cout<<cn<<mn<<"Start parsing display_systematic_group " << std::endl;
                 std::string tmp;
 	        tmp = reader->Get(plotSection, "display_systematic_group", "EMPTY");
-	        if(!tmp.compare("EMPTY")) {
+	        if(!tmp.compare("EMPTY")) {          
 	         std::cout<<cn<<mn<<"INFO: No plot option for display_systematic_group found"<< std::endl;
 	        } else {
 	         //Parse into vector
@@ -762,6 +762,7 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
                  }
 		 for(int j = 0; j < tmpVector.size(); j++) {
 		  if (debug) std::cout<<cn<<mn<< "\t" << tmpVector[j] << std::endl;
+                  //systematicsclassescolor.clear();
                   systematicsclassescolor.push_back( atoi(tmpVector.at(j).c_str()));	       
 		 }
 		}

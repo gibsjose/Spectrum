@@ -64,6 +64,12 @@ bool SPXUtilities::SortLargestRelativeError(TGraphAsymmErrors * g1, TGraphAsymmE
  bool sort=false;
  if (fabs(emax1)>fabs(emax2)) sort=true;
 
+ //do not sort the vector with name Other
+ TString gname=g1->GetName();
+ if (gname.Contains("Other") || gname.Contains("other")) {
+  std::cout<<cn<<mn<<"INFO: graphs with name Other will always be at the end "<<std::endl;
+  sort=false;
+ }
  //if (sort) std::cout<<cn<<mn<<" sort= "<<sort<<std::endl;
  //std::cout<<cn<<mn<<" g1= "<<g1->GetName()<<" emax1= "<<emax1<<" g2= "<<g2->GetName()<<" emax2= "<<emax2<<std::endl;
  

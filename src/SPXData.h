@@ -193,7 +193,8 @@ public:
 		return data["stat"];
 	}
 
-	//NOTE: Returns average of postive and negative error
+	//NOTE: Returns average of positive and negative error
+        // Replaced by SymmetrizeSystematicUncertaintyMatrix
 	//std::vector<double> & GetSystematicErrorVector(void) {
 	//  return 0.5*(data["syst_p"]+data["syst_n"]);
 	//}
@@ -297,13 +298,13 @@ private:
 
 	std::string GetCorrespondingSystematicName(std::string systename);
 
-        StringDoubleVectorMap_T SymmetrizeSystemicUncertaintiesMatrix(StringDoubleVectorMap_T syst);
+        StringDoubleVectorMap_T SymmetrizeSystematicUncertaintyMatrix(StringDoubleVectorMap_T syst);
 
         // parsing and print methods
 
 	void ParseSpectrum(void);
 	//void ParseHERAFitter(void);
-
+	void PrintMap(StringDoubleVectorMap_T &m); 
 	void PrintSpectrum(void);
 	//void PrintHERAFitter(void);
 

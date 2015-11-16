@@ -776,6 +776,7 @@ void SPXRatio::Divide(void) {
      throw SPXGraphException(cn + mn + oss.str());
     }
 
+    TGraphAsymmErrors *graph =0;
     if (ratioStyle.IsDataOverData()) {
      if (!denominatorGraphstatonly) {
       std::ostringstream oss;
@@ -790,18 +791,23 @@ void SPXRatio::Divide(void) {
       <<std::endl;
      }
 
-     TGraphAsymmErrors *graph = SPXGraphUtilities::Divide(numeratorGraphstatonly.at(i), denominatorGraphstatonly,divideType);
-     if (!graph) throw SPXGraphException(cn+mn+"Ratio graph statistical only not found !");
+     graph = SPXGraphUtilities::Divide(numeratorGraphstatonly.at(i), denominatorGraphstatonly,divideType);   
 
-     if (debug) {
-      std::cout<<cn<<mn<<"Ratio graph"<<graph->GetName()<<std::endl;
-      graph->Print();
-     }
-     ratioGraphstatonly.push_back(graph);
     }
+
+    if (ratioStyle.IsDataOverConvolute()) {
+      graph = SPXGraphUtilities::Divide(numeratorGraphstatonly[i], denominatorGraph,divideType); 
+    }
+ 
+    if (!graph) throw SPXGraphException(cn+mn+"Ratio graph statistical only not found !");
+
+    if (debug) {
+     std::cout<<cn<<mn<<"Ratio graph"<<graph->GetName()<<std::endl;
+     graph->Print();
+    }
+    ratioGraphstatonly.push_back(graph);
    }
   }
-
  } catch(const SPXException &e) {
   std::cerr << e.what() << std::endl;
   throw SPXGraphException(cn + mn + "Unable to divide numerator and denominator to calculate ratio");
@@ -1680,7 +1686,7 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
    if (icolline>0 && istyfill!=0) {
     graph->Draw(option.c_str());
    } else
-    if (debug) std::cout<<cn<<mn<<"INFO Graph "<<graph->GetName()<<" not plotted istyfill= "<<istyfill<<" color= "<< icolline<<std::endl;
+    if (debug) std::cout<<cn<<mn<<"INFO Graph "<<graph->GetName()<<" not plotted FillStyle istyfill= "<<istyfill<<" color= "<< icolline<<std::endl;
   }
 
   if (isyst<1) { 
@@ -1688,7 +1694,7 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
    if (debug) std::cout<<cn<<mn<<"Graph stat "<< ratioGraphstatonly.size()<<std::endl;    
 
    for (int igraphstat=0; igraphstat < ratioGraphstatonly.size(); igraphstat++) {
-    TGraphAsymmErrors *graphstat = ratioGraphstatonly[igraphstat];
+    TGraphAsymmErrors *graphstat = ratioGraphstatonly.at(igraphstat);
     if (!graphstat) std::cout<<"WARNING graphstat not found !"<<std::endl;
     TString gname=graphstat->GetName();
 
@@ -1728,11 +1734,14 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
    if (debug) {
     if (TString(option).Contains("Z")) std::cout<<cn<<mn<<"option does contain Z "    <<" option= "<<option.c_str()<<std::endl;
     else                               std::cout<<cn<<mn<<"option does not contain Z "<<" option= "<<option.c_str()<<std::endl;
-    if (!TString(option).Contains("z"))std::cout<<cn<<mn<<"option does contain z "    <<" option= "<<option.c_str()<<std::endl;
+    if (TString(option).Contains("z")) std::cout<<cn<<mn<<"option does contain z "    <<" option= "<<option.c_str()<<std::endl;
     else                               std::cout<<cn<<mn<<"option does not contain z "<<" option= "<<option.c_str()<<std::endl;
    }
 
    if (!TString(option).Contains("Z") && !TString(option).Contains("z")) { // only plot if error ticks are ask for
+
+    if (debug)
+     std::cout<<cn<<mn<<"Number of stat graphs "<< ratioGraphstatonly.size() <<std::endl;
 
     for (int igraphstat=0; igraphstat < ratioGraphstatonly.size(); igraphstat++) {
      TGraphAsymmErrors *graphstat = ratioGraphstatonly[igraphstat];

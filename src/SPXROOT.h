@@ -55,6 +55,8 @@
 #include "TRandom.h"
 #include "TMatrixTLazy.h"
 #include "TMatrixT.h"
+#include "TVectorT.h"
+#include "TVectorD.h"
 #include "TMatrixD.h"
 #include "TMinuit.h"
 

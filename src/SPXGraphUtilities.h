@@ -83,6 +83,10 @@ public:
 	static TH1D* GetEdgeHistogram(TGraphAsymmErrors * g, bool low = false);
 
 	static TH1D* GraphToHistogram(TGraphAsymmErrors * g);
+        static TH1D* GraphToHistogramDownError(TGraphAsymmErrors * g);
+        static TH1D* GraphToHistogramUpError(TGraphAsymmErrors * g);
+
+        static TH1D* CalculateRelativeUncertainty(TH1D* h1, TH1D* h2);
 
 	static void HistogramToGraph(TGraphAsymmErrors * g, TH1 *h);
 
@@ -123,6 +127,10 @@ public:
         static TGraphAsymmErrors *SPXTGraphSetYErrorsZero(TGraphAsymmErrors *g1);
         static TGraphErrors *SPXTGraphSetXErrorsZero(TGraphErrors *g1);
         static TGraphErrors *SPXTGraphSetYErrorsZero(TGraphErrors *g1);
+
+        static TVectorD* SPXHistogramToVector( TH1D* h1 );
+        static bool SPXHistosHaveSameMean(TH1* h1, TH1D *h2);
+        static TH1D* HistogramSwitchSign(TH1D * h1);
 };
 
 #endif

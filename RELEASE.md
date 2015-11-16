@@ -6,6 +6,10 @@
 
 ## Change Log
 
+ // -SPXPDF: get and calculate methods for theory covariance matrix
+
+  -added SPXGraphUtilities::SPXHistogramToVector
+
   -SPXDATA: Removed bug in reading in covariance matrix starting with negative value
             Removed bug reading in last line of covariance matrix 
             corrected trasformation from covariance to correlation matrix
