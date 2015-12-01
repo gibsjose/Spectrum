@@ -17,6 +17,7 @@
 #include <string.h> //memcpy
 
 #include "SPXPlot.h"
+#include "SPXSummaryFigures.h" 
 
 const std::string cn = "SPXPlot::";
 
@@ -26,6 +27,7 @@ bool SPXPlot::debug;
 #ifdef DEVELOP
 SPXpValue* pvalue;
 #endif
+SPXSummaryFigures * summaryfigures;
 
 #ifdef TIMER
 class quick_timer { 
@@ -95,7 +97,11 @@ void SPXPlot::Plot(void) {
 	SetAxisLabels();
 	ScaleAxes();
 	DrawOverlay();
+
+	PreparationDrawRatio();
 	DrawRatio();
+        DrawBox(); 
+
 	DrawLegend();
 
 #ifdef DEVELOP
@@ -109,7 +115,6 @@ void SPXPlot::Plot(void) {
 	  //std::cout<<cn<<mn<<"id= "<<id<<std::endl;
 	  //}
 
-	 //SPXpValue* pvalue= new SPXpValue(data,crossSections, steeringFile);
          if (id==0) {
           pvalue = new SPXpValue(); //class to analyze data and theory agreement
           pvalue->SetSteeringFile(steeringFile); 
@@ -154,6 +159,22 @@ void SPXPlot::Plot(void) {
  
         }
 
+         if (id==0) {
+          summaryfigures = new SPXSummaryFigures (); 
+          summaryfigures->SetSteeringFile(steeringFile); 
+         }
+
+         summaryfigures->SetPlotNumber(id);         
+         //summaryfigures->SetDataandTheory(data,crossSections);
+         //summaryfigures->SetRatio(ratios,ratioFrameHisto);
+         summaryfigures->SetRatioFrame(ratioFrameHisto);
+         summaryfigures->SetLegend(leg,leginfo);
+         summaryfigures->SetPlot(this);
+
+         if (id==steeringFile->GetNumberOfPlotConfigurations()-1) {
+	  std::cout<<cn<<mn<<"Now Draw summary figure "<<std::endl;
+          summaryfigures->Draw();         
+         }
 
 	UpdateCanvas();
 
@@ -1129,8 +1150,8 @@ void SPXPlot::DrawOverlay(void) {
 	}
 }
 
-void SPXPlot::DrawRatio(void) {
- std::string mn = "DrawRatio: ";
+void SPXPlot::PreparationDrawRatio(void) {
+ std::string mn = "PrepationDrawRatio: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if(!ratioPad) {
@@ -1153,6 +1174,21 @@ void SPXPlot::DrawRatio(void) {
   StaggerConvoluteRatio();
  }
 
+ return; 
+}
+
+void SPXPlot::DrawRatio(void) {
+ std::string mn = "DrawRatio: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ //Do nothing if not drawing ratio
+ SPXPlotConfiguration &pc = steeringFile->GetPlotConfiguration(id);
+ SPXDisplayStyle &ds = pc.GetDisplayStyle();
+
+ if(!ds.ContainsRatio()) {
+  return;
+ }
+
  //Counters for number of stat/tot ratios: Used for darkening stat/tot ratios and also
  // for sanity checking (data/stat graphs covering up other ratios)
  unsigned int statRatios = 0;
@@ -1170,17 +1206,11 @@ void SPXPlot::DrawRatio(void) {
 
   if(!steeringFile->GetPlotErrorTicks() && !steeringFile->GetPlotBand()) 
    ratioOptions += "Z";
-		
-  //Set x errors to zero if ratio involves convolute AND is not plot band
-  //if(ratios.at(iratio).HasConvolute() && !steeringFile->GetPlotBand()) {
-  //Never clear X errors for DataStat or DataTot (extra check: HasConvolute() should already rule out stat/tot...)
-  // if(!ratios[i].IsDataStat() && !ratios[i].IsDataTot()) {
-  //  std::vector<TGraphAsymmErrors *> ratiographs=ratios[i].GetRatioGraph();
-  //  for (int igraph=0; igraph < ratiographs.size(); igraph++) {
-  //   TGraphAsymmErrors *graph = ratiographs[igraph];
-  //  }
-  // if(debug) std::cout << cn << mn << "Set X errors to zero for ratios[" << i << "]" << std::endl;
-  //}
+
+
+ //Draw a line at 1, where ratios are relative to
+  TLine *referenceLine = new TLine(xMinRatio, 1.0, xMaxRatio, 1.0);
+  referenceLine->Draw();
 
   if(ratios.at(iratio).IsDataStat()) {
    statRatios++;
@@ -1197,22 +1227,45 @@ void SPXPlot::DrawRatio(void) {
     std::cerr << cn << mn << "WARNING: Data Tot band could possibly hide other bands/points plotted underneath it: Move data_to to ratio_0?" << std::endl;
    }
   }
-   
+
   bool plotmarker=steeringFile->GetPlotMarker();
-  double xbox    =steeringFile->GetXDataBoxLabel();
-  double ybox    =steeringFile->GetYDataBoxLabel();
   if (debug) {
-   std::cout<<cn<<mn<<"Draw ratio with xbox= "<<xbox<<" ybox= "<<ybox<<std::endl;
    if (plotmarker) std::cout<<cn<<mn<<"plotmarker TRUE "<<std::endl;
    std::cout<<cn<<mn<<"Draw ratio "<<iratio<<" with options= "<<ratioOptions.c_str()<<std::endl;
   }
-  ratios.at(iratio).Draw(ratioOptions.c_str(),statRatios, totRatios ,plotmarker,xbox,ybox);
- 
+
+  ratios.at(iratio).Draw(ratioOptions.c_str(),statRatios, totRatios ,plotmarker);
+
  }
 
- //Draw a line at 1, where ratios are relative to
- TLine *referenceLine = new TLine(xMinRatio, 1.0, xMaxRatio, 1.0);
- referenceLine->Draw();
+ return; 
+}
+
+void SPXPlot::DrawBox() {
+ std::string mn = "DrawBox: ";
+ if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ double xbox    =steeringFile->GetXDataBoxLabel();
+ double ybox    =steeringFile->GetYDataBoxLabel();
+
+ for (int iratio=0; iratio<ratios.size(); iratio++) {
+  //if (!ratios.at(iratio)){
+  //throw SPXGeneralException(cn + mn + "SPXRatio not found !");
+  //}  
+  bool isdatastat=ratios.at(iratio).IsDataStat();
+  bool isdatatot =ratios.at(iratio).IsDataTot();
+  if (isdatastat || isdatatot) {
+   int mcolor=ratios.at(iratio).GetDataGraphFillColor();
+   if (isdatatot) mcolor++;
+   if (debug) {
+    std::cout<<cn<<mn<<"Draw with xbox= "<<xbox<<" ybox= "<<ybox<<std::endl;
+    std::cout<<cn<<mn<<"isdatastat= "    <<isdatastat<<" isdatatot= "<<isdatatot<<std::endl;
+    std::cout<<cn<<mn<<"iratio= "<<iratio<<"mcolor= "<<mcolor<<std::endl;
+   }
+   SPXDrawUtilities::DrawBox(xbox,ybox, mcolor,isdatatot, isdatastat);
+  }
+ }
+ return; 
 }
 
 void SPXPlot::DrawLegend(void) {
@@ -1388,7 +1441,7 @@ void SPXPlot::DrawLegend(void) {
  bool differentsqrts=false, differentR=false, differentetabin=false, differentlumi=false;
 
  if(os.ContainsData()) {
-  if (debug) std::cout << cn << mn <<"Contains data "<< std::endl;
+  if (debug) std::cout << cn << mn <<"Overlay style contains data "<< std::endl;
 
   if (data.size()==0)
    throw SPXGeneralException(cn+mn+"No data object found !");
@@ -1498,7 +1551,6 @@ void SPXPlot::DrawLegend(void) {
  float linesize=0.07; 
  //if (steeringFile->GetScaleFunctionalFormLabel() )  linesize+=0.02;
 
- TLegend *leg = 0;
 
  leg = new TLegend();
  leg->SetBorderSize(0);
@@ -1953,6 +2005,7 @@ void SPXPlot::DrawLegend(void) {
 
     //if (!pdfsdifferent&&!ratioonly) {
     if (!pdfsdifferent) {
+     if (debug) std::cout<<cn<<mn<<"PDFs are not different !"<< std::endl;
      TString opt="";
      if (steeringFile->GetPlotMarker()) opt="P";
      if (steeringFile->GetPlotBand()) opt="LF";
@@ -1961,17 +2014,28 @@ void SPXPlot::DrawLegend(void) {
       label+=" #otimes ";
       label+=GetCorrectionLabel(crossSections[icross]);
      }
+     //if (debug) std::cout<<cn<<mn<<"label= "<<label<< std::endl;
      TGraphAsymmErrors * gband=pdf->GetTotalBand();
-
+     if (!gband) {
+      if (!pdf->GetDoTotal()) {
+       std::cout<<cn<<mn<<"Can not find TotalBand, since do_total swithced off in SPXPDF ! "<<std::endl;
+       throw SPXGeneralException(cn+mn+"Switch on band_total option in steering !"); 
+      } else {
+       std::cout<<cn<<mn<<"ERROR gband not found ! "<<std::endl;
+       throw SPXGeneralException(cn+mn+"gband not found !"); 
+      }
+     }
      if (icross==0) {
+      if (debug) std::cout<<cn<<mn<<"icross=0 "<< std::endl;
       label+=" with ";
-      label+=pdf->GetPDFtype();
 
+      label+=pdf->GetPDFtype();
+      if (debug) std::cout<<cn<<mn<<"label= "<< label << std::endl;
        if (steeringFile->GetLabelChi2() && !pdfsdifferent &&!steeringFile->GetParameterScan() && !scalechoicedifferent) {
         if (debug) std::cout<<cn<<mn<<"Add Chi2 to label icross= "<<icross<<std::endl;
         if (icross>=data.size()) {
-         std::cout<<cn<<mn<<"WARNING: Something is wrong Number of crosssection "<<data.size()<<" but idata= "<<icross<<std::endl; 
-         throw SPXGeneralException(cn+mn+"CrossSection and data do not match !"); 
+         std::cout<<cn<<mn<<"WARNING: Something is wrong Number of cross-sections= "<<data.size()<<" but idata= "<<icross<<std::endl; 
+         throw SPXGeneralException(cn+mn+"Numer of cross-sections and data do not match !"); 
         }
         double chi2= SPXChi2::CalculateSimpleChi2(pdf, data.at(icross));
         if (debug) std::cout<<cn<<mn<<"Chi2= "<<chi2<<" pdf= "<<pdf->GetPDFtype()<<" Data= "<< data.at(icross)->GetTotalErrorGraph()->GetName()<<std::endl;   
@@ -1981,6 +2045,7 @@ void SPXPlot::DrawLegend(void) {
        }
 
        if (nlouncertainty) {
+        if (debug) std::cout<<cn<<mn<<"nlouncertainty " << std::endl;
         if (label.Sizeof()>namesize) namesize=label.Sizeof();
         if (debug) std::cout<<cn<<mn<<"Add in legend nlouncertainty gband= "<<gband->GetName()<<" namesize= "<<namesize<<std::endl;
         if (scalechoicedifferent || steeringFile->GetParameterScan()) {
@@ -2266,7 +2331,7 @@ void SPXPlot::DrawLegend(void) {
 
  // Now build second Legend with info
 
- TLegend *leginfo = new TLegend();
+ leginfo = new TLegend();
  leginfo->SetBorderSize(0);
  leginfo->SetFillColor(0);
  leginfo->SetFillStyle(0);
@@ -2940,12 +3005,26 @@ void SPXPlot::NormalizeCrossSections(void) {
 
 			SPXPDFSteeringFile *psf = crossSections[i].GetPDFSteeringFile();
 			SPXPlotConfigurationInstance *pci = crossSections[i].GetPlotConfigurationInstance();
-
+                        
 			std::string masterXUnits=pci->dataSteeringFile.GetXUnits();
 			std::string slaveXUnits =pci->gridSteeringFile.GetXUnits();
 			std::string masterYUnits=pci->dataSteeringFile.GetYUnits();
 			std::string slaveYUnits =pci->gridSteeringFile.GetYUnits();
 
+                        if (masterXUnits.empty()) {
+			 if(debug) std::cout << cn << mn << "No master Xunits found. No data steering ? "<< std::endl;
+                         std::cout << cn << mn << "WARNING: no data object found --> will not normalise cross-sections"<< std::endl;
+                         //masterXUnits=slaveXUnits;
+                         return;
+                        }                        
+
+                        if (masterYUnits.empty()) {
+			 if(debug) std::cout << cn << mn << "No master Yunits found. No data steering ? "<< std::endl;
+                         //masterYUnits=slaveYUnits;
+                         std::cout << cn << mn << "WARNING: no data object found --> will not normalise cross-sections"<< std::endl;
+                         return;
+                        }                        
+                     
                        	TGraphAsymmErrors * gNom = crossSections[i].GetNominal();
                         if (!gNom) std::cout << cn << mn << "gNom graph not found at index " << i << std::endl;
 
@@ -2958,9 +3037,11 @@ void SPXPlot::NormalizeCrossSections(void) {
 
 			if(debug) {
 			 std::cout << cn << mn << "Scales determined from data/grid unit differential: " << std::endl;
-			 std::cout << "\t Data X Units: " << masterXUnits << std::endl;
+                         if (!masterXUnits.empty())
+			  std::cout << "\t Data X Units: " << masterXUnits << std::endl;
 			 std::cout << "\t Grid X Units: " << slaveXUnits << std::endl << std::endl;
-			 std::cout << "\t Data Y Units: " << masterYUnits << std::endl;
+                         if (!masterXUnits.empty())
+			  std::cout << "\t Data Y Units: " << masterYUnits << std::endl;
 			 std::cout << "\t Grid Y Units: " << slaveYUnits << std::endl << std::endl;
 			 std::cout << "\t ---> X Unit Scale Determined: " << xScale << std::endl;
 			 std::cout << "\t ---> Y Unit Scale Determined: " << yScale << std::endl << std::endl;
@@ -3183,6 +3264,11 @@ void SPXPlot::InitializeData(void) {
 
 			continue;
 		}
+
+                if (key.empty()) {
+ 		 std::cout << cn << mn << "Key is empty, can not create data object" << std::endl;
+                 return;
+                }
 
 		//Add data steering file to data set
 		dataSet.insert(key);

@@ -94,10 +94,10 @@ void SPXSteeringFile::SetDefaults(void) {
 	if(debug) std::cout << cn << mn << "TakeSignforTotalError set to default: \"true\"" << std::endl;
 
 	gridCorr = true;
-	if(debug) std::cout << cn << mn << "TakeSignforTotalError set to default: \"true\"" << std::endl;
+	if(debug) std::cout << cn << mn << "gridCorr set to default: \"true\"" << std::endl;
 
 	ContainGridCorr ="";
-	if(debug) std::cout << cn << mn << "TakeSignforTotalError set to default: Empty" << std::endl;
+	if(debug) std::cout << cn << mn << "ContainGridCorr set to default: empty string" << std::endl;
 
 	RemoveXbins.clear(); 
 	DataCutXmin.clear();
@@ -482,7 +482,7 @@ void SPXSteeringFile::Print(void) {
 	std::cout << "\t\t Number of Plots: " << GetNumberOfPlotConfigurations() << std::endl << std::endl;
         if (GetNumberOfPlotConfigurations()==0) {
           std::ostringstream oss;
-          oss << cn << "Please, specify either a data_steering_file or a mc_Steering_file " << std::endl << std::endl;
+          oss << cn << "Please, specify either a data_steering_file or a grid_Steering_file " << std::endl << std::endl;
 
           throw SPXParseException(oss.str());
         }
@@ -634,6 +634,13 @@ unsigned int SPXSteeringFile::ParseNumberOfPlots(void) {
 		if(debug) std::cout << cn << mn << "Checking for existence of plot section: " << plotSection << std::endl;
 
 		tmp = reader->Get(plotSection, "data_steering_files", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 if(debug) {
+                  std::cout << cn << mn << "WARNING No data_steering_files found plot section: " << plotSection << " was not found. Number of plots found: " << plotNumber << std::endl;
+                  std::cout << cn << mn << "Try grid_steering_files instead  "  << std::endl;
+                 } 
+		 tmp = reader->Get(plotSection, "grid_steering_files", "EMPTY");              
+                }
 
 		if(!tmp.compare("EMPTY")) {
 			if(debug) std::cout << cn << mn << "plot section: " << plotSection << " was not found. Number of plots found: " << plotNumber << std::endl;

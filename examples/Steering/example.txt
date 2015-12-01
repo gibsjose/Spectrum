@@ -34,8 +34,11 @@
 [GEN]
 debug = true					;[Optional] Turn on/off debug statements - [default = false]
 
-output_rootfile = true
-output_graphicformat = eps
+output_rootfile = true                          ;[Optional] if present, all histograms, graphs are dumped in root file
+output_graphicformat = eps                      ;[Optional] Output format for figures
+
+summary_figure_outline = 2,3 ;[Optional] If present launches SPXSummaryFigures
+                             ;           Parameter are Nx, Ny in the Canvas Divide
 
 ;==============================================================
 ; Graphing Options

@@ -48,7 +48,8 @@ public:
 
         denominatorGraph=0;
 	denominatorGraphstatonly=0;
-
+        dataGraphFillColor=kGray;
+        dataGraphFillStyle=1001; 
     }
 
     void Parse(std::string &s);
@@ -215,12 +216,16 @@ public:
         pdfDirectory = dir;
     }
 
-    void Draw(std::string option, int istat, int itot, bool plotmarker, double xbox=0.5, double ybox=0.3);
+    //void Draw(std::string option, int istat, int itot, bool plotmarker, double xbox=0.5, double ybox=0.3);
+    void Draw(std::string option, int istat, int itot, bool plotmarker);
 
     void SetAddTotalSystematics(int icol){
      AddTotalSyst=icol;  
      return; 
     }
+
+    int GetDataGraphFillColor(void) {return dataGraphFillColor;}
+    int GetDataGraphFillStyle(void) {return dataGraphFillStyle;}
 
 private:
     static bool debug;
@@ -270,6 +275,9 @@ private:
     StringPairPDFMap_T * convoluteFilePDFMap;       //Map of grid/pdf file pairs to their convolute pdf objects
 
     bool MatchesConvoluteString(std::string &s);
+
+    int dataGraphFillColor; // Fill color for data in ratio with data as denominator
+    int dataGraphFillStyle; // Fill style for data in ratio with data as denominator
 
 };
 

@@ -2087,6 +2087,8 @@ void SPXPDF::CalcTotalErrors()
  h_Total_results=(TGraphAsymmErrors *) (Mapallbands.begin()->second)->Clone(name.c_str());
  if (!h_Total_results) {
   throw SPXGraphException(cn+mn+"Could not create h_Total_results !");
+ } else {
+  if (debug) std::cout<<cn<<mn<<"h_Total_results created "; 
  }
 
  for (int ibin=0; ibin<nbin; ibin++) {

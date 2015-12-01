@@ -43,7 +43,7 @@ INI_OBJ = 	$(OBJ_DIR)/ini.o $(OBJ_DIR)/INIReader.o
 RAW_SRC = SPXLatexTable.cxx SPXGraphUtilities.cxx SPXUtilities.cxx SPXDrawUtilities.cxx Spectrum.cxx SPXSteeringFile.cxx SPXRatioStyle.cxx SPXDisplayStyle.cxx SPXOverlayStyle.cxx \
 	SPXPDFBandType.cxx SPXPDFErrorType.cxx SPXPDFErrorSize.cxx SPXPlotConfiguration.cxx SPXPDFSteeringFile.cxx \
 	SPXGridSteeringFile.cxx SPXDataSteeringFile.cxx SPXDataFormat.cxx SPXData.cxx SPXPlot.cxx SPXCrossSection.cxx \
-	SPXGrid.cxx SPXPDF.cxx SPXRatio.cxx SPXPlotType.cxx SPXAtlasStyle.cxx SPXGridCorrections.cxx SPXChi2.cxx
+	SPXGrid.cxx SPXPDF.cxx SPXRatio.cxx SPXPlotType.cxx SPXAtlasStyle.cxx SPXGridCorrections.cxx SPXChi2.cxx SPXSummaryFigures.cxx SPXCanvasPartition.cxx
 
 SRC = $(RAW_SRC:%.cxx=$(SRC_DIR)/%.cxx)
 OBJ = $(RAW_SRC:%.cxx=$(OBJ_DIR)/%.o)

@@ -38,7 +38,7 @@ public:
 
 	void Parse(void);
 	void Print(void);
-	void Draw(void);
+	void Draw(std::string opt="");
 
 	void CreateGraphs(void);
 

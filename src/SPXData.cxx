@@ -1386,7 +1386,7 @@ void SPXData::ReadCorrelation()
    corr_matrixstat  = new TMatrixT<double>(nbin, nbin);
    corr_matrixstat->UnitMatrix();
 
-   if (debug) std::cout <<cn<<mn<<"INFO: correlation matrix is unity ! "<< std::endl; 
+   if (debug) std::cout <<cn<<mn<<"INFO: correlation matrix set to unity ! "<< std::endl; 
 
    for (int ibin=0; ibin<nbin; ibin++){
     double eystath=statisticalErrorGraph->GetErrorYhigh(ibin);
@@ -2412,3 +2412,10 @@ void SPXData::PrintMap(StringDoubleVectorMap_T &m) {
 
 }
 
+void SPXData::Draw(std::string opt){
+ std::string mn = "Draw: ";
+ SPXUtilities::PrintMethodHeader(cn, mn);
+
+ this->totalErrorGraph->Draw(opt.c_str());
+
+};

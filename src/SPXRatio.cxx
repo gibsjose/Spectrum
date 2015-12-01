@@ -431,13 +431,13 @@ void SPXRatio::Divide(void) {
   try {
 
    TGraphAsymmErrors *graph = SPXGraphUtilities::Divide(numeratorGraph.back(), denominatorGraph, ZeroDenGraphErrors);
-   graph->SetFillStyle(1001);
-   graph->SetFillColor(kGray);
+   graph->SetFillStyle(dataGraphFillStyle);
+   graph->SetFillColor(dataGraphFillColor);
    ratioGraph.push_back(graph);
 
    if(debug) std::cout<<cn<<mn<< "Successfully divided data stat graph with options: " << std::endl;
-   if(debug) std::cout<< "\t Fill Style = " << 1001 << std::endl;
-   if(debug) std::cout<< "\t Fill Color = " << kGray << std::endl;
+   if(debug) std::cout<< "\t Fill Style = " << dataGraphFillStyle << std::endl;
+   if(debug) std::cout<< "\t Fill Color = " << dataGraphFillStyle << std::endl;
   } catch(const SPXException &e) {
    std::cerr << e.what() << std::endl;
    throw SPXGraphException(cn + mn + "Unable to divide data stat graphs");
@@ -449,13 +449,13 @@ void SPXRatio::Divide(void) {
   try {
 
    TGraphAsymmErrors *graph = SPXGraphUtilities::Divide(numeratorGraph.back(), denominatorGraph, ZeroDenGraphErrors);
-   graph->SetFillStyle(1001);
-   graph->SetFillColor(kGray);
+   graph->SetFillStyle(dataGraphFillStyle);
+   graph->SetFillColor(dataGraphFillColor);
    ratioGraph.push_back(graph);
 
    if(debug) std::cout<<cn<<mn<<"Successfully divided data tot graph with options: " << std::endl;
-   if(debug) std::cout<< "\t Fill Style = " << 1001 << std::endl;
-   if(debug) std::cout<< "\t Fill Color = " << kGray << std::endl;
+   if(debug) std::cout<< "\t Fill Style = " << dataGraphFillStyle << std::endl;
+   if(debug) std::cout<< "\t Fill Color = " << dataGraphFillColor << std::endl;
 
   } catch(const SPXException &e) {
    std::cerr << e.what() << std::endl;
@@ -1579,16 +1579,12 @@ bool SPXRatio::MatchesConvoluteString(std::string &s) {
     }
 }
 
-
-void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plotmarker, double xbox, double ybox) {
+void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plotmarker) {
  std::string mn = "Draw: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if ( ratioGraph.size()==0)
   std::cout<<cn<<mn<<"WARNING: Ratio graph is empty "<<std::endl;
-
- //double xmin=0.25, ymin=0.3, boxsize=0.05;
- double xmin=xbox, ymin=ybox, boxsize=0.05;
 
  if(debug) std::cout<<cn<<mn<<"ratioStyle= "<<ratioStyle.ToString()<<std::endl;
   
@@ -1600,19 +1596,13 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
     throw SPXGraphException(cn + mn + "graph not found");
    }
    //Incrementally darken the data_stat/data_tot graphs based on their order for increased visibility
+   if (debug) {
+    std::cout<<cn<<mn<<"IsDataStat()r= "<<IsDataStat()<<" IsDataTot()= "<< IsDataTot() <<std::endl;
+    std::cout<<cn<<mn<<"Plot graph with FillColor= "<<graph->GetFillColor()<<" with color= "<<graph->GetFillColor() + (statRatios + totRatios)<<std::endl;
+   }
    graph->SetFillColor(graph->GetFillColor() + (statRatios + totRatios));
    graph->Draw("E2");
 
-   int mcolor=graph->GetFillColor();
-
-   if(IsDataTot()) {
-    std::string datatext="Data uncertainty";
-    SPXDrawUtilities::BoxText(xmin, ymin, boxsize, boxsize, mcolor, datatext, mcolor, 1, 0.75*boxsize);
-   }
-
-   if(IsDataStat()) {
-    SPXDrawUtilities::BoxText(xmin, ymin, boxsize, boxsize/2., mcolor,"", mcolor, 1, 0.75*boxsize);
-   }
   }
  } else if ( IsDataOverData() ){
   
