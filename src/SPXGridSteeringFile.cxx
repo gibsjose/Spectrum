@@ -180,7 +180,7 @@ void SPXGridSteeringFile::Print(void) {
 	std::cout << "\t\t Lowest Order: " << lowestOrder << std::endl;
 	std::cout << "\t\t Change cross section by: " << changesqrts<<"%" << std::endl;
 
-        if (ParameterName.empty() !! ParameterName=="EMPTY") {
+        if (ParameterName.empty() || ParameterName=="EMPTY") {
          std::cout << "\t\t No Parameter set "  << std::endl;
         } else std::cout << "\t\t Parameter: " << ParameterName<<" = " << ParameterValue <<" " << ParameterUnit << std::endl;
 }
