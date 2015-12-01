@@ -256,7 +256,7 @@ TH1D* SPXGraphUtilities::MatchandMultiply(TH1D *hfact, TH1D* hist, bool dividedB
 //Match binning of slave graph to the binning of the master graph
 TH1D* SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TH1D *hslave, bool dividedByBinWidth) {
  std::string mn = "MatchBinning: ";
- bool debug = false;
+ bool debug = true;
 
  // Make sure graphs are valid
  if (!master) {
@@ -393,7 +393,7 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
             s_exh = s_x + s_exh;
             s_bw = s_exh - s_exl;
 
-            //if (debug) std::cout<<cn<<mn<<"          Slave bin number " << j <<" x= "<<s_x<<" xmin= "<<s_exl<<" xmax= "<< s_exh<< std::endl;
+            if (debug) std::cout<<cn<<mn<<"          Slave bin number " << j <<" x= "<<s_x<<" xmin= "<<s_exl<<" xmax= "<< s_exh<< std::endl;
 
             //Exception if point lies within master bin AND slave bin width is greater than master bin width
             //double eps=std::numeric_limits<double>::epsilon();
@@ -432,7 +432,9 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
 		std::cerr<<oss.str().c_str()<<std::endl;
 
                 throw SPXGraphException(oss.str());
-            }
+            } 
+	    //else if (debug)
+	    // std::cout<<cn<<mn<<"not passed  if(((s_x >= m_exl) && (s_x <= m_exh)) && (s_bw > m_bw)) "<<std::endl; 
 
             //Exception if there is a phase shift (slave xlow is below master xlow AND slave xhigh is
             //	above, or vice versa for the master xhigh)
@@ -470,7 +472,10 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
                         << m_eyh << ")" << std::endl;
 
               throw SPXGraphException(cn + mn + "Slave graph is phase-shifted with respect to master: Unable to match binning");
-            }
+            } 
+	    //else if (debug)
+	    //  std::cout<<cn<<mn<<"not passed if(((s_exl < m_exl) && (s_exh > m_exl)) || ((s_exh > m_exh) && (s_exl < m_exh)))"<<std::endl;
+
 
             //
             //Slave is NOT phase shifted, and slave bin is equal to or less than master
@@ -637,11 +642,11 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
     
     //Print Graphs
     if(debug) {
-        std::cout << cn << mn << "Printing Master Graph" << std::endl;
+        std::cout << cn << mn << "Printing Master Graph" << master->GetName()<<std::endl;
         master->Print();
         std::cout << std::endl;
 
-        std::cout << cn << mn << "Printing Slave Graph" << std::endl;
+        std::cout << cn << mn << "Printing Slave Graph" << slave->GetName() << std::endl;
         slave->Print();
         std::cout << std::endl;
     }
@@ -986,9 +991,6 @@ TH1D *SPXGraphUtilities::GraphToHistogram(TGraphAsymmErrors * g) {
      throw SPXGraphException(cn + mn + "Graph provided was invalid");
     }
 
-    //std::cout << cn<<mn<<"Print graph: "<<g->GetName() << std::endl;
-    //g->Print();
-
     TString name=TString("h")+g->GetName();
 
     int nbin=g->GetN();
@@ -1025,6 +1027,105 @@ TH1D *SPXGraphUtilities::GraphToHistogram(TGraphAsymmErrors * g) {
     //h1->Print("all");
 
     return h1;
+}
+
+
+TH1D *SPXGraphUtilities::GraphToHistogramUpError(TGraphAsymmErrors * g) {
+    std::string mn = "GraphToHistogramUpError: ";
+    //Make sure histogram is valid
+    if(!g) {
+     throw SPXGraphException(cn + mn + "Graph provided was invalid");
+    }
+
+    TString name=TString("hUpError")+g->GetName();
+
+    int nbin=g->GetN();
+
+    Double_t xbins[nbin+1];
+    double x, y , exl, exh;
+    for(int ibin = 0; ibin < nbin; ibin++) {
+     g->GetPoint(ibin,x,y);
+     exl=g->GetErrorXlow(ibin);
+     exh=g->GetErrorXhigh(ibin);
+     xbins[ibin]=x-exl;
+    }
+
+    xbins[nbin]=x+exh;
+
+    TH1D *h1 = new TH1D(name,name,nbin,xbins); 
+
+    for(int ibin = 0; ibin < nbin; ibin++) {
+        double eyh=g->GetErrorYhigh(ibin);
+        double eyl=g->GetErrorYlow(ibin);
+        double x, y;
+        g->GetPoint(ibin,x,y);
+        y+=eyh;
+        double ey=0.;
+        //double ey=(eyh+eyl)/2.;
+       	h1->SetBinContent(ibin+1,y);
+        h1->SetBinError  (ibin+1,ey);
+    }
+
+    return h1;
+}
+
+TH1D *SPXGraphUtilities::GraphToHistogramDownError(TGraphAsymmErrors * g) {
+    std::string mn = "GraphToHistogramDownError: ";
+    //Make sure histogram is valid
+    if(!g) {
+     throw SPXGraphException(cn + mn + "Graph provided was invalid");
+    }
+
+    TString name=TString("hDownError")+g->GetName();
+
+    int nbin=g->GetN();
+
+    Double_t xbins[nbin+1];
+    double x, y , exl, exh;
+    for(int ibin = 0; ibin < nbin; ibin++) {
+     g->GetPoint(ibin,x,y);
+     exl=g->GetErrorXlow(ibin);
+     exh=g->GetErrorXhigh(ibin);
+     xbins[ibin]=x-exl;
+    }
+
+    xbins[nbin]=x+exh;
+
+    TH1D *h1 = new TH1D(name,name,nbin,xbins); 
+
+    for (int ibin = 0; ibin < nbin; ibin++) {
+        double eyh=g->GetErrorYhigh(ibin);
+        double eyl=g->GetErrorYlow(ibin);
+        double x, y;
+        g->GetPoint(ibin,x,y);
+        y-=eyl;
+        double ey=0.;
+        //double ey=(eyh+eyl)/2.;
+       	h1->SetBinContent(ibin+1,y);
+        h1->SetBinError  (ibin+1,ey);
+    }
+
+    return h1;
+}
+
+TH1D *SPXGraphUtilities::HistogramSwitchSign(TH1D * h1) {
+    std::string mn = "HistogramSwitchSign: ";
+    //Make sure histogram is valid
+    if(!h1) {
+     throw SPXGraphException(cn + mn + "Histogram provided was invalid");
+    }
+
+    TString name=TString("hswitchedsign")+h1->GetName();
+
+    TH1D *h2 = (TH1D*) h1->Clone(name);
+    int nbin=h1->GetNbinsX();
+    for (int ibin = 0; ibin < nbin; ibin++) {
+     double y=h1->GetBinContent(ibin+1,y);
+     y=-1.*y;
+     h2->SetBinContent(ibin+1,y);
+    }
+
+    return h2;
 }
 
 
@@ -1916,8 +2017,9 @@ void SPXGraphUtilities::AddinQuadrature(TGraphAsymmErrors* g1, TGraphAsymmErrors
    Double_t x2=0., y2=0.;
    g2->GetPoint(i, x2,y2);
    if (y2==0.) y2=1.;
-   std::cout<<cn<<mn<<"INFO: low and high errors have the same sign signs  g2= "<<g2->GetName()
-                    <<" relative EYhigh2["<<i<<"]= " << EYhigh2[i]/y2 <<" EYlow2["<<i<<"]= "<<EYlow2[i]/y2<< std::endl;   
+   if (EYhigh2[i]!=0 || EYlow2[i]!=0)
+    std::cout<<cn<<mn<<"INFO: low and high errors have the same sign signs  g2= "<<g2->GetName()
+                     <<" relative EYhigh2["<<i<<"]= " << EYhigh2[i]/y2 <<" EYlow2["<<i<<"]= "<<EYlow2[i]/y2<< std::endl;   
   }
 
   eyh=sqrt(EYhigh1[i]*EYhigh1[i]+EYhigh2[i]*EYhigh2[i]);
@@ -2182,4 +2284,74 @@ TGraphErrors * SPXGraphUtilities::SPXTGraphSetXErrorsZero(TGraphErrors *g1){
     return g2;
 }
 
+TVectorD* SPXGraphUtilities::SPXHistogramToVector( TH1D* h_ ){
+  std::string mn = "SPXHistogramToVector: ";
 
+  if (!h_) {
+   throw SPXGraphException(cn+mn+"Histogram provided was invalid");
+  }
+
+  TVectorD* v_ = new TVectorD( h_->GetNbinsX() );
+  for (Int_t i=0; i<h_->GetNbinsX(); i++) {
+    (*v_)[i] = h_->GetBinContent(i+1);
+  }
+  return v_;
+}
+
+
+TH1D* SPXGraphUtilities::CalculateRelativeUncertainty(TH1D* h1, TH1D* h2){
+  std::string mn = "CalculateRelativeUncertainty:";
+  // calculate h3=(h1-h2)/h2
+  if (!h1) {
+   throw SPXGraphException(cn+mn+"First histogram provided was invalid");
+  }
+
+  if (!h2) {
+   throw SPXGraphException(cn+mn+"Second histogram provided was invalid");
+  }
+
+  TString hname="relU";
+  hname+=h1->GetName();
+  TH1D* h3=(TH1D*) h1->Clone(hname); 
+  if (!h3) {
+   throw SPXGraphException(cn+mn+"Result histogram can not be created !");
+  }
+
+  h3->Add(h2,-1.);
+  h3->Divide(h2);
+  
+  return h3;
+}
+
+bool SPXGraphUtilities::SPXHistosHaveSameMean(TH1* h1, TH1D *h2){
+ std::string mn = "SPXHistoAreEqual: ";
+ //
+ // Test if h1 and h2 have the same mean value
+ //
+ bool showinfo=true;
+
+ // Print properties of TH1 h1 
+ if (!h1) {
+  throw SPXGraphException(cn+mn+"First histogram provided was invalid");
+ }
+
+ if (!h2) {
+  throw SPXGraphException(cn+mn+"Second histogram provided was invalid");
+ }
+
+ if (h1->GetNbinsX() != h2->GetNbinsX()) {
+  if (showinfo) std::cout<<cn<<mn<<"Different number of h1 bins= "<<h1->GetNbinsX()<<" h2 bins= "<<h2->GetNbinsX()<<std::endl;
+  return false;
+ }
+
+ for (int i = 0; i < h1->GetNbinsX(); i++) {
+  double y1= h1->GetBinContent(i + 1);
+  double y2= h2->GetBinContent(i + 1);
+  if ( y1 != y2 ) {
+   if (showinfo) std::cout<<cn<<mn<<"Difference in bin= "<<i<<" h1= "<<y1<<" h2= "<<y2<<std::endl;
+   return false;
+  }
+ }
+
+ return true;
+} 

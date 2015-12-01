@@ -223,3 +223,25 @@ TString SPXDrawUtilities::FormatwithExp(double xinput){
  datalabel+=Form("%1.1f 10^{%d}",x,exp);
  return datalabel;
 }
+
+
+void SPXDrawUtilities::DrawBox(double xbox, double ybox, int mcolor, bool isdatatot, bool isdatastat, double boxsize) {
+ std::string mn = "DrawBox: ";
+ //if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
+
+ double xmin=xbox, ymin=ybox;
+
+ //if(isdatastat) std::cout<<cn<<mn<<"Data stat is ON "<<std::endl;
+ //if(isdatatot)  std::cout<<cn<<mn<<"Data tot  is ON "<<std::endl;
+ 
+ if(isdatatot) {
+  std::string datatext="Data uncertainty";
+  SPXDrawUtilities::BoxText(xmin, ymin, boxsize, boxsize, mcolor, datatext, mcolor, 1, 0.75*boxsize);
+ }
+
+ if(isdatastat) {
+  SPXDrawUtilities::BoxText(xmin, ymin, boxsize, boxsize/2., mcolor,"", mcolor, 1, 0.75*boxsize);
+ }
+
+ return;
+}

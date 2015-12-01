@@ -201,6 +201,10 @@ class SPXPDF {
 
         void SetParameterScan(bool myscan){ ParameterScan=myscan; return;};
         bool GetParameterScan()           { return ParameterScan;};
+        
+        TMatrixT<double> * GetTheoryCovarianceMatrix();
+        void  CalculateTheoryCovarianceMatrix();
+
 
     private:
         //VARIABLES
@@ -219,6 +223,8 @@ class SPXPDF {
         TGraphAsymmErrors *h_AlternativeScaleChoice_results;   // alternative scale choice uncertainty
         TGraphAsymmErrors *h_BeamUncertainty_results;   // scale uncertainty
         TGraphAsymmErrors *h_Total_results;   // total uncertainty
+
+        TMatrixT<double>  *cov_matrix; //covariance matrix of theory uncertainties
 
         //string calc_desc;
         bool applgridok;

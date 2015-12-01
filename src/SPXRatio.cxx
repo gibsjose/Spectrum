@@ -431,13 +431,13 @@ void SPXRatio::Divide(void) {
   try {
 
    TGraphAsymmErrors *graph = SPXGraphUtilities::Divide(numeratorGraph.back(), denominatorGraph, ZeroDenGraphErrors);
-   graph->SetFillStyle(1001);
-   graph->SetFillColor(kGray);
+   graph->SetFillStyle(dataGraphFillStyle);
+   graph->SetFillColor(dataGraphFillColor);
    ratioGraph.push_back(graph);
 
    if(debug) std::cout<<cn<<mn<< "Successfully divided data stat graph with options: " << std::endl;
-   if(debug) std::cout<< "\t Fill Style = " << 1001 << std::endl;
-   if(debug) std::cout<< "\t Fill Color = " << kGray << std::endl;
+   if(debug) std::cout<< "\t Fill Style = " << dataGraphFillStyle << std::endl;
+   if(debug) std::cout<< "\t Fill Color = " << dataGraphFillStyle << std::endl;
   } catch(const SPXException &e) {
    std::cerr << e.what() << std::endl;
    throw SPXGraphException(cn + mn + "Unable to divide data stat graphs");
@@ -449,13 +449,13 @@ void SPXRatio::Divide(void) {
   try {
 
    TGraphAsymmErrors *graph = SPXGraphUtilities::Divide(numeratorGraph.back(), denominatorGraph, ZeroDenGraphErrors);
-   graph->SetFillStyle(1001);
-   graph->SetFillColor(kGray);
+   graph->SetFillStyle(dataGraphFillStyle);
+   graph->SetFillColor(dataGraphFillColor);
    ratioGraph.push_back(graph);
 
    if(debug) std::cout<<cn<<mn<<"Successfully divided data tot graph with options: " << std::endl;
-   if(debug) std::cout<< "\t Fill Style = " << 1001 << std::endl;
-   if(debug) std::cout<< "\t Fill Color = " << kGray << std::endl;
+   if(debug) std::cout<< "\t Fill Style = " << dataGraphFillStyle << std::endl;
+   if(debug) std::cout<< "\t Fill Color = " << dataGraphFillColor << std::endl;
 
   } catch(const SPXException &e) {
    std::cerr << e.what() << std::endl;
@@ -776,6 +776,7 @@ void SPXRatio::Divide(void) {
      throw SPXGraphException(cn + mn + oss.str());
     }
 
+    TGraphAsymmErrors *graph =0;
     if (ratioStyle.IsDataOverData()) {
      if (!denominatorGraphstatonly) {
       std::ostringstream oss;
@@ -790,18 +791,23 @@ void SPXRatio::Divide(void) {
       <<std::endl;
      }
 
-     TGraphAsymmErrors *graph = SPXGraphUtilities::Divide(numeratorGraphstatonly.at(i), denominatorGraphstatonly,divideType);
-     if (!graph) throw SPXGraphException(cn+mn+"Ratio graph statistical only not found !");
+     graph = SPXGraphUtilities::Divide(numeratorGraphstatonly.at(i), denominatorGraphstatonly,divideType);   
 
-     if (debug) {
-      std::cout<<cn<<mn<<"Ratio graph"<<graph->GetName()<<std::endl;
-      graph->Print();
-     }
-     ratioGraphstatonly.push_back(graph);
     }
+
+    if (ratioStyle.IsDataOverConvolute()) {
+      graph = SPXGraphUtilities::Divide(numeratorGraphstatonly[i], denominatorGraph,divideType); 
+    }
+ 
+    if (!graph) throw SPXGraphException(cn+mn+"Ratio graph statistical only not found !");
+
+    if (debug) {
+     std::cout<<cn<<mn<<"Ratio graph"<<graph->GetName()<<std::endl;
+     graph->Print();
+    }
+    ratioGraphstatonly.push_back(graph);
    }
   }
-
  } catch(const SPXException &e) {
   std::cerr << e.what() << std::endl;
   throw SPXGraphException(cn + mn + "Unable to divide numerator and denominator to calculate ratio");
@@ -1573,16 +1579,12 @@ bool SPXRatio::MatchesConvoluteString(std::string &s) {
     }
 }
 
-
-void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plotmarker, double xbox, double ybox) {
+void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plotmarker) {
  std::string mn = "Draw: ";
  if(debug) SPXUtilities::PrintMethodHeader(cn, mn);
 
  if ( ratioGraph.size()==0)
   std::cout<<cn<<mn<<"WARNING: Ratio graph is empty "<<std::endl;
-
- //double xmin=0.25, ymin=0.3, boxsize=0.05;
- double xmin=xbox, ymin=ybox, boxsize=0.05;
 
  if(debug) std::cout<<cn<<mn<<"ratioStyle= "<<ratioStyle.ToString()<<std::endl;
   
@@ -1594,19 +1596,13 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
     throw SPXGraphException(cn + mn + "graph not found");
    }
    //Incrementally darken the data_stat/data_tot graphs based on their order for increased visibility
+   if (debug) {
+    std::cout<<cn<<mn<<"IsDataStat()r= "<<IsDataStat()<<" IsDataTot()= "<< IsDataTot() <<std::endl;
+    std::cout<<cn<<mn<<"Plot graph with FillColor= "<<graph->GetFillColor()<<" with color= "<<graph->GetFillColor() + (statRatios + totRatios)<<std::endl;
+   }
    graph->SetFillColor(graph->GetFillColor() + (statRatios + totRatios));
    graph->Draw("E2");
 
-   int mcolor=graph->GetFillColor();
-
-   if(IsDataTot()) {
-    std::string datatext="Data uncertainty";
-    SPXDrawUtilities::BoxText(xmin, ymin, boxsize, boxsize, mcolor, datatext, mcolor, 1, 0.75*boxsize);
-   }
-
-   if(IsDataStat()) {
-    SPXDrawUtilities::BoxText(xmin, ymin, boxsize, boxsize/2., mcolor,"", mcolor, 1, 0.75*boxsize);
-   }
   }
  } else if ( IsDataOverData() ){
   
@@ -1680,7 +1676,7 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
    if (icolline>0 && istyfill!=0) {
     graph->Draw(option.c_str());
    } else
-    if (debug) std::cout<<cn<<mn<<"INFO Graph "<<graph->GetName()<<" not plotted istyfill= "<<istyfill<<" color= "<< icolline<<std::endl;
+    if (debug) std::cout<<cn<<mn<<"INFO Graph "<<graph->GetName()<<" not plotted FillStyle istyfill= "<<istyfill<<" color= "<< icolline<<std::endl;
   }
 
   if (isyst<1) { 
@@ -1688,7 +1684,7 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
    if (debug) std::cout<<cn<<mn<<"Graph stat "<< ratioGraphstatonly.size()<<std::endl;    
 
    for (int igraphstat=0; igraphstat < ratioGraphstatonly.size(); igraphstat++) {
-    TGraphAsymmErrors *graphstat = ratioGraphstatonly[igraphstat];
+    TGraphAsymmErrors *graphstat = ratioGraphstatonly.at(igraphstat);
     if (!graphstat) std::cout<<"WARNING graphstat not found !"<<std::endl;
     TString gname=graphstat->GetName();
 
@@ -1728,11 +1724,14 @@ void SPXRatio::Draw(std::string option, int statRatios, int totRatios, bool plot
    if (debug) {
     if (TString(option).Contains("Z")) std::cout<<cn<<mn<<"option does contain Z "    <<" option= "<<option.c_str()<<std::endl;
     else                               std::cout<<cn<<mn<<"option does not contain Z "<<" option= "<<option.c_str()<<std::endl;
-    if (!TString(option).Contains("z"))std::cout<<cn<<mn<<"option does contain z "    <<" option= "<<option.c_str()<<std::endl;
+    if (TString(option).Contains("z")) std::cout<<cn<<mn<<"option does contain z "    <<" option= "<<option.c_str()<<std::endl;
     else                               std::cout<<cn<<mn<<"option does not contain z "<<" option= "<<option.c_str()<<std::endl;
    }
 
    if (!TString(option).Contains("Z") && !TString(option).Contains("z")) { // only plot if error ticks are ask for
+
+    if (debug)
+     std::cout<<cn<<mn<<"Number of stat graphs "<< ratioGraphstatonly.size() <<std::endl;
 
     for (int igraphstat=0; igraphstat < ratioGraphstatonly.size(); igraphstat++) {
      TGraphAsymmErrors *graphstat = ratioGraphstatonly[igraphstat];

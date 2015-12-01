@@ -78,6 +78,7 @@ public:
 	void DrawRatioPadFrame(void);
 	void DrawOverlay(void);
 	void DrawRatio(void);
+	void PreparationDrawRatio(void);
 	void DrawBand(SPXPDF *pdf, std::string option, SPXPlotConfigurationInstance pc);
 	void DrawLegend();
 	void UpdateCanvas(void);
@@ -87,6 +88,11 @@ public:
 	void StaggerConvoluteOverlay(void);
 	void StaggerConvoluteRatio(void);
 	void DrawDataStatErrors(void);
+
+        //TPad *GetRatioPad(){ return ratioPad;};
+        //TPad *GetOverlayPad(){ return overlayPad;};
+
+        void DrawBox(void);
 
 	static bool GetDebug(void) {
 		return debug;
@@ -101,6 +107,7 @@ public:
 		}
 	}
 
+
 private:
 	static bool debug;					// Flag indicating debug mode
 	SPXSteeringFile *steeringFile;				// Fully parsed steering file
@@ -108,6 +115,9 @@ private:
 
         TFile *rootfile; // pointer to root file
 
+        TLegend *leg;     // Legend
+        TLegend *leginfo; // Legend info
+        
         std::vector<SPXData*> data;				// Vector of data
 	std::vector<SPXCrossSection> crossSections;		// Vector of cross sections
 	std::vector<SPXRatio> ratios;				// Vector of ratios

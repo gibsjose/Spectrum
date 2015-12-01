@@ -14,6 +14,7 @@
 #define SPXDRAWUTILITIES_H
 
 #include "SPXMathUtilities.h"
+#include "SPXUtilities.h"
 #include "SPXROOT.h"
 
 
@@ -22,6 +23,8 @@ public:
 
   static void BoxText(double x, double y, double xboxsize, double yboxsize, int mcolor, std::string text, int lcol=1, int lstyle=1, double tsize=0.03);
   static TString FormatwithExp(double xinput);
+
+  static void DrawBox(double xbox, double ybox, int mcolor, bool isdatatot=true, bool isdatastat=true, double boxsize=0.05);
 };
 
 #endif
