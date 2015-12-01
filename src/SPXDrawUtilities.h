@@ -25,6 +25,8 @@ public:
   static TString FormatwithExp(double xinput);
 
   static void DrawBox(double xbox, double ybox, int mcolor, bool isdatatot=true, bool isdatastat=true, double boxsize=0.05);
+
+  static void PlotAndSave2Dmatrix( TMatrixD *covMat_, Int_t N, Double_t binLimits[], TH2D* frame2D, TString *name, Int_t SetZrage=0, Double_t min_=0., Double_t max_=0. );
 };
 
 #endif

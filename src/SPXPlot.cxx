@@ -159,6 +159,7 @@ void SPXPlot::Plot(void) {
  
         }
 
+#ifdef DEVELOP
          if (id==0) {
           summaryfigures = new SPXSummaryFigures (); 
           summaryfigures->SetSteeringFile(steeringFile); 
@@ -175,7 +176,7 @@ void SPXPlot::Plot(void) {
 	  std::cout<<cn<<mn<<"Now Draw summary figure "<<std::endl;
           summaryfigures->Draw();         
          }
-
+#endif
 	UpdateCanvas();
 
 	//Create a PNG of the canvas

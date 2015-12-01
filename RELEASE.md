@@ -6,6 +6,8 @@
 
 ## Change Log
 
+  -SPXPlot: change to be able to run theory only
+
   -SPXDATA: Removed bug in reading in covariance matrix starting with negative value
             Removed bug reading in last line of covariance matrix 
             corrected trasformation from covariance to correlation matrix
