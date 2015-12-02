@@ -1,43 +1,26 @@
 ;==============================================================
 ;
 ; Description:
-;	Example PDF Steering File
 ;
-; Authors:
-
-;
-; Date:
-;
-; Other:
-;	Other information...
-;
-;==============================================================
-
-;--------------------------------------------------------------
-; NOTE:
-;
-; Make sure you COMMENT OUT (;) ALL UNUSED LINES:
-;
-;	"  some_thing = "  <--- BAD
-;	"; some_thing = "  <--- OKAY
-;
-; If you forget to do this, some trailing comments could
-; be included in the option's value
 ;--------------------------------------------------------------
 
 ;==============================================================
 ; General Options
 ;==============================================================
 [GEN]
-debug = true
+debug = false
 ;==============================================================
 ; Description
 ;==============================================================
 [DESC]
-name = CT10 ; name of LHGrid-file
-type = CT10 ; general name used for printing etc
-order = 1   ; 1=NLO 2=NNLO
-num_members = 53 ; number of PDF members
+name = HERAPDF20_Jets_NLO_EIG
+; introduce vector here ?
+' not clear what to do here, introduce a vector ?
+;name_var = 
+;
+type = HERAPDF20Jets
+order = NLO
+num_members = 31
 ; pdf_set_path =
 
 ;==============================================================
@@ -45,8 +28,8 @@ num_members = 53 ; number of PDF members
 ;==============================================================
 [STYLE]
 fill_style = 3004
-fill_color = 797
-marker_style = 20
+fill_color = 611
+marker_style = 25
 
 ;==============================================================
 ; PDF Options
@@ -54,16 +37,20 @@ marker_style = 20
 [PDF]
 default_id = 0
 default_id_var = 0
-is90Percent = true
+first_eig = 1
+last_eig = 30
+first_quad = 0
+last_quad = 0
+first_max = 0
+last_max = 0
+include_eig = true
+include_quad = false
+include_max = false
 band_type = use_error_band
-;
-ErrorPropagationType = 1
-;error_type = alphas_band
+ErrorPropagationType = 2
 error_type = pdf_band
-;
 error_size = one_sigma
-; PDF set member number
-alpha_s_error_number_up = 7
-alpha_s_error_number_down = 3
-alpha_s_pdf_name_up = CT10as
-alpha_s_pdf_name_down = CT10as
+alpha_s_error_number_up = 0
+alpha_s_error_number_down = 0
+alpha_s_pdf_name_up = 
+alpha_s_pdf_name_down = 

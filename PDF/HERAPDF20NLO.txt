@@ -1,0 +1,39 @@
+ [DESC]
+name = HERAPDF20_NLO_EIG
+name_var = HERAPDF20_NLO_VAR
+type = HERAPDF20
+order = NLO
+num_members = 42
+; pdf_set_path =
+
+;==============================================================
+; Style Options
+;==============================================================
+[STYLE]
+fill_style = 3004
+fill_color = 619
+marker_style = 21
+
+;==============================================================
+; PDF Options
+;==============================================================
+[PDF]
+default_id = 0
+default_id_var = 0
+first_eig = 1
+last_eig = 28
+first_quad = 1
+last_quad = 10
+first_max = 11
+last_max = 13
+include_eig = true
+include_quad = true
+include_max = true
+band_type = use_error_band
+ErrorPropagationType = 2
+error_type = pdf_band
+error_size = one_sigma
+alpha_s_error_number_up = 0
+alpha_s_error_number_down = 0
+alpha_s_pdf_name_up = HERAPDF20_NLO_ALPHAS_116
+alpha_s_pdf_name_down = HERAPDF20_NLO_ALPHAS_120
