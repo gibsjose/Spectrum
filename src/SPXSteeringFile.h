@@ -90,7 +90,7 @@ private:
 
 	bool labelDate;	        //Flag to add Data beside label
 
-	bool   showIndividualSystematicswithName; //Flag to show individual systematics data uncertainties that contain name
+	bool showIndividualSystematicswithName; //Flag to show individual systematics data uncertainties that contain name
                                           // given in steering
 	double showIndividualSystematics; //Flag to show individual systematics data uncertainties
 	double showTotalSystematics; //Flag to show total systematics data uncertainties
@@ -100,7 +100,7 @@ private:
         double XDataBoxLabel;    // X-coordinate of data box label
         double YDataBoxLabel;    // Y-coordinate of data box label
 
-        double 	BeamUncertainty; // Introduce beam uncertainty to band with value 	BeamUncertainty
+        double BeamUncertainty; // Introduce beam uncertainty to band with value BeamUncertainty
 
         bool BandwithPDF;        // show the Uncertainty band with the PDF uncertainties
 	bool BandwithAlphaS;     // show the Uncertainty band with alphas  uncertainties
@@ -109,6 +109,9 @@ private:
 	bool BandTotal;          // show the Total uncertainty band
 
         std::vector<bool> gridcorrections; // flags if grid correction go into band
+
+	//std::vector<std::string>  replicasteeringfile; // name of steering file to read replica
+	std::string  replicasteeringfile; // name of steering file to read replica
 
         std::vector<std::string> systematicsclasses;      // groups to display systematics
         std::vector<int>         systematicsclassescolor; // groups to display systematics fill colors
@@ -501,6 +504,9 @@ public:
 		return this->ParameterScan;
 	}
 
+         
+	//std::vector<std::string >  GetReplicaFileNames() { return replicasteeringfile;} 
+	std::string   GetReplicaFileName() { return replicasteeringfile;} 
 };
 
 #endif

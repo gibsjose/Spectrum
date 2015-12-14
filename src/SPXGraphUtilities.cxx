@@ -152,7 +152,7 @@ TGraphErrors* SPXGraphUtilities::TH1TOTGraph(TH1 *h1)
  if (!g1) std::cout<<cn<<mn<<" graph g1 not created "<<std::endl;
  //g1->Print();
 
- Double_t x, y, ex, ey;
+ double x, y, ex, ey;
  for (Int_t i=0; i<h1->GetNbinsX(); i++) {
    // cout<<cn<<mn<<<<" i= "<<i<<endl;
    y=h1->GetBinContent(i+1);
@@ -621,7 +621,7 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
 
      std::ostringstream oss;
      oss<<cn<<mn<<"Different number of bins nmaster="<<nmaster<<" nslave= "<<nslave<< std::endl;     
-     throw SPXParseException(oss.str());
+     throw SPXGeneralException(oss.str());
     }
     
     double s_x, s_y, m_x, m_y;
@@ -637,7 +637,7 @@ void SPXGraphUtilities::MatchBinning(TGraphAsymmErrors *master, TGraphAsymmError
      std::cout<<cn<<mn<< "Different last bins master="<<m_x<<" slave= "<<s_x<< std::endl;
      std::ostringstream oss;
      oss<<cn<<mn<<"Different last bins master="<<m_x<<" slave= "<<s_x<<std::endl;
-     throw SPXParseException(oss.str());
+     throw SPXGeneralException(oss.str());
     }
     
     //Print Graphs
@@ -1381,6 +1381,87 @@ void SPXGraphUtilities::DivideByBinWidth(TGraphAsymmErrors *g) {
     return;
 }
 
+//Divide histogram by the bin width for each bin
+TH1D* SPXGraphUtilities::DivideByBinWidth(TH1D *h1) {
+ std::string mn = "DivideByBinWidth:TH1D: ";
+
+ if(!h1) {
+  throw SPXGraphException(cn + mn + "Histogram is Invalid");
+ }
+
+ TString hname=h1->GetName();
+ hname+="dividedbybinwidth";
+ TH1D *h2=(TH1D*) h1->Clone(hname);
+ if(!h2) {
+  throw SPXGraphException(cn + mn + "Histogram h2 is Invalid");
+ }
+
+ int nbin=h1->GetNbinsX();
+ for (int ibin = 0; ibin < nbin; ibin++) {
+
+  double val= h1->GetBinContent(ibin+1);
+  double eval= h1->GetBinError(ibin+1);
+  double binWidth =h1->GetBinCenter(ibin+1);
+  if (binWidth!=0.) {
+   val/=binWidth;
+   eval/=binWidth;
+  }
+  
+  //std::cout<<cn<<mn<<" ibin= "<<ibin<<" binwidth= "<<binWidth<<" val= "<<val<<std::endl;
+
+  h2->SetBinContent(ibin+1,val);
+  h2->SetBinError  (ibin+1,eval);
+
+ }
+
+ return h2;
+}
+
+
+//Divide histogram by the bin width for each bin
+TH1D* SPXGraphUtilities::DivideByBinWidth(TH1D *h1, std::vector <double> binw) {
+ std::string mn = "DivideByBinWidth:vector: ";
+
+ if(!h1) {
+  throw SPXGraphException(cn + mn + "Histogram is Invalid");
+ }
+
+ TString hname=h1->GetName();
+ hname+="dividedbybinwidth";
+ TH1D *h2=(TH1D*) h1->Clone(hname);
+ if(!h2) {
+  throw SPXGraphException(cn + mn + "Histogram h2 is Invalid");
+ }
+
+ int nbin=h1->GetNbinsX();
+
+ if(nbin!=binw.size()-1) {
+  std::ostringstream oss;
+  oss << cn <<mn<<"Number of bins in histogram nbin= "<<nbin<<" and vector "<<binw.size()-1<<" not the same ";
+  std::cout<<oss.str()<<std::endl;
+  throw SPXGraphException(oss.str());
+ }
+
+ for (int ibin = 0; ibin < nbin; ibin++) {
+
+  double val= h1->GetBinContent(ibin+1);
+  double eval= h1->GetBinError(ibin+1);
+  double binWidth = binw.at(ibin+1)-binw.at(ibin);
+  if (binWidth!=0.) {
+   val/=binWidth;
+   eval/=binWidth;
+  }
+  
+  //std::cout<<cn<<mn<<" ibin= "<<ibin<<" binwidth= "<<binWidth<<" val= "<<val<<std::endl;
+
+  h2->SetBinContent(ibin+1,val);
+  h2->SetBinError  (ibin+1,eval);
+
+ }
+
+ return h2;
+}
+
 
  void SPXGraphUtilities::Add(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, int noerr) {
  //
@@ -1400,7 +1481,7 @@ void SPXGraphUtilities::DivideByBinWidth(TGraphAsymmErrors *g) {
   oss << cn <<mn<<"WARNING: Graph g1 "<<g1->GetName()<<" NBin1= "<<nBins1
                    <<" and graph g2 "<<g2->GetName()<<" NBin2= "<<nBins2
                    <<" do not have the same lenght ! ";
-  throw SPXParseException(oss.str());
+  throw SPXGeneralException(oss.str());
  }
 
  double *x1   = g1->GetX();
@@ -1499,7 +1580,7 @@ void SPXGraphUtilities::DivideByBinWidth(TGraphAsymmErrors *g) {
   oss << cn <<mn<<"WARNING: Graph g1 "<<g1->GetName()<<" NBin1= "<<nBins1
                    <<" and graph g2 "<<g2->GetName()<<" NBin2= "<<nBins2
                    <<" do not have the same lenght ! ";
-  throw SPXParseException(oss.str());
+  throw SPXGeneralException(oss.str());
  }
 
  double *x1   = g1->GetX();
@@ -1653,11 +1734,11 @@ void  SPXGraphUtilities::Add(TH1D *h1, TH1D *h2){
  bool debug=false;
 
   if (!h1) {
-   throw SPXParseException(cn+mn+"Histogram h1 not found !");   
+   throw SPXGeneralException(cn+mn+"Histogram h1 not found !");   
   }
 
   if (!h2) {
-   throw SPXParseException(cn+mn+"Histogram h2 not found !");   
+   throw SPXGeneralException(cn+mn+"Histogram h2 not found !");   
   }
  
   TString hname=h1->GetName();
@@ -1688,7 +1769,7 @@ void SPXGraphUtilities::Multiply(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, i
   oss << cn <<mn<<"WARNING: Graph g1 "<<g1->GetName()<<" NBin1= "<<nBins1
                    <<" and graph g2 "<<g2->GetName()<<" NBin2= "<<nBins2
                    <<" do not have the same lenght ! ";
-  throw SPXParseException(oss.str());
+  throw SPXGeneralException(oss.str());
  }
 
  double *x1   = g1->GetX();
@@ -1786,7 +1867,7 @@ int SPXGraphUtilities::CompareValues(TGraphAsymmErrors *g1, TGraphAsymmErrors *g
   oss << cn <<mn<<"WARNING: Graph g1 "<<g1->GetName()<<" NBin1= "<<nBins1
                    <<" and graph g2 "<<g2->GetName()<<" NBin2= "<<nBins2
                    <<" do not have the same lenght ! ";
-  throw SPXParseException(oss.str());
+  throw SPXGraphException(oss.str());
  }
 
  double *x1   = g1->GetX();
@@ -2195,6 +2276,27 @@ bool SPXGraphUtilities::GraphWithNoError(TGraphAsymmErrors * g) {
     return allerrorszero;
 }
 
+TH1D* SPXGraphUtilities::SPXZeroErrors(TH1* h1){
+ std::string mn = "SPXZeroErrors: ";
+ //
+ // zero y-errors in a histogram
+ //
+ if (!h1) {
+  throw SPXGraphException(cn + mn + "Graph provided was invalid");
+ }
+ 
+ TString name="nom";
+ name+=h1->GetName();
+
+ TH1D *h2=(TH1D*) h1->Clone(name);
+
+ for (int i = 0; i < h1->GetNbinsX(); i++) {
+  h2->SetBinError(i+1,0.);
+ }
+ return h2;
+}
+
+
 TGraphAsymmErrors * SPXGraphUtilities::SPXTGraphSetXErrorsZero(TGraphAsymmErrors *g1){
     std::string mn = "SPXTGraphSetXErrorsZero: ";
 
@@ -2355,3 +2457,392 @@ bool SPXGraphUtilities::SPXHistosHaveSameMean(TH1* h1, TH1D *h2){
 
  return true;
 } 
+
+/*
+// This method is not yet tests
+TH1D* SPXGraphUtilities::HistogramCutXAxis(TH1D * h1, double xmin, double xmax){
+ std::string mn = "HistogramCutXAxis: ";
+ //Make sure histogram is valid
+ if(!h1) {
+  throw SPXGraphException(cn + mn + "Histogram provided was invalid");
+ }
+
+ TString name=TString("hxaxixcut")+h1->GetName();
+
+ // TH1D *h2 = (TH1D*) h1->Clone(name);
+ int nbin=h1->GetNbinsX();
+ vector <double> vy;
+ vector <double> vey;
+ vector <double> vx;
+ //vector <double> vex;
+
+ for (int ibin = 0; ibin < nbin; ibin++) {
+  double x=h1->GetBinCenter(ibin+1);
+  if (x>xmin && x<=xmax) {
+   vy.push_back(h1->GetBinContent(ibin+1));
+   vey.push_back(h1->GetBinError(ibin+1));
+   vx.push_back(h1->GetBinCenter(ibin+1));
+  }
+ }
+
+ TH1D *h2= new TH1D(name,h1->GetTitle(),vy.size(),vy.at(0), vy.back());
+ h2->SetEntries(h1->GetEntries());
+
+ std::cout<<cn<<mn<<" Print new histgram: "<<std::endl;
+ h2->Print("all");
+
+ for (int i=0; i<vy.size(); i++) {
+  h2->SetBinContent(i+1,vy.at(i));  
+  h2->SetBinError(i+1,vey.at(i));  
+ }
+
+ return h2;
+}
+*/
+ 
+
+TH1D* SPXGraphUtilities::SPXHistogramCutXAxis(TH1D * h1, int ixmin, int ixmax){
+ std::string mn = "HistogramCutXAxis:TH1D: ";
+ //Make sure histogram is valid
+ if(!h1) {
+  throw SPXGraphException(cn + mn + "Histogram provided was invalid");
+ }
+
+ TString name=TString("hxaxixcut")+h1->GetName();
+
+ int nbin=h1->GetNbinsX();
+ std::vector <double> vy;
+ std::vector <double> vey;
+
+ for (int ibin = 0; ibin < nbin; ibin++) {
+  if (ibin>=ixmin && ibin<ixmax) {
+   vy.push_back(h1->GetBinContent(ibin+1));
+   vey.push_back(h1->GetBinError(ibin+1));
+  }
+ }
+ 
+ TH1D *h2= new TH1D(name,h1->GetTitle(),vy.size(),0., vy.size());
+
+ //std::cout<<cn<<mn<<" Print new histgram: "<<std::endl;
+ //h2->Print("all");
+
+ for (int i=0; i<vy.size(); i++) {
+  h2->SetBinContent(i+1,vy.at(i));  
+  h2->SetBinError(i+1,vey.at(i));  
+ }
+
+ h2->SetEntries(h1->GetEntries());
+
+ return h2;
+}
+
+TH2D* SPXGraphUtilities::SPXHistogramCutXAxis(TH2D * h1, int ixmin, int ixmax){
+ std::string mn = "HistogramCutXAxis:TH2D: ";
+ //
+ // Make sure histogram is valid
+ //
+ if(!h1) {
+  throw SPXGraphException(cn + mn + "Histogram provided was invalid");
+ }
+
+ TString hname=TString("hxcut")+h1->GetName();
+
+ int nbinx=h1->GetNbinsX();
+ int nbiny=h1->GetNbinsY();
+
+ std::vector<TH1D*>  vtmp;
+
+ for (int ibin = 0; ibin < nbinx; ibin++) {
+  if (ibin>=ixmin && ibin<ixmax) {
+   TString pname="projectionbin";
+   pname+=ibin+1;
+   pname+=h1->GetName();
+   TH1D *htmp=h1->ProjectionY(pname,ibin+1,ibin+1);
+   vtmp.push_back(htmp);
+
+   //std::cout<<cn<<mn<<" Print htmp for ibin= "<<ibin<<std::endl;
+   //htmp->Print("all");
+
+  }
+ }
+
+ //std::cout<<cn<<mn<<"New number of bins on x-axis= "<<vtmp.size()<<std::endl;
+
+ TH2D *h2= new TH2D(hname,h1->GetTitle(),vtmp.size(),0.,vtmp.size(),nbiny,0.,nbiny);
+
+ //std::cout<<cn<<mn<<" Print new histgram: "<<std::endl;
+ //h2->Print("all");
+
+ for (int ix = 0; ix < vtmp.size(); ix++) {
+
+  if (!vtmp.at(ix)) {
+   throw SPXGraphException(cn + mn + "Histogram provided was invalid");
+  }
+
+  for (int iy = 0; iy < nbiny; iy++) {
+   double val= vtmp.at(ix)->GetBinContent(iy+1);
+   double eval=vtmp.at(ix)->GetBinError(iy+1);
+   h2->SetBinContent(ix+1,iy+1,val);  
+   h2->SetBinError  (ix+1,iy+1,eval);  
+  }
+ }
+
+ h2->SetEntries(h1->GetEntries());
+
+ /*
+ TCanvas *c1= new TCanvas("old","old");
+ h1->Draw("colz");
+
+ TCanvas *c2= new TCanvas("new","new");
+ h2->Draw("colz");
+ */
+
+ for (int ix = 0; ix < vtmp.size(); ix++) {
+  delete vtmp.at(ix);
+ }
+
+ return h2;
+}
+
+TH1D* SPXGraphUtilities::SPXTransformXaxisToIndex(TH1D * h1){
+ std::string mn = "SPXTransformXaxisToIndex: ";
+ //
+ // Transforms the xaxis given in float to an index
+ //
+
+ //Make sure histogram is valid
+ if(!h1) {
+  throw SPXGraphException(cn + mn + "Histogram provided was invalid");
+ }
+
+ TString hname=TString("indexed")+h1->GetName();
+
+ int nbin=h1->GetNbinsX();
+ TH1D *h2= new TH1D(hname,h1->GetTitle(),nbin,0., nbin);
+ if(!h2) {
+  throw SPXGraphException(cn + mn + "Histogram h2 not created !");
+ }
+ for (int i=0; i<nbin; i++) {
+   h2->SetBinContent(i+1,h1->GetBinContent(i+1));  
+   h2->SetBinError  (i+1,h1->GetBinError(i+1));  
+ }
+
+ h2->SetEntries(h1->GetEntries());
+
+ return h2;
+}
+
+
+
+
+double  SPXGraphUtilities::SPXCompareHistograms(TH1D * h1, TH1 *h2, double reltolerance, bool debug){
+ std::string mn = "SPXCompareHistograms: ";
+ //
+ // Compares the value of two histograms
+ //
+ //Make sure histogram is valid
+ if(!h1) {
+  throw SPXGraphException(cn + mn + "Histogram h1 is invalid");
+ }
+
+ if(!h2) {
+  throw SPXGraphException(cn + mn + "Histogram h2 is invalid");
+ }
+
+ int n1bin=h1->GetNbinsX();
+ int n2bin=h2->GetNbinsX();
+
+ if(n1bin!=n2bin) {
+  std::ostringstream oss;
+  oss<<cn<<mn<<"Histograms have different number of bins n1bin= "<<n1bin<<" n2bin= "<<n2bin <<" "<< std::endl;     
+  throw SPXGeneralException(oss.str());
+ }
+
+ double dev=0.;
+ for (int ibin = 0; ibin < n1bin; ibin++) {
+  double c1=h1->GetBinCenter(ibin+1);
+  double c2=h2->GetBinCenter(ibin+1);
+  if(c1!=c2) {
+   std::ostringstream oss;
+   oss<<cn<<mn<<"Histograms have different bin center c1= "<<c1<<" c2= "<<c2 << std::endl;     
+   throw SPXGeneralException(oss.str());
+  }
+
+  double val1= h1->GetBinContent(ibin+1);
+  double val2= h2->GetBinContent(ibin+1);
+  double diff=0.;
+
+  if (val1!=0) {
+   diff=fabs(val1-val2)/val1;
+
+   if (diff>=reltolerance) {
+    dev+=diff;
+   }
+  } else {
+   if (val2!=0) {
+    std::cout<<cn<<mn<<"WARNING: val1=0, but not val2= "<<val2<<std::endl;
+    return HUGE_VAL;
+   }
+  }
+
+  if (debug)
+   std::cout<<cn<<mn<<"val1= "<<val1<<" val2= "<<val2<<" diff= "<<diff<<" rel= "<<val1/val2<<" summed deviation= "<<dev<<std::endl;
+ }
+ 
+ return dev;
+};
+
+TMatrixD * SPXGraphUtilities::SPXGetMatrix(TH2D * h1){
+ std::string mn = "SPXGetMatrix: ";
+
+ if(!h1) {
+  throw SPXGraphException(cn + mn + "Histogram is invalid");
+ }
+
+ int nbinx=h1->GetNbinsX();
+ int nbiny=h1->GetNbinsY();
+
+ TMatrixT<double> *matrix = new TMatrixT<double>(nbinx,nbiny);
+ if (!matrix) {
+  throw SPXGraphException(cn + mn + "Matrix can not be created !");
+ }
+
+ for (int ix = 0; ix < nbinx; ix++) {
+  for (int iy = 0; iy < nbiny; iy++) {
+    double val=h1->GetBinContent(ix+1,iy+1);
+    (*matrix)(ix,iy)=val;
+  }
+ }
+
+ //TString name="m";
+ //name+=h1->GetName();
+ //matrix->SetName(name);
+ 
+ return matrix;
+}
+
+bool SPXGraphUtilities::SPXCheckGraphBinning(TGraphErrors *g1, std::vector <double > bins){
+ std::string mn = "SPXCheckGraphBinning: ";
+ //
+ // Check of graph has same binning as given by vector bins
+ // Check bin centers 
+ // vector is supposed to be the bin boundary
+
+ //Make sure graph is valid
+
+ if(!g1) {
+  throw SPXGraphException(cn + mn + "TGraph g1 is invalid");
+ }
+
+ int n1bin=g1->GetN();
+ int n2bin=bins.size()-1;
+
+ if(n1bin!=n2bin) {
+  std::ostringstream oss;
+  oss<<cn<<mn<<"TGraph has different number of bins in graph= "<<n1bin<<" but vector bin= "<<n2bin <<" "<< std::endl;     
+  std::cout<<oss.str()<<std::endl;
+
+  std::cout<<cn<<mn<<"Graph g1: "<<std::endl;
+  g1->Print();
+
+  std::cout<<cn<<mn<<"vector bins: "<< n2bin <<std::endl;
+  for (int i=0; i<bins.size()-1; i++) { // vector has one element more since it is supposed to be the bin boundary
+   double xm=(bins.at(i)+bins.at(i+1))/2;
+   std::cout<<cn<<mn<<i<<" bins: "<<bins.at(i)<<" xm= "<<xm<<std::endl;
+   //std::cout<<cn<<mn<<i<<" bins: "<<bins.at(i)<<std::endl;
+  }
+
+  throw SPXGeneralException(oss.str());
+ }
+ 
+ bool ok=true;
+
+ double x=0., y=0.;
+ for (Int_t i=0; i<g1->GetN(); i++) {
+  g1->GetPoint(i,x,y);
+  //double ey=g1->GetErrorY(i);
+  //g2->SetPointError(i,0.,ey);
+
+  double xm=(bins.at(i)+bins.at(i+1))/2;
+
+  //std::cout<<cn<<mn<<i<<" x= "<<x<<" xm= "<<xm<<" y= "<<y<<std::endl;
+
+  if (x!=xm) ok=false;
+
+ }
+
+ return ok;
+}
+
+double SPXGraphUtilities::SPXCompareTMatrices(TMatrixD * m1, TMatrixD *m2, double reltolerance, bool debug){
+ std::string mn = "SPXCompareTMatrices: ";
+ //
+ // Compares the value of two TMatrices
+ //
+ // Make sure matrix is valid
+ //
+ if(!m1) {
+  throw SPXGraphException(cn + mn + "TMatrix m1 is invalid");
+ }
+
+ if(!m2) {
+  throw SPXGraphException(cn + mn + "TMatrix m2 is invalid");
+ }
+
+ if(m1->GetNrows() != m2->GetNrows() ) {
+  std::ostringstream oss;
+  oss<<cn<<mn<<"TMatrix have different number of rows m1= "<<m1->GetNrows() <<" m2= "<< m2->GetNrows() <<" "<< std::endl;     
+  throw SPXGeneralException(oss.str());
+ }
+
+ if(m1->GetNcols() != m2->GetNcols() ) {
+  std::ostringstream oss;
+  oss<<cn<<mn<<"TMatrix have different number of columns m1= "<<m1->GetNcols() <<" m2= "<< m2->GetNcols() <<" "<< std::endl;     
+  throw SPXGeneralException(oss.str());
+ }
+
+ double dev=0.;
+
+ for( Int_t i=0; i<m1->GetNcols(); i++ ){
+  for( Int_t j=0; j<m1->GetNrows(); j++ ){
+   double val1= (*m1)[i][j];
+   double val2= (*m2)[i][j];
+
+   if (val1*val2<0) {
+    std::cout<<cn<<mn<<"WARNING: elements have different signs i= "<< i <<" j= "<< j << " val1= "<<val1<<" val2= "<<val2<<std::endl;
+   }
+
+   double diff=0.;
+   if (val1!=0.) {
+    diff=fabs(val1-val2)/val1;
+
+    if (diff>=reltolerance) {
+     dev+=diff;
+
+     std::cout<<cn<<mn<<"WARNING: element not the same within "<<reltolerance<<" i= "<<i<<" j= "<<j<< std::scientific << " val1= "<<val1<<" val2= "<<val2<<
+             " rel= "<<val1/val2<<" diff= "<<diff<<" dev= "<<dev<<std::endl;
+
+    } else {
+     if (diff>=0.02) {
+      std::cout<<cn<<mn<<"WARNING: element not the same within 2% "<<" i= "<<i<<" j= "<<j<< std::scientific << " val1= "<<val1<<" val2= "<<val2<<
+             " rel= "<<val1/val2<<" diff= "<<diff<<" dev= "<<dev<<std::endl;
+     }
+    }
+   } else {
+    if (val2!=0) {
+     std::cout<<cn<<mn<<"WARNING: val1=0, but not val2= "<<val2<<std::endl;
+     std::cerr<<cn<<mn<<"WARNING: val1=0, but not val2= "<<val2<<std::endl;
+     return HUGE_VAL;
+    }
+   }
+
+   if (debug)
+    std::cout<<cn<<mn<<" i= "<<i<<" j= "<<j<< std::scientific << " val1= "<<val1<<" val2= "<<val2<<
+             " rel= "<<val1/val2<<" diff= "<<diff<<" dev= "<<dev<<std::endl;
+  }
+ }
+ 
+ return dev;
+};
+
+

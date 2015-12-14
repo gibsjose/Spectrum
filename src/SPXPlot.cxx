@@ -17,7 +17,11 @@
 #include <string.h> //memcpy
 
 #include "SPXPlot.h"
-#include "SPXSummaryFigures.h" 
+
+//#ifdef DEVELOP
+//#include "SPXSummaryFigures.h" 
+//#include "SPXGlobalCorrelation.h" 
+//#endif
 
 const std::string cn = "SPXPlot::";
 
@@ -26,8 +30,10 @@ bool SPXPlot::debug;
 
 #ifdef DEVELOP
 SPXpValue* pvalue;
+SPXGlobalCorrelation *gcm;
 #endif
-SPXSummaryFigures * summaryfigures;
+
+//SPXSummaryFigures * summaryfigures;
 
 #ifdef TIMER
 class quick_timer { 
@@ -106,15 +112,34 @@ void SPXPlot::Plot(void) {
 
 #ifdef DEVELOP
         if (steeringFile->GetCalculateChi2()>0){       
+	 if (debug) {
+ 	  std::cout<<" "<<std::endl;
+	  std::cout<<cn<<mn<<"Now call pValue calculation "<<std::endl;
+	  std::cout<<cn<<mn<<"Data size "<<data.size()<<std::endl;
+	  std::cout<<cn<<mn<<"CrossSection size "<<crossSections.size()<<std::endl;
+	  std::cout<<cn<<mn<<"id= "<<id<<std::endl;
+	 }
 
-	  //if (debug) {
- 	  //std::cout<<" "<<std::endl;
-	  //std::cout<<cn<<mn<<"Now call pValue calculation "<<std::endl;
-	  //std::cout<<cn<<mn<<"Data size "<<data.size()<<std::endl;
-	  //std::cout<<cn<<mn<<"CrossSection size "<<crossSections.size()<<std::endl;
-	  //std::cout<<cn<<mn<<"id= "<<id<<std::endl;
-	  //}
+         if (id==0) {     
+          gcm= new SPXGlobalCorrelation(steeringFile);
+         }
 
+	 gcm->SetData(data);
+         if (id==steeringFile->GetNumberOfPlotConfigurations()-1) {
+	  std::cout<<cn<<mn<<"Build the global correllation matrix: "<<std::endl;
+	  gcm->BuildGlobalCovarianceMatrix();
+          if (!gcm->CheckMatrices()) {
+           std::cout<<cn<<mn<<"Problem in global covariance matrix "<<std::endl;
+           std::cerr<<cn<<mn<<"Problem in global covariance matrix "<<std::endl;
+          }  
+
+          if (debug) {
+ 	   std::cout<<cn<<mn<<"Print the global correllation matrix: "<<std::endl;
+           gcm->GetGlobalCovarianceMatrix()->Print();
+          }
+         }
+
+ /*
          if (id==0) {
           pvalue = new SPXpValue(); //class to analyze data and theory agreement
           pvalue->SetSteeringFile(steeringFile); 
@@ -131,7 +156,7 @@ void SPXPlot::Plot(void) {
 	   //std::cout<<cn<<mn<<"calling SPXpValue finalize method "<<std::endl;
           pvalue->Finalize();         
          }
-
+ */
 	} else {
 	 std::cout<<cn<<mn<<"calculate_chi2 option not ON SPXpValue not called "<<id<<std::endl;
         } 
@@ -160,6 +185,7 @@ void SPXPlot::Plot(void) {
         }
 
 #ifdef DEVELOP
+	/*
          if (id==0) {
           summaryfigures = new SPXSummaryFigures (); 
           summaryfigures->SetSteeringFile(steeringFile); 
@@ -176,6 +202,7 @@ void SPXPlot::Plot(void) {
 	  std::cout<<cn<<mn<<"Now Draw summary figure "<<std::endl;
           summaryfigures->Draw();         
          }
+	*/
 #endif
 	UpdateCanvas();
 

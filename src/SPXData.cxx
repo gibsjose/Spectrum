@@ -41,8 +41,11 @@ SPXData::SPXData(const SPXPlotConfigurationInstance &pci) {
   DataCutXmax=this->pci.dataSteeringFile.GetDataCutXmax();
 
   if (debug) std::cout<<cn<<mn<<"Remove bins with values < "<<DataCutXmin<<" and > "<<DataCutXmax<<std::endl;
- } else 
+ } else {
   if (debug) std::cout<<cn<<mn<<"All data are kept ...unless main steering over-rules "<<std::endl;
+  DataCutXmin=-HUGE_VAL;
+  DataCutXmax= HUGE_VAL;
+ }
 
  TakeSignforTotalError=false;
   
@@ -1371,6 +1374,7 @@ void SPXData::ReadCorrelation()
 
   if (debug) 
    std::cout <<cn<<mn<<"Read correlation matrix from: "<<corrtotalfilename<< std::endl; 
+
   this->ReadCorrelationMatrix(corrtotalfilename);
 
  } else {
@@ -1422,10 +1426,8 @@ void SPXData::ReadCorrelation()
    std::cerr<<cn<<mn<<"WARNING no systematics components found ! "<< std::endl; 
   } else {
    this->CalculateSystematicCovarianceMatrix();
+   std::cout<<cn<<mn<<"Finished calculation of systematic covariance matrix"<< std::endl; 
   }
- 
-  // add up stat and syst covariance matrice
-  if (debug) std::cout <<cn<<mn<<"Add up stat and syst covariance matrices "<< std::endl; 
   //
   // calculate total covariance
   //
@@ -1435,6 +1437,14 @@ void SPXData::ReadCorrelation()
    //throw SPXParseException(cn+mn+"WARNING: Systematic covariance matrix not found ! ");
    return;
   }
+
+  //if (debug) {
+   std::cout<<cn<<mn<<"Print systematic covariance matrix "<< std::endl; 
+   cov_matrixsyst->Print();
+   //}
+
+  // add up stat and syst covariance matrice
+  if (debug) std::cout <<cn<<mn<<"Add up stat and syst covariance matrices "<< std::endl; 
 
   //cov_matrixtot->Plus(*cov_matrixstat,*cov_matrixsyst);
   cov_matrixtot = new TMatrixT<double>(*cov_matrixstat,TMatrixD::kPlus,*cov_matrixsyst);
@@ -1447,7 +1457,6 @@ void SPXData::ReadCorrelation()
  
   if (debug) {
    std::cout<<cn<<mn<<"Print total covariance matrix "<< std::endl; 
-   
    cov_matrixtot->Print();
   }   
 
@@ -2094,13 +2103,13 @@ std::vector <TGraphAsymmErrors *>  SPXData::GetSystematicsErrorGraphs(void){
   
     if ((eyh<0 && eyl<0) || (eyh>0 && eyl>0) ) {
      std::ostringstream oss;
-     oss << cn<<mn<<"INFO: in "<<sname<<" ibin= "<<ibin<<" errors have same sign:  eyh= "<<eyh<<" eyl= "<<eyl;  
+     oss << cn<<mn<<"INFO: in "<<sname<<" ibin= "<<ibin<<" errors have same sign: eyh= "<<eyh<<" eyl= "<<eyl;  
      std::cout<<oss.str()<<std::endl;
      std::cerr<<oss.str()<<std::endl;
     }
 
     if (eyh<0 && eyl>0) {
-     std::cout<<cn<<mn<<"INFO: in ibin= "<<ibin<<" eyh<0 and exl>0 errors have switched sign:  eyh= "<<eyh<<" eyl= "<<eyl<<std::endl;
+     std::cout<<cn<<mn<<"INFO: in ibin= "<<ibin<<" eyh<0 and exl>0 errors have switched sign: eyh= "<<eyh<<" eyl= "<<eyl<<std::endl;
      //double tmp=eyh;
      //eyh=eyl;
      //eyl=tmp;
@@ -2419,3 +2428,75 @@ void SPXData::Draw(std::string opt){
  this->totalErrorGraph->Draw(opt.c_str());
 
 };
+
+bool SPXData::CheckCovarianceMatrix(double reltol){
+ std::string mn = "CheckCovarianceMatrix: ";
+ SPXUtilities::PrintMethodHeader(cn, mn);
+
+ bool ok=true;
+
+ TMatrixD *covdata=this->GetDataStatCovarianceMatrix();
+ if (!covdata) {
+  std::cout<<cn<<mn<<"INFO: Data covariance matrix can not be retrieved !"<<std::endl;
+ }
+
+ ok=this->CheckCovarianceMatrix(covdata, reltol);
+ if (!ok) {
+  std::cout<<cn<<mn<<"WARNING: Data covariance matrix "<<covdata->GetName()<<" is not ok!"<<std::endl;
+ } 
+
+ return ok;
+}
+
+bool SPXData::CheckCovarianceMatrix(TMatrixD *covdata, double reltol){
+ std::string mn = "CheckCovarianceMatrix:TMatrixD: ";
+ SPXUtilities::PrintMethodHeader(cn, mn);
+
+ bool ok=true;
+
+ if (!covdata) {
+  throw SPXGeneralException(cn+mn+"Input covariance matrix not found !");
+ }
+
+ TGraphAsymmErrors * gdata=this->GetStatisticalErrorGraph();
+ if (!gdata) {
+  throw SPXGeneralException(cn+mn+"Data statistical graph not found !");
+ }
+
+ int nbin=gdata->GetN();
+
+ if (nbin!=covdata->GetNrows() || nbin!=covdata->GetNcols()) {
+  std::ostringstream oss;
+  oss << "Number of bins nbin= "<<nbin<<" and cov matrix not ok ! matrix: nrows= "<< covdata->GetNrows() <<" ncol= "<< covdata->GetNcols() << std::endl;
+  throw SPXGeneralException(oss.str());
+ }
+
+ for (int i=0; i<nbin; i++) {
+  double estat=gdata->GetErrorYhigh(i);
+  estat=(gdata->GetErrorYhigh(i)+gdata->GetErrorYlow(i))/2.;
+    
+  double valcov=(*covdata)[i][i];
+
+  //if (debug) std::cout<<cn<<mn<<i<<" covdata= "<<valcov<<" stat err= "<<estat<<std::endl;
+  
+  double diff=fabs(valcov-estat*estat);
+  if (estat!=0.) diff/=estat*estat;
+  if (diff>reltol) {
+   ok=false;
+   std::cout<<cn<<mn<<"WARNING: Bin= "<<i<<" covariance matrix and data stat error are not the same within "<<std::fixed<<reltol<<std::scientific<<" : cov= "<<sqrt(valcov)<<" stat err= "<<estat<<" rel difference= "<<diff<<" ratio= "<< valcov/(estat*estat)<<std::endl;;
+   //std::cout<<std::defaultfloat <<std::endl;
+
+  } else {
+   if (debug) std::cout<<cn<<mn<<"Bin i= "<<i<<" digaonal covariance matrix elements and data stat error consistent within= "<<diff<<std::endl;
+   if (diff>0.02 && reltol>0.02) {
+    std::ostringstream oss;
+    oss <<cn<<mn<< std::scientific <<"WARNING: Bin= "<<i
+	    <<" diagonal covariance matrix elements and data stat error are not the same within 2%: cov= "<<sqrt(valcov)<<" stat err= "<<estat<<" rel difference= "<<diff<<" ratio= "<< valcov/(estat*estat);
+     std::cout<<oss.str()<<std::endl;
+     std::cerr<<oss.str()<<std::endl;
+    }
+   }
+  }
+
+ return ok;
+}

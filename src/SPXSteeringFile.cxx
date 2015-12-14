@@ -571,6 +571,20 @@ void SPXSteeringFile::Print(void) {
 			std::cout << "\t\t\t Corrections Marker Style "<< j << ": " << tmp.correctionsMarkerStyle << std::endl;
                         std::cout <<" " << std::endl;
 
+
+                        /*
+                        if (replicasteeringfile.size()>0) {
+			 std::cout << "\t\t\t Number of replica steering files= "<< replicasteeringfile.size()<< std::endl;
+
+                         for (int i=0; i<replicasteeringfile.size(); i++) {
+			  std::cout << "\t\t\t File name = " << replicasteeringfile.at(i) << std::endl;
+                         }
+			}
+                        */
+                        if (!replicasteeringfile.empty()) {
+			 std::cout << "\t\t\t replica file name = " << replicasteeringfile << std::endl;
+                        }      
+
                         if (systematicsclasses.size()>0) {
 			 std::cout << "\t\t\t Number of systematic classes to group systematics components"<< systematicsclasses.size()<< std::endl;
 
@@ -738,11 +752,30 @@ void SPXSteeringFile::ParsePlotConfigurations(void) {
 		plotSection = intStream.str();
 		if(debug) std::cout << cn << mn << "Formed plot section string: " << plotSection << std::endl;
 
+                std::string tmp;
+ 
+                if(debug) std::cout<<cn<<mn<<"Start parsing display_systematic_group_fill_color " << std::endl;
+		tmp = reader->Get(plotSection, "display_systematic_group_fill_color", "EMPTY");
+		if(!tmp.compare("EMPTY")) {
+		 std::cout<<cn<<mn<<"INFO: No plot option for display_systematic_group_fill_color found"<< std::endl;
+		} else {	       
+		 //Parse into vector
+		 tmpVector = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+		 if(debug) {
+		  std::cout<<cn<<mn<<"display_systematic_group_fill_color configuration string: " << tmp << " parsed into:" << std::endl;
+                 }
+		 for(int j = 0; j < tmpVector.size(); j++) {
+		  if (debug) std::cout<<cn<<mn<< "\t" << tmpVector[j] << std::endl;
+                  //systematicsclassescolor.clear();
+                  systematicsclassescolor.push_back( atoi(tmpVector.at(j).c_str()));	       
+		 }
+		}
+                //
                 // 
 		//Get the systematic class
 		//
        	        if(debug) std::cout<<cn<<mn<<"Start parsing display_systematic_group " << std::endl;
-                std::string tmp;
+                //std::string tmp;
 	        tmp = reader->Get(plotSection, "display_systematic_group", "EMPTY");
 	        if(!tmp.compare("EMPTY")) {          
 	         std::cout<<cn<<mn<<"INFO: No plot option for display_systematic_group found"<< std::endl;
@@ -2552,8 +2585,27 @@ void SPXSteeringFile::Parse(void) {
 
 	//Graphing configurations [GRAPH]
 
-        ParameterScan= reader->GetBoolean("GRAPH", "grid_parameter_scan",ParameterScan );
-        if (debug) std::cout << cn << mn << "ParameterScan= "<< (ParameterScan ? "ON" : "OFF" ) << std::endl;
+	//
+	//
+        /*
+       	        if(debug) std::cout<<cn<<mn<<"Start parsing replica_steering_file " << std::endl;
+	        tmp = reader->Get(plotSection, "replica_steering_file", "EMPTY");
+	        if(!tmp.compare("EMPTY")) {          
+	         std::cout<<cn<<mn<<"INFO: No plot option for replica_steering_file found"<< std::endl;
+	        } else {
+	         //Parse into vector
+	         replicasteeringfile = SPXStringUtilities::CommaSeparatedListToVector(tmp);
+	         if(debug) {
+	          std::cout<<cn<<mn<<"replica_steering_file configuration string: " << tmp << " parsed into:" << std::endl;
+		  for(int j = 0; j < replicasteeringfile.size(); j++) {
+		   std::cout<<cn<<mn<< "\t" << replicasteeringfile[j] << std::endl;
+		  }
+		 }
+	        }
+	 */
+        replicasteeringfile= reader->Get("GRAPH", "replica_steering_file","");
+        if (debug) std::cout << cn << mn << "replica_steering_file= "<< replicasteeringfile << std::endl;
+	//
 
 	plotBand = reader->GetBoolean("GRAPH", "plot_band", plotBand);
 

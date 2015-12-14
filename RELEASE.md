@@ -6,6 +6,10 @@
 
 ## Change Log
 
+  -SPXGraphUtilities: Introduce HistogramCutXAxis
+
+  -SPXData: inititialize  DataCutXmin,  DataCutXmax to high values
+
   -SPXPlot: change to be able to run theory only
 
   -SPXDATA: Removed bug in reading in covariance matrix starting with negative value

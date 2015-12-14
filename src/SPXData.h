@@ -244,6 +244,20 @@ public:
         void KeepSystematicthatContains(std::string);
 
 	void UpdateSystematics(void);
+
+	std::string GetDataDirectory(void){ return pci.dataDirectory;}
+
+        bool CheckCovarianceMatrix(double reltol=0.);
+        bool CheckCovarianceMatrix(TMatrixD *cov,double reltol=0.);
+
+        double GetXmin(void){
+	 return this->GetXlowVector().at(0);
+        }
+
+        double GetXmax(void){
+	 return this->GetXhighVector().at(this->GetXhighVector().size()-1);
+        }
+
 private:
 	static bool debug;		   //Flag indicating debug mode
 	std::ifstream *dataFile;	   //Must declare as pointer... ifstream's copy constructor is private
@@ -312,6 +326,7 @@ private:
 
 	void OpenDataFile(void);
 	void CheckVectorSize(const std::vector<double> & vector, const std::string & name, unsigned int masterSize);
+
 
 };
 
