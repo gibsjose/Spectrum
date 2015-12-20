@@ -35,24 +35,29 @@ void SPXCrossSection::Create(SPXSteeringFile *mainsteeringfile) {
 
  //Attempt to create the Grid
  try {
-  grid = new SPXGrid(pci);
 
   if (debug) std::cout<<cn<<mn<<"Create grid with name= "<<gridname.c_str()<<std::endl;
 
+  grid = new SPXGrid(pci);
+
+  if (debug) std::cout<<cn<<mn<<"Created grid with name= "<<gridname.c_str()<<std::endl;
+
   grid->SetGridName(gridname);
   grid->CreateGrid();
+
  } catch(const SPXException &e) {
   throw;
  }
 
- if (debug) std::cout<<cn<<mn<<"Attached the GRID "<<std::endl;
-
+ if (debug) std::cout<<cn<<mn<<"Attach the GRID "<<std::endl;
  //Attempt to create the PDF object and perform convolution
  try {
   pdf = new SPXPDF(psf, grid);
  } catch(const SPXException &e) {
   throw;
  }
+
+ if (debug) std::cout<<cn<<mn<<"Attached the GRID "<<std::endl;
 
  //@TODO What to do when the grid IS divided but the reference is NOT?
  dividedByBinWidth = this->pci->gridSteeringFile.IsGridDividedByBinWidth();

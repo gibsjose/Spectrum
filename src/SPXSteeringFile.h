@@ -76,6 +76,8 @@ private:
                                     //      false uncertainties are taken as such
       	bool set_grid_styles;       // Flag to indicate, if grid properties are set 
 
+        bool AddMCStattoTotalStatError; //
+
 	std::vector <bool> RemoveXbins;           // if ON points below/above DataCutXmin/DataCutXmax are removed
 	std::vector <double> DataCutXmin;         // Value below which data points are removed if  RemoveXbins=true
 	std::vector <double> DataCutXmax;         // Value above which data points are removed if  RemoveXbins=true
@@ -84,6 +86,7 @@ private:
 
 	bool gridCorr;		// if true  corrections should be applied to grid/convolute
 	std::string ContainGridCorr; // only keep correction that contain this string
+	std::string MCstatNametoAddtoTotal; // name of mcstat error to be add to total error
 	bool nomCorr;		// if true correction should be applied to nominal histogram
 	bool labelSqrtS;	// if true Sqrt(s) value should be shown in the legend
 	bool labelChi2;	        // if true Chi2 should be add on label
@@ -245,6 +248,14 @@ public:
 	  return this-> TakeSignforTotalError;
 	}
 
+	bool GetAddMCStattoTotalStatError(void) const {
+	 return this->AddMCStattoTotalStatError;
+        }
+
+
+	std::string GetMCstatNametoAddtoTotal(void) const {
+	 return this->MCstatNametoAddtoTotal;
+        }
 
 	bool PrintTotalCrossSection(void) const {
 		return this->printTotalSigma;

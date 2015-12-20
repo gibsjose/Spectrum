@@ -48,7 +48,8 @@ SPXData::SPXData(const SPXPlotConfigurationInstance &pci) {
  }
 
  TakeSignforTotalError=false;
-  
+ AddMCStattoTotalStatError=""; 
+ 
  //set pointer to zero
  statisticalErrorGraph=0;
  systematicErrorGraph=0;
@@ -468,6 +469,70 @@ void SPXData::ParseSpectrum(void) {
 
 	if(debug) std::cout<<" "<<std::endl;
 
+	std::cout<<cn<<mn<<"HUHU AddMCStattoTotalStatError= "<<AddMCStattoTotalStatError<<std::endl;
+        if (AddMCStattoTotalStatError!="") {
+	 std::string name=AddMCStattoTotalStatError;
+         if (!TString(AddMCStattoTotalStatError).Contains("syst_"))
+	  name="syst_"+AddMCStattoTotalStatError;
+
+  	 if (debug) std::cout<<cn<<mn<<"INFO Remove name: "<<name<<std::endl;
+
+         for (int i=0; i<2; i++) {
+	  std::string iname;
+	  if (i==0) iname=name+"+";
+          else      iname=name+"-";
+
+  	  if (debug) std::cout<<cn<<mn<<"INFO Remove from map of systematics: "<<iname<<std::endl;
+
+          if (individualSystematics.count(iname)>0) {
+	   if (debug) std::cout<<cn<<mn<<"Found in map, now Erase from map "<<iname<<" in map individualSystematics "<<std::endl;
+
+	   std::vector <double> vtmp=individualSystematics[iname];
+
+           individualSystematics.erase(iname);
+
+           if (i==1) {
+	    if (debug) std::cout<<cn<<mn<<"Only add up negative "<<AddMCStattoTotalStatError<<" to data stat uncertainty "<<std::endl;
+            continue;
+           }
+
+           if (stat.size()!=vtmp.size()){
+	    std::cout<<cn<<mn<<"Data stat and MC stat vectors do not have the same size "<<std::endl;
+	    std::cout<<cn<<mn<<"Data stat size= "<<stat.size()<<std::endl;
+	    std::cout<<cn<<mn<<"MC stat size= "<<vtmp.size()<<std::endl;
+           }
+
+           for (int i=0; i<vtmp.size(); i++){ 
+	    std::cout<<cn<<mn<<"i= "<<i<<" MCstat= "<<vtmp.at(i)<<std::endl;
+           } 
+
+           for (int i=0; i<stat.size(); i++){ 
+	    std::cout<<cn<<mn<<"i= "<<i<<" Datastat= "<<stat.at(i)<<std::endl;
+           } 
+
+ 	   std::vector <double> quadstat;
+           for (int i=0; i<vtmp.size(); i++) {
+	    double quad=vtmp.at(i)*vtmp.at(i)+stat.at(i)*stat.at(i);
+            if (quad>0.) quad=sqrt(quad);
+	    quadstat.push_back(quad); 
+	    std::cout<<cn<<mn<<"i= "<<i<<" quad= "<<quad<<std::endl;
+           }
+           //
+           if (debug) std::cout<<cn<<mn<<"Replace data statistical by MC and data statistics added in quadrature"<<std::endl;
+           //stat=quadstat; 
+           std::copy (stat.begin(), stat.end(), quadstat.begin());
+            
+           for (int i=0; i<stat.size(); i++){ 
+	    std::cout<<cn<<mn<<"i= "<<i<<" total stat= "<<stat.at(i)<<std::endl;
+           } 
+           //
+          } else {
+	   std::cout<<cn<<mn<<"WARNING: Not found in map "<<iname<<std::endl;
+          }
+
+         }
+        }
+
 	//If necessary, compute/compare total positive/negative systematics for each bin using the individual systematic errors
 	if(pos_count) {
 
@@ -494,7 +559,7 @@ void SPXData::ParseSpectrum(void) {
 				const std::string   &name = it->first;
 				std::vector<double> &syst = it->second;
 
-				//std::cout<<cn<<mn<<" i= "<<i<<" syst.size()= "<<syst.size()<<std::endl;
+				std::cout<<cn<<mn<<name<<" i= "<<i<<" syst.size()= "<<syst.size()<<std::endl;
 
 			        if (i>=syst.size()) { 
 				 std::ostringstream oss;
@@ -616,6 +681,7 @@ void SPXData::ParseSpectrum(void) {
           syst_n=vsyst;
          
 	 }
+
 	 // remove bins from vector in the map
 	 for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
 	  const std::string   &syst_name  = it->first;

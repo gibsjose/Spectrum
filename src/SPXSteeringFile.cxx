@@ -93,6 +93,13 @@ void SPXSteeringFile::SetDefaults(void) {
 	TakeSignforTotalError = true;
 	if(debug) std::cout << cn << mn << "TakeSignforTotalError set to default: \"true\"" << std::endl;
 
+	AddMCStattoTotalStatError = false;
+	if(debug) std::cout << cn << mn << "AddMCStatTotaltoStatError set to default: \"false\"" << std::endl;
+
+	MCstatNametoAddtoTotal ="";
+	if(debug) std::cout << cn << mn << "MCstatNametoAddtoTotal set to default: empty string" << std::endl;
+
+
 	gridCorr = true;
 	if(debug) std::cout << cn << mn << "gridCorr set to default: \"true\"" << std::endl;
 
@@ -410,6 +417,10 @@ void SPXSteeringFile::Print(void) {
 
         if (showIndividualSystematicswithName) {
 	 std::cout << "\t\t Show individual systematics with name in steering: " << std::endl;
+        }
+
+	if (AddMCStattoTotalStatError) {
+	 std::cout << "\t\t Add MCstat uncertainty to total uncertainty: name= " <<MCstatNametoAddtoTotal<< std::endl;
         }
 
         if (showIndividualSystematics==0)
@@ -2714,6 +2725,11 @@ void SPXSteeringFile::Parse(void) {
 
 	ContainGridCorr= reader->Get("GRAPH", "contain_grid_corr", ContainGridCorr);
 
+	MCstatNametoAddtoTotal = reader->Get("GRAPH", "add_mcstat_to_totstat",MCstatNametoAddtoTotal);
+        if (ContainGridCorr>0){ 
+	 std::cout<<cn<<mn<<"Add MC statistical uncertainty to total is ON "<<std::endl;
+	 AddMCStattoTotalStatError=true;
+        }
 
 	labelSqrtS     = reader->GetBoolean("GRAPH", "label_sqrt_s", labelSqrtS);
 

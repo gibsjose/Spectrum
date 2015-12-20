@@ -131,15 +131,15 @@ void SPXPlot::Plot(void) {
           if (!gcm->CheckMatrices()) {
            std::cout<<cn<<mn<<"Problem in global covariance matrix "<<std::endl;
            std::cerr<<cn<<mn<<"Problem in global covariance matrix "<<std::endl;
-          }  
-
-          if (debug) {
- 	   std::cout<<cn<<mn<<"Print the global correllation matrix: "<<std::endl;
-           gcm->GetGlobalCovarianceMatrix()->Print();
+          } else { 
+           if (debug) {
+ 	    std::cout<<cn<<mn<<"Print the global correllation matrix: "<<std::endl;
+            gcm->GetGlobalCovarianceMatrix()->Print();
+           }
           }
          }
 
- /*
+	 /*
          if (id==0) {
           pvalue = new SPXpValue(); //class to analyze data and theory agreement
           pvalue->SetSteeringFile(steeringFile); 
@@ -156,10 +156,11 @@ void SPXPlot::Plot(void) {
 	   //std::cout<<cn<<mn<<"calling SPXpValue finalize method "<<std::endl;
           pvalue->Finalize();         
          }
- */
+	 */
 	} else {
 	 std::cout<<cn<<mn<<"calculate_chi2 option not ON SPXpValue not called "<<id<<std::endl;
         } 
+
 
 	SPXCImodel* pcimodel= new SPXCImodel(data,crossSections, steeringFile);
         pcimodel->SetPlotNumber(id); 
@@ -1383,7 +1384,9 @@ void SPXPlot::DrawLegend(void) {
 
  if (steeringFile->GetParameterScan())
   std::cout<<cn<<mn<<"Grid contain parameter scan= "<< std::endl;
- 
+ else if (debug) 
+  std::cout<<cn<<mn<<"Grid does NOT contain parameter scan= "<< std::endl;
+
  for(int icross = 0; icross < crossSections.size(); icross++) {
 
   if (debug) {
@@ -3308,6 +3311,10 @@ void SPXPlot::InitializeData(void) {
 
                 if (steeringFile->GetTakeSignforTotalError()) {
                  dataInstance->SetTakeSignforTotalError(true);
+		} 
+
+                if (steeringFile->GetAddMCStattoTotalStatError()>0) {
+		 dataInstance->SetAddMCStattoTotalStatError(steeringFile->GetMCstatNametoAddtoTotal());
 		} 
 
 		if(debug) std::cout<<cn<<mn<<"Call GetDataRemoveFlag for i= "<<i << std::endl;

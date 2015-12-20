@@ -83,6 +83,16 @@ public:
 
         void SetTakeSignforTotalError(bool mybool){
          TakeSignforTotalError=mybool; 
+         return;
+        }
+
+	void SetAddMCStattoTotalStatError(std::string myname) {
+	 AddMCStattoTotalStatError=myname;
+         return;
+        }
+
+	std::string GetAddMCStattoTotalStatError(void) {
+	 return AddMCStattoTotalStatError;
         }
 
         const std::string & GetDataFileName(void) {
@@ -270,6 +280,8 @@ private:
         bool TakeSignforTotalError; // When adding up components to total error, if true
                                     // keep all negative systematics in lower total error
                                     // keep all positive systematics in higher total error
+
+	std::string AddMCStattoTotalStatError; // add MC statistical to total uncertainty
 
         bool RemoveXbins;           // if ON points below/above DataCutXmin/DataCutXmax are removed
         double DataCutXmin;         // Value below which data points are removed if  RemoveXbins=true
