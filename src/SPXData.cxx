@@ -1494,12 +1494,10 @@ void SPXData::ReadCorrelation()
    this->CalculateSystematicCovarianceMatrix();
    std::cout<<cn<<mn<<"Finished calculation of systematic covariance matrix"<< std::endl; 
   }
-<<<<<<< HEAD
  
   // add up stat and syst covariance matrice
   if (debug) std::cout <<cn<<mn<<"Add up stat and syst covariance matrices "<< std::endl; 
-=======
->>>>>>> release-0.98
+
   //
   // calculate total covariance
   //
@@ -2500,8 +2498,6 @@ void SPXData::Draw(std::string opt){
  this->totalErrorGraph->Draw(opt.c_str());
 
 };
-<<<<<<< HEAD
-=======
 
 bool SPXData::CheckCovarianceMatrix(double reltol){
  std::string mn = "CheckCovarianceMatrix: ";

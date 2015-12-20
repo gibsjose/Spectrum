@@ -2454,9 +2454,6 @@ bool SPXGraphUtilities::SPXHistosHaveSameMean(TH1* h1, TH1D *h2){
    return false;
   }
  }
-<<<<<<< HEAD
-=======
-
  return true;
 } 
 

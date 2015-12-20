@@ -245,8 +245,6 @@ void SPXDrawUtilities::DrawBox(double xbox, double ybox, int mcolor, bool isdata
 
  return;
 }
-<<<<<<< HEAD
-=======
 
 void SPXDrawUtilities::PlotAndSave2Dmatrix( TMatrixD *covMat_, Int_t N, Double_t binLimits[], TH2D* frame2D, TString *name, Int_t SetZrage, Double_t min_, Double_t max_ ){
   //
@@ -283,5 +281,3 @@ void SPXDrawUtilities::PlotAndSave2Dmatrix( TMatrixD *covMat_, Int_t N, Double_t
    return;
 }
 
-
->>>>>>> release-0.98

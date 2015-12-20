@@ -394,11 +394,8 @@ TGraphAsymmErrors * SPXGridCorrections::GetCorrectionGraph(std::string &filename
 
  TGraphAsymmErrors* gcorr= new TGraphAsymmErrors();
  if (!gcorr) throw SPXGraphException(cn + mn + "ERROR creating graph ");
-<<<<<<< HEAD
+
  gcorr->SetName(TString("corrections_"+filename));
-=======
- gcorr->SetName(TString("correction_"+filename));
->>>>>>> release-0.98
 
  if (corrections.empty())
   throw SPXGraphException(cn + mn + "ERROR correction map is empty ! ");

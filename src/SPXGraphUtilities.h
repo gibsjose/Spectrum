@@ -129,11 +129,9 @@ public:
         static TGraphErrors *SPXTGraphSetXErrorsZero(TGraphErrors *g1);
         static TGraphErrors *SPXTGraphSetYErrorsZero(TGraphErrors *g1);
 
-<<<<<<< HEAD
         static TVectorD* SPXHistogramToVector( TH1D* h1 );
         static bool SPXHistosHaveSameMean(TH1* h1, TH1D *h2);
         static TH1D* HistogramSwitchSign(TH1D * h1);
-=======
         static TH1D* SPXZeroErrors(TH1* h1);
 
         static TVectorD* SPXHistogramToVector( TH1D* h1 );
@@ -151,7 +149,7 @@ public:
         static bool SPXCheckGraphBinning(TGraphErrors *g1, std::vector <double> bins);
 
         static TH1D *SPXTransformXaxisToIndex(TH1D* hnomnorm);
->>>>>>> release-0.98
+
 };
 
 #endif
