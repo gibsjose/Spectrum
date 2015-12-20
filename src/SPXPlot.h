@@ -32,10 +32,12 @@
 #include "SPXData.h"
 #include "SPXUtilities.h"
 
-#ifdef DEVELOP
+//#ifdef DEVELOP
 #include "SPXpValue.h"
 #include "SPXCImodel.h"
-#endif      
+#include "SPXGlobalCorrelation.h"
+//#include "SPXSummaryFigures.h" 
+//#endif      
 
 #include "SPXLatexTable.h"
 #include "SPXChi2.h"
@@ -55,6 +57,12 @@ public:
 		 SPXCrossSection::SetDebug(true);
 		 SPXGridCorrections::SetDebug(true);
 		 SPXRatio::SetDebug(true);
+#ifdef DEVELOP
+		 SPXGlobalCorrelation::SetDebug(true);
+		 //SPXSummaryFigures::SetDebug(true); \\will introduce loop
+		 SPXpValue::SetDebug(true);
+#endif  
+
 		}
 	}
 

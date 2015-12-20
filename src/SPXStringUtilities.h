@@ -54,6 +54,16 @@ public:
 	//static std::string CompareTwoSTring(std::string firstValue, std::string secondValue);
         //static std::string LCSubstr(std::string x, std::string y);
 
+        static std::string ReplaceString(std::string org, std::string replacedstring, std::string replacingstring){
+         std::string fline=org;
+         fline.replace(fline.find(replacedstring),replacedstring.length(),replacingstring);
+
+	 //std::cout<<"ReplaceString: org string= "<<org<<" replace string= "<<replacedstring<<" replacing string= "<< replacingstring <<" new string= "<<fline<< std::endl;
+
+         return fline;
+        };
+
+
 	template<typename T>
 	static T StringToNumber(const std::string& numberAsString) {
 		T valor;
@@ -62,15 +72,15 @@ public:
 		std::string str1=numberAsString;
 		if (isdigit((int)LeftTrim(str1).at(0)) || LeftTrim(str1).at(0)=='-') {
                  if (str1.find("D")!=std::string::npos) {
-		   //std::cout<<"Replace old string "<<str1<<std::endl;
-                 str1.replace(numberAsString.find("D"),1,"e");
-		 //std::cout<<"Replace D to E new string "<<str1<<std::endl;
-                 //double valor1=atof(str1.c_str());
- 		 //std::cout<<"valor1= "<< std::scientific << valor1 <<std::endl;
+		  //std::cout<<"Replace old string "<<str1<<std::endl;
+                  str1.replace(numberAsString.find("D"),1,"e");
+		  //std::cout<<"Replace D to E new string "<<str1<<std::endl;
+                  //double valor1=atof(str1.c_str());
+ 		  //std::cout<<"valor1= "<< std::scientific << valor1 <<std::endl;
                  }
                 }
-		//std::stringstream stream(numberAsString);
-                std::stringstream stream(str1);
+		std::stringstream stream(numberAsString);
+                //std::stringstream stream(str1);
 		stream >> valor;
 		if (stream.fail()) {
 		  //throw SPXParseException("Could not convert string " + numberAsString + " to a number");

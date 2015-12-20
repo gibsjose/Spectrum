@@ -41,11 +41,15 @@ SPXData::SPXData(const SPXPlotConfigurationInstance &pci) {
   DataCutXmax=this->pci.dataSteeringFile.GetDataCutXmax();
 
   if (debug) std::cout<<cn<<mn<<"Remove bins with values < "<<DataCutXmin<<" and > "<<DataCutXmax<<std::endl;
- } else 
+ } else {
   if (debug) std::cout<<cn<<mn<<"All data are kept ...unless main steering over-rules "<<std::endl;
+  DataCutXmin=-HUGE_VAL;
+  DataCutXmax= HUGE_VAL;
+ }
 
  TakeSignforTotalError=false;
-  
+ AddMCStattoTotalStatError=""; 
+ 
  //set pointer to zero
  statisticalErrorGraph=0;
  systematicErrorGraph=0;
@@ -465,6 +469,70 @@ void SPXData::ParseSpectrum(void) {
 
 	if(debug) std::cout<<" "<<std::endl;
 
+	std::cout<<cn<<mn<<"HUHU AddMCStattoTotalStatError= "<<AddMCStattoTotalStatError<<std::endl;
+        if (AddMCStattoTotalStatError!="") {
+	 std::string name=AddMCStattoTotalStatError;
+         if (!TString(AddMCStattoTotalStatError).Contains("syst_"))
+	  name="syst_"+AddMCStattoTotalStatError;
+
+  	 if (debug) std::cout<<cn<<mn<<"INFO Remove name: "<<name<<std::endl;
+
+         for (int i=0; i<2; i++) {
+	  std::string iname;
+	  if (i==0) iname=name+"+";
+          else      iname=name+"-";
+
+  	  if (debug) std::cout<<cn<<mn<<"INFO Remove from map of systematics: "<<iname<<std::endl;
+
+          if (individualSystematics.count(iname)>0) {
+	   if (debug) std::cout<<cn<<mn<<"Found in map, now Erase from map "<<iname<<" in map individualSystematics "<<std::endl;
+
+	   std::vector <double> vtmp=individualSystematics[iname];
+
+           individualSystematics.erase(iname);
+
+           if (i==1) {
+	    if (debug) std::cout<<cn<<mn<<"Only add up negative "<<AddMCStattoTotalStatError<<" to data stat uncertainty "<<std::endl;
+            continue;
+           }
+
+           if (stat.size()!=vtmp.size()){
+	    std::cout<<cn<<mn<<"Data stat and MC stat vectors do not have the same size "<<std::endl;
+	    std::cout<<cn<<mn<<"Data stat size= "<<stat.size()<<std::endl;
+	    std::cout<<cn<<mn<<"MC stat size= "<<vtmp.size()<<std::endl;
+           }
+
+           for (int i=0; i<vtmp.size(); i++){ 
+	    std::cout<<cn<<mn<<"i= "<<i<<" MCstat= "<<vtmp.at(i)<<std::endl;
+           } 
+
+           for (int i=0; i<stat.size(); i++){ 
+	    std::cout<<cn<<mn<<"i= "<<i<<" Datastat= "<<stat.at(i)<<std::endl;
+           } 
+
+ 	   std::vector <double> quadstat;
+           for (int i=0; i<vtmp.size(); i++) {
+	    double quad=vtmp.at(i)*vtmp.at(i)+stat.at(i)*stat.at(i);
+            if (quad>0.) quad=sqrt(quad);
+	    quadstat.push_back(quad); 
+	    std::cout<<cn<<mn<<"i= "<<i<<" quad= "<<quad<<std::endl;
+           }
+           //
+           if (debug) std::cout<<cn<<mn<<"Replace data statistical by MC and data statistics added in quadrature"<<std::endl;
+           //stat=quadstat; 
+           std::copy (stat.begin(), stat.end(), quadstat.begin());
+            
+           for (int i=0; i<stat.size(); i++){ 
+	    std::cout<<cn<<mn<<"i= "<<i<<" total stat= "<<stat.at(i)<<std::endl;
+           } 
+           //
+          } else {
+	   std::cout<<cn<<mn<<"WARNING: Not found in map "<<iname<<std::endl;
+          }
+
+         }
+        }
+
 	//If necessary, compute/compare total positive/negative systematics for each bin using the individual systematic errors
 	if(pos_count) {
 
@@ -491,7 +559,7 @@ void SPXData::ParseSpectrum(void) {
 				const std::string   &name = it->first;
 				std::vector<double> &syst = it->second;
 
-				//std::cout<<cn<<mn<<" i= "<<i<<" syst.size()= "<<syst.size()<<std::endl;
+				std::cout<<cn<<mn<<name<<" i= "<<i<<" syst.size()= "<<syst.size()<<std::endl;
 
 			        if (i>=syst.size()) { 
 				 std::ostringstream oss;
@@ -613,6 +681,7 @@ void SPXData::ParseSpectrum(void) {
           syst_n=vsyst;
          
 	 }
+
 	 // remove bins from vector in the map
 	 for(StringDoubleVectorMap_T::iterator it = individualSystematics.begin(); it != individualSystematics.end(); it++) {
 	  const std::string   &syst_name  = it->first;
@@ -1371,6 +1440,7 @@ void SPXData::ReadCorrelation()
 
   if (debug) 
    std::cout <<cn<<mn<<"Read correlation matrix from: "<<corrtotalfilename<< std::endl; 
+
   this->ReadCorrelationMatrix(corrtotalfilename);
 
  } else {
@@ -1422,10 +1492,14 @@ void SPXData::ReadCorrelation()
    std::cerr<<cn<<mn<<"WARNING no systematics components found ! "<< std::endl; 
   } else {
    this->CalculateSystematicCovarianceMatrix();
+   std::cout<<cn<<mn<<"Finished calculation of systematic covariance matrix"<< std::endl; 
   }
+<<<<<<< HEAD
  
   // add up stat and syst covariance matrice
   if (debug) std::cout <<cn<<mn<<"Add up stat and syst covariance matrices "<< std::endl; 
+=======
+>>>>>>> release-0.98
   //
   // calculate total covariance
   //
@@ -1435,6 +1509,14 @@ void SPXData::ReadCorrelation()
    //throw SPXParseException(cn+mn+"WARNING: Systematic covariance matrix not found ! ");
    return;
   }
+
+  //if (debug) {
+   std::cout<<cn<<mn<<"Print systematic covariance matrix "<< std::endl; 
+   cov_matrixsyst->Print();
+   //}
+
+  // add up stat and syst covariance matrice
+  if (debug) std::cout <<cn<<mn<<"Add up stat and syst covariance matrices "<< std::endl; 
 
   //cov_matrixtot->Plus(*cov_matrixstat,*cov_matrixsyst);
   cov_matrixtot = new TMatrixT<double>(*cov_matrixstat,TMatrixD::kPlus,*cov_matrixsyst);
@@ -1447,7 +1529,6 @@ void SPXData::ReadCorrelation()
  
   if (debug) {
    std::cout<<cn<<mn<<"Print total covariance matrix "<< std::endl; 
-   
    cov_matrixtot->Print();
   }   
 
@@ -2094,13 +2175,13 @@ std::vector <TGraphAsymmErrors *>  SPXData::GetSystematicsErrorGraphs(void){
   
     if ((eyh<0 && eyl<0) || (eyh>0 && eyl>0) ) {
      std::ostringstream oss;
-     oss << cn<<mn<<"INFO: in "<<sname<<" ibin= "<<ibin<<" errors have same sign:  eyh= "<<eyh<<" eyl= "<<eyl;  
+     oss << cn<<mn<<"INFO: in "<<sname<<" ibin= "<<ibin<<" errors have same sign: eyh= "<<eyh<<" eyl= "<<eyl;  
      std::cout<<oss.str()<<std::endl;
      std::cerr<<oss.str()<<std::endl;
     }
 
     if (eyh<0 && eyl>0) {
-     std::cout<<cn<<mn<<"INFO: in ibin= "<<ibin<<" eyh<0 and exl>0 errors have switched sign:  eyh= "<<eyh<<" eyl= "<<eyl<<std::endl;
+     std::cout<<cn<<mn<<"INFO: in ibin= "<<ibin<<" eyh<0 and exl>0 errors have switched sign: eyh= "<<eyh<<" eyl= "<<eyl<<std::endl;
      //double tmp=eyh;
      //eyh=eyl;
      //eyl=tmp;
@@ -2419,3 +2500,78 @@ void SPXData::Draw(std::string opt){
  this->totalErrorGraph->Draw(opt.c_str());
 
 };
+<<<<<<< HEAD
+=======
+
+bool SPXData::CheckCovarianceMatrix(double reltol){
+ std::string mn = "CheckCovarianceMatrix: ";
+ SPXUtilities::PrintMethodHeader(cn, mn);
+
+ bool ok=true;
+
+ TMatrixD *covdata=this->GetDataStatCovarianceMatrix();
+ if (!covdata) {
+  std::cout<<cn<<mn<<"INFO: Data covariance matrix can not be retrieved !"<<std::endl;
+ }
+
+ ok=this->CheckCovarianceMatrix(covdata, reltol);
+ if (!ok) {
+  std::cout<<cn<<mn<<"WARNING: Data covariance matrix "<<covdata->GetName()<<" is not ok!"<<std::endl;
+ } 
+
+ return ok;
+}
+
+bool SPXData::CheckCovarianceMatrix(TMatrixD *covdata, double reltol){
+ std::string mn = "CheckCovarianceMatrix:TMatrixD: ";
+ SPXUtilities::PrintMethodHeader(cn, mn);
+
+ bool ok=true;
+
+ if (!covdata) {
+  throw SPXGeneralException(cn+mn+"Input covariance matrix not found !");
+ }
+
+ TGraphAsymmErrors * gdata=this->GetStatisticalErrorGraph();
+ if (!gdata) {
+  throw SPXGeneralException(cn+mn+"Data statistical graph not found !");
+ }
+
+ int nbin=gdata->GetN();
+
+ if (nbin!=covdata->GetNrows() || nbin!=covdata->GetNcols()) {
+  std::ostringstream oss;
+  oss << "Number of bins nbin= "<<nbin<<" and cov matrix not ok ! matrix: nrows= "<< covdata->GetNrows() <<" ncol= "<< covdata->GetNcols() << std::endl;
+  throw SPXGeneralException(oss.str());
+ }
+
+ for (int i=0; i<nbin; i++) {
+  double estat=gdata->GetErrorYhigh(i);
+  estat=(gdata->GetErrorYhigh(i)+gdata->GetErrorYlow(i))/2.;
+    
+  double valcov=(*covdata)[i][i];
+
+  //if (debug) std::cout<<cn<<mn<<i<<" covdata= "<<valcov<<" stat err= "<<estat<<std::endl;
+  
+  double diff=fabs(valcov-estat*estat);
+  if (estat!=0.) diff/=estat*estat;
+  if (diff>reltol) {
+   ok=false;
+   std::cout<<cn<<mn<<"WARNING: Bin= "<<i<<" covariance matrix and data stat error are not the same within "<<std::fixed<<reltol<<std::scientific<<" : cov= "<<sqrt(valcov)<<" stat err= "<<estat<<" rel difference= "<<diff<<" ratio= "<< valcov/(estat*estat)<<std::endl;;
+   //std::cout<<std::defaultfloat <<std::endl;
+
+  } else {
+   if (debug) std::cout<<cn<<mn<<"Bin i= "<<i<<" digaonal covariance matrix elements and data stat error consistent within= "<<diff<<std::endl;
+   if (diff>0.02 && reltol>0.02) {
+    std::ostringstream oss;
+    oss <<cn<<mn<< std::scientific <<"WARNING: Bin= "<<i
+	    <<" diagonal covariance matrix elements and data stat error are not the same within 2%: cov= "<<sqrt(valcov)<<" stat err= "<<estat<<" rel difference= "<<diff<<" ratio= "<< valcov/(estat*estat);
+     std::cout<<oss.str()<<std::endl;
+     std::cerr<<oss.str()<<std::endl;
+    }
+   }
+  }
+
+ return ok;
+}
+>>>>>>> release-0.98

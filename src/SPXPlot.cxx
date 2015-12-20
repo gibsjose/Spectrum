@@ -19,6 +19,11 @@
 #include "SPXPlot.h"
 #include "SPXSummaryFigures.h" 
 
+//#ifdef DEVELOP
+//#include "SPXSummaryFigures.h" 
+//#include "SPXGlobalCorrelation.h" 
+//#endif
+
 const std::string cn = "SPXPlot::";
 
 //Must define the static debug variable in the implementation
@@ -26,8 +31,11 @@ bool SPXPlot::debug;
 
 #ifdef DEVELOP
 SPXpValue* pvalue;
+SPXGlobalCorrelation *gcm;
 #endif
 SPXSummaryFigures * summaryfigures;
+
+//SPXSummaryFigures * summaryfigures;
 
 #ifdef TIMER
 class quick_timer { 
@@ -106,14 +114,32 @@ void SPXPlot::Plot(void) {
 
 #ifdef DEVELOP
         if (steeringFile->GetCalculateChi2()>0){       
+	 if (debug) {
+ 	  std::cout<<" "<<std::endl;
+	  std::cout<<cn<<mn<<"Now call pValue calculation "<<std::endl;
+	  std::cout<<cn<<mn<<"Data size "<<data.size()<<std::endl;
+	  std::cout<<cn<<mn<<"CrossSection size "<<crossSections.size()<<std::endl;
+	  std::cout<<cn<<mn<<"id= "<<id<<std::endl;
+	 }
 
-	  //if (debug) {
- 	  //std::cout<<" "<<std::endl;
-	  //std::cout<<cn<<mn<<"Now call pValue calculation "<<std::endl;
-	  //std::cout<<cn<<mn<<"Data size "<<data.size()<<std::endl;
-	  //std::cout<<cn<<mn<<"CrossSection size "<<crossSections.size()<<std::endl;
-	  //std::cout<<cn<<mn<<"id= "<<id<<std::endl;
-	  //}
+         if (id==0) {     
+          gcm= new SPXGlobalCorrelation(steeringFile);
+         }
+
+	 gcm->SetData(data);
+         if (id==steeringFile->GetNumberOfPlotConfigurations()-1) {
+	  std::cout<<cn<<mn<<"Build the global correllation matrix: "<<std::endl;
+	  gcm->BuildGlobalCovarianceMatrix();
+          if (!gcm->CheckMatrices()) {
+           std::cout<<cn<<mn<<"Problem in global covariance matrix "<<std::endl;
+           std::cerr<<cn<<mn<<"Problem in global covariance matrix "<<std::endl;
+          } else { 
+           if (debug) {
+ 	    std::cout<<cn<<mn<<"Print the global correllation matrix: "<<std::endl;
+            gcm->GetGlobalCovarianceMatrix()->Print();
+           }
+          }
+         }
 
          if (id==0) {
           pvalue = new SPXpValue(); //class to analyze data and theory agreement
@@ -131,10 +157,11 @@ void SPXPlot::Plot(void) {
 	   //std::cout<<cn<<mn<<"calling SPXpValue finalize method "<<std::endl;
           pvalue->Finalize();         
          }
-
+	 */
 	} else {
 	 std::cout<<cn<<mn<<"calculate_chi2 option not ON SPXpValue not called "<<id<<std::endl;
         } 
+
 
 	SPXCImodel* pcimodel= new SPXCImodel(data,crossSections, steeringFile);
         pcimodel->SetPlotNumber(id); 
@@ -159,23 +186,15 @@ void SPXPlot::Plot(void) {
  
         }
 
-         if (id==0) {
-          summaryfigures = new SPXSummaryFigures (); 
-          summaryfigures->SetSteeringFile(steeringFile); 
-         }
-
-         summaryfigures->SetPlotNumber(id);         
-         //summaryfigures->SetDataandTheory(data,crossSections);
-         //summaryfigures->SetRatio(ratios,ratioFrameHisto);
-         summaryfigures->SetRatioFrame(ratioFrameHisto);
-         summaryfigures->SetLegend(leg,leginfo);
-         summaryfigures->SetPlot(this);
-
          if (id==steeringFile->GetNumberOfPlotConfigurations()-1) {
 	  std::cout<<cn<<mn<<"Now Draw summary figure "<<std::endl;
           summaryfigures->Draw();         
          }
-
+         if (id==steeringFile->GetNumberOfPlotConfigurations()-1) {
+	  std::cout<<cn<<mn<<"Now Draw summary figure "<<std::endl;
+          summaryfigures->Draw();         
+         }
+#endif
 	UpdateCanvas();
 
 	//Create a PNG of the canvas
@@ -1355,7 +1374,9 @@ void SPXPlot::DrawLegend(void) {
 
  if (steeringFile->GetParameterScan())
   std::cout<<cn<<mn<<"Grid contain parameter scan= "<< std::endl;
- 
+ else if (debug) 
+  std::cout<<cn<<mn<<"Grid does NOT contain parameter scan= "<< std::endl;
+
  for(int icross = 0; icross < crossSections.size(); icross++) {
 
   if (debug) {
@@ -3280,6 +3301,10 @@ void SPXPlot::InitializeData(void) {
 
                 if (steeringFile->GetTakeSignforTotalError()) {
                  dataInstance->SetTakeSignforTotalError(true);
+		} 
+
+                if (steeringFile->GetAddMCStattoTotalStatError()>0) {
+		 dataInstance->SetAddMCStattoTotalStatError(steeringFile->GetMCstatNametoAddtoTotal());
 		} 
 
 		if(debug) std::cout<<cn<<mn<<"Call GetDataRemoveFlag for i= "<<i << std::endl;

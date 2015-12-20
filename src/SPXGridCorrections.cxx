@@ -202,7 +202,7 @@ void SPXGridCorrections::Parse(void) {
   }
 
   if (debug) {
-    std::cout<<cn<<mn<<" Number of bins= "<<numberOfBins<<" xsize= "<< x.size()<<std::endl;
+    std::cout<<cn<<mn<<"Number of bins= "<<numberOfBins<<" xsize= "<< x.size()<<std::endl;
   }
 
   // Set number of bins to match the first corrections vector's xm size
@@ -221,7 +221,7 @@ void SPXGridCorrections::Parse(void) {
   // Check vector sizes
 
   if (debug) {
-    std::cout<<cn<<mn<<" Number of bins= "<<numberOfBins<<" xsize= "<< x.size()<<" check if corrections files have different sizes "<<std::endl;
+    std::cout<<cn<<mn<<"Number of bins= "<<numberOfBins<<" xsize= "<< x.size()<<" check if corrections files have different sizes "<<std::endl;
 
   }
 
@@ -394,7 +394,11 @@ TGraphAsymmErrors * SPXGridCorrections::GetCorrectionGraph(std::string &filename
 
  TGraphAsymmErrors* gcorr= new TGraphAsymmErrors();
  if (!gcorr) throw SPXGraphException(cn + mn + "ERROR creating graph ");
+<<<<<<< HEAD
  gcorr->SetName(TString("corrections_"+filename));
+=======
+ gcorr->SetName(TString("correction_"+filename));
+>>>>>>> release-0.98
 
  if (corrections.empty())
   throw SPXGraphException(cn + mn + "ERROR correction map is empty ! ");
@@ -411,7 +415,7 @@ TGraphAsymmErrors * SPXGridCorrections::GetCorrectionGraph(std::string &filename
  }
 
  if (debug) {
-  std::cout<<cn<<mn<<" numberOfBins= "<<numberOfBins<<std::endl;
+  std::cout<<cn<<mn<<"numberOfBins= "<<numberOfBins<<std::endl;
  }
 
  for (int i=0; i<numberOfBins; i++) {

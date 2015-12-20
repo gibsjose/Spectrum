@@ -1,5 +1,5 @@
 //************************************************************/
-//
+// 
 //	Graph Utilities Header
 //
 //	Some useful graph utilities for Spectrum
@@ -98,10 +98,11 @@ public:
 
 	static void Scale(TGraphAsymmErrors *graph, double xScale, double yScale);
 
-	//static void Normalize(TGraphAsymmErrors *graph, double yBinWidthScale, bool normalizeToTotalSigma, bool divideByBinWidth);
-
 	static double GetTotalSigma(TGraphAsymmErrors * g, bool dividedByBinWidth);
+
 	static void DivideByBinWidth(TGraphAsymmErrors * g);
+	static TH1D* DivideByBinWidth(TH1D * h1);
+	static TH1D* DivideByBinWidth(TH1D *h1, std::vector <double> binw);
 
         static TGraphAsymmErrors* TH1TOTGraphAsymm(TH1 *h1);
         static TGraphErrors* TH1TOTGraph(TH1 *h1);
@@ -128,9 +129,29 @@ public:
         static TGraphErrors *SPXTGraphSetXErrorsZero(TGraphErrors *g1);
         static TGraphErrors *SPXTGraphSetYErrorsZero(TGraphErrors *g1);
 
+<<<<<<< HEAD
         static TVectorD* SPXHistogramToVector( TH1D* h1 );
         static bool SPXHistosHaveSameMean(TH1* h1, TH1D *h2);
         static TH1D* HistogramSwitchSign(TH1D * h1);
+=======
+        static TH1D* SPXZeroErrors(TH1* h1);
+
+        static TVectorD* SPXHistogramToVector( TH1D* h1 );
+        static bool SPXHistosHaveSameMean(TH1* h1, TH1D *h2);
+        static TH1D* HistogramSwitchSign(TH1D * h1);
+
+	//static TH1D* HistogramCutXAxis(TH1D * h1, double xmin, double xmax);
+        static TH1D* SPXHistogramCutXAxis(TH1D * h1, int ixmin, int ixmax);
+        static TH2D* SPXHistogramCutXAxis(TH2D * h1, int ixmin, int ixmax);
+
+        static double SPXCompareHistograms(TH1D * h1, TH1 *h2, double reltolerance=0., bool debug=false);
+        static double SPXCompareTMatrices(TMatrixD * m1, TMatrixD *m2, double reltolerance=0., bool debug=false);
+        static TMatrixD * SPXGetMatrix(TH2D * h1);
+
+        static bool SPXCheckGraphBinning(TGraphErrors *g1, std::vector <double> bins);
+
+        static TH1D *SPXTransformXaxisToIndex(TH1D* hnomnorm);
+>>>>>>> release-0.98
 };
 
 #endif

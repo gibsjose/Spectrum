@@ -6,9 +6,17 @@
 
 ## Change Log
 
+<<<<<<< HEAD
  // -SPXPDF: get and calculate methods for theory covariance matrix
 
   -added SPXGraphUtilities::SPXHistogramToVector
+=======
+  -SPXGraphUtilities: Introduce HistogramCutXAxis
+
+  -SPXData: inititialize  DataCutXmin,  DataCutXmax to high values
+
+  -SPXPlot: change to be able to run theory only
+>>>>>>> release-0.98
 
   -SPXDATA: Removed bug in reading in covariance matrix starting with negative value
             Removed bug reading in last line of covariance matrix 

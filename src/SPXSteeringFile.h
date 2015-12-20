@@ -76,6 +76,8 @@ private:
                                     //      false uncertainties are taken as such
       	bool set_grid_styles;       // Flag to indicate, if grid properties are set 
 
+        bool AddMCStattoTotalStatError; //
+
 	std::vector <bool> RemoveXbins;           // if ON points below/above DataCutXmin/DataCutXmax are removed
 	std::vector <double> DataCutXmin;         // Value below which data points are removed if  RemoveXbins=true
 	std::vector <double> DataCutXmax;         // Value above which data points are removed if  RemoveXbins=true
@@ -84,13 +86,14 @@ private:
 
 	bool gridCorr;		// if true  corrections should be applied to grid/convolute
 	std::string ContainGridCorr; // only keep correction that contain this string
+	std::string MCstatNametoAddtoTotal; // name of mcstat error to be add to total error
 	bool nomCorr;		// if true correction should be applied to nominal histogram
 	bool labelSqrtS;	// if true Sqrt(s) value should be shown in the legend
 	bool labelChi2;	        // if true Chi2 should be add on label
 
 	bool labelDate;	        //Flag to add Data beside label
 
-	bool   showIndividualSystematicswithName; //Flag to show individual systematics data uncertainties that contain name
+	bool showIndividualSystematicswithName; //Flag to show individual systematics data uncertainties that contain name
                                           // given in steering
 	double showIndividualSystematics; //Flag to show individual systematics data uncertainties
 	double showTotalSystematics; //Flag to show total systematics data uncertainties
@@ -100,7 +103,7 @@ private:
         double XDataBoxLabel;    // X-coordinate of data box label
         double YDataBoxLabel;    // Y-coordinate of data box label
 
-        double 	BeamUncertainty; // Introduce beam uncertainty to band with value 	BeamUncertainty
+        double BeamUncertainty; // Introduce beam uncertainty to band with value BeamUncertainty
 
         bool BandwithPDF;        // show the Uncertainty band with the PDF uncertainties
 	bool BandwithAlphaS;     // show the Uncertainty band with alphas  uncertainties
@@ -109,6 +112,9 @@ private:
 	bool BandTotal;          // show the Total uncertainty band
 
         std::vector<bool> gridcorrections; // flags if grid correction go into band
+
+	//std::vector<std::string>  replicasteeringfile; // name of steering file to read replica
+	std::string  replicasteeringfile; // name of steering file to read replica
 
         std::vector<std::string> systematicsclasses;      // groups to display systematics
         std::vector<int>         systematicsclassescolor; // groups to display systematics fill colors
@@ -242,6 +248,14 @@ public:
 	  return this-> TakeSignforTotalError;
 	}
 
+	bool GetAddMCStattoTotalStatError(void) const {
+	 return this->AddMCStattoTotalStatError;
+        }
+
+
+	std::string GetMCstatNametoAddtoTotal(void) const {
+	 return this->MCstatNametoAddtoTotal;
+        }
 
 	bool PrintTotalCrossSection(void) const {
 		return this->printTotalSigma;
@@ -501,6 +515,9 @@ public:
 		return this->ParameterScan;
 	}
 
+         
+	//std::vector<std::string >  GetReplicaFileNames() { return replicasteeringfile;} 
+	std::string   GetReplicaFileName() { return replicasteeringfile;} 
 };
 
 #endif

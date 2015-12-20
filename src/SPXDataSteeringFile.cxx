@@ -512,6 +512,7 @@ void SPXDataSteeringFile::Parse(void) {
 	  for (int i=0; i<SystematicsUncorrelatedBetweenBins.size(); i++) {
 	   std::cout<<cn<<mn<<" i= "<<" name= "<<SystematicsUncorrelatedBetweenBins.at(i).c_str()<<std::endl;
           }
+          if (SystematicsUncorrelatedBetweenBins.size()==0) std::cout<<cn<<mn<<"No uncorrelated systematics in steering "<<std::endl; 
          }  
 	}
 }

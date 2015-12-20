@@ -245,3 +245,43 @@ void SPXDrawUtilities::DrawBox(double xbox, double ybox, int mcolor, bool isdata
 
  return;
 }
+<<<<<<< HEAD
+=======
+
+void SPXDrawUtilities::PlotAndSave2Dmatrix( TMatrixD *covMat_, Int_t N, Double_t binLimits[], TH2D* frame2D, TString *name, Int_t SetZrage, Double_t min_, Double_t max_ ){
+  //
+  // plot and print a 2D matrix
+  // B. Malaescu
+  //
+   std::string mn = "PlotAndSave2Dmatrix: ";
+
+   if (!covMat_) {
+    throw SPXGraphException(cn + mn + "Matrix is invalid");
+   }
+
+   TH2D *covMatH = new TH2D( (*name)+"H", (*name)+"H", N, binLimits, N, binLimits );
+   for( Int_t i=0; i<N; i++){
+      for( Int_t j=0; j<N; j++){
+	 covMatH->SetBinContent( i+1, j+1, (*covMat_)[i][j] );
+      }
+   }
+
+   if( SetZrage ){
+      covMatH->SetMinimum( min_ );
+      covMatH->SetMaximum( max_ );
+   }
+ 
+   TCanvas *can = new TCanvas( *name, *name, 0, 0, 700, 500 );
+   //SetCanvasStyle2D( can );
+   can->cd();
+   can->SetRightMargin ( 0.16 );
+
+   frame2D->Draw();
+   covMatH->Draw("colzsame");
+ //
+   can->Print( "plots/" + (*name) + ".png", "png");
+   return;
+}
+
+
+>>>>>>> release-0.98

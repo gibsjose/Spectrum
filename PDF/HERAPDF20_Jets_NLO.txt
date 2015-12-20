@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ;==============================================================
 ;
 ; Description:
@@ -9,19 +8,19 @@
 ; General Options
 ;==============================================================
 [GEN]
-debug = true
+debug = false
 ;==============================================================
 ; Description
 ;==============================================================
 [DESC]
-=======
- [DESC]
->>>>>>> release-0.98
-name = HERAPDF20_NLO_EIG
-name_var = HERAPDF20_NLO_VAR
-type = HERAPDF20
+name = HERAPDF20_Jets_NLO_EIG
+; introduce vector here ?
+' not clear what to do here, introduce a vector ?
+;name_var = 
+;
+type = HERAPDF20Jets
 order = NLO
-num_members = 42
+num_members = 31
 ; pdf_set_path =
 
 ;==============================================================
@@ -29,8 +28,8 @@ num_members = 42
 ;==============================================================
 [STYLE]
 fill_style = 3004
-fill_color = 619
-marker_style = 21
+fill_color = 611
+marker_style = 25
 
 ;==============================================================
 ; PDF Options
@@ -39,19 +38,19 @@ marker_style = 21
 default_id = 0
 default_id_var = 0
 first_eig = 1
-last_eig = 28
-first_quad = 1
-last_quad = 10
-first_max = 11
-last_max = 13
+last_eig = 30
+first_quad = 0
+last_quad = 0
+first_max = 0
+last_max = 0
 include_eig = true
-include_quad = true
-include_max = true
+include_quad = false
+include_max = false
 band_type = use_error_band
 ErrorPropagationType = 2
 error_type = pdf_band
 error_size = one_sigma
 alpha_s_error_number_up = 0
 alpha_s_error_number_down = 0
-alpha_s_pdf_name_up = HERAPDF20_NLO_ALPHAS_116
-alpha_s_pdf_name_down = HERAPDF20_NLO_ALPHAS_120
+alpha_s_pdf_name_up = 
+alpha_s_pdf_name_down = 
